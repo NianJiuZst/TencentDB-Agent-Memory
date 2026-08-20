@@ -1,4 +1,6 @@
-import protocolJson from "../protocol.e2e.v3.json" with { type: "json" };
+import protocolJson from "../protocol.e2e.adaptive.v1.json" with { type: "json" };
+import type { LifecyclePolicy } from "../../../src/core/lifecycle/index.js";
+import { ADAPTIVE_PROTOCOL } from "./adaptive-protocol.js";
 import { PROTOCOL } from "./protocol.js";
 
 export interface LifecycleE2EProtocol {
@@ -6,9 +8,11 @@ export interface LifecycleE2EProtocol {
   supersedes?: string;
   changeReason?: string;
   retrievalProtocolVersion: string;
+  adaptiveProtocolVersion?: string;
   seed: number;
   population: string;
   selection: {
+    eligiblePeriods?: string[];
     stratifyBy: "persona";
     casesPerPersona: number;
     expectedPersonas: number;
@@ -18,7 +22,9 @@ export interface LifecycleE2EProtocol {
     frozenSelectionSha256: string;
     usesAnswerOrJudgeOutput: boolean;
   };
-  arms: ["base", "oracle_query" | "oracle_chain"];
+  arms: ["base", "oracle_query" | "oracle_chain" | "adaptive"];
+  adaptivePolicy?: LifecyclePolicy;
+  policyProvenance?: string;
   models: {
     provider: "openrouter";
     reader: string;
@@ -59,6 +65,13 @@ if (
 
 if (E2E_PROTOCOL.selection.usesAnswerOrJudgeOutput) {
   throw new Error("E2E sample selection must not use answer or judge output");
+}
+
+if (
+  E2E_PROTOCOL.arms[1] === "adaptive"
+  && E2E_PROTOCOL.adaptiveProtocolVersion !== ADAPTIVE_PROTOCOL.protocolVersion
+) {
+  throw new Error("adaptive E2E protocol must reference the active adaptive protocol");
 }
 
 if (!/^[a-f0-9]{64}$/.test(E2E_PROTOCOL.selection.frozenSelectionSha256)) {

@@ -2,13 +2,20 @@ import { createHash } from "node:crypto";
 import { appendFile, mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { getEncoding } from "js-tiktoken";
+import {
+  applyLifecyclePolicy,
+  LifecycleLedger,
+  type LifecycleDecisionLog,
+} from "../../../src/core/lifecycle/index.js";
 import { loadMemora } from "./adapter.js";
+import { ADAPTIVE_PROTOCOL } from "./adaptive-protocol.js";
 import { MemoryCoreGroupBackend } from "./backend.js";
 import { E2E_PROTOCOL } from "./e2e-protocol.js";
 import { callOpenRouter, type ModelResponse } from "./openrouter.js";
 import { PROTOCOL } from "./protocol.js";
 import { oracleChainCandidates, oracleQueryCandidates } from "./runner.js";
 import { scoreRetrieved } from "./metrics.js";
+import { extractMemoraLifecycleEvents } from "./memora-events.js";
 import type {
   BootstrapInterval,
   EvaluationCriterion,
@@ -18,13 +25,14 @@ import type {
 
 const encoding = getEncoding("cl100k_base");
 
-type ComparatorArm = "oracle_query" | "oracle_chain";
+type ComparatorArm = "oracle_query" | "oracle_chain" | "adaptive";
 type E2EArm = "base" | ComparatorArm;
 
 interface SelectedCase {
   question: LifecycleEvalQuestion;
   base: RetrievedUnit[];
   comparator: RetrievedUnit[];
+  comparatorDecision?: LifecycleDecisionLog;
   selectionHash: string;
 }
 
@@ -54,6 +62,7 @@ interface ArmResult {
   metrics: AnswerMetrics;
   reader: ModelResponse;
   judge: ModelResponse;
+  lifecycleDecision?: LifecycleDecisionLog;
 }
 
 interface E2ECaseResult {
@@ -221,6 +230,10 @@ async function retrieveExposedCases(dataRoot: string, verifyHash: boolean): Prom
   const exposed: SelectedCase[] = [];
   for (let index = 0; index < loaded.groups.length; index += 1) {
     const group = loaded.groups[index];
+    if (
+      E2E_PROTOCOL.selection.eligiblePeriods?.length
+      && !E2E_PROTOCOL.selection.eligiblePeriods.includes(group.period)
+    ) continue;
     const backend = new MemoryCoreGroupBackend(group.units);
     const unitsBySession = new Map<string, RetrievedUnit[]>();
     for (const unit of group.units) {
@@ -228,19 +241,55 @@ async function retrieveExposedCases(dataRoot: string, verifyHash: boolean): Prom
       entries.push({ ...unit, score: 0, tokenCount: encoding.encode(unit.content).length });
       unitsBySession.set(unit.sessionId, entries);
     }
+    const materializedById = new Map(
+      [...unitsBySession.values()].flat().map((unit) => [unit.id, unit]),
+    );
+    let adaptiveLedger: LifecycleLedger | undefined;
+    if (E2E_PROTOCOL.arms[1] === "adaptive") {
+      const extracted = extractMemoraLifecycleEvents(group.sessions, group.units);
+      try {
+        adaptiveLedger = new LifecycleLedger(
+          group.units.map((unit) => ({ id: unit.id, content: unit.content, sequence: unit.sequence })),
+          extracted.events,
+          {
+            maxUnits: ADAPTIVE_PROTOCOL.capacity.maxUnitsPerGroup,
+            maxEvents: ADAPTIVE_PROTOCOL.capacity.maxEventsPerGroup,
+            maxEdges: ADAPTIVE_PROTOCOL.capacity.maxEdgesPerGroup,
+          },
+        );
+      } catch {
+        adaptiveLedger = undefined;
+      }
+    }
     try {
       for (const question of group.questions) {
         if (!question.obsoleteAtoms.length || !question.evaluationQuestions.length) continue;
         const search = await backend.search(question.query, PROTOCOL.retrieval.candidateLimit);
+        for (const candidate of search.candidates) materializedById.set(candidate.id, candidate);
         const base = search.candidates.slice(0, PROTOCOL.retrieval.resultLimit);
         if (scoreRetrieved(question, base).obsoleteAny !== 1) continue;
-        const comparator = E2E_PROTOCOL.arms[1] === "oracle_chain"
-          ? oracleChainCandidates(question, search.candidates, unitsBySession)
-          : oracleQueryCandidates(question, search.candidates);
+        let comparator: RetrievedUnit[];
+        let comparatorDecision: LifecycleDecisionLog | undefined;
+        if (E2E_PROTOCOL.arms[1] === "oracle_chain") {
+          comparator = oracleChainCandidates(question, search.candidates, unitsBySession);
+        } else if (E2E_PROTOCOL.arms[1] === "oracle_query") {
+          comparator = oracleQueryCandidates(question, search.candidates);
+        } else {
+          if (!E2E_PROTOCOL.adaptivePolicy) throw new Error("adaptive comparator requires a pinned policy");
+          const applied = applyLifecyclePolicy({
+            candidates: search.candidates,
+            resolver: adaptiveLedger,
+            policy: E2E_PROTOCOL.adaptivePolicy,
+            materialize: (id) => materializedById.get(id),
+          });
+          comparator = applied.candidates;
+          comparatorDecision = applied.decision;
+        }
         exposed.push({
           question,
           base,
           comparator,
+          comparatorDecision,
           selectionHash: hash(`${E2E_PROTOCOL.seed}:${question.id}`),
         });
       }
@@ -321,6 +370,9 @@ async function evaluateArm(
     metrics: scoreAnswer(verdicts),
     reader,
     judge,
+    ...(arm !== "base" && selected.comparatorDecision
+      ? { lifecycleDecision: selected.comparatorDecision }
+      : {}),
   };
 }
 
@@ -358,6 +410,13 @@ function aggregateArm(cases: E2ECaseResult[], arm: E2EArm) {
       (sum, result) => sum + (result.reader.usage.costUsd ?? 0) + (result.judge.usage.costUsd ?? 0),
       0,
     ),
+    lifecycleFallbackRate: mean(armResults.map((result) =>
+      result.lifecycleDecision?.mode === "fallback" ? 1 : 0
+    )),
+    lifecycleRedirectRate: mean(armResults.map((result) =>
+      (result.lifecycleDecision?.redirects ?? 0) > 0 ? 1 : 0
+    )),
+    lifecycleMeanLatencyMs: mean(armResults.map((result) => result.lifecycleDecision?.elapsedMs ?? 0)),
   };
 }
 
@@ -468,7 +527,9 @@ export async function runE2EHeadroom(options: E2ERunOptions): Promise<Record<str
     caveats: [
       "This is a targeted stale-exposed diagnostic, not an estimate over all Memora questions.",
       "The single batched judge is cheaper than, but not comparable to, Memora's official three-judge Table 3 protocol.",
-      `${comparatorArm} uses gold correction labels and is an upper bound, not a deployable lifecycle controller.`,
+      comparatorArm === "adaptive"
+        ? "The adaptive controller uses write-time operation metadata and an optimization-period-selected policy; it does not read evaluation evidence."
+        : `${comparatorArm} uses gold correction labels and is an upper bound, not a deployable lifecycle controller.`,
     ],
   };
   await writeFile(path.join(options.outputDir, "summary.json"), `${JSON.stringify(report, null, 2)}\n`, "utf8");
