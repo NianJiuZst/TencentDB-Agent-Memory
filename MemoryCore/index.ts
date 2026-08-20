@@ -52,6 +52,10 @@ import {
 } from "./src/utils/ensure-hook-policy.js";
 import { resolveOpenClawStateDir } from "./src/utils/openclaw-state-dir.js";
 
+// Optional host-neutral lifecycle sidecar. Exporting it does not install the
+// controller into the default Gateway/plugin path; callers opt in explicitly.
+export * from "./src/core/lifecycle/index.js";
+
 const TAG = "[memory-tdai]";
 
 type OpenClawAdapterMode = "local" | "client";

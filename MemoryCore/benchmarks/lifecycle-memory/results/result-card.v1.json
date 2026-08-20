@@ -1,0 +1,80 @@
+{
+  "resultVersion": "lifecycle-result-card-v1.0",
+  "dataset": {
+    "name": "Memora",
+    "revision": "a6493188efc836d6511ed5e4163fe3ba87da30ff",
+    "manifestSha256": "dfc82711dd6647bcb0ba590f43a336f0dac02420e981ce957dd1fd13ae331bfc",
+    "questions": 600,
+    "sessions": 27614,
+    "personas": 10
+  },
+  "adaptiveProtocol": "lifecycle-adaptive-v1.0",
+  "selectedPolicy": {
+    "enabled": true,
+    "minConfidence": 0.85,
+    "maxHops": 1,
+    "maxExpansions": 64,
+    "resultLimit": 5,
+    "timeoutMs": 10
+  },
+  "directHeldOut": {
+    "period": "quarterly",
+    "forgettingBearing": {
+      "cases": 192,
+      "baseEvidenceFamaProxy": 0.45016774937889864,
+      "adaptiveEvidenceFamaProxy": 0.47700513196360017,
+      "delta": 0.026837382584701353,
+      "ci95": [0.014746911412450842, 0.0412718494955337]
+    },
+    "staleExposed": {
+      "cases": 61,
+      "baseEvidenceFamaProxy": 0.09069454069888164,
+      "adaptiveEvidenceFamaProxy": 0.18356531446695376,
+      "delta": 0.09287077376807219,
+      "ci95": [0.058508924338737514, 0.127756293809977]
+    }
+  },
+  "answerLevelHeldOut": {
+    "protocol": "lifecycle-adaptive-e2e-v1.1",
+    "mode": "stale-exposed-quarterly",
+    "cases": 50,
+    "selectionSha256": "1e3ab7b21bd1425f98f095ca76a31d350c47f3bb9c9cf0090139567859dadaf1",
+    "base": {
+      "mpa": 0.38814856369121065,
+      "faa": 0.8655525536090398,
+      "fama": 0.33360150602950234,
+      "meanInjectedTokens": 144.52
+    },
+    "adaptive": {
+      "mpa": 0.4399308647235118,
+      "faa": 0.9407781849152879,
+      "fama": 0.40140064569932987,
+      "meanInjectedTokens": 146.76,
+      "fallbackRate": 0.0,
+      "meanLifecycleLatencyMs": 0.01823079999994661
+    },
+    "deltas": {
+      "mpa": { "mean": 0.051782301032301026, "ci95": [0.0043333333333333305, 0.10961111111111112] },
+      "faa": { "mean": 0.07522563130624789, "ci95": [0.05041583162880116, 0.10234958741549809] },
+      "fama": { "mean": 0.06779913966982759, "ci95": [0.02120684753930018, 0.12321624277830652] }
+    },
+    "gate": {
+      "passed": false,
+      "checks": { "famaDelta": true, "faaDelta": false, "famaCi": true }
+    }
+  },
+  "fallbackValidation": {
+    "cases": 600,
+    "disabledMismatches": 0,
+    "damagedMismatches": 0,
+    "timeoutMismatches": 0
+  },
+  "multiJudgeReplication": {
+    "protocol": "lifecycle-adaptive-rejudge-v1.0",
+    "status": "incomplete",
+    "completedCases": 22,
+    "plannedCases": 50,
+    "excludedFromClaims": true,
+    "reason": "OpenRouter HTTP 402 insufficient credits"
+  }
+}
