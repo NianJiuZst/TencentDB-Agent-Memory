@@ -82,6 +82,15 @@ export interface PipelineTriggerConfig {
 }
 
 /** Recall settings — controls memory retrieval for context injection. */
+export interface AdaptiveRecallConfig {
+  /** Enable the reviewed policy sidepath (default: false). */
+  enabled: boolean;
+  /** JSON policy produced by the benchmark promotion stage. */
+  policyPath?: string;
+  /** Per adaptive-stage timeout before the exact base path is retried. */
+  timeoutMs: number;
+}
+
 export interface RecallConfig {
   /** Enable auto-recall (default: true) */
   enabled: boolean;
@@ -97,6 +106,8 @@ export interface RecallConfig {
   strategy: "embedding" | "keyword" | "hybrid";
   /** Overall recall timeout in milliseconds (default: 5000). When exceeded, recall is skipped with a warning. */
   timeoutMs: number;
+  /** Optional, fail-closed adaptive candidate and injection-budget policy. */
+  adaptive?: AdaptiveRecallConfig;
 }
 
 /** Embedding service configuration for vector search. */
@@ -387,6 +398,7 @@ export function parseConfig(raw: Record<string, unknown> | undefined): MemoryTda
 
   // --- Recall ---
   const recallGroup = obj(c, "recall");
+  const adaptiveRecallGroup = obj(recallGroup, "adaptive");
 
   // --- Embedding ---
   const embeddingGroup = obj(c, "embedding");
@@ -576,6 +588,11 @@ export function parseConfig(raw: Record<string, unknown> | undefined): MemoryTda
       scoreThreshold: num(recallGroup, "scoreThreshold") ?? 0.3,
       strategy: validateStrategy(str(recallGroup, "strategy")) ?? "hybrid",
       timeoutMs: num(recallGroup, "timeoutMs") ?? 5000,
+      adaptive: {
+        enabled: bool(adaptiveRecallGroup, "enabled") ?? false,
+        policyPath: optStr(adaptiveRecallGroup, "policyPath"),
+        timeoutMs: num(adaptiveRecallGroup, "timeoutMs") ?? 250,
+      },
     },
     embedding: {
       enabled: embeddingEnabled,

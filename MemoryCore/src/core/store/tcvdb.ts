@@ -134,7 +134,7 @@ const QUERY_PAGE_SIZE = 100;
 const L1_OUTPUT_FIELDS = [
   "id", "text", "type", "priority", "scene_name",
   "team_id", "user_id", "agent_id", "session_key", "session_id", "task_id", "version", "timestamp_str", "timestamp_start",
-  "timestamp_end", "metadata_json", "created_time_ms", "updated_time_ms",
+  "timestamp_end", "source_message_ids_json", "metadata_json", "created_time_ms", "updated_time_ms",
 ];
 
 /** All L0 output fields returned by query/search. */
@@ -173,6 +173,18 @@ function isoToEpochMs(iso: string): number {
 function epochMsToIso(ms: number): string {
   if (!ms || ms <= 0) return "";
   return new Date(ms).toISOString();
+}
+
+function parseStringArrayJson(value: unknown): string[] {
+  if (typeof value !== "string" || value.length === 0) return [];
+  try {
+    const parsed = JSON.parse(value) as unknown;
+    return Array.isArray(parsed)
+      ? parsed.filter((item): item is string => typeof item === "string")
+      : [];
+  } catch {
+    return [];
+  }
 }
 
 function escapeFilterString(value: string): string {
@@ -685,6 +697,7 @@ export class TcvdbMemoryStore implements IMemoryStore {
       timestamp_end: tsEnd,
       created_time_ms: isoToEpochMs(record.createdAt),
       updated_time_ms: isoToEpochMs(record.updatedAt),
+      source_message_ids_json: JSON.stringify(record.source_message_ids ?? []),
       metadata_json: JSON.stringify(record.metadata),
       memory_type: DEFAULT_MEMORY_TYPE,
     };
@@ -736,6 +749,7 @@ export class TcvdbMemoryStore implements IMemoryStore {
           timestamp_end: tsEnd,
           created_time_ms: isoToEpochMs(record.createdAt),
           updated_time_ms: isoToEpochMs(record.updatedAt),
+          source_message_ids_json: JSON.stringify(record.source_message_ids ?? []),
           metadata_json: JSON.stringify(record.metadata),
           memory_type: DEFAULT_MEMORY_TYPE,
         };
@@ -893,6 +907,7 @@ export class TcvdbMemoryStore implements IMemoryStore {
           timestamp_end: String(doc.timestamp_end ?? ""),
           created_time: epochMsToIso(Number(doc.created_time_ms ?? 0)),
           updated_time: epochMsToIso(Number(doc.updated_time_ms ?? 0)),
+          source_message_ids_json: String(doc.source_message_ids_json ?? "[]"),
           metadata_json: String(doc.metadata_json ?? "{}"),
         }));
       }
@@ -925,6 +940,7 @@ export class TcvdbMemoryStore implements IMemoryStore {
         timestamp_end: String(doc.timestamp_end ?? ""),
         created_time: epochMsToIso(Number(doc.created_time_ms ?? 0)),
         updated_time: epochMsToIso(Number(doc.updated_time_ms ?? 0)),
+        source_message_ids_json: String(doc.source_message_ids_json ?? "[]"),
         metadata_json: String(doc.metadata_json ?? "{}"),
       }));
     } catch (err) {
@@ -1926,6 +1942,7 @@ export class TcvdbMemoryStore implements IMemoryStore {
         timestamp_end: d.timestamp_end ?? "",
         created_time: d.created_time_ms ? new Date(d.created_time_ms).toISOString() : "",
         updated_time: d.updated_time_ms ? new Date(d.updated_time_ms).toISOString() : "",
+        source_message_ids_json: d.source_message_ids_json ?? "[]",
         metadata_json: d.metadata_json ?? "{}",
       }));
 
@@ -2034,6 +2051,7 @@ export class TcvdbMemoryStore implements IMemoryStore {
         user_id: String(doc.user_id ?? ""),
         agent_id: String(doc.agent_id ?? ""),
         version: Number(doc.version ?? 0),
+        source_message_ids: parseStringArrayJson(doc.source_message_ids_json),
         metadata_json: String(doc.metadata_json ?? "{}"),
       });
     }

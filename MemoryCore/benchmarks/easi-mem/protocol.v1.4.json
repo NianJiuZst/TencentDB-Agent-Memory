@@ -1,0 +1,38 @@
+{
+  "protocolVersion": "easi-mem-long-dialogue-v1.4.0",
+  "supersedes": "easi-mem-long-dialogue-v1.3.0",
+  "changeReason": "V1.3 used an absolute token budget whose cost behavior depends on average message length. V1.4 predeclares a base-relative token grid before any LoCoMo retrieval run. The effective budget is min(1024, ratio times the exact token load of the original Top-5). All LongMemEval baselines are rerun; the selected policy is then frozen for an external LoCoMo stress test.",
+  "developmentDataset": {
+    "name": "LongMemEval-S-cleaned",
+    "revision": "98d7416c24c778c2fee6e6f3006e7a073259d48f",
+    "sha256": "d6f21ea9d60a0d56f34a05b609c79c88a451d2ae03597821ea3d5a9678c3a442",
+    "validityNote": "Protocol evolution inspected earlier aggregate results, so this dataset is treated as developmental rather than a pristine confirmatory test."
+  },
+  "externalStressTest": {
+    "name": "LoCoMo-10",
+    "source": "snap-research/locomo",
+    "sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+    "policyFrozenBeforeRetrieval": true,
+    "frozenPolicySha256": "75f707baee0d23aa38746c183b1ef88f613e358d22a15a0d78f79d46fc38429f",
+    "uncertainty": "conversation-cluster bootstrap over 10 conversations"
+  },
+  "split": {
+    "method": "category-stratified SHA-256 ordering",
+    "seed": 20260823,
+    "train": 0.6,
+    "dev": 0.2,
+    "test": 0.2
+  },
+  "profiles": {
+    "base": "Top-5 without an adaptive token cap",
+    "fixedControl": "Top-30 candidate pool, Top-10 output, 896-token cap",
+    "relativeGrid": [0.70, 0.75, 0.80, 0.85, 0.90, 0.95],
+    "relativeCapTokens": 1024
+  },
+  "promotion": {
+    "maxRecallRegression": 0.01,
+    "minTokenReduction": 0.1,
+    "pairedBootstrapSamples": 5000,
+    "minUtility95CiLowerBound": 0
+  }
+}

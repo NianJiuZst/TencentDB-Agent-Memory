@@ -63,6 +63,16 @@ function rowToMemoryRecord(row: L1RecordRow): MemoryRecord {
     // malformed JSON — use empty object
   }
 
+  let sourceMessageIds: string[] = [];
+  try {
+    const parsed = JSON.parse(row.source_message_ids_json || "[]") as unknown;
+    if (Array.isArray(parsed)) {
+      sourceMessageIds = parsed.filter((item): item is string => typeof item === "string");
+    }
+  } catch {
+    // malformed provenance — preserve the record and expose an empty source set
+  }
+
   // Reconstruct timestamps array from timestamp_start / timestamp_end
   const timestamps: string[] = [];
   if (row.timestamp_str) timestamps.push(row.timestamp_str);
@@ -77,7 +87,7 @@ function rowToMemoryRecord(row: L1RecordRow): MemoryRecord {
     type: row.type as MemoryType,
     priority: row.priority,
     scene_name: row.scene_name,
-    source_message_ids: [], // not stored in SQLite (vector search doesn't need them)
+    source_message_ids: sourceMessageIds,
     metadata,
     timestamps,
     createdAt: row.created_time,

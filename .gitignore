@@ -86,6 +86,7 @@ docs/*.pdf
 docs/*.png
 docs/*.pptx
 docs/*.mmd
+/tmp/pdfs/
 
 # Log files
 *.log

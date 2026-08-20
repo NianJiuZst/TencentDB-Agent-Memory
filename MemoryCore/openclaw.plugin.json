@@ -89,7 +89,16 @@
           "maxTotalRecallChars": { "type": "number", "default": 0, "description": "本轮 auto-recall 注入的 L1 记忆总字符预算；填 0 表示不限制" },
           "scoreThreshold": { "type": "number", "default": 0.3, "description": "最低分数阈值" },
           "strategy": { "type": "string", "enum": ["embedding", "keyword", "hybrid"], "default": "hybrid", "description": "搜索策略：keyword(关键词)、embedding(向量)、hybrid(混合RRF融合，推荐)" },
-          "timeoutMs": { "type": "number", "default": 5000, "description": "召回整体超时（毫秒），超时后跳过记忆注入并打印警告日志" }
+          "timeoutMs": { "type": "number", "default": 5000, "description": "召回整体超时（毫秒），超时后跳过记忆注入并打印警告日志" },
+          "adaptive": {
+            "type": "object",
+            "description": "可审阅的自适应召回旁路；关闭或策略读取、校验、执行失败时硬回退原始召回路径",
+            "properties": {
+              "enabled": { "type": "boolean", "default": false, "description": "是否启用自适应策略；默认关闭" },
+              "policyPath": { "type": "string", "description": "由评测晋级阶段生成的版本化 JSON 策略路径；相对路径以插件数据目录解析" },
+              "timeoutMs": { "type": "number", "default": 250, "description": "策略读取、探测或候选查询每阶段的超时（毫秒）；失败后执行原始召回" }
+            }
+          }
         }
       },
       "embedding": {

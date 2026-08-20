@@ -71,6 +71,8 @@ export interface L1SearchResult {
   task_id: string;
   user_id: string;
   agent_id: string;
+  /** Message-level provenance retained by the L1 store. */
+  source_message_ids: string[];
   metadata_json: string;
 }
 
@@ -93,6 +95,8 @@ export interface L1FtsResult {
   task_id: string;
   user_id: string;
   agent_id: string;
+  /** Message-level provenance retained by the L1 store. */
+  source_message_ids: string[];
   metadata_json: string;
 }
 
@@ -130,6 +134,8 @@ export interface L1RecordRow {
   timestamp_end: string;
   created_time: string;
   updated_time: string;
+  /** JSON encoded string array for storage-backend portability. */
+  source_message_ids_json: string;
   metadata_json: string;
 }
 

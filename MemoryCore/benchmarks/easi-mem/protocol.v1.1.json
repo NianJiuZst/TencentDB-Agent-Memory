@@ -1,0 +1,51 @@
+{
+  "protocolVersion": "easi-mem-long-dialogue-v1.1.0",
+  "supersedes": "easi-mem-long-dialogue-v1.0.0",
+  "changeReason": "The v1.0 development split showed that query-only leaves collapsed to the majority lean profile. V1.1 adds base Top-5 scout features and conservative low-confidence fallback; all arms and baselines must be rerun.",
+  "dataset": {
+    "name": "LongMemEval-S-cleaned",
+    "source": "https://huggingface.co/datasets/xiaowu0162/longmemeval-cleaned/resolve/main/longmemeval_s_cleaned.json",
+    "revision": "98d7416c24c778c2fee6e6f3006e7a073259d48f",
+    "sha256": "d6f21ea9d60a0d56f34a05b609c79c88a451d2ae03597821ea3d5a9678c3a442",
+    "instances": 500,
+    "retrievalInstances": 470,
+    "abstentionInstances": 30
+  },
+  "base": {
+    "memoryCoreRevision": "97f94654280b2932c35ba4806a491999ed244cc9",
+    "backend": "MemoryCore SQLite FTS5",
+    "granularity": "L0 turn, both user and assistant roles",
+    "query": "question text only",
+    "maxResults": 5
+  },
+  "routerFeatures": {
+    "queryOnly": [
+      "queryChars", "queryTokens", "temporalCueCount", "updateCueCount",
+      "multiHopCueCount", "digitCount", "entityLikeTokenCount", "documentCount"
+    ],
+    "baseTop5Scout": [
+      "scoutResultCount", "topScoreGap", "scoreDecay5",
+      "uniqueSourceRatio5", "meanCandidateTokens5"
+    ],
+    "forbidden": ["question_type", "split", "answer", "gold evidence labels"]
+  },
+  "split": {
+    "method": "category-stratified SHA-256 ordering",
+    "seed": 20260821,
+    "train": 0.6,
+    "dev": 0.2,
+    "test": 0.2,
+    "testPolicy": "frozen; no labels or question_type are available to the router"
+  },
+  "metrics": [
+    "RecallAnySession", "RecallAllSessions", "MacroSessionRecall",
+    "RecallAnyTurn", "RecallAllTurns", "MacroTurnRecall",
+    "SessionNDCG", "InjectedTokens", "AlignedTokenRate", "query latency p50/p95"
+  ],
+  "promotion": {
+    "maxMacroRecallRegression": 0.01,
+    "minTokenReduction": 0.1,
+    "pairedBootstrapSamples": 5000,
+    "minUtility95CiLowerBound": 0
+  }
+}

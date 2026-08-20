@@ -1,0 +1,12 @@
+{
+  "protocolVersion": "easi-mem-long-dialogue-v1.0.0",
+  "status": "retired-after-full-run",
+  "changeReason": "Query-only routing collapsed to the majority lean profile on the development split.",
+  "seed": 20260820,
+  "datasetSha256": "d6f21ea9d60a0d56f34a05b609c79c88a451d2ae03597821ea3d5a9678c3a442",
+  "result": {
+    "promotionPassed": false,
+    "testMacroRecallDeltaVsBestStatic": -0.02976190476190476,
+    "testTokenReduction": 0.5552388252766732
+  }
+}

@@ -100,6 +100,7 @@ export interface VectorSearchResult {
   task_id: string;
   user_id: string;
   agent_id: string;
+  source_message_ids: string[];
   /** Raw metadata JSON string (e.g., contains activity_start_time / activity_end_time for episodic) */
   metadata_json: string;
 }
@@ -321,6 +322,18 @@ export function bm25RankToScore(rank: number): number {
   return 1 / (1 + rank);
 }
 
+function parseStringArrayJson(value: unknown): string[] {
+  if (typeof value !== "string" || value.length === 0) return [];
+  try {
+    const parsed = JSON.parse(value) as unknown;
+    return Array.isArray(parsed)
+      ? parsed.filter((item): item is string => typeof item === "string")
+      : [];
+  } catch {
+    return [];
+  }
+}
+
 /** FTS5 search result for L1 records. */
 export interface FtsSearchResult {
   record_id: string;
@@ -340,6 +353,7 @@ export interface FtsSearchResult {
   task_id: string;
   user_id: string;
   agent_id: string;
+  source_message_ids: string[];
   metadata_json: string;
 }
 
@@ -641,6 +655,7 @@ export class VectorStore implements IMemoryStore {
         timestamp_end TEXT DEFAULT '',
         created_time TEXT DEFAULT '',
         updated_time TEXT DEFAULT '',
+        source_message_ids_json TEXT NOT NULL DEFAULT '[]',
         metadata_json TEXT DEFAULT '{}'
       )
     `);
@@ -652,6 +667,7 @@ export class VectorStore implements IMemoryStore {
     try { this.db.exec("ALTER TABLE l1_records ADD COLUMN agent_id TEXT NOT NULL DEFAULT 'default'"); } catch { /* exists */ }
     try { this.db.exec("ALTER TABLE l1_records ADD COLUMN task_id TEXT DEFAULT ''"); } catch { /* exists */ }
     try { this.db.exec("ALTER TABLE l1_records ADD COLUMN version INTEGER NOT NULL DEFAULT 0"); } catch { /* exists */ }
+    try { this.db.exec("ALTER TABLE l1_records ADD COLUMN source_message_ids_json TEXT NOT NULL DEFAULT '[]'"); } catch { /* exists */ }
     this.db.prepare("UPDATE l1_records SET team_id = ? WHERE team_id = '' OR team_id IS NULL").run(DEFAULT_ISOLATION_ID);
     this.db.prepare("UPDATE l1_records SET user_id = ? WHERE user_id = '' OR user_id IS NULL").run(DEFAULT_ISOLATION_ID);
     this.db.prepare("UPDATE l1_records SET agent_id = ? WHERE agent_id = '' OR agent_id IS NULL").run(DEFAULT_ISOLATION_ID);
@@ -697,9 +713,9 @@ export class VectorStore implements IMemoryStore {
       INSERT INTO l1_records (
         record_id, content, type, priority, scene_name, session_key, session_id,
         team_id, task_id, version, timestamp_str, timestamp_start, timestamp_end,
-        created_time, updated_time, metadata_json,
+        created_time, updated_time, source_message_ids_json, metadata_json,
         user_id, agent_id
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ON CONFLICT(record_id) DO UPDATE SET
         content=excluded.content,
         type=excluded.type,
@@ -712,6 +728,7 @@ export class VectorStore implements IMemoryStore {
         timestamp_start=excluded.timestamp_start,
         timestamp_end=excluded.timestamp_end,
         updated_time=excluded.updated_time,
+        source_message_ids_json=excluded.source_message_ids_json,
         metadata_json=excluded.metadata_json,
         user_id=excluded.user_id,
         agent_id=excluded.agent_id
@@ -725,7 +742,7 @@ export class VectorStore implements IMemoryStore {
 
     this.stmtGetMeta = this.db.prepare(`
       SELECT content, type, priority, scene_name, session_key, session_id, team_id, task_id, user_id, agent_id,
-             version, timestamp_str, timestamp_start, timestamp_end, metadata_json
+             version, timestamp_str, timestamp_start, timestamp_end, source_message_ids_json, metadata_json
       FROM l1_records WHERE record_id = ?
     `);
 
@@ -1198,7 +1215,7 @@ export class VectorStore implements IMemoryStore {
     const l1QueryCols = `record_id, content, type, priority, scene_name, session_key, session_id,
       team_id, task_id, user_id, agent_id, version,
       timestamp_str, timestamp_start, timestamp_end,
-      created_time, updated_time, metadata_json`;
+      created_time, updated_time, source_message_ids_json, metadata_json`;
 
     this.stmtQueryBySessionId = this.db.prepare(`
       SELECT ${l1QueryCols} FROM l1_records
@@ -1395,6 +1412,7 @@ export class VectorStore implements IMemoryStore {
           tsEnd,
           record.createdAt,
           record.updatedAt,
+          JSON.stringify(record.source_message_ids ?? []),
           JSON.stringify(record.metadata),
           (record as MemoryRecord & { userId?: string }).userId || DEFAULT_ISOLATION_ID,
           (record as MemoryRecord & { agentId?: string }).agentId || DEFAULT_ISOLATION_ID,
@@ -1526,6 +1544,7 @@ export class VectorStore implements IMemoryStore {
               timestamp_str: string;
               timestamp_start: string;
               timestamp_end: string;
+              source_message_ids_json: string;
               metadata_json: string;
             }
           | undefined;
@@ -1561,6 +1580,7 @@ export class VectorStore implements IMemoryStore {
           task_id: meta.task_id ?? "",
           user_id: meta.user_id ?? "",
           agent_id: meta.agent_id ?? "",
+          source_message_ids: parseStringArrayJson(meta.source_message_ids_json),
           metadata_json: meta.metadata_json,
         });
       }
@@ -2665,7 +2685,7 @@ export class VectorStore implements IMemoryStore {
 
       // Fetch page — must include user_id / agent_id so callers can enforce
       // isolation in downstream filters / Coordinator candidate pool.
-      const dataSql = `SELECT record_id, content, type, priority, scene_name, session_key, session_id, team_id, task_id, user_id, agent_id, version, timestamp_str, timestamp_start, timestamp_end, created_time, updated_time, metadata_json FROM l1_records ${where} ORDER BY updated_time DESC LIMIT ? OFFSET ?`;
+      const dataSql = `SELECT record_id, content, type, priority, scene_name, session_key, session_id, team_id, task_id, user_id, agent_id, version, timestamp_str, timestamp_start, timestamp_end, created_time, updated_time, source_message_ids_json, metadata_json FROM l1_records ${where} ORDER BY updated_time DESC LIMIT ? OFFSET ?`;
       const rows = this.db.prepare(dataSql).all(...params, filter.limit, filter.offset) as unknown as L1RecordRow[];
 
       return { rows, total };
@@ -3173,25 +3193,29 @@ export class VectorStore implements IMemoryStore {
       return rows
         .filter((r) => rowMatchesIsolation(r, filter))
         .slice(0, limit)
-        .map((r) => ({
-          record_id: r.record_id,
-          content: r.content,
-          type: r.type,
-          priority: r.priority,
-          scene_name: r.scene_name,
-          score: bm25RankToScore(r.rank),
-          timestamp_str: r.timestamp_str,
-          timestamp_start: r.timestamp_start,
-          timestamp_end: r.timestamp_end,
-          version: r.version ?? 0,
-          session_key: r.session_key,
-          session_id: r.session_id,
-          team_id: r.team_id ?? "",
-          task_id: r.task_id ?? "",
-          user_id: r.user_id ?? "",
-          agent_id: r.agent_id ?? "",
-          metadata_json: r.metadata_json,
-        }));
+        .map((r) => {
+          const meta = this.stmtGetMeta.get(r.record_id) as { source_message_ids_json?: string } | undefined;
+          return {
+            record_id: r.record_id,
+            content: r.content,
+            type: r.type,
+            priority: r.priority,
+            scene_name: r.scene_name,
+            score: bm25RankToScore(r.rank),
+            timestamp_str: r.timestamp_str,
+            timestamp_start: r.timestamp_start,
+            timestamp_end: r.timestamp_end,
+            version: r.version ?? 0,
+            session_key: r.session_key,
+            session_id: r.session_id,
+            team_id: r.team_id ?? "",
+            task_id: r.task_id ?? "",
+            user_id: r.user_id ?? "",
+            agent_id: r.agent_id ?? "",
+            source_message_ids: parseStringArrayJson(meta?.source_message_ids_json),
+            metadata_json: r.metadata_json,
+          };
+        });
     } catch (err) {
       this.logger?.warn(
         `${TAG} [L1-fts-search] FAILED (non-fatal, returning empty): ${err instanceof Error ? err.message : String(err)}`,

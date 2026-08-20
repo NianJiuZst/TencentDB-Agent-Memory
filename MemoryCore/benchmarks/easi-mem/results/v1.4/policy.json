@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "revision": "easi-adc30593739a",
+  "createdAt": "2026-08-20T00:00:00.000Z",
+  "defaultProfile": "relative-75",
+  "profiles": [
+    {
+      "name": "base",
+      "candidateLimit": 5,
+      "resultLimit": 5,
+      "tokenBudget": 4096,
+      "recencyWeight": 0,
+      "diversityWeight": 0
+    },
+    {
+      "name": "fixed-896",
+      "candidateLimit": 30,
+      "resultLimit": 10,
+      "tokenBudget": 896,
+      "recencyWeight": 0,
+      "diversityWeight": 0.12
+    },
+    {
+      "name": "relative-70",
+      "candidateLimit": 30,
+      "resultLimit": 10,
+      "tokenBudget": 1024,
+      "baselineTokenRatio": 0.7,
+      "recencyWeight": 0,
+      "diversityWeight": 0.12
+    },
+    {
+      "name": "relative-75",
+      "candidateLimit": 30,
+      "resultLimit": 10,
+      "tokenBudget": 1024,
+      "baselineTokenRatio": 0.75,
+      "recencyWeight": 0,
+      "diversityWeight": 0.12
+    },
+    {
+      "name": "relative-80",
+      "candidateLimit": 30,
+      "resultLimit": 10,
+      "tokenBudget": 1024,
+      "baselineTokenRatio": 0.8,
+      "recencyWeight": 0,
+      "diversityWeight": 0.12
+    },
+    {
+      "name": "relative-85",
+      "candidateLimit": 30,
+      "resultLimit": 10,
+      "tokenBudget": 1024,
+      "baselineTokenRatio": 0.85,
+      "recencyWeight": 0,
+      "diversityWeight": 0.12
+    },
+    {
+      "name": "relative-90",
+      "candidateLimit": 30,
+      "resultLimit": 10,
+      "tokenBudget": 1024,
+      "baselineTokenRatio": 0.9,
+      "recencyWeight": 0,
+      "diversityWeight": 0.12
+    },
+    {
+      "name": "relative-95",
+      "candidateLimit": 30,
+      "resultLimit": 10,
+      "tokenBudget": 1024,
+      "baselineTokenRatio": 0.95,
+      "recencyWeight": 0,
+      "diversityWeight": 0.12
+    }
+  ],
+  "router": {
+    "profile": "relative-75"
+  }
+}

@@ -32,6 +32,8 @@
     "test:oss": "vitest run -c vitest.oss.config.ts",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
+    "eval:easi-mem": "tsx benchmarks/easi-mem/src/cli.ts",
+    "eval:easi-mem:locomo": "tsx benchmarks/easi-mem/src/replication-cli.ts",
     "test:standalone:memory": "bash __tests__/standalone/e2e.sh",
     "test:standalone:skill": "bash __tests__/standalone/skill-e2e.sh",
     "test:standalone:conv": "bash __tests__/standalone/all-e2e.sh",

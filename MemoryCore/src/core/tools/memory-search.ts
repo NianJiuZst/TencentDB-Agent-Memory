@@ -31,6 +31,7 @@ export interface MemorySearchResultItem {
   scene_name: string;
   score: number;
   version: number;
+  source_message_ids: string[];
   created_at: string;
   updated_at: string;
 }
@@ -163,6 +164,7 @@ export async function executeMemorySearch(params: {
       agent_id: r.agent_id,
       task_id: r.task_id,
       version: r.version ?? 0,
+      source_message_ids: r.source_message_ids,
       created_at: r.timestamp_start,
       updated_at: r.timestamp_end,
     }));
@@ -205,10 +207,11 @@ export async function executeMemorySearch(params: {
           scene_name: r.scene_name,
           score: r.score,
           team_id: r.team_id,
-      user_id: r.user_id,
-      agent_id: r.agent_id,
-      task_id: r.task_id,
-      version: r.version ?? 0,
+          user_id: r.user_id,
+          agent_id: r.agent_id,
+          task_id: r.task_id,
+          version: r.version ?? 0,
+          source_message_ids: r.source_message_ids,
           created_at: r.timestamp_start,
           updated_at: r.timestamp_end,
         }));
@@ -241,10 +244,11 @@ export async function executeMemorySearch(params: {
           scene_name: r.scene_name,
           score: r.score,
           team_id: r.team_id,
-      user_id: r.user_id,
-      agent_id: r.agent_id,
-      task_id: r.task_id,
-      version: r.version ?? 0,
+          user_id: r.user_id,
+          agent_id: r.agent_id,
+          task_id: r.task_id,
+          version: r.version ?? 0,
+          source_message_ids: r.source_message_ids,
           created_at: r.timestamp_start,
           updated_at: r.timestamp_end,
         }));

@@ -1,0 +1,47 @@
+{
+  "status": "failed-frozen-transfer",
+  "protocolVersion": "easi-mem-long-dialogue-v1.4.0-locomo-external",
+  "dataset": {
+    "name": "LoCoMo-10",
+    "sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+    "totalCases": 1986,
+    "evidenceCases": 1536,
+    "negativeLoadCases": 450,
+    "dependencyClusters": 10
+  },
+  "frozenPolicy": {
+    "revision": "easi-adc30593739a",
+    "sha256": "75f707baee0d23aa38746c183b1ef88f613e358d22a15a0d78f79d46fc38429f",
+    "profile": "relative-75"
+  },
+  "frozenTransfer": {
+    "base": { "macroSessionRecall": 0.7403144634589945, "recallAnySession": 0.8118489583333334, "recallAllSessions": 0.6842447916666666, "macroTurnRecall": 0.4243831309749279, "meanInjectedItems": 5, "meanInjectedTokens": 168.70768229166666 },
+    "adaptive": { "macroSessionRecall": 0.695158781828704, "recallAnySession": 0.7630208333333334, "recallAllSessions": 0.6432291666666666, "macroTurnRecall": 0.3711578912262506, "meanInjectedItems": 4.205078125, "meanInjectedTokens": 122.20442708333333 },
+    "clusterBootstrapDeltas": {
+      "macroSessionRecall": { "mean": -0.04515568163029101, "lower95": -0.05612456031450444, "upper95": -0.03354137525593465 },
+      "injectedTokens": { "mean": -46.503255208333336, "lower95": -48.46741415557113, "upper95": -44.56308266003729 },
+      "utility": { "mean": -0.036886362549503005, "lower95": -0.04724840664160217, "upper95": -0.025851024187302077 },
+      "tokenReduction": 0.27564396935960017
+    },
+    "checks": { "macroRecallCiWithinGuard": false, "recallAnyWithinGuard": false, "recallAllWithinGuard": false, "tokenReduction": true, "tokenReductionConfidence": true, "utilityConfidence": false }
+  },
+  "crossFittedCalibration": {
+    "validity": "exploratory leave-one-conversation-out, designed after frozen-transfer failure",
+    "selectedProfileCounts": { "base": 10 },
+    "macroSessionRecallDelta": 0,
+    "tokenDelta": 0,
+    "harmPrevented": true,
+    "optimizationPromoted": false
+  },
+  "paretoArms": {
+    "base": { "macroSessionRecall": 0.7403144634589945, "meanInjectedTokens": 168.70768229166666 },
+    "fixed-896": { "macroSessionRecall": 0.8296637318121691, "meanInjectedTokens": 336.8333333333333 },
+    "relative-70": { "macroSessionRecall": 0.6827246610449738, "meanInjectedTokens": 113.724609375 },
+    "relative-75": { "macroSessionRecall": 0.695158781828704, "meanInjectedTokens": 122.20442708333333 },
+    "relative-80": { "macroSessionRecall": 0.7025171027612438, "meanInjectedTokens": 130.61263020833334 },
+    "relative-85": { "macroSessionRecall": 0.7138640873015877, "meanInjectedTokens": 138.92708333333334 },
+    "relative-90": { "macroSessionRecall": 0.7296619233630949, "meanInjectedTokens": 147.39973958333334 },
+    "relative-95": { "macroSessionRecall": 0.7312740265376981, "meanInjectedTokens": 155.65950520833334 }
+  },
+  "negativeLoad": { "cases": 450, "baseMeanItems": 5, "frozenMeanItems": 4.188888888888889, "baseMeanTokens": 173.14444444444445, "frozenMeanTokens": 125.58 }
+}

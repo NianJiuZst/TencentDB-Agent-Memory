@@ -28,6 +28,8 @@ import {
   type ProfileIsolation,
 } from "../profile/profile-sync.js";
 import type { Logger } from "../types.js";
+import { executeAdaptiveLineRecall } from "../adaptive-recall/runtime.js";
+import type { RecallDecisionLog } from "../adaptive-recall/types.js";
 
 const TAG = "[memory-tdai] [recall]";
 const RECALL_TRUNCATION_SUFFIX = "…（已截断；可用 tdai_memory_search 或 tdai_conversation_search 查看详情）";
@@ -73,6 +75,8 @@ export interface RecallResult {
   recalledL3Persona?: string | null;
   /** Effective search strategy used */
   recallStrategy?: string;
+  /** Bounded adaptive-policy decision, including hard-fallback reason. */
+  adaptiveRecallDecision?: RecallDecisionLog;
 
   // ── H-15: structured failure signal ──
   /**
@@ -178,12 +182,57 @@ async function performAutoRecallCore(params: {
   let memoryLines: string[] = [];
   let effectiveStrategy = "skipped";
   let recalledL1Memories: RecalledMemory[] = [];
+  let adaptiveRecallDecision: RecallDecisionLog | undefined;
   let searchTiming: SearchTiming = { ftsMs: 0, embeddingMs: 0, ftsHits: 0, embeddingHits: 0 };
   if (!userText || userText.length === 0) {
     logger?.debug?.(`${TAG} User text empty/undefined, skipping memory search (persona/scene still injected)`);
   } else {
     effectiveStrategy = cfg.recall.strategy ?? "hybrid";
-    const searchResult = await searchMemories(userText, pluginDataDir, cfg, logger, effectiveStrategy as "keyword" | "embedding" | "hybrid", vectorStore, embeddingService);
+    const adaptiveConfig = cfg.recall.adaptive;
+    let searchResult: SearchResult;
+    if (adaptiveConfig?.enabled) {
+      const configuredPolicyPath = adaptiveConfig.policyPath;
+      const policyPath = configuredPolicyPath
+        ? (path.isAbsolute(configuredPolicyPath)
+          ? configuredPolicyPath
+          : path.resolve(pluginDataDir, configuredPolicyPath))
+        : undefined;
+      const adaptive = await executeAdaptiveLineRecall({
+        enabled: true,
+        query: userText,
+        baselineMaxResults: cfg.recall.maxResults ?? 5,
+        timeoutMs: adaptiveConfig.timeoutMs ?? 250,
+        policyPath,
+        logger,
+        search: async (maxResults) => {
+          const searchCfg: MemoryTdaiConfig = maxResults === cfg.recall.maxResults
+            ? cfg
+            : { ...cfg, recall: { ...cfg.recall, maxResults } };
+          return searchMemories(
+            userText,
+            pluginDataDir,
+            searchCfg,
+            logger,
+            effectiveStrategy as "keyword" | "embedding" | "hybrid",
+            vectorStore,
+            embeddingService,
+          );
+        },
+      });
+      searchResult = adaptive.searchResult;
+      adaptiveRecallDecision = adaptive.decision;
+    } else {
+      // Deliberately preserve the pre-existing call graph when the feature is off.
+      searchResult = await searchMemories(
+        userText,
+        pluginDataDir,
+        cfg,
+        logger,
+        effectiveStrategy as "keyword" | "embedding" | "hybrid",
+        vectorStore,
+        embeddingService,
+      );
+    }
     memoryLines = searchResult.lines;
     searchTiming = searchResult.timing;
     memoryLines = applyRecallBudget(memoryLines, cfg.recall, logger);
@@ -309,6 +358,7 @@ async function performAutoRecallCore(params: {
     recalledL1Memories,
     recalledL3Persona: personaContent ?? null,
     recallStrategy: effectiveStrategy,
+    adaptiveRecallDecision,
   };
 }
 
@@ -668,7 +718,7 @@ async function searchHybrid(
                   type: r.type as MemoryRecord["type"],
                   priority: r.priority,
                   scene_name: r.scene_name,
-                  source_message_ids: [],
+                  source_message_ids: r.source_message_ids,
                   metadata: r.metadata_json ? (() => { try { return JSON.parse(r.metadata_json); } catch { return {}; } })() : {},
                   timestamps: [r.timestamp_str].filter(Boolean),
                   createdAt: "",
