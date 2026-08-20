@@ -72,6 +72,9 @@ function collectEvidenceAtoms(
       id: `${questionId}:${kind}:${atoms.length}`,
       value: atomValue,
       sourceSessionIds: normalizedSessions,
+      ...(kind === "obsolete" ? {
+        invalidatedAtSequence: Math.min(...normalizedSessions.map((id) => Number(id))),
+      } : {}),
     });
   };
 
@@ -154,6 +157,7 @@ function sessionToUnits(session: MemoraSession): MemoryUnit[] {
       role: turn.speaker === "ai_agent" ? "assistant" as const : "user" as const,
       content: turn.message.trim(),
       timestampMs,
+      sequence: session.session_id,
     }));
 }
 

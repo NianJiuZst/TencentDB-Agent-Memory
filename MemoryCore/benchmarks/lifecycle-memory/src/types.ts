@@ -49,12 +49,14 @@ export interface MemoryUnit {
   role: "user" | "assistant";
   content: string;
   timestampMs: number;
+  sequence: number;
 }
 
 export interface EvidenceAtom {
   id: string;
   value: string;
   sourceSessionIds: string[];
+  invalidatedAtSequence?: number;
 }
 
 export interface LifecycleEvalQuestion {

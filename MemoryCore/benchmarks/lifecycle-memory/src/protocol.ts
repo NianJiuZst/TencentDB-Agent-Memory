@@ -1,4 +1,4 @@
-import protocolJson from "../protocol.v1.1.json" with { type: "json" };
+import protocolJson from "../protocol.v2.json" with { type: "json" };
 
 export interface LifecycleProtocol {
   protocolVersion: string;
@@ -14,6 +14,12 @@ export interface LifecycleProtocol {
     expectedPersonas: number;
     expectedQuestionFiles: number;
     expectedSessionFiles: number;
+    sessionSequenceInvariant?: string;
+  };
+  labelAlignment?: {
+    current: string;
+    obsolete: string;
+    correctionEventIsObsolete: boolean;
   };
   retrieval: {
     backend: string;

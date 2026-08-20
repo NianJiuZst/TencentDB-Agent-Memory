@@ -7,6 +7,7 @@ import type {
   LifecycleEvalQuestion,
   RetrievedUnit,
 } from "./types.js";
+import { candidateMatchesCurrentAtom, candidateMatchesObsoleteAtom } from "./semantics.js";
 
 function mean(values: number[]): number {
   return values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : 0;
@@ -19,25 +20,12 @@ function percentile(values: number[], probability: number): number {
 }
 
 export function scoreRetrieved(question: LifecycleEvalQuestion, candidates: RetrievedUnit[]): CaseMetrics {
-  const normalize = (value: string) => value
-    .toLowerCase()
-    .replace(/[\u2018\u2019]/g, "'")
-    .replace(/[^\p{L}\p{N}]+/gu, " ")
-    .trim();
-  const normalizedCandidates = candidates.map((candidate) => ({
-    candidate,
-    content: normalize(candidate.content),
-  }));
-  const matches = (atom: EvidenceAtom) => {
-    const expected = normalize(atom.value);
-    if (!expected) return false;
-    const sources = new Set(atom.sourceSessionIds);
-    return normalizedCandidates.some(({ candidate, content }) =>
-      sources.has(candidate.sessionId) && content.includes(expected)
-    );
-  };
-  const currentMatches = question.currentAtoms.filter(matches).length;
-  const obsoleteMatches = question.obsoleteAtoms.filter(matches).length;
+  const currentMatches = question.currentAtoms.filter((atom) =>
+    candidates.some((candidate) => candidateMatchesCurrentAtom(candidate, atom))
+  ).length;
+  const obsoleteMatches = question.obsoleteAtoms.filter((atom) =>
+    candidates.some((candidate) => candidateMatchesObsoleteAtom(candidate, atom))
+  ).length;
   const currentSessionRecall = question.currentAtoms.length
     ? currentMatches / question.currentAtoms.length
     : 1;

@@ -1,8 +1,10 @@
-import protocolJson from "../protocol.e2e.v1.json" with { type: "json" };
+import protocolJson from "../protocol.e2e.v2.json" with { type: "json" };
 import { PROTOCOL } from "./protocol.js";
 
 export interface LifecycleE2EProtocol {
   protocolVersion: string;
+  supersedes?: string;
+  changeReason?: string;
   retrievalProtocolVersion: string;
   seed: number;
   population: string;

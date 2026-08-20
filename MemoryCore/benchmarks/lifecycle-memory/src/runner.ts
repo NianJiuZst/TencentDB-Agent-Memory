@@ -6,6 +6,11 @@ import { loadMemora } from "./adapter.js";
 import { MemoryCoreGroupBackend } from "./backend.js";
 import { aggregate, pairedPersonaBootstrap, scoreRetrieved } from "./metrics.js";
 import { PROTOCOL } from "./protocol.js";
+import {
+  candidateMatchesCurrentAtom,
+  candidateMatchesObsoleteAtom,
+  redactObsoleteUnits,
+} from "./semantics.js";
 import type {
   CaseResult,
   DatasetDescription,
@@ -55,45 +60,18 @@ function oracleFullCandidates(question: LifecycleEvalQuestion, candidates: Retri
     role: "user" as const,
     content: atom.value,
     timestampMs: 0,
+    sequence: Number.MAX_SAFE_INTEGER,
     score: 1 - index * 1e-6,
     tokenCount: atom.value.split(/\s+/).length,
   }));
 }
 
-function escapeRegExp(value: string): string {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
-function normalizeEvidence(value: string): string {
-  return value
-    .toLowerCase()
-    .replace(/[\u2018\u2019]/g, "'")
-    .replace(/[^\p{L}\p{N}]+/gu, " ")
-    .trim();
-}
-
 export function candidateMatchesAtom(candidate: RetrievedUnit, atom: EvidenceAtom): boolean {
-  if (!atom.sourceSessionIds.includes(candidate.sessionId)) return false;
-  const expected = normalizeEvidence(atom.value);
-  return expected.length > 0 && normalizeEvidence(candidate.content).includes(expected);
+  return candidateMatchesCurrentAtom(candidate, atom);
 }
 
-export function redactUnits<T extends { sessionId: string; content: string }>(units: T[], atoms: EvidenceAtom[]): T[] {
-  const atomsBySession = new Map<string, EvidenceAtom[]>();
-  for (const atom of atoms) {
-    for (const sessionId of atom.sourceSessionIds) {
-      const entries = atomsBySession.get(sessionId) ?? [];
-      entries.push(atom);
-      atomsBySession.set(sessionId, entries);
-    }
-  }
-  return units.flatMap((unit) => {
-    let content = unit.content;
-    for (const atom of atomsBySession.get(unit.sessionId) ?? []) {
-      content = content.replace(new RegExp(escapeRegExp(atom.value), "giu"), "[superseded]");
-    }
-    return content.replace(/\[superseded\]/g, "").trim().length > 0 ? [{ ...unit, content }] : [];
-  });
+export function redactUnits<T extends { content: string; sequence: number }>(units: T[], atoms: EvidenceAtom[]): T[] {
+  return redactObsoleteUnits(units, atoms);
 }
 
 export function oracleQueryCandidates(
@@ -102,8 +80,8 @@ export function oracleQueryCandidates(
 ): RetrievedUnit[] {
   return candidates
     .flatMap((candidate) => {
-      const staleMatch = question.obsoleteAtoms.some((atom) => candidateMatchesAtom(candidate, atom));
-      const currentMatch = question.currentAtoms.some((atom) => candidateMatchesAtom(candidate, atom));
+      const staleMatch = question.obsoleteAtoms.some((atom) => candidateMatchesObsoleteAtom(candidate, atom));
+      const currentMatch = question.currentAtoms.some((atom) => candidateMatchesCurrentAtom(candidate, atom));
       if (staleMatch && !currentMatch) return [];
       return redactUnits([candidate], question.obsoleteAtoms);
     })

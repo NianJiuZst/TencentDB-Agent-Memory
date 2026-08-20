@@ -8,8 +8,10 @@ const encoding = getEncoding("cl100k_base");
 
 export class MemoryCoreGroupBackend {
   private readonly store = new VectorStore(":memory:", 0);
+  private readonly unitById: Map<string, MemoryUnit>;
 
   constructor(units: MemoryUnit[]) {
+    this.unitById = new Map(units.map((unit) => [unit.id, unit]));
     this.store.init();
     for (const unit of units) {
       const ok = this.store.upsertL0({
@@ -39,6 +41,7 @@ export class MemoryCoreGroupBackend {
         role: item.role === "assistant" ? "assistant" : "user",
         content: item.content,
         timestampMs: Date.parse(item.recorded_at),
+        sequence: this.unitById.get(item.id)?.sequence ?? Number(item.session_id),
         score: item.score,
         tokenCount: encoding.encode(item.content).length,
       })),

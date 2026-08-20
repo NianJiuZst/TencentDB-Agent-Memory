@@ -36,6 +36,7 @@
     "eval:easi-mem:locomo": "tsx benchmarks/easi-mem/src/replication-cli.ts",
     "eval:lifecycle-headroom": "tsx benchmarks/lifecycle-memory/src/cli.ts",
     "eval:lifecycle-e2e": "tsx benchmarks/lifecycle-memory/src/e2e-cli.ts",
+    "test:lifecycle-memory": "vitest run -c benchmarks/lifecycle-memory/vitest.config.ts",
     "test:standalone:memory": "bash __tests__/standalone/e2e.sh",
     "test:standalone:skill": "bash __tests__/standalone/skill-e2e.sh",
     "test:standalone:conv": "bash __tests__/standalone/all-e2e.sh",

@@ -1,0 +1,44 @@
+{
+  "protocolVersion": "lifecycle-e2e-headroom-v2.0",
+  "supersedes": "lifecycle-e2e-headroom-v1.0",
+  "changeReason": "V1 selected correction events as if they were obsolete assertions. V2 inherits lifecycle-headroom-v2.0 and selects only candidate units that mention a gold obsolete value before its correction/deletion boundary. Models, sample size, thresholds, and uncertainty method are unchanged.",
+  "retrievalProtocolVersion": "lifecycle-headroom-v2.0",
+  "seed": 20260820,
+  "population": "forgetting-bearing Memora questions where the frozen MemoryCore Base top-5 contains at least one value-matched assertion predating its gold correction/deletion event",
+  "selection": {
+    "stratifyBy": "persona",
+    "casesPerPersona": 4,
+    "expectedPersonas": 10,
+    "expectedPopulationSize": 116,
+    "hashAlgorithm": "sha256",
+    "hashInput": "<seed>:<case-id>",
+    "frozenSelectionSha256": "7fd499ec9e8813a8bcef3ce4b0f7e7a04ed5db2b36690b24b0f5faf01b7acc31",
+    "usesAnswerOrJudgeOutput": false
+  },
+  "arms": ["base", "oracle_query"],
+  "models": {
+    "provider": "openrouter",
+    "reader": "openai/gpt-4o-mini",
+    "readerTemperature": 0,
+    "readerMaxTokens": 500,
+    "judge": "google/gemini-2.5-flash-lite",
+    "judgeTemperature": 0,
+    "judgeMaxTokens": 4000,
+    "retries": 3
+  },
+  "evaluation": {
+    "criteriaSource": "Memora evaluation.evaluation_questions",
+    "judgeMode": "single fixed judge; all criteria for one answer batched in one JSON response",
+    "metrics": ["MPA", "FAA", "FAMA"],
+    "officialTable3Comparable": false
+  },
+  "uncertainty": {
+    "unit": "persona",
+    "bootstrapSamples": 5000
+  },
+  "headroomGate": {
+    "minFamaDelta": 0.05,
+    "minFaaDelta": 0.1,
+    "requireFamaCiLowerAboveZero": true
+  }
+}

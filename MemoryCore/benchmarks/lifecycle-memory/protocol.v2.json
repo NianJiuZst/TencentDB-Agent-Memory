@@ -1,0 +1,39 @@
+{
+  "protocolVersion": "lifecycle-headroom-v2.0",
+  "supersedes": "lifecycle-headroom-v1.1",
+  "changeReason": "Audit of v1.1 failures showed that Memora forgetting-evidence session ids identify the correction or deletion event, not the original assertion. V2 labels an obsolete atom only when its value occurs in a memory unit before that invalidation boundary; the correction event itself remains current evidence. Thresholds are unchanged.",
+  "seed": 20260820,
+  "dataset": {
+    "name": "Memora",
+    "repository": "https://github.com/geniesinc/Memora",
+    "revision": "a6493188efc836d6511ed5e4163fe3ba87da30ff",
+    "dataManifestSha256": "dfc82711dd6647bcb0ba590f43a336f0dac02420e981ce957dd1fd13ae331bfc",
+    "periods": ["weekly", "monthly", "quarterly"],
+    "expectedPersonas": 10,
+    "expectedQuestionFiles": 30,
+    "expectedSessionFiles": 27614,
+    "sessionSequenceInvariant": "Within every persona-period, numeric session_id order is non-decreasing in date (verified: 30/30 groups, zero violations)."
+  },
+  "labelAlignment": {
+    "current": "normalized atom value plus source-session provenance",
+    "obsolete": "normalized atom value in a memory unit whose sequence precedes the atom's correction/deletion session",
+    "correctionEventIsObsolete": false
+  },
+  "retrieval": {
+    "backend": "memorycore-l0-sqlite-fts5",
+    "candidateLimit": 30,
+    "resultLimit": 5,
+    "indexOnlySharedMemoryTurns": true
+  },
+  "uncertainty": {
+    "unit": "persona",
+    "bootstrapSamples": 5000
+  },
+  "headroomGate": {
+    "subset": "forgetting-bearing",
+    "minBaseObsoleteAnyRate": 0.1,
+    "minEvidenceFamaDelta": 0.05,
+    "minForgettingAbsenceDelta": 0.1,
+    "requireEvidenceFamaCiLowerAboveZero": true
+  }
+}
