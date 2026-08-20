@@ -1,0 +1,56 @@
+{
+  "protocolVersion": "lifecycle-adaptive-e2e-v1.1",
+  "supersedes": "lifecycle-adaptive-e2e-v1.0",
+  "changeReason": "A pre-score run stopped when the batched judge omitted one criterion after retries. V1.1 conservatively maps missing, duplicate-displaced, or non-binary criterion answers to unclear and incorrect. The sample, adaptive policy, models, thresholds, and uncertainty method are unchanged; all cases are rerun from scratch.",
+  "retrievalProtocolVersion": "lifecycle-headroom-v3.1",
+  "adaptiveProtocolVersion": "lifecycle-adaptive-v1.0",
+  "seed": 20260820,
+  "population": "held-out quarterly forgetting-bearing Memora questions where the frozen MemoryCore Base top-5 contains at least one stale assertion",
+  "selection": {
+    "eligiblePeriods": ["quarterly"],
+    "stratifyBy": "persona",
+    "casesPerPersona": 5,
+    "expectedPersonas": 10,
+    "expectedPopulationSize": 61,
+    "hashAlgorithm": "sha256",
+    "hashInput": "<seed>:<case-id>",
+    "frozenSelectionSha256": "1e3ab7b21bd1425f98f095ca76a31d350c47f3bb9c9cf0090139567859dadaf1",
+    "usesAnswerOrJudgeOutput": false
+  },
+  "arms": ["base", "adaptive"],
+  "adaptivePolicy": {
+    "enabled": true,
+    "minConfidence": 0.85,
+    "maxHops": 1,
+    "maxExpansions": 64,
+    "resultLimit": 5,
+    "timeoutMs": 10
+  },
+  "policyProvenance": "selected automatically on weekly/monthly by lifecycle-adaptive-v1.0 before any quarterly E2E answer was generated",
+  "models": {
+    "provider": "openrouter",
+    "reader": "openai/gpt-4o-mini",
+    "readerTemperature": 0,
+    "readerMaxTokens": 500,
+    "judge": "google/gemini-2.5-flash-lite",
+    "judgeTemperature": 0,
+    "judgeMaxTokens": 4000,
+    "retries": 3
+  },
+  "evaluation": {
+    "criteriaSource": "Memora evaluation.evaluation_questions",
+    "judgeMode": "single fixed judge; all criteria for one answer batched in one JSON response",
+    "invalidJudgeAnswer": "map missing, duplicate-displaced, or non-binary answers to unclear and incorrect",
+    "metrics": ["MPA", "FAA", "FAMA"],
+    "officialTable3Comparable": false
+  },
+  "uncertainty": {
+    "unit": "persona",
+    "bootstrapSamples": 5000
+  },
+  "headroomGate": {
+    "minFamaDelta": 0.05,
+    "minFaaDelta": 0.1,
+    "requireFamaCiLowerAboveZero": true
+  }
+}

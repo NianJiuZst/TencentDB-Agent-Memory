@@ -138,9 +138,6 @@ export function parseJudge(content: string, criteria: EvaluationCriterion[]): Cr
   const parsed = JSON.parse(cleaned) as { results?: Array<{ id?: unknown; answer?: unknown; confidence?: unknown }> };
   if (!Array.isArray(parsed.results)) throw new Error("judge JSON has no results array");
   const resultById = new Map(parsed.results.map((result) => [String(result.id), result]));
-  if (resultById.size !== criteria.length) {
-    throw new Error(`judge returned ${resultById.size} unique results for ${criteria.length} criteria`);
-  }
   return criteria.map((criterion) => {
     const result = resultById.get(criterion.id);
     const rawAnswer = String(result?.answer).toLowerCase();

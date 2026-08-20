@@ -1,4 +1,4 @@
-import protocolJson from "../protocol.e2e.adaptive.v1.json" with { type: "json" };
+import protocolJson from "../protocol.e2e.adaptive.v1.1.json" with { type: "json" };
 import type { LifecyclePolicy } from "../../../src/core/lifecycle/index.js";
 import { ADAPTIVE_PROTOCOL } from "./adaptive-protocol.js";
 import { PROTOCOL } from "./protocol.js";

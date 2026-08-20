@@ -21,4 +21,14 @@ describe("lifecycle E2E judge parsing", () => {
       correct: false,
     }]);
   });
+
+  it("conservatively scores an omitted criterion as unclear and incorrect", () => {
+    const verdicts = parseJudge('{"results":[]}', [{
+      id: "missing",
+      question: "Does the response contain the active fact?",
+      expectedAnswer: "yes",
+      type: "memory_presence",
+    }]);
+    expect(verdicts[0]).toMatchObject({ answer: "unclear", confidence: 0, correct: false });
+  });
 });
