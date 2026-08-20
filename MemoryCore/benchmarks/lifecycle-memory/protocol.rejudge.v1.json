@@ -1,0 +1,25 @@
+{
+  "protocolVersion": "lifecycle-adaptive-rejudge-v1.0",
+  "sourceProtocolVersion": "lifecycle-adaptive-e2e-v1.1",
+  "sourceCasesSha256": "dbfe9fbf3a9e3e02c74b05ee484b0fc9ae5631cf0acb88ad953cddb67c78089b",
+  "seed": 20260820,
+  "judges": [
+    "openai/gpt-4.1",
+    "anthropic/claude-haiku-4.5",
+    "google/gemini-2.5-flash"
+  ],
+  "judgeTemperature": 0,
+  "judgeMaxTokens": 4000,
+  "retries": 3,
+  "consensus": "strict majority of yes/no votes; ties, missing, and non-binary votes are unclear and incorrect",
+  "reuseFrozenReaderAnswers": true,
+  "uncertainty": {
+    "unit": "persona",
+    "bootstrapSamples": 5000
+  },
+  "gate": {
+    "minFamaDelta": 0.05,
+    "minFaaDelta": 0.1,
+    "requireFamaCiLowerAboveZero": true
+  }
+}

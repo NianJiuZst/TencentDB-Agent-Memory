@@ -36,7 +36,7 @@ interface SelectedCase {
   selectionHash: string;
 }
 
-interface CriterionVerdict {
+export interface CriterionVerdict {
   id: string;
   answer: "yes" | "no" | "unclear";
   confidence: number;
@@ -113,7 +113,7 @@ function readerMessages(question: LifecycleEvalQuestion, candidates: RetrievedUn
   ];
 }
 
-function judgeMessages(answer: string, criteria: EvaluationCriterion[]) {
+export function judgeMessages(answer: string, criteria: EvaluationCriterion[]) {
   const criteriaText = criteria.map((criterion) =>
     `${criterion.id}: ${criterion.question}`
   ).join("\n");
@@ -154,7 +154,7 @@ export function parseJudge(content: string, criteria: EvaluationCriterion[]): Cr
   });
 }
 
-function scoreAnswer(verdicts: CriterionVerdict[]): AnswerMetrics {
+export function scoreAnswer(verdicts: CriterionVerdict[]): AnswerMetrics {
   const presence = verdicts.filter((verdict) => verdict.type === "memory_presence");
   const forgetting = verdicts.filter((verdict) => verdict.type === "forgetting_absence");
   const mpa = presence.length ? presence.filter((verdict) => verdict.correct).length / presence.length : 0;
