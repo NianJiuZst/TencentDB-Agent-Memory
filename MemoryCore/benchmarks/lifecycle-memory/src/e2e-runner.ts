@@ -29,7 +29,7 @@ interface SelectedCase {
 
 interface CriterionVerdict {
   id: string;
-  answer: "yes" | "no";
+  answer: "yes" | "no" | "unclear";
   confidence: number;
   expectedAnswer: "yes" | "no";
   type: "memory_presence" | "forgetting_absence";
@@ -123,7 +123,7 @@ function judgeMessages(answer: string, criteria: EvaluationCriterion[]) {
   ];
 }
 
-function parseJudge(content: string, criteria: EvaluationCriterion[]): CriterionVerdict[] {
+export function parseJudge(content: string, criteria: EvaluationCriterion[]): CriterionVerdict[] {
   const cleaned = content.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "");
   const parsed = JSON.parse(cleaned) as { results?: Array<{ id?: unknown; answer?: unknown; confidence?: unknown }> };
   if (!Array.isArray(parsed.results)) throw new Error("judge JSON has no results array");
@@ -133,8 +133,8 @@ function parseJudge(content: string, criteria: EvaluationCriterion[]): Criterion
   }
   return criteria.map((criterion) => {
     const result = resultById.get(criterion.id);
-    const answer = String(result?.answer).toLowerCase();
-    if (answer !== "yes" && answer !== "no") throw new Error(`invalid judge answer for ${criterion.id}`);
+    const rawAnswer = String(result?.answer).toLowerCase();
+    const answer = rawAnswer === "yes" || rawAnswer === "no" ? rawAnswer : "unclear";
     const confidence = Number(result?.confidence);
     return {
       id: criterion.id,

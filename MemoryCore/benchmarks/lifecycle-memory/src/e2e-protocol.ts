@@ -1,4 +1,4 @@
-import protocolJson from "../protocol.e2e.v2.json" with { type: "json" };
+import protocolJson from "../protocol.e2e.v2.1.json" with { type: "json" };
 import { PROTOCOL } from "./protocol.js";
 
 export interface LifecycleE2EProtocol {
@@ -32,6 +32,7 @@ export interface LifecycleE2EProtocol {
   evaluation: {
     criteriaSource: string;
     judgeMode: string;
+    invalidJudgeAnswer?: string;
     metrics: string[];
     officialTable3Comparable: boolean;
   };

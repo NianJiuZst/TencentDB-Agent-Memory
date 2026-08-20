@@ -1,0 +1,24 @@
+import { describe, expect, it } from "vitest";
+import { parseJudge } from "./e2e-runner.js";
+
+describe("lifecycle E2E judge parsing", () => {
+  it("conservatively scores a non-binary answer as unclear and incorrect", () => {
+    const verdicts = parseJudge(JSON.stringify({
+      results: [{ id: "criterion-1", answer: "maybe", confidence: 0.4 }],
+    }), [{
+      id: "criterion-1",
+      question: "Does the response contain the active fact?",
+      expectedAnswer: "yes",
+      type: "memory_presence",
+    }]);
+
+    expect(verdicts).toEqual([{
+      id: "criterion-1",
+      answer: "unclear",
+      confidence: 0.4,
+      expectedAnswer: "yes",
+      type: "memory_presence",
+      correct: false,
+    }]);
+  });
+});
