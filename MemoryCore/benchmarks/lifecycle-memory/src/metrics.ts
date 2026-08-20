@@ -49,7 +49,7 @@ export function scoreRetrieved(question: LifecycleEvalQuestion, candidates: Retr
   };
 }
 
-export function aggregate(results: CaseResult[]): AggregateMetrics {
+export function aggregate<T extends Pick<CaseResult, "metrics" | "queryLatencyMs">>(results: T[]): AggregateMetrics {
   return {
     cases: results.length,
     currentSessionRecall: mean(results.map((result) => result.metrics.currentSessionRecall)),
@@ -78,15 +78,15 @@ function mulberry32(seed: number): () => number {
   };
 }
 
-export function pairedPersonaBootstrap(
-  adaptive: CaseResult[],
-  baseline: CaseResult[],
-  metric: (adaptiveResult: CaseResult, baselineResult: CaseResult) => number,
+export function pairedPersonaBootstrap<T extends Pick<CaseResult, "caseId" | "persona">>(
+  adaptive: T[],
+  baseline: T[],
+  metric: (adaptiveResult: T, baselineResult: T) => number,
   samples: number,
   seed: number,
 ): BootstrapInterval {
   const baselineById = new Map(baseline.map((result) => [result.caseId, result]));
-  const byPersona = new Map<string, Array<readonly [CaseResult, CaseResult]>>();
+  const byPersona = new Map<string, Array<readonly [T, T]>>();
   for (const result of adaptive) {
     const reference = baselineById.get(result.caseId);
     if (!reference) continue;

@@ -240,6 +240,7 @@ export async function loadMemora(dataRoot: string, verifyHash = true): Promise<{
         id: `${period}:${persona}`,
         persona,
         period,
+        sessions,
         units: sessions.flatMap(sessionToUnits),
         questions: flattenQuestions(evaluation.questions, persona, period),
       });

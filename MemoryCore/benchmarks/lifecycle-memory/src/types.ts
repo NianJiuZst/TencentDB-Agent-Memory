@@ -80,6 +80,7 @@ export interface LifecycleEvalGroup {
   id: string;
   persona: string;
   period: MemoraPeriod;
+  sessions: MemoraSession[];
   units: MemoryUnit[];
   questions: LifecycleEvalQuestion[];
 }

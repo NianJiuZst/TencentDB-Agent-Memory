@@ -1,0 +1,48 @@
+{
+  "protocolVersion": "lifecycle-adaptive-v1.0",
+  "retrievalProtocolVersion": "lifecycle-headroom-v3.1",
+  "seed": 20260820,
+  "split": {
+    "optimizationPeriods": ["weekly", "monthly"],
+    "heldOutPeriods": ["quarterly"],
+    "usesHeldOutFeedback": false
+  },
+  "signals": {
+    "source": "Memora write-time session_type, operation, operation_details, and shared-memory turns",
+    "usesEvaluationEvidence": false,
+    "confidenceLevels": {
+      "explicitStructuredDelta": 0.99,
+      "activityDeleteState": 0.95,
+      "activityStateDiff": 0.9
+    }
+  },
+  "policyGrid": {
+    "minConfidence": [0.85, 0.95],
+    "maxHops": [1, 2, 4, 8],
+    "maxExpansions": 64,
+    "resultLimit": 5,
+    "timeoutMs": 10,
+    "maxPolicies": 16
+  },
+  "optimizer": {
+    "objective": "mean evidenceFamaProxy on optimization-period forgetting-bearing questions minus cost and fallback penalties",
+    "costPenalty": 0.01,
+    "fallbackPenalty": 1.0
+  },
+  "capacity": {
+    "maxUnitsPerGroup": 10000,
+    "maxEventsPerGroup": 5000,
+    "maxEdgesPerGroup": 50000
+  },
+  "uncertainty": {
+    "unit": "persona",
+    "bootstrapSamples": 5000
+  },
+  "directGate": {
+    "subset": "held-out stale-exposed",
+    "minEvidenceFamaDelta": 0.02,
+    "requireCiLowerAboveZero": true,
+    "requireDisabledEquivalence": true,
+    "requireForcedFailureFallback": true
+  }
+}
