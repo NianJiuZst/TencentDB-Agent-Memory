@@ -1,4 +1,4 @@
-import protocolJson from "../protocol.e2e.v2.1.json" with { type: "json" };
+import protocolJson from "../protocol.e2e.v3.json" with { type: "json" };
 import { PROTOCOL } from "./protocol.js";
 
 export interface LifecycleE2EProtocol {
@@ -18,7 +18,7 @@ export interface LifecycleE2EProtocol {
     frozenSelectionSha256: string;
     usesAnswerOrJudgeOutput: boolean;
   };
-  arms: ["base", "oracle_query"];
+  arms: ["base", "oracle_query" | "oracle_chain"];
   models: {
     provider: "openrouter";
     reader: string;
@@ -49,7 +49,11 @@ export interface LifecycleE2EProtocol {
 
 export const E2E_PROTOCOL = protocolJson as LifecycleE2EProtocol;
 
-if (E2E_PROTOCOL.retrievalProtocolVersion !== PROTOCOL.protocolVersion) {
+if (
+  E2E_PROTOCOL.retrievalProtocolVersion !== PROTOCOL.protocolVersion
+  && E2E_PROTOCOL.retrievalProtocolVersion !== PROTOCOL.supersedes
+  && !PROTOCOL.compatibleRetrievalProtocols?.includes(E2E_PROTOCOL.retrievalProtocolVersion)
+) {
   throw new Error("E2E protocol must reference the active retrieval protocol");
 }
 

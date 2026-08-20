@@ -2,11 +2,13 @@ import { execFile } from "node:child_process";
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
+import { getEncoding } from "js-tiktoken";
 import { loadMemora } from "./adapter.js";
 import { MemoryCoreGroupBackend } from "./backend.js";
 import { aggregate, pairedPersonaBootstrap, scoreRetrieved } from "./metrics.js";
 import { PROTOCOL } from "./protocol.js";
 import {
+  candidateContainsAtom,
   candidateMatchesCurrentAtom,
   candidateMatchesObsoleteAtom,
   redactObsoleteUnits,
@@ -21,6 +23,7 @@ import type {
 } from "./types.js";
 
 const runFile = promisify(execFile);
+const encoding = getEncoding("cl100k_base");
 
 export interface RunOptions {
   dataRoot: string;
@@ -88,6 +91,56 @@ export function oracleQueryCandidates(
     .slice(0, PROTOCOL.retrieval.resultLimit);
 }
 
+export function oracleChainCandidates(
+  question: LifecycleEvalQuestion,
+  candidates: RetrievedUnit[],
+  unitsBySession: Map<string, RetrievedUnit[]>,
+): RetrievedUnit[] {
+  const output: RetrievedUnit[] = [];
+  const emitted = new Set<string>();
+  const traversed = new Set<string>();
+  const maxHops = PROTOCOL.retrieval.maxChainHops ?? 8;
+  const maxExpansions = PROTOCOL.retrieval.maxChainExpansions ?? 64;
+  let expansions = 0;
+  const push = (candidate: RetrievedUnit) => {
+    if (emitted.has(candidate.id) || output.length >= PROTOCOL.retrieval.resultLimit) return;
+    emitted.add(candidate.id);
+    output.push(candidate);
+  };
+
+  const resolve = (candidate: RetrievedUnit, depth: number): RetrievedUnit[] => {
+    if (traversed.has(candidate.id)) return [];
+    traversed.add(candidate.id);
+    const staleAtoms = question.obsoleteAtoms.filter((atom) =>
+      candidateMatchesObsoleteAtom(candidate, atom)
+    );
+    if (!staleAtoms.length) return [candidate];
+    if (depth >= maxHops || expansions >= maxExpansions) return [];
+
+    const successors: RetrievedUnit[] = [];
+    const successorIds = new Set<string>();
+    for (const atom of staleAtoms) {
+      for (const sessionId of atom.sourceSessionIds) {
+        const correctionUnits = unitsBySession.get(sessionId) ?? [];
+        const valueMatched = correctionUnits.filter((unit) => candidateContainsAtom(unit, atom));
+        for (const correction of valueMatched.length ? valueMatched : correctionUnits) {
+          if (correction.sequence <= candidate.sequence || successorIds.has(correction.id)) continue;
+          successorIds.add(correction.id);
+          successors.push(correction);
+        }
+      }
+    }
+    expansions += successors.length;
+    return successors.flatMap((successor) => resolve(successor, depth + 1));
+  };
+
+  for (const candidate of candidates) {
+    for (const resolved of resolve(candidate, 0)) push(resolved);
+    if (output.length >= PROTOCOL.retrieval.resultLimit) break;
+  }
+  return output;
+}
+
 async function sourceRevision(): Promise<{ head: string; branch: string; base: string }> {
   const cwd = path.resolve(import.meta.dirname, "../../..");
   const [head, branch, base] = await Promise.all([
@@ -110,6 +163,7 @@ export async function runHeadroom(options: RunOptions): Promise<Record<string, u
   const results: Record<HeadroomArm, CaseResult[]> = {
     base: [],
     oracle_query: [],
+    oracle_chain: [],
     oracle_write: [],
     oracle_full: [],
   };
@@ -124,7 +178,7 @@ export async function runHeadroom(options: RunOptions): Promise<Record<string, u
     const unitBySession = new Map<string, RetrievedUnit[]>();
     for (const unit of group.units) {
       const entries = unitBySession.get(unit.sessionId) ?? [];
-      entries.push({ ...unit, score: 0, tokenCount: 0 });
+      entries.push({ ...unit, score: 0, tokenCount: encoding.encode(unit.content).length });
       unitBySession.set(unit.sessionId, entries);
     }
 
@@ -133,11 +187,13 @@ export async function runHeadroom(options: RunOptions): Promise<Record<string, u
         const baseSearch = await baseBackend.search(question.query, PROTOCOL.retrieval.candidateLimit);
         const base = baseSearch.candidates.slice(0, PROTOCOL.retrieval.resultLimit);
         const oracleQuery = oracleQueryCandidates(question, baseSearch.candidates);
+        const oracleChain = oracleChainCandidates(question, baseSearch.candidates, unitBySession);
         const oracleWriteSearch = await oracleWriteBackend.search(question.query, PROTOCOL.retrieval.resultLimit);
         const goldPool = question.currentSessionIds.flatMap((sessionId) => unitBySession.get(sessionId) ?? []);
 
         results.base.push(makeResult(question, "base", base, baseSearch.latencyMs));
         results.oracle_query.push(makeResult(question, "oracle_query", oracleQuery, baseSearch.latencyMs));
+        results.oracle_chain.push(makeResult(question, "oracle_chain", oracleChain, baseSearch.latencyMs));
         results.oracle_write.push(makeResult(
           question,
           "oracle_write",
@@ -172,7 +228,7 @@ export async function runHeadroom(options: RunOptions): Promise<Record<string, u
   );
   const base = results.base;
   const comparisonsAll = Object.fromEntries(
-    (["oracle_query", "oracle_write", "oracle_full"] as const).map((arm, index) => [arm, {
+    (["oracle_query", "oracle_chain", "oracle_write", "oracle_full"] as const).map((arm, index) => [arm, {
       evidenceFamaProxy: pairedPersonaBootstrap(
         results[arm], base,
         (left, right) => left.metrics.evidenceFamaProxy - right.metrics.evidenceFamaProxy,
@@ -195,7 +251,7 @@ export async function runHeadroom(options: RunOptions): Promise<Record<string, u
   );
   const forgettingBase = forgettingResults.base;
   const comparisonsForgettingBearing = Object.fromEntries(
-    (["oracle_query", "oracle_write", "oracle_full"] as const).map((arm, index) => [arm, {
+    (["oracle_query", "oracle_chain", "oracle_write", "oracle_full"] as const).map((arm, index) => [arm, {
       evidenceFamaProxy: pairedPersonaBootstrap(
         forgettingResults[arm], forgettingBase,
         (left, right) => left.metrics.evidenceFamaProxy - right.metrics.evidenceFamaProxy,
@@ -217,16 +273,17 @@ export async function runHeadroom(options: RunOptions): Promise<Record<string, u
     }]),
   );
   const baseAggregate = aggregatesForgettingBearing.base as ReturnType<typeof aggregate>;
-  const oracleQuery = comparisonsForgettingBearing.oracle_query as {
+  const primaryArm = PROTOCOL.headroomGate.primaryArm ?? "oracle_query";
+  const primaryComparison = comparisonsForgettingBearing[primaryArm] as {
     evidenceFamaProxy: ReturnType<typeof pairedPersonaBootstrap>;
     forgettingAbsence: ReturnType<typeof pairedPersonaBootstrap>;
   };
   const checks = {
     baseObsoleteAnyRate: baseAggregate.obsoleteAnyRate >= PROTOCOL.headroomGate.minBaseObsoleteAnyRate,
-    evidenceFamaDelta: oracleQuery.evidenceFamaProxy.mean >= PROTOCOL.headroomGate.minEvidenceFamaDelta,
-    forgettingAbsenceDelta: oracleQuery.forgettingAbsence.mean >= PROTOCOL.headroomGate.minForgettingAbsenceDelta,
+    evidenceFamaDelta: primaryComparison.evidenceFamaProxy.mean >= PROTOCOL.headroomGate.minEvidenceFamaDelta,
+    forgettingAbsenceDelta: primaryComparison.forgettingAbsence.mean >= PROTOCOL.headroomGate.minForgettingAbsenceDelta,
     evidenceFamaCi: !PROTOCOL.headroomGate.requireEvidenceFamaCiLowerAboveZero
-      || oracleQuery.evidenceFamaProxy.lower > 0,
+      || primaryComparison.evidenceFamaProxy.lower > 0,
   };
   const report = {
     status: exploratory ? "exploratory" : Object.values(checks).every(Boolean) ? "passed" : "failed",
@@ -247,10 +304,11 @@ export async function runHeadroom(options: RunOptions): Promise<Record<string, u
       all: comparisonsAll,
       forgettingBearing: comparisonsForgettingBearing,
     },
-    headroomGate: { passed: Object.values(checks).every(Boolean), checks },
+    headroomGate: { primaryArm, passed: Object.values(checks).every(Boolean), checks },
     caveats: [
       "These are provenance-boundary metrics, not official Memora answer-level FAMA.",
       "oracle_query uses per-question obsolete labels and is an upper bound, not a deployable method.",
+      "oracle_chain additionally uses gold correction-session edges and is a version-traversal upper bound.",
       "oracle_write redacts the union of labeled-obsolete atoms for a persona-period and can over-remove repeated values.",
       "oracle_full injects gold current sessions and is only a ceiling check.",
     ],

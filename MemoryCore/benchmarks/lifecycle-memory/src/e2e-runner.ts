@@ -7,7 +7,7 @@ import { MemoryCoreGroupBackend } from "./backend.js";
 import { E2E_PROTOCOL } from "./e2e-protocol.js";
 import { callOpenRouter, type ModelResponse } from "./openrouter.js";
 import { PROTOCOL } from "./protocol.js";
-import { oracleQueryCandidates } from "./runner.js";
+import { oracleChainCandidates, oracleQueryCandidates } from "./runner.js";
 import { scoreRetrieved } from "./metrics.js";
 import type {
   BootstrapInterval,
@@ -18,12 +18,13 @@ import type {
 
 const encoding = getEncoding("cl100k_base");
 
-type E2EArm = "base" | "oracle_query";
+type ComparatorArm = "oracle_query" | "oracle_chain";
+type E2EArm = "base" | ComparatorArm;
 
 interface SelectedCase {
   question: LifecycleEvalQuestion;
   base: RetrievedUnit[];
-  oracleQuery: RetrievedUnit[];
+  comparator: RetrievedUnit[];
   selectionHash: string;
 }
 
@@ -62,7 +63,7 @@ interface E2ECaseResult {
   period: string;
   task: string;
   selectionHash: string;
-  arms: Record<E2EArm, ArmResult>;
+  arms: Record<string, ArmResult>;
 }
 
 export interface E2ERunOptions {
@@ -190,8 +191,9 @@ function pairedBootstrap(
     byPersona.set(result.persona, entries);
   }
   const clusters = [...byPersona.values()];
+  const comparatorArm = E2E_PROTOCOL.arms[1];
   const delta = (result: E2ECaseResult) =>
-    result.arms.oracle_query.metrics[metric] - result.arms.base.metrics[metric];
+    result.arms[comparatorArm].metrics[metric] - result.arms.base.metrics[metric];
   const observed = mean(cases.map(delta));
   const random = mulberry32(seed);
   const draws: number[] = [];
@@ -220,16 +222,25 @@ async function retrieveExposedCases(dataRoot: string, verifyHash: boolean): Prom
   for (let index = 0; index < loaded.groups.length; index += 1) {
     const group = loaded.groups[index];
     const backend = new MemoryCoreGroupBackend(group.units);
+    const unitsBySession = new Map<string, RetrievedUnit[]>();
+    for (const unit of group.units) {
+      const entries = unitsBySession.get(unit.sessionId) ?? [];
+      entries.push({ ...unit, score: 0, tokenCount: encoding.encode(unit.content).length });
+      unitsBySession.set(unit.sessionId, entries);
+    }
     try {
       for (const question of group.questions) {
         if (!question.obsoleteAtoms.length || !question.evaluationQuestions.length) continue;
         const search = await backend.search(question.query, PROTOCOL.retrieval.candidateLimit);
         const base = search.candidates.slice(0, PROTOCOL.retrieval.resultLimit);
         if (scoreRetrieved(question, base).obsoleteAny !== 1) continue;
+        const comparator = E2E_PROTOCOL.arms[1] === "oracle_chain"
+          ? oracleChainCandidates(question, search.candidates, unitsBySession)
+          : oracleQueryCandidates(question, search.candidates);
         exposed.push({
           question,
           base,
-          oracleQuery: oracleQueryCandidates(question, search.candidates),
+          comparator,
           selectionHash: hash(`${E2E_PROTOCOL.seed}:${question.id}`),
         });
       }
@@ -266,7 +277,7 @@ async function evaluateArm(
   selected: SelectedCase,
   arm: E2EArm,
 ): Promise<ArmResult> {
-  const candidates = arm === "base" ? selected.base : selected.oracleQuery;
+  const candidates = arm === "base" ? selected.base : selected.comparator;
   const reader = await callOpenRouter({
     apiKey,
     model: E2E_PROTOCOL.models.reader,
@@ -314,9 +325,10 @@ async function evaluateArm(
 }
 
 async function evaluateCase(apiKey: string, selected: SelectedCase): Promise<E2ECaseResult> {
-  const [base, oracleQuery] = await Promise.all([
+  const comparatorArm = E2E_PROTOCOL.arms[1];
+  const [base, comparator] = await Promise.all([
     evaluateArm(apiKey, selected, "base"),
-    evaluateArm(apiKey, selected, "oracle_query"),
+    evaluateArm(apiKey, selected, comparatorArm),
   ]);
   return {
     caseId: selected.question.id,
@@ -325,7 +337,7 @@ async function evaluateCase(apiKey: string, selected: SelectedCase): Promise<E2E
     period: selected.question.period,
     task: selected.question.task,
     selectionHash: selected.selectionHash,
-    arms: { base, oracle_query: oracleQuery },
+    arms: { base, [comparatorArm]: comparator },
   };
 }
 
@@ -360,6 +372,7 @@ async function existingResults(file: string): Promise<E2ECaseResult[]> {
 }
 
 export async function runE2EHeadroom(options: E2ERunOptions): Promise<Record<string, unknown>> {
+  const comparatorArm = E2E_PROTOCOL.arms[1];
   const { dataset, exposed } = await retrieveExposedCases(options.dataRoot, !options.skipHashVerification);
   if (exposed.length !== E2E_PROTOCOL.selection.expectedPopulationSize) {
     throw new Error(
@@ -372,6 +385,7 @@ export async function runE2EHeadroom(options: E2ERunOptions): Promise<Record<str
     protocolVersion: E2E_PROTOCOL.protocolVersion,
     populationSize: exposed.length,
     selectedSize: selected.length,
+    comparatorArm,
     selected: selected.map((entry) => ({
       caseId: entry.question.id,
       groupId: entry.question.groupId,
@@ -379,7 +393,7 @@ export async function runE2EHeadroom(options: E2ERunOptions): Promise<Record<str
       task: entry.question.task,
       selectionHash: entry.selectionHash,
       baseCandidateIds: entry.base.map((candidate) => candidate.id),
-      oracleQueryCandidateIds: entry.oracleQuery.map((candidate) => candidate.id),
+      comparatorCandidateIds: entry.comparator.map((candidate) => candidate.id),
     })),
   };
   const selectionJson = `${JSON.stringify(selection, null, 2)}\n`;
@@ -447,14 +461,14 @@ export async function runE2EHeadroom(options: E2ERunOptions): Promise<Record<str
     },
     aggregates: {
       base: aggregateArm(cases, "base"),
-      oracle_query: aggregateArm(cases, "oracle_query"),
+      [comparatorArm]: aggregateArm(cases, comparatorArm),
     },
     comparisonVsBase: comparison,
     headroomGate: { passed: Object.values(checks).every(Boolean), checks },
     caveats: [
       "This is a targeted stale-exposed diagnostic, not an estimate over all Memora questions.",
       "The single batched judge is cheaper than, but not comparable to, Memora's official three-judge Table 3 protocol.",
-      "oracle_query uses gold obsolete evidence and is an upper bound, not a deployable lifecycle controller.",
+      `${comparatorArm} uses gold correction labels and is an upper bound, not a deployable lifecycle controller.`,
     ],
   };
   await writeFile(path.join(options.outputDir, "summary.json"), `${JSON.stringify(report, null, 2)}\n`, "utf8");

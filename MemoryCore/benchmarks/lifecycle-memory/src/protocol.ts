@@ -1,9 +1,10 @@
-import protocolJson from "../protocol.v2.json" with { type: "json" };
+import protocolJson from "../protocol.v3.1.json" with { type: "json" };
 
 export interface LifecycleProtocol {
   protocolVersion: string;
   supersedes?: string;
   changeReason?: string;
+  compatibleRetrievalProtocols?: string[];
   seed: number;
   dataset: {
     name: string;
@@ -26,12 +27,16 @@ export interface LifecycleProtocol {
     candidateLimit: number;
     resultLimit: number;
     indexOnlySharedMemoryTurns: boolean;
+    oracleChain?: string;
+    maxChainHops?: number;
+    maxChainExpansions?: number;
   };
   uncertainty: {
     unit: "persona";
     bootstrapSamples: number;
   };
   headroomGate: {
+    primaryArm?: "oracle_query" | "oracle_chain";
     subset: "forgetting-bearing";
     minBaseObsoleteAnyRate: number;
     minEvidenceFamaDelta: number;

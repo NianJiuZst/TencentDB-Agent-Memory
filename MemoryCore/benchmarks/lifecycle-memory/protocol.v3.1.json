@@ -1,0 +1,48 @@
+{
+  "protocolVersion": "lifecycle-headroom-v3.1",
+  "supersedes": "lifecycle-headroom-v3.0",
+  "changeReason": "The pre-E2E direct run exposed stale correction nodes after one-hop replacement when preferences were revised repeatedly. V3.1 follows correction edges transitively with predeclared hop and expansion caps. Existing arms, metrics, thresholds, and uncertainty settings are unchanged.",
+  "seed": 20260820,
+  "compatibleRetrievalProtocols": [
+    "lifecycle-headroom-v2.0",
+    "lifecycle-headroom-v3.0",
+    "lifecycle-headroom-v3.1"
+  ],
+  "dataset": {
+    "name": "Memora",
+    "repository": "https://github.com/geniesinc/Memora",
+    "revision": "a6493188efc836d6511ed5e4163fe3ba87da30ff",
+    "dataManifestSha256": "dfc82711dd6647bcb0ba590f43a336f0dac02420e981ce957dd1fd13ae331bfc",
+    "periods": ["weekly", "monthly", "quarterly"],
+    "expectedPersonas": 10,
+    "expectedQuestionFiles": 30,
+    "expectedSessionFiles": 27614,
+    "sessionSequenceInvariant": "Within every persona-period, numeric session_id order is non-decreasing in date (verified: 30/30 groups, zero violations)."
+  },
+  "labelAlignment": {
+    "current": "normalized atom value plus source-session provenance",
+    "obsolete": "normalized atom value in a memory unit whose sequence precedes the atom's correction/deletion session",
+    "correctionEventIsObsolete": false
+  },
+  "retrieval": {
+    "backend": "memorycore-l0-sqlite-fts5",
+    "candidateLimit": 30,
+    "resultLimit": 5,
+    "indexOnlySharedMemoryTurns": true,
+    "oracleChain": "replace each stale predecessor hit with value-matched shared-memory units from its labeled correction/deletion session; follow replacement nodes transitively, deduplicate, then refill to resultLimit",
+    "maxChainHops": 8,
+    "maxChainExpansions": 64
+  },
+  "uncertainty": {
+    "unit": "persona",
+    "bootstrapSamples": 5000
+  },
+  "headroomGate": {
+    "primaryArm": "oracle_chain",
+    "subset": "forgetting-bearing",
+    "minBaseObsoleteAnyRate": 0.1,
+    "minEvidenceFamaDelta": 0.05,
+    "minForgettingAbsenceDelta": 0.1,
+    "requireEvidenceFamaCiLowerAboveZero": true
+  }
+}

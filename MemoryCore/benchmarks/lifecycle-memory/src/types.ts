@@ -101,7 +101,7 @@ export interface RetrievedUnit extends MemoryUnit {
   tokenCount: number;
 }
 
-export type HeadroomArm = "base" | "oracle_query" | "oracle_write" | "oracle_full";
+export type HeadroomArm = "base" | "oracle_query" | "oracle_chain" | "oracle_write" | "oracle_full";
 
 export interface CaseMetrics {
   currentSessionRecall: number;
