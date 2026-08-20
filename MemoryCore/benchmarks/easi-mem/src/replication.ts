@@ -66,6 +66,18 @@ function mean(values: number[]): number {
   return values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : 0;
 }
 
+async function currentSource(): Promise<{ memoryCoreBaseRevision: string; branch: string }> {
+  const { execFile } = await import("node:child_process");
+  const { promisify } = await import("node:util");
+  const run = promisify(execFile);
+  const cwd = path.resolve(import.meta.dirname, "../../..");
+  const [revision, branch] = await Promise.all([
+    run("git", ["rev-parse", "HEAD"], { cwd }),
+    run("git", ["branch", "--show-current"], { cwd }),
+  ]);
+  return { memoryCoreBaseRevision: revision.stdout.trim(), branch: branch.stdout.trim() };
+}
+
 function aggregateByCategory(results: ArmCaseResult[]): Record<string, AggregateMetrics> {
   const categories = [...new Set(results.map((result) => result.category))].sort();
   return Object.fromEntries(categories.map((category) => [
@@ -274,6 +286,7 @@ export async function runLoCoMoReplication(options: ReplicationOptions) {
     protocolVersion: `${PROTOCOL.protocolVersion}-locomo-external`,
     generatedAt: new Date().toISOString(),
     dataset: loaded.description,
+    source: await currentSource(),
     frozenPolicy: {
       revision: policy.revision,
       sha256: policySha256,
