@@ -1,0 +1,33 @@
+{
+  "protocolVersion": "lifecycle-headroom-v1.1",
+  "supersedes": "lifecycle-headroom-v1.0",
+  "changeReason": "The exploratory one-group smoke showed that reasoning questions have no obsolete labels. Promotion gates now use the predeclared forgetting-bearing subset while all-question results remain mandatory.",
+  "seed": 20260820,
+  "dataset": {
+    "name": "Memora",
+    "repository": "https://github.com/geniesinc/Memora",
+    "revision": "a6493188efc836d6511ed5e4163fe3ba87da30ff",
+    "dataManifestSha256": "dfc82711dd6647bcb0ba590f43a336f0dac02420e981ce957dd1fd13ae331bfc",
+    "periods": ["weekly", "monthly", "quarterly"],
+    "expectedPersonas": 10,
+    "expectedQuestionFiles": 30,
+    "expectedSessionFiles": 27614
+  },
+  "retrieval": {
+    "backend": "memorycore-l0-sqlite-fts5",
+    "candidateLimit": 30,
+    "resultLimit": 5,
+    "indexOnlySharedMemoryTurns": true
+  },
+  "uncertainty": {
+    "unit": "persona",
+    "bootstrapSamples": 5000
+  },
+  "headroomGate": {
+    "subset": "forgetting-bearing",
+    "minBaseObsoleteAnyRate": 0.1,
+    "minEvidenceFamaDelta": 0.05,
+    "minForgettingAbsenceDelta": 0.1,
+    "requireEvidenceFamaCiLowerAboveZero": true
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "protocolVersion": "lifecycle-e2e-headroom-v1.0",
+  "retrievalProtocolVersion": "lifecycle-headroom-v1.1",
+  "seed": 20260820,
+  "population": "forgetting-bearing Memora questions where the frozen MemoryCore Base top-5 contains at least one provenance-aligned obsolete evidence atom",
+  "selection": {
+    "stratifyBy": "persona",
+    "casesPerPersona": 4,
+    "expectedPersonas": 10,
+    "expectedPopulationSize": 75,
+    "hashAlgorithm": "sha256",
+    "hashInput": "<seed>:<case-id>",
+    "frozenSelectionSha256": "deb725f06774af578d39f2d7e2a8392ea81e632d5fde1f98ee71457ee6c004b6",
+    "usesAnswerOrJudgeOutput": false
+  },
+  "arms": ["base", "oracle_query"],
+  "models": {
+    "provider": "openrouter",
+    "reader": "openai/gpt-4o-mini",
+    "readerTemperature": 0,
+    "readerMaxTokens": 500,
+    "judge": "google/gemini-2.5-flash-lite",
+    "judgeTemperature": 0,
+    "judgeMaxTokens": 4000,
+    "retries": 3
+  },
+  "evaluation": {
+    "criteriaSource": "Memora evaluation.evaluation_questions",
+    "judgeMode": "single fixed judge; all criteria for one answer batched in one JSON response",
+    "metrics": ["MPA", "FAA", "FAMA"],
+    "officialTable3Comparable": false
+  },
+  "uncertainty": {
+    "unit": "persona",
+    "bootstrapSamples": 5000
+  },
+  "headroomGate": {
+    "minFamaDelta": 0.05,
+    "minFaaDelta": 0.1,
+    "requireFamaCiLowerAboveZero": true
+  }
+}
