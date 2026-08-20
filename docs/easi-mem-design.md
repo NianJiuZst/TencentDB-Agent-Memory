@@ -175,8 +175,8 @@ The development split selects `relative-75`. On the 98-case held-out split:
 | All-session recall | 0.73469 | 0.77551 | +0.04082 |
 | Macro turn recall | 0.69898 | 0.71769 | +0.01871 |
 | Mean injected tokens | 1018.77 | 712.17 | -30.09% |
-| Query latency p50 (ms) | 0.662 | 1.326 | +0.664 |
-| Query latency p95 (ms) | 1.648 | 2.348 | +0.700 |
+| Query latency p50 (ms) | 0.727 | 1.444 | +0.717 |
+| Query latency p95 (ms) | 1.867 | 2.620 | +0.753 |
 
 The macro-session-recall delta has a paired 95% interval of
 [-0.00510, 0.06071]. The mean token delta is -306.59 with interval
@@ -235,6 +235,25 @@ The following results remain part of the audit trail:
   transfer to LoCoMo.
 
 This history is why protocol versions and baseline reruns are mandatory.
+
+## Verification record
+
+- Exact LongMemEval rerun: source `43f3b478b95d6fb732945942f7ef1dc4a6fd033c`,
+  500 cases, status `passed`.
+- Exact LoCoMo rerun: source `abea42195e0fc815a9195676655e126d44691060`,
+  1,986 cases, frozen-transfer status `failed` as required by the observed
+  negative result.
+- `pnpm test`: 5 files and 21 tests passed, including switch equivalence,
+  forced failure/timeout fallback, late-completion isolation, policy caps, and
+  provenance round-trip.
+- `pnpm run build:plugin`: passed.
+- The repository-wide aggregate `pnpm run build` reaches and passes the plugin
+  build and three script builds, then stops because the upstream
+  `build:seed-v2` script references an absent `scripts/seed-v2/tsconfig.json`.
+  That path is also absent at the untouched base revision and is unrelated to
+  this sidepath.
+- The English paper compiles to a nine-page PDF with no TeX warnings or
+  overfull/underfull boxes; all rendered pages were visually inspected.
 
 ## Migration to internal programming conversations
 

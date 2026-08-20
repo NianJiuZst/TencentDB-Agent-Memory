@@ -9,14 +9,18 @@
     "negativeLoadCases": 450,
     "dependencyClusters": 10
   },
+  "source": {
+    "memoryCoreBaseRevision": "abea42195e0fc815a9195676655e126d44691060",
+    "branch": "codex/easi-mem"
+  },
   "frozenPolicy": {
     "revision": "easi-adc30593739a",
     "sha256": "75f707baee0d23aa38746c183b1ef88f613e358d22a15a0d78f79d46fc38429f",
     "profile": "relative-75"
   },
   "frozenTransfer": {
-    "base": { "macroSessionRecall": 0.7403144634589945, "recallAnySession": 0.8118489583333334, "recallAllSessions": 0.6842447916666666, "macroTurnRecall": 0.4243831309749279, "meanInjectedItems": 5, "meanInjectedTokens": 168.70768229166666 },
-    "adaptive": { "macroSessionRecall": 0.695158781828704, "recallAnySession": 0.7630208333333334, "recallAllSessions": 0.6432291666666666, "macroTurnRecall": 0.3711578912262506, "meanInjectedItems": 4.205078125, "meanInjectedTokens": 122.20442708333333 },
+    "base": { "macroSessionRecall": 0.7403144634589945, "recallAnySession": 0.8118489583333334, "recallAllSessions": 0.6842447916666666, "macroTurnRecall": 0.4243831309749279, "meanInjectedItems": 5, "meanInjectedTokens": 168.70768229166666, "queryLatencyP50Ms": 0.38229199999477714, "queryLatencyP95Ms": 0.5858330000046408 },
+    "adaptive": { "macroSessionRecall": 0.695158781828704, "recallAnySession": 0.7630208333333334, "recallAllSessions": 0.6432291666666666, "macroTurnRecall": 0.3711578912262506, "meanInjectedItems": 4.205078125, "meanInjectedTokens": 122.20442708333333, "queryLatencyP50Ms": 0.8452499999984866, "queryLatencyP95Ms": 1.1351250000006985 },
     "clusterBootstrapDeltas": {
       "macroSessionRecall": { "mean": -0.04515568163029101, "lower95": -0.05612456031450444, "upper95": -0.03354137525593465 },
       "injectedTokens": { "mean": -46.503255208333336, "lower95": -48.46741415557113, "upper95": -44.56308266003729 },

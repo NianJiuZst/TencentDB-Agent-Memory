@@ -524,9 +524,9 @@ requires explicit sufficiency supervision.
 
 \subsection{Latency}
 
-LongMemEval backend query p50/p95 increases from 0.662/1.648 ms to
-1.326/2.348 ms when the candidate limit grows from 5 to 30. LoCoMo increases
-from 0.379/0.561 ms to 0.833/1.089 ms. These local in-memory measurements are
+LongMemEval backend query p50/p95 increases from 0.727/1.867 ms to
+1.444/2.620 ms when the candidate limit grows from 5 to 30. LoCoMo increases
+from 0.382/0.586 ms to 0.845/1.135 ms. These local in-memory measurements are
 small in absolute terms but roughly double retrieval latency; remote vector
 stores must be remeasured rather than extrapolated.
 
@@ -595,7 +595,9 @@ improvement.
 The release records dataset revision/checksum, protocol JSON, split seed, all
 profile definitions, 5,000 bootstrap draws, structured case outputs, compact
 result receipts, and the promoted policy checksum. The implementation is on a
-dedicated branch over MemoryCore v2 source. Unit tests cover disabled-path
+dedicated branch over MemoryCore v2 source. The structured receipts contain
+full source revisions; the exact LongMemEval and LoCoMo reruns used
+\code{43f3b47} and \code{abea421}, respectively. Unit tests cover disabled-path
 equivalence, corrupt policy, baseline mismatch, forced adaptive error, timeout,
 hard limits, base-relative budget, and L1 provenance round-trip. The complete
 plugin build is also exercised.

@@ -8,6 +8,10 @@
     "sha256": "d6f21ea9d60a0d56f34a05b609c79c88a451d2ae03597821ea3d5a9678c3a442",
     "cases": 500
   },
+  "source": {
+    "memoryCoreBaseRevision": "43f3b478b95d6fb732945942f7ef1dc4a6fd033c",
+    "branch": "codex/easi-mem"
+  },
   "split": { "train": 280, "dev": 92, "test": 98, "abstention": 30, "seed": 20260823 },
   "selectedProfile": "relative-75",
   "policyRevision": "easi-adc30593739a",
@@ -20,8 +24,8 @@
       "ndcgSessions": 0.8412444458270429,
       "meanInjectedItems": 5,
       "meanInjectedTokens": 1018.765306122449,
-      "queryLatencyP50Ms": 0.6621669999985897,
-      "queryLatencyP95Ms": 1.6482910000049742
+      "queryLatencyP50Ms": 0.7269579999992857,
+      "queryLatencyP95Ms": 1.86658300000272
     },
     "adaptive": {
       "macroSessionRecall": 0.85,
@@ -31,8 +35,8 @@
       "ndcgSessions": 0.8429332237336113,
       "meanInjectedItems": 6.377551020408164,
       "meanInjectedTokens": 712.1734693877551,
-      "queryLatencyP50Ms": 1.3256670000009763,
-      "queryLatencyP95Ms": 2.347874999999476
+      "queryLatencyP50Ms": 1.443542000000889,
+      "queryLatencyP95Ms": 2.6195000000006985
     },
     "pairedDeltas": {
       "macroSessionRecall": { "mean": 0.026020408163265306, "lower95": -0.00510204081632653, "upper95": 0.060714285714285714 },
