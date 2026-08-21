@@ -35,6 +35,8 @@ interface ShieldCase {
   changedCandidates: number;
   redactions: number;
   decisionMode: "base" | "shielded" | "fallback";
+  elapsedMs: number;
+  fallbackReason?: string;
   v1ExactObsoleteContextAny: number;
   shieldExactObsoleteContextAny: number;
   v1CurrentAtomRecall: number;
@@ -210,6 +212,8 @@ export async function runEvidenceShieldFeasibility(
       changedCandidates: applied.decision.changedCandidates,
       redactions: applied.decision.redactions,
       decisionMode: applied.decision.mode,
+      elapsedMs: applied.decision.elapsedMs,
+      fallbackReason: applied.decision.fallbackReason,
       v1ExactObsoleteContextAny: exactObsoleteContextAny(question, v1),
       shieldExactObsoleteContextAny: exactObsoleteContextAny(question, shielded),
       v1CurrentAtomRecall: currentAtomRecall(question, v1),

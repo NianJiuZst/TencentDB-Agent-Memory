@@ -10,7 +10,7 @@ This file is the persistent direction registry for iterative work above the fixe
 
 | ID | Direction | Single changed dimension | Evidence source | Status | Promotion boundary |
 |---|---|---|---|---|---|
-| D1 | Correction-aware evidence shield | Injection rendering after V1 | Write-time `obsoleteValues`; query-time deterministic masking | Active | Frozen 50 are development-only; new public data required |
+| D1 | Correction-aware evidence shield | Injection rendering after V1 | Write-time `obsoleteValues`; query-time deterministic masking | V1.0 rejected; compact V1.1 active | Frozen 50 are development-only; new public data required |
 | D2 | Query-adaptive abstention/budget | Whether and how much memory to inject | Query features plus downstream utility | Queued | Must beat V1 under fixed or lower token cost |
 | D3 | Net-value lifecycle curation | Bounded retention/expiry priority | Utility, harm, bytes, provenance | Queued | Must report false-forgetting cost |
 | D4 | Query-time evidence distillation | Selection/rewriting within the V1 candidate set | Small local/open model with validity gates | Queued | Must hard-fallback on parse, timeout, or low confidence |
@@ -21,6 +21,8 @@ This file is the persistent direction registry for iterative work above the fixe
 The V2 failure analysis found more exact obsolete-value exposure in both contexts and answers. D1 changes neither retrieval identity nor budget; it tests whether correction statements themselves leak superseded surface forms. This makes the result easier to attribute than another joint Top-k, hop, and threshold search.
 
 The design is informed by query-time evidence distillation in [DeferMem](https://arxiv.org/abs/2605.22411), adaptive memory allocation in [ElasticMem](https://arxiv.org/abs/2605.30690), and on-demand abstaining memory generation in [Mem-pi](https://arxiv.org/abs/2605.21463). D1 deliberately starts with a deterministic renderer rather than reinforcement learning so that it is cheap, reviewable, and provider-independent.
+
+D1-v1.0 reduced exact obsolete-value context exposure from 74% to 12% with no measured current-atom recall loss, but it increased mean injected tokens by 2.70% and four of 50 cases exceeded its 5 ms budget. The predeclared gate rejected it before answer generation. D1-v1.1 keeps every quality gate fixed, replaces obsolete spans with the compact pronoun `it`, and uses a 10 ms shield budget matching the incumbent lifecycle budget.
 
 ## Iteration rule
 

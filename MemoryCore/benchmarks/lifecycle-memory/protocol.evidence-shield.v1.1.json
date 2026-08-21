@@ -1,0 +1,69 @@
+{
+  "protocolVersion": "lifecycle-evidence-shield-v1.1",
+  "parentProtocols": [
+    "lifecycle-adaptive-v1.0",
+    "lifecycle-evidence-shield-v1.0"
+  ],
+  "developmentStatus": "Post-hoc one-factor candidate defined after evidence-shield-v1.0 reduced obsolete exposure but failed its token and zero-fallback gates. V1.1 changes only the replacement token and shield timeout; all feasibility and answer-development gates remain unchanged. The frozen 50 cases are analysis data only.",
+  "changeFromV1": {
+    "replacement": "[superseded] -> it",
+    "timeoutMs": "5 -> 10",
+    "reason": "V1.0 increased mean tokens by 2.70% and had four measured shield timeouts; no quality threshold changed"
+  },
+  "seed": 20260822,
+  "incumbent": {
+    "protocolVersion": "lifecycle-adaptive-v1.0",
+    "enabled": true,
+    "minConfidence": 0.85,
+    "maxHops": 1,
+    "maxExpansions": 64,
+    "resultLimit": 5,
+    "timeoutMs": 10
+  },
+  "candidate": {
+    "name": "v1_evidence_shield_compact",
+    "singleChangedDimension": "injection rendering",
+    "candidateIds": "byte-equivalent to V1 in identity, order, and count",
+    "constructionUsesEvaluationLabels": false,
+    "constructionSource": "write-time lifecycle event obsoleteValues attached to successorUnitIds",
+    "policy": {
+      "enabled": true,
+      "minConfidence": 0.85,
+      "maxCandidates": 5,
+      "maxRedactions": 32,
+      "replacement": "it",
+      "timeoutMs": 10
+    }
+  },
+  "analysisSelection": {
+    "protocolVersion": "lifecycle-adaptive-e2e-v1.1",
+    "selectionSha256": "1e3ab7b21bd1425f98f095ca76a31d350c47f3bb9c9cf0090139567859dadaf1",
+    "cases": 50,
+    "use": "mechanism diagnosis and answer-development triage only"
+  },
+  "feasibilityGate": {
+    "minExactObsoleteContextAnyRateReduction": 0.1,
+    "maxCurrentAtomRecallLoss": 0,
+    "maxMeanInjectedTokenIncreaseFraction": 0,
+    "requireCandidateIdEquivalence": true,
+    "requireZeroFallbacks": true,
+    "requireDisabledEquivalence": true,
+    "requireForcedFailureFallback": true
+  },
+  "answerDevelopmentGate": {
+    "role": "qualify for new-data confirmation, not promotion",
+    "requirePositiveFamaDeltaOverV1": true,
+    "minFaaDeltaOverV1": 0.01,
+    "maxMpaLossFromV1": 0.01,
+    "maxMeanInjectedTokenIncreaseFraction": 0,
+    "requireNonnegativeFamaDirectionForEachReader": true
+  },
+  "confirmationRequirement": {
+    "mustUseNewData": true,
+    "preferredPublicData": [
+      "LongMemEval update and abstention subsets",
+      "an untouched public temporal-update split"
+    ],
+    "internalProgrammingAdapterRequiredForBusinessClaim": true
+  }
+}
