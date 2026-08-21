@@ -46,6 +46,8 @@ The failure is upstream of rendering: many high-ranked stale hits are redirected
 
 This choice follows the retain-versus-supersede boundary reported by MemStrata: lossy merging can destroy static recall, while unfiltered retention leaks stale facts. It also responds to STALE's distinction between retrieving an update and acting on the represented state. D3 remains a bounded sidecar with exact Base fallback.
 
+The frozen D3-v1.0 protocol makes no fitted choices: `minConfidence=0.85`, one hop, the existing 30-item candidate pool, and final `k=5` all remain fixed. The primary proxy subset is quarterly current-state, forgetting-bearing questions; historical/reasoning and non-forgetting slices are reported separately. Qualification requires at least +2 points evidence-FAMA proxy with a persona-bootstrap lower bound above zero, no recall or forgetting loss, no token increase, no non-forgetting harm, and exact fallback behavior.
+
 ## Iteration rule
 
 1. Freeze the candidate construction and gates before computing its scores.

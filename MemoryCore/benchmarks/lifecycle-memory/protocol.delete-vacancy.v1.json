@@ -1,0 +1,87 @@
+{
+  "protocolVersion": "lifecycle-delete-vacancy-v1.0",
+  "researchDirection": "D3",
+  "seed": 20260822,
+  "dataset": {
+    "name": "Memora",
+    "revision": "a6493188efc836d6511ed5e4163fe3ba87da30ff",
+    "dataManifestSha256": "dfc82711dd6647bcb0ba590f43a336f0dac02420e981ce957dd1fd13ae331bfc"
+  },
+  "split": {
+    "developmentPeriods": ["weekly", "monthly"],
+    "heldOutProxyPeriod": "quarterly",
+    "usesHeldOutFeedbackForPolicy": false,
+    "answerPanel": "If the proxy gate passes, freeze a new answer panel from quarterly current-state cases excluding lifecycle-adaptive-e2e-v1.1 case ids."
+  },
+  "incumbent": {
+    "name": "lifecycle-adaptive-v1.0",
+    "minConfidence": 0.85,
+    "maxHops": 1,
+    "maxExpansions": 64,
+    "resultLimit": 5,
+    "timeoutMs": 10
+  },
+  "candidate": {
+    "name": "delete-aware vacancy refill",
+    "enabled": true,
+    "candidateLimit": 30,
+    "resultLimit": 5,
+    "minConfidence": 0.85,
+    "maxHops": 1,
+    "maxExpansions": 64,
+    "timeoutMs": 10,
+    "maxCandidates": 30,
+    "eventSemantics": {
+      "deletePredecessor": "Emit no successor for a candidate invalidated by the latest eligible delete event.",
+      "deleteSuccessor": "Treat the write-time deletion utterance itself as a tombstone and do not inject it.",
+      "updatePredecessor": "Redirect to the latest eligible update successor exactly as V1 does.",
+      "ordinaryCandidate": "Keep its Base rank order.",
+      "refill": "Continue through the existing Base candidate pool until five valid candidates are emitted or the bounded pool is exhausted.",
+      "mixedLatestKinds": "Fail the whole call and return Base rather than guessing."
+    },
+    "forbidden": [
+      "evaluation memory or forgetting evidence",
+      "gold atoms or criteria",
+      "answer outcomes",
+      "new FTS5 or vector searches",
+      "synthetic current facts",
+      "more than five injected candidates"
+    ]
+  },
+  "capacity": {
+    "maxUnitsPerGroup": 10000,
+    "maxEventsPerGroup": 5000,
+    "maxEdgesPerGroup": 50000,
+    "maxTombstonesPerGroup": 5000
+  },
+  "evaluation": {
+    "primarySubset": "quarterly questions with at least one obsolete atom and task in {remembering, recommending}",
+    "secondarySubsets": [
+      "all periods",
+      "development current-state forgetting-bearing",
+      "quarterly all",
+      "quarterly current-state non-forgetting",
+      "quarterly reasoning"
+    ],
+    "comparison": "candidate versus fixed V1",
+    "uncertaintyUnit": "persona",
+    "bootstrapSamples": 5000
+  },
+  "proxyGate": {
+    "minPrimaryEvidenceFamaProxyDelta": 0.02,
+    "requirePrimaryEvidenceFamaProxyCiLowerAboveZero": true,
+    "minPrimaryCurrentSessionRecallDelta": 0,
+    "minPrimaryForgettingAbsenceDelta": 0,
+    "maxQuarterlyCurrentStateNonForgettingHarmedCasesVsV1": 0,
+    "maxMeanInjectedTokenIncreaseFractionVsV1": 0,
+    "requireAtMostFiveCandidates": true,
+    "requireZeroOrdinaryFallbacks": true,
+    "requireDisabledBaseEquivalence": true,
+    "requireForcedFailureBaseFallback": true
+  },
+  "outcomeSemantics": {
+    "pass": "freeze_new_answer_panel",
+    "fail": "reject_candidate_and_continue_to_D4"
+  },
+  "claimBoundary": "The proxy gate can qualify answer testing only. It cannot establish answer quality, programming-task utility, or promotion over V1."
+}
