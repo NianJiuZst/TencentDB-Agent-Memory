@@ -60,6 +60,8 @@ D4-v1.0 passed the proxy gate and an independent reconstruction check. Weekly/mo
 
 The answer-selection protocol is frozen before selection. It excludes all 50 prior answer-development case ids, admits only quarterly remembering/recommending questions with forgetting criteria, and selects exactly five cases per persona by a seeded SHA-256 ordering. The selector is outcome-blind: it cannot inspect proxy metrics or require a V1/candidate difference.
 
+The resulting fresh panel has 50 cases (31 remembering, 19 recommending), zero overlap with the prior panel, and 21 contexts that actually differ between V1 and D4. For the 29 exact no-op cases, the answer protocol generates and judges one canonical cell and clones it to both arms, preventing decoding noise from masquerading as a treatment effect. D4 passes only if answer FAMA and MPA improve, FAMA's persona-bootstrap lower bound is nonnegative, FAA loses at most 0.5 points, both readers have nonnegative FAMA direction, and tokens do not increase.
+
 ## Iteration rule
 
 1. Freeze the candidate construction and gates before computing its scores.

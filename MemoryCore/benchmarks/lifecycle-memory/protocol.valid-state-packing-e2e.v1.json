@@ -1,0 +1,113 @@
+{
+  "protocolVersion": "lifecycle-valid-state-packing-e2e-v1.0",
+  "candidateProtocolVersion": "lifecycle-valid-state-packing-v1.0",
+  "selectionProtocolVersion": "lifecycle-valid-state-packing-e2e-selection-v1.0",
+  "evidenceRole": "Fresh answer-level confirmation panel within Memora. It excludes all prior answer-development cases but remains a within-dataset method validation, not programming-task evidence.",
+  "seed": 20260823,
+  "dataset": {
+    "name": "Memora",
+    "revision": "a6493188efc836d6511ed5e4163fe3ba87da30ff",
+    "dataManifestSha256": "dfc82711dd6647bcb0ba590f43a336f0dac02420e981ce957dd1fd13ae331bfc"
+  },
+  "inputs": {
+    "selection": {
+      "sha256": "fb4ef25cdb4bb3953af94ed8a964c4ec5bebf8fc4c9fc8d13ae0935c67d3188e",
+      "cases": 50,
+      "personas": 10,
+      "casesPerPersona": 5,
+      "overlapWithPriorPanel": 0
+    },
+    "contextManifest": {
+      "sha256": "bb628c47628022dfb705119a747d0999b9fdd4b1900c883c0beca14ac2b904a9",
+      "changedCases": 21,
+      "unchangedCases": 29,
+      "v1MeanInjectedTokens": 121.54,
+      "candidateMeanInjectedTokens": 117.56
+    },
+    "proxyRun": {
+      "casesSha256": "2d001bfb706f6da658af95375f59d938fb7290b5e78cbacdb58b25c3d92c54b0",
+      "summarySha256": "c6c9f0186243c09c660e8ed7a1e12b21b6fd74a750153bdf20340b82b519851e",
+      "validationSha256": "5ca1001254d795861dfb78dff838266ea6d5884a0bb8a0ad2693991e48207db5",
+      "requiredStatus": "passed"
+    },
+    "excludedPriorSelectionSha256": "1e3ab7b21bd1425f98f095ca76a31d350c47f3bb9c9cf0090139567859dadaf1"
+  },
+  "arms": ["v1", "valid_state_packing"],
+  "readers": [
+    {
+      "id": "minimax-m3",
+      "provider": "minimax",
+      "model": "MiniMax-M3",
+      "baseUrl": "https://api.minimaxi.com/v1",
+      "apiKeyEnv": "MINIMAX_API_KEY",
+      "temperature": 0.1,
+      "topP": 0.95,
+      "maxTokens": 700,
+      "thinking": "disabled"
+    },
+    {
+      "id": "deepseek-v4-flash",
+      "provider": "deepseek",
+      "model": "deepseek-v4-flash",
+      "baseUrl": "https://api.deepseek.com",
+      "apiKeyEnv": "DEEPSEEK_API_KEY",
+      "temperature": 0,
+      "maxTokens": 700,
+      "thinking": "disabled"
+    }
+  ],
+  "judges": [
+    {
+      "id": "minimax-m3",
+      "provider": "minimax",
+      "model": "MiniMax-M3",
+      "baseUrl": "https://api.minimaxi.com/v1",
+      "apiKeyEnv": "MINIMAX_API_KEY",
+      "temperature": 0.1,
+      "topP": 0.95,
+      "maxTokens": 8192,
+      "thinking": "disabled"
+    },
+    {
+      "id": "deepseek-v4-flash",
+      "provider": "deepseek",
+      "model": "deepseek-v4-flash",
+      "baseUrl": "https://api.deepseek.com",
+      "apiKeyEnv": "DEEPSEEK_API_KEY",
+      "temperature": 0,
+      "maxTokens": 8192,
+      "thinking": "disabled"
+    }
+  ],
+  "execution": {
+    "retries": 3,
+    "maxConcurrency": 4,
+    "taskOrdering": "Ascending SHA256 of seed + NUL + caseId + NUL + readerId + NUL + canonical arm.",
+    "unchangedContextDeduplication": "When ids, contents, and token counts are exactly equal, generate and judge one canonical V1 cell and clone it to the candidate arm with sharedNoop provenance.",
+    "expectedReaderCalls": 142,
+    "expectedJudgeCalls": 284,
+    "expectedArmRows": 200
+  },
+  "aggregation": {
+    "primary": "Cross-model mean: each reader answer is scored only by the other model.",
+    "sensitivity": "Full-factorial mean over both judges and both readers.",
+    "secondary": "Changed-context subset under the same crossed aggregation.",
+    "uncertaintyUnit": "persona",
+    "bootstrapSamples": 20000
+  },
+  "answerGate": {
+    "requirePositiveFamaDelta": true,
+    "minFamaPersonaBootstrapLower": 0,
+    "requirePositiveMpaDelta": true,
+    "minFaaDelta": -0.005,
+    "requireNonnegativeCriterionAccuracyDelta": true,
+    "requireNonnegativeFamaDirectionForEachReader": true,
+    "maxMeanInjectedTokenIncreaseFraction": 0,
+    "requireExactNoopClones": true,
+    "requireZeroModelMismatches": true
+  },
+  "outcomeSemantics": {
+    "pass": "qualify_D4_for_external_dataset_confirmation_without_replacing_V1_yet",
+    "fail": "reject_D4_and_continue_to_D5"
+  }
+}
