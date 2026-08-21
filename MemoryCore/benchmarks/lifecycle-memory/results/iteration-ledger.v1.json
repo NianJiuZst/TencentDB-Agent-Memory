@@ -38,6 +38,43 @@
         "zeroFallbacks"
       ],
       "interpretation": "The mechanism strongly reduced exact obsolete-value exposure without losing current-atom recall, but this configuration violated its predeclared operational gates. It is not advanced to answer evaluation."
+    },
+    {
+      "id": "D1-v1.1",
+      "direction": "compact correction-aware evidence shielding",
+      "protocolVersion": "lifecycle-evidence-shield-v1.1",
+      "preScoreCommit": "d650cb122e3822f20f44ae6c32d7254e6a13f017",
+      "evidenceRole": "post-hoc development feasibility on the previously analyzed frozen 50 cases",
+      "status": "rejected",
+      "candidate": {
+        "replacement": "it",
+        "timeoutMs": 10,
+        "candidateIdentity": "exactly V1"
+      },
+      "results": {
+        "cases": 50,
+        "casesWithChangedContent": 47,
+        "redactions": 115,
+        "v1ExactObsoleteContextAnyRate": 0.74,
+        "candidateExactObsoleteContextAnyRate": 0.1,
+        "currentAtomRecallLoss": 0,
+        "v1MeanInjectedTokens": 146.76,
+        "candidateMeanInjectedTokens": 142.3,
+        "meanInjectedTokenIncreaseFraction": -0.030389751976015122,
+        "fallbacks": 1,
+        "fallbackReasons": {
+          "evidence shield timed out": 1
+        },
+        "maxObservedElapsedMs": 10.480333000000428,
+        "candidateIdMismatches": 0,
+        "disabledMismatches": 0,
+        "damagedMismatches": 0,
+        "timeoutMismatches": 0
+      },
+      "failedChecks": [
+        "zeroFallbacks"
+      ],
+      "interpretation": "Compact shielding passed exposure, current-atom, identity, token, disabled, and forced-failure checks, but one ordinary call exceeded the fixed 10 ms budget. It is rejected; a final semantic-equivalent precompiled implementation is tested as V1.2."
     }
   ]
 }

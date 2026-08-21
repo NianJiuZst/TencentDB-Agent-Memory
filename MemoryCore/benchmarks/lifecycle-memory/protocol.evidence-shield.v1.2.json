@@ -1,0 +1,70 @@
+{
+  "protocolVersion": "lifecycle-evidence-shield-v1.2",
+  "parentProtocols": [
+    "lifecycle-adaptive-v1.0",
+    "lifecycle-evidence-shield-v1.1"
+  ],
+  "developmentStatus": "Final engineering retry in the D1 direction. V1.2 precompiles event-derived redaction patterns when the bounded sidecar is built. Query semantics, candidate policy, 10 ms timeout, and every feasibility and answer-development gate are identical to V1.1. The frozen 50 cases are analysis data only.",
+  "changeFromV1_1": {
+    "querySemantics": "unchanged",
+    "implementation": "compile Unicode-safe obsolete-value patterns at sidecar construction rather than per query",
+    "reason": "V1.1 passed every quality and cost check but one 92-character-value case took 10.48 ms and triggered the zero-fallback gate",
+    "iterationLimit": "If V1.2 fails feasibility, stop D1 and move to D2"
+  },
+  "seed": 20260822,
+  "incumbent": {
+    "protocolVersion": "lifecycle-adaptive-v1.0",
+    "enabled": true,
+    "minConfidence": 0.85,
+    "maxHops": 1,
+    "maxExpansions": 64,
+    "resultLimit": 5,
+    "timeoutMs": 10
+  },
+  "candidate": {
+    "name": "v1_evidence_shield_precompiled",
+    "singleChangedDimension": "injection rendering",
+    "candidateIds": "byte-equivalent to V1 in identity, order, and count",
+    "constructionUsesEvaluationLabels": false,
+    "constructionSource": "write-time lifecycle event obsoleteValues attached to successorUnitIds",
+    "policy": {
+      "enabled": true,
+      "minConfidence": 0.85,
+      "maxCandidates": 5,
+      "maxRedactions": 32,
+      "replacement": "it",
+      "timeoutMs": 10
+    }
+  },
+  "analysisSelection": {
+    "protocolVersion": "lifecycle-adaptive-e2e-v1.1",
+    "selectionSha256": "1e3ab7b21bd1425f98f095ca76a31d350c47f3bb9c9cf0090139567859dadaf1",
+    "cases": 50,
+    "use": "mechanism diagnosis and answer-development triage only"
+  },
+  "feasibilityGate": {
+    "minExactObsoleteContextAnyRateReduction": 0.1,
+    "maxCurrentAtomRecallLoss": 0,
+    "maxMeanInjectedTokenIncreaseFraction": 0,
+    "requireCandidateIdEquivalence": true,
+    "requireZeroFallbacks": true,
+    "requireDisabledEquivalence": true,
+    "requireForcedFailureFallback": true
+  },
+  "answerDevelopmentGate": {
+    "role": "qualify for new-data confirmation, not promotion",
+    "requirePositiveFamaDeltaOverV1": true,
+    "minFaaDeltaOverV1": 0.01,
+    "maxMpaLossFromV1": 0.01,
+    "maxMeanInjectedTokenIncreaseFraction": 0,
+    "requireNonnegativeFamaDirectionForEachReader": true
+  },
+  "confirmationRequirement": {
+    "mustUseNewData": true,
+    "preferredPublicData": [
+      "LongMemEval update and abstention subsets",
+      "an untouched public temporal-update split"
+    ],
+    "internalProgrammingAdapterRequiredForBusinessClaim": true
+  }
+}

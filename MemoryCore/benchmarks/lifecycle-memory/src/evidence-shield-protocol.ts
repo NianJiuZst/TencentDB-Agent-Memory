@@ -1,4 +1,4 @@
-import protocolJson from "../protocol.evidence-shield.v1.1.json" with { type: "json" };
+import protocolJson from "../protocol.evidence-shield.v1.2.json" with { type: "json" };
 import type { LifecycleEvidenceShieldPolicy, LifecyclePolicy } from "../../../src/core/lifecycle/index.js";
 
 interface EvidenceShieldProtocol {
@@ -27,7 +27,7 @@ interface EvidenceShieldProtocol {
 
 export const EVIDENCE_SHIELD_PROTOCOL = protocolJson as EvidenceShieldProtocol;
 
-if (EVIDENCE_SHIELD_PROTOCOL.protocolVersion !== "lifecycle-evidence-shield-v1.1") {
+if (EVIDENCE_SHIELD_PROTOCOL.protocolVersion !== "lifecycle-evidence-shield-v1.2") {
   throw new Error("unexpected evidence-shield protocol version");
 }
 if (EVIDENCE_SHIELD_PROTOCOL.incumbent.protocolVersion !== "lifecycle-adaptive-v1.0") {

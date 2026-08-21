@@ -1,10 +1,16 @@
 import { performance } from "node:perf_hooks";
 import type { LifecycleEvent } from "./types.js";
 
+interface RedactionValue {
+  key: string;
+  pattern: RegExp;
+  value: string;
+}
+
 interface EvidenceAnnotation {
   confidence: number;
   eventId: string;
-  obsoleteValues: string[];
+  obsoleteValues: RedactionValue[];
   sequence: number;
 }
 
@@ -108,9 +114,12 @@ export class LifecycleEvidenceShield implements LifecycleEvidenceShieldSource {
       if (event.confidence < 0 || event.confidence > 1) {
         throw new Error(`invalid confidence for ${event.id}`);
       }
-      const obsoleteValues = [...new Map(event.obsoleteValues
-        .map((value) => [normalize(value), value.trim()] as const)
-        .filter(([key]) => key.length >= 2)).values()];
+      const obsoleteValues = [...new Map(event.obsoleteValues.flatMap((rawValue) => {
+        const value = rawValue.trim();
+        const key = normalize(value);
+        const pattern = valuePattern(value);
+        return key.length >= 2 && pattern ? [[key, { key, pattern, value }] as const] : [];
+      })).values()];
       if (!obsoleteValues.length) continue;
       for (const unitId of new Set(event.successorUnitIds)) {
         if (!unitId) throw new Error(`evidence shield event ${event.id} has an empty successor`);
@@ -154,13 +163,12 @@ export class LifecycleEvidenceShield implements LifecycleEvidenceShieldSource {
         .filter((entry) => entry.confidence >= policy.minConfidence)
         .sort((left, right) => right.sequence - left.sequence || left.eventId.localeCompare(right.eventId));
       const values = [...new Map(annotations.flatMap((entry) => entry.obsoleteValues)
-        .map((value) => [normalize(value), value] as const)).values()]
-        .sort((left, right) => normalize(right).length - normalize(left).length);
+        .map((value) => [value.key, value] as const)).values()]
+        .sort((left, right) => right.key.length - left.key.length);
       let content = candidate.content;
       for (const value of values) {
-        const pattern = valuePattern(value);
-        if (!pattern) continue;
-        content = content.replace(pattern, () => {
+        value.pattern.lastIndex = 0;
+        content = content.replace(value.pattern, () => {
           redactions += 1;
           checkBudget();
           return policy.replacement;
