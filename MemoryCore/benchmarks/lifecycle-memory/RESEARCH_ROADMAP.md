@@ -14,7 +14,7 @@ This file is the persistent direction registry for iterative work above the fixe
 | D2 | Query-conditioned evidence-risk routing | Choose V1 or shield rendering per query | Bounded sidecar features plus downstream utility | Rejected at cross-fitted gate | Stopped: MPA non-inferiority and reader-stability gates failed |
 | D3 | Delete-aware vacancy refill | Whether deletion successors consume Top-k slots | Typed lifecycle event kind plus the existing Base candidate pool | Rejected at proxy gate | Positive recall signal, but magnitude and token gates failed |
 | D4 | Feedback-optimized valid-state packing | Token fraction and item cap after validity filtering | Development-period proxy feedback; per-query V1 token budget | Rejected at answer uncertainty gate | Positive point estimates are retained as a near-miss, not promoted |
-| D5 | Scope-aware coexistence | Branch/environment validity rather than global invalidation | Adapter-provided repository/branch/task scope | Queued | Requires a programming-session adapter or scoped public proxy |
+| D5 | Target-keyed state projection on MemOps | Value-substring invalidation versus explicit operation target state | Public gold operation traces shared by every arm | Adapter audit passed; protocol design next | Oracle-management evidence only; public JSON has no independent scope field |
 
 ## Why D1 is first
 
@@ -63,6 +63,14 @@ The answer-selection protocol is frozen before selection. It excludes all 50 pri
 The resulting fresh panel has 50 cases (31 remembering, 19 recommending), zero overlap with the prior panel, and 21 contexts that actually differ between V1 and D4. For the 29 exact no-op cases, the answer protocol generates and judges one canonical cell and clones it to both arms, preventing decoding noise from masquerading as a treatment effect. D4 passes only if answer FAMA and MPA improve, FAMA's persona-bootstrap lower bound is nonnegative, FAA loses at most 0.5 points, both readers have nonnegative FAMA direction, and tokens do not increase.
 
 D4 failed only the frozen uncertainty check. On the fresh 50-case panel, FAMA improved by 1.16 points, MPA by 0.61, FAA by 1.22, and criterion accuracy by 0.88, while mean injected tokens fell by 3.27%. Both reader-specific FAMA directions were positive. However, the persona-bootstrap 95% interval for FAMA was -0.14 to +2.90 points, so its lower bound remained below zero. An independent reconstruction reproduced all metrics, 142 reader calls, 284 judge calls, 58 exact no-op clones, and zero retries, model mismatches, schema mismatches, or arithmetic mismatches. This is a useful near-miss but not sufficient evidence to replace V1; the threshold and panel are left unchanged after scoring.
+
+## Why D5 changes dataset and state key
+
+D1 through D4 repeatedly show that a value-substring version edge is useful but incomplete: the same surface form can belong to different entities, while a target's current state may be expressed without repeating its old value. The July 2026 MemOps release provides public operation traces with target ids, validity, old/new values, trigger spans, and provenance, plus matched adjacent and longitudinal probes. Its operation-centric construction also supplies a lower-cost diagnostic bridge between retrieval proxies and answer-only evaluation.
+
+The pinned public artifact contains 403 paired long-conversation instances, 2,558 operations, and 2,006 longitudinal probes. All gold spans map to MemoryCore L0-shaped units under a fail-closed adapter. D5 will give Base, V1, and the challenger the same oracle operation objects, then vary only state management: V1 retains value-substring edges, while the challenger maintains a bounded current state keyed by operation target. This isolates management from extraction and will be reported as oracle-management evidence.
+
+The released JSON does not expose a separate scope field despite the paper's broader formulation. D5 therefore does not validate repository or branch coexistence. That direction remains an internal-adapter requirement; no public result will be relabeled as programming-task evidence.
 
 ## Iteration rule
 
