@@ -11,6 +11,7 @@ export {
 } from "./delete-vacancy.js";
 export { applyLifecycleValidStatePacking } from "./valid-state-packer.js";
 export {
+  applyLifecycleDominanceGuard,
   applyLifecycleTargetState,
   DEFAULT_TARGET_STATE_LIMITS,
   LifecycleTargetState,
@@ -40,8 +41,12 @@ export type {
   LifecycleValidStatePackingResult,
 } from "./valid-state-packer.js";
 export type {
+  LifecycleDominanceDecision,
+  LifecycleDominanceResult,
+  LifecycleTargetStateClassification,
   LifecycleTargetStateDecision,
   LifecycleTargetStateKind,
+  LifecycleTargetStateInspector,
   LifecycleTargetStateLimits,
   LifecycleTargetStateOperation,
   LifecycleTargetStatePolicy,

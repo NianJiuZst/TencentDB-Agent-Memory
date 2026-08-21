@@ -42,12 +42,28 @@ export interface LifecycleTargetStateResolution {
   projectedTargets: number;
 }
 
+export interface LifecycleTargetStateClassification {
+  currentIds: string[];
+  staleIds: string[];
+  targetLinksVisited: number;
+  targets: number;
+  unknownIds: string[];
+}
+
 export interface LifecycleTargetStateSource {
   resolveIds(
     candidateIds: string[],
     policy: LifecycleTargetStatePolicy,
     now?: () => number,
   ): LifecycleTargetStateResolution;
+}
+
+export interface LifecycleTargetStateInspector {
+  classifyIds(
+    candidateIds: string[],
+    policy: LifecycleTargetStatePolicy,
+    now?: () => number,
+  ): LifecycleTargetStateClassification;
 }
 
 export interface LifecycleTargetStateDecision extends LifecycleTargetStateResolution {
@@ -61,6 +77,27 @@ export interface LifecycleTargetStateDecision extends LifecycleTargetStateResolu
 export interface LifecycleTargetStateResult<T> {
   candidates: T[];
   decision: LifecycleTargetStateDecision;
+}
+
+export interface LifecycleDominanceDecision {
+  challengerCost: number;
+  checks: {
+    budgetRespected: boolean;
+    currentRetained: boolean;
+    staleNotIncreased: boolean;
+    unknownRetained: boolean;
+  };
+  elapsedMs: number;
+  fallbackReason?: string;
+  incumbentCost: number;
+  mode: "incumbent" | "challenger" | "fallback";
+  rejectionReasons: string[];
+  state: LifecycleTargetStateClassification;
+}
+
+export interface LifecycleDominanceResult<T> {
+  candidates: T[];
+  decision: LifecycleDominanceDecision;
 }
 
 interface TargetState {
@@ -99,7 +136,7 @@ function validatePolicy(policy: LifecycleTargetStatePolicy): void {
   }
 }
 
-export class LifecycleTargetState implements LifecycleTargetStateSource {
+export class LifecycleTargetState implements LifecycleTargetStateSource, LifecycleTargetStateInspector {
   private readonly operationsByTarget = new Map<string, LifecycleTargetStateOperation[]>();
   private readonly targetsByUnitId = new Map<string, string[]>();
   private readonly unitIds: Set<string>;
@@ -271,6 +308,72 @@ export class LifecycleTargetState implements LifecycleTargetStateSource {
       maxProjectedStateUnits,
     };
   }
+
+  classifyIds(
+    candidateIds: string[],
+    policy: LifecycleTargetStatePolicy,
+    now: () => number = performance.now.bind(performance),
+  ): LifecycleTargetStateClassification {
+    validatePolicy(policy);
+    const ids = [...new Set(candidateIds)];
+    if (ids.length > policy.maxCandidates) {
+      throw new Error(`target-state classification capacity exceeded: ${ids.length}`);
+    }
+    const startedAt = now();
+    const current = new Set<string>();
+    const linked = new Set<string>();
+    const targets = new Set<string>();
+    const stateCache = new Map<string, TargetState>();
+    let targetLinksVisited = 0;
+    const checkBudget = () => {
+      if (now() - startedAt > policy.timeoutMs) {
+        throw new Error("target-state classification timed out");
+      }
+      if (targetLinksVisited > policy.maxExpansions) {
+        throw new Error("target-state classification expansion capacity exceeded");
+      }
+      if (targets.size > policy.maxTargets) {
+        throw new Error("target-state classification target capacity exceeded");
+      }
+    };
+    const stateFor = (targetId: string): TargetState => {
+      const cached = stateCache.get(targetId);
+      if (cached) return cached;
+      const latest = (this.operationsByTarget.get(targetId) ?? []).filter((operation) =>
+        operation.validity === "confirmed" && operation.confidence >= policy.minConfidence
+      ).at(-1);
+      const state = latest
+        ? {
+            available: true,
+            ids: latest.kind === "delete"
+              ? []
+              : latest.successorUnitIds,
+          }
+        : { available: false, ids: [] };
+      stateCache.set(targetId, state);
+      return state;
+    };
+    for (const id of ids) {
+      checkBudget();
+      for (const targetId of this.targetsByUnitId.get(id) ?? []) {
+        targets.add(targetId);
+        targetLinksVisited += 1;
+        checkBudget();
+        const state = stateFor(targetId);
+        if (!state.available) continue;
+        linked.add(id);
+        if (state.ids.includes(id)) current.add(id);
+      }
+    }
+    const stale = new Set([...linked].filter((id) => !current.has(id)));
+    return {
+      currentIds: ids.filter((id) => current.has(id)),
+      staleIds: ids.filter((id) => stale.has(id)),
+      targetLinksVisited,
+      targets: targets.size,
+      unknownIds: ids.filter((id) => !linked.has(id)),
+    };
+  }
 }
 
 function emptyResolution(ids: string[]): LifecycleTargetStateResolution {
@@ -352,5 +455,122 @@ export function applyLifecycleTargetState<T extends { id: string }>(params: {
         ...emptyResolution(baseline.map((item) => item.id)),
       },
     };
+  }
+}
+
+function emptyClassification(ids: string[]): LifecycleTargetStateClassification {
+  return {
+    currentIds: [],
+    staleIds: [],
+    targetLinksVisited: 0,
+    targets: 0,
+    unknownIds: ids,
+  };
+}
+
+export function applyLifecycleDominanceGuard<T extends { id: string }>(params: {
+  challenger: T[];
+  cost: (candidate: T) => number;
+  incumbent: T[];
+  inspector?: LifecycleTargetStateInspector;
+  now?: () => number;
+  policy: LifecycleTargetStatePolicy;
+}): LifecycleDominanceResult<T> {
+  const startedAt = performance.now();
+  const incumbent = params.incumbent.slice(0, params.policy.resultLimit);
+  const incumbentIds = incumbent.map((item) => item.id);
+  const fallback = (
+    reason: string,
+    incumbentCost = 0,
+    challengerCost = 0,
+  ): LifecycleDominanceResult<T> => ({
+    candidates: incumbent,
+    decision: {
+      challengerCost,
+      checks: {
+        budgetRespected: false,
+        currentRetained: false,
+        staleNotIncreased: false,
+        unknownRetained: false,
+      },
+      elapsedMs: performance.now() - startedAt,
+      fallbackReason: reason,
+      incumbentCost,
+      mode: "fallback",
+      rejectionReasons: [reason],
+      state: emptyClassification(incumbentIds),
+    },
+  });
+  if (!params.policy.enabled) {
+    return {
+      candidates: incumbent,
+      decision: {
+        challengerCost: 0,
+        checks: {
+          budgetRespected: true,
+          currentRetained: true,
+          staleNotIncreased: true,
+          unknownRetained: true,
+        },
+        elapsedMs: performance.now() - startedAt,
+        incumbentCost: 0,
+        mode: "incumbent",
+        rejectionReasons: ["dominance guard disabled"],
+        state: emptyClassification(incumbentIds),
+      },
+    };
+  }
+  if (!params.inspector) return fallback("target-state inspector unavailable");
+  try {
+    if (params.incumbent.length > params.policy.resultLimit
+      || params.challenger.length > params.policy.resultLimit) {
+      throw new Error("dominance guard context capacity exceeded");
+    }
+    const incumbentCost = incumbent.reduce((sum, item) => sum + params.cost(item), 0);
+    const challengerCost = params.challenger.reduce((sum, item) => sum + params.cost(item), 0);
+    if (!Number.isFinite(incumbentCost) || incumbentCost < 0
+      || !Number.isFinite(challengerCost) || challengerCost < 0) {
+      throw new Error("dominance guard received invalid cost");
+    }
+    const unionIds = [...new Set([
+      ...incumbentIds,
+      ...params.challenger.map((item) => item.id),
+    ])];
+    const state = params.inspector.classifyIds(unionIds, params.policy, params.now);
+    const incumbentSet = new Set(incumbentIds);
+    const challengerSet = new Set(params.challenger.map((item) => item.id));
+    const currentRetained = state.currentIds
+      .filter((id) => incumbentSet.has(id))
+      .every((id) => challengerSet.has(id));
+    const unknownRetained = state.unknownIds
+      .filter((id) => incumbentSet.has(id))
+      .every((id) => challengerSet.has(id));
+    const staleNotIncreased = state.staleIds
+      .filter((id) => challengerSet.has(id))
+      .every((id) => incumbentSet.has(id));
+    const budgetRespected = challengerCost <= incumbentCost;
+    const checks = {
+      budgetRespected,
+      currentRetained,
+      staleNotIncreased,
+      unknownRetained,
+    };
+    const rejectionReasons = Object.entries(checks)
+      .filter(([, passed]) => !passed)
+      .map(([name]) => name);
+    return {
+      candidates: rejectionReasons.length ? incumbent : params.challenger,
+      decision: {
+        challengerCost,
+        checks,
+        elapsedMs: performance.now() - startedAt,
+        incumbentCost,
+        mode: rejectionReasons.length ? "incumbent" : "challenger",
+        rejectionReasons,
+        state,
+      },
+    };
+  } catch (error) {
+    return fallback(error instanceof Error ? error.message : String(error));
   }
 }
