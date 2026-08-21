@@ -1,0 +1,58 @@
+{
+  "protocolVersion": "lifecycle-memops-profile-split-v1.0",
+  "seed": 20260822,
+  "unit": "profile",
+  "method": "Sort unique profile ids by SHA256(seed + NUL + profile), then assign the first 60 to development, next 20 to validation, and final 20 to test.",
+  "development": [
+    "A04", "A05", "A11", "A13", "A14", "A16", "A22", "A27", "A28", "A33",
+    "B04", "B06", "B10", "B11", "B12", "B14", "B22", "B23", "B25", "B26",
+    "B27", "B28", "B29", "C02", "C05", "C10", "C16", "C22", "C23", "C24",
+    "C25", "C28", "C29", "C30", "C31", "C32", "D05", "D10", "D14", "D16",
+    "D17", "D19", "D21", "D22", "D25", "E01", "E03", "E07", "E10", "E13",
+    "E14", "E15", "F01", "F06", "F07", "F08", "F11", "F12", "F16", "F17"
+  ],
+  "validation": [
+    "A02", "A06", "A07", "A19", "A20", "A29", "B02", "B03", "C21", "C26",
+    "C27", "D01", "D20", "D23", "D24", "E08", "E11", "E12", "F14", "F15"
+  ],
+  "test": [
+    "A01", "A26", "A30", "A31", "A32", "B01", "B05", "B21", "B24", "B30",
+    "C01", "C03", "C04", "C06", "C07", "C11", "D02", "D11", "D18", "F13"
+  ],
+  "counts": {
+    "development": {
+      "profiles": 60,
+      "instances": 237,
+      "operationFamilies": {
+        "forget": 48,
+        "reflect": 56,
+        "remember": 41,
+        "trajectory_ops": 49,
+        "update": 43
+      }
+    },
+    "validation": {
+      "profiles": 20,
+      "instances": 82,
+      "operationFamilies": {
+        "forget": 16,
+        "reflect": 20,
+        "remember": 15,
+        "trajectory_ops": 15,
+        "update": 16
+      }
+    },
+    "test": {
+      "profiles": 20,
+      "instances": 84,
+      "operationFamilies": {
+        "reflect": 20,
+        "remember": 12,
+        "trajectory_ops": 18,
+        "update": 18,
+        "forget": 16
+      }
+    }
+  },
+  "canonicalSha256": "679608b0e27a356ab2865e211684b07f4baa99825ccea5f11ee0506e2a013cbb"
+}

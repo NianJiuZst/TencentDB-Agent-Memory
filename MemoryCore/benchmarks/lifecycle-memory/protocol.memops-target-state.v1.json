@@ -1,0 +1,131 @@
+{
+  "protocolVersion": "lifecycle-memops-target-state-v1.0",
+  "direction": "D5 target-keyed current-state projection",
+  "evidenceRole": "External public operation-level oracle-management validation. Every arm receives the same gold operation objects; this isolates lifecycle management from extraction and is not end-to-end extraction evidence.",
+  "dataset": {
+    "name": "MemOps",
+    "repository": "https://github.com/MemTensor/MemOps",
+    "revision": "312af65e2c7b6d1b70f062ffa8b4cde32aaf6f35",
+    "manifestSha256": "b55278a63656421edb2080d65631ffe91ef67fabdd4fa490da6bc4002c2ee012",
+    "instances": 403,
+    "profiles": 100,
+    "operations": 2558,
+    "longitudinalProbes": 2006,
+    "syntheticPublicBenchmark": true,
+    "hasIndependentScopeField": false
+  },
+  "split": {
+    "protocolVersion": "lifecycle-memops-profile-split-v1.0",
+    "fileSha256": "0645b090a75dcd58368168c2a70b42153bcaa90fecb6cc50b91dad3ab5add1e9",
+    "canonicalSha256": "679608b0e27a356ab2865e211684b07f4baa99825ccea5f11ee0506e2a013cbb",
+    "unit": "profile",
+    "developmentProfiles": 60,
+    "validationProfiles": 20,
+    "testProfiles": 20,
+    "developmentPrimaryCases": 188,
+    "validationPrimaryCases": 66,
+    "testPrimaryCases": 66
+  },
+  "alignment": {
+    "memoryUnits": "All injected longitudinal dialogue turns are written as MemoryCore L0 units with stable instance/conversation/turn ids.",
+    "operationInput": "Gold operation target, validity, old/new value, trigger, and provenance are shared unchanged by V1 and D5.",
+    "spanMapping": "Use the provided one-based evidence turn index and verify quote containment; fail closed on ambiguity.",
+    "primaryEligibility": "CandidateDisambiguation longitudinal probes with at least one operation target aligned from gold provenance.",
+    "excludedStructurallyUnalignedCases": 1
+  },
+  "retrieval": {
+    "engine": "MemoryCore L0 conversation search using the existing FTS5 path",
+    "candidateLimit": 30,
+    "resultLimit": 5,
+    "embeddings": "disabled",
+    "candidateOrdering": "unchanged MemoryCore order"
+  },
+  "arms": {
+    "base": "First five MemoryCore candidates.",
+    "v1": {
+      "description": "Existing value-substring correction-linked successor redirection.",
+      "minConfidence": 0.85,
+      "maxHops": 1,
+      "maxExpansions": 64,
+      "resultLimit": 5,
+      "timeoutMs": 10
+    },
+    "targetState": {
+      "description": "Project any target-linked historical, tentative, or retracted unit to the latest confirmed target state; confirmed deletion maps to an empty state and the Base pool is backfilled.",
+      "minConfidence": 0.85,
+      "maxCandidates": 30,
+      "maxExpansions": 64,
+      "maxTargets": 64,
+      "resultLimit": 5,
+      "timeoutMs": 10,
+      "wholeItemPacking": true,
+      "perQueryBudgetReference": "actual V1 injected tokens"
+    }
+  },
+  "policyGrid": {
+    "budgetFractions": [0.75, 0.9, 1.0],
+    "maxStateUnits": [1, 2, 3],
+    "policies": 9,
+    "optimizationSplit": "development",
+    "selectionMetric": "stateFama delta versus V1",
+    "utility": "deltaStateFama - 2*negativeCurrentRecallDelta - 2*negativeStaleAbsenceDelta - 0.25*positiveMeanTokenIncreaseFraction - fallbackRate",
+    "tieBreak": "higher utility, then lower budget fraction, then fewer state units, then lexical policy id"
+  },
+  "metrics": {
+    "relevantTargets": "Union of operation targets attached to a probe's gold provenance units.",
+    "currentStateRecall": "Fraction of the relevant targets' final confirmed non-deleted state units present in the injected context; defined as 1 when every relevant target is deleted.",
+    "staleAbsence": "One minus the fraction of relevant-target historical/tentative/retracted units present in the injected context.",
+    "staleAnyAbsence": "One iff no stale relevant-target unit is injected.",
+    "stateFama": "max(0, currentStateRecall - lambda*(1-staleAbsence)), where lambda is staleRelevantUnits/(currentRelevantUnits+staleRelevantUnits).",
+    "goldProvenanceRecall": "Descriptive fraction of gold provenance units injected; it is not a promotion gate because a current-state view may intentionally omit history.",
+    "cost": ["injected items", "injected tokens", "retrieval latency p50/p95", "sidecar latency p50/p95"]
+  },
+  "aggregation": {
+    "primaryProbeType": "CandidateDisambiguation",
+    "secondaryProbeTypes": ["OperationApplication", "TargetBinding", "StateTransition"],
+    "historyModeProbeTypes": ["OperationTrace", "StateTrajectory"],
+    "uncertaintyUnit": "profile",
+    "bootstrapSamples": 20000,
+    "bootstrapSeed": 20260825
+  },
+  "validationGate": {
+    "minStateFamaDelta": 0.01,
+    "minStateFamaBootstrapLower": 0,
+    "minCurrentStateRecallDelta": 0,
+    "minStaleAbsenceDelta": 0,
+    "maxPrimaryHarmedCaseRate": 0.05,
+    "minPerOperationFamilyStateFamaDelta": -0.005,
+    "maxMeanInjectedTokenIncreaseFraction": 0,
+    "maxPerQueryTokenViolations": 0,
+    "maxOrdinaryFallbacks": 0,
+    "maxP95SidecarLatencyMs": 5,
+    "requireExactDisabledFallback": true,
+    "requireExactMissingSourceFallback": true,
+    "requireExactTimeoutFallback": true,
+    "requireExactHistoryModeV1": true
+  },
+  "testGate": {
+    "requireValidationPassBeforeRead": true,
+    "minStateFamaDelta": 0,
+    "minStateFamaBootstrapLower": 0,
+    "minCurrentStateRecallDelta": 0,
+    "minStaleAbsenceDelta": 0,
+    "maxMeanInjectedTokenIncreaseFraction": 0,
+    "maxPerQueryTokenViolations": 0,
+    "maxOrdinaryFallbacks": 0
+  },
+  "fallback": {
+    "disabled": "Exact Base prefix.",
+    "missingSource": "Exact Base prefix.",
+    "timeout": "Exact Base prefix.",
+    "invalidStructureOrMaterialization": "Exact Base prefix.",
+    "historyMode": "Exact V1 context; D5 current-state projection is not applied."
+  },
+  "outcomeSemantics": {
+    "development": "Select one fixed policy only; never claim confirmation.",
+    "validationPass": "Unlock the untouched test profiles; do not claim programming-task effectiveness.",
+    "validationFail": "Reject D5-v1.0 and do not inspect test retrieval outcomes.",
+    "testPass": "Qualify target-keyed state projection for an answer-level MemOps panel and internal adapter testing.",
+    "testFail": "Retain V1 and record the boundary or negative result."
+  }
+}
