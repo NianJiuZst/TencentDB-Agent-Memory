@@ -1,0 +1,15 @@
+{
+  "selectionProtocolVersion": "lifecycle-memops-target-state-selection-v1.0",
+  "sourceProtocolVersion": "lifecycle-memops-target-state-v1.0",
+  "preDevelopmentCommit": "bd51d02064b37fa38e0efb8a26bf1e8c143d349f",
+  "developmentCasesSha256": "1183eb2f74142a561c1f998a3490ffc09d574dccd2668186f9f652c4383da939",
+  "developmentSelectionSha256": "192cd510602507534f7e1703d264b6232966241d82ea90a6ca8a399245d55354",
+  "developmentSummarySha256": "f097687f3691cb6132bb9d30a27f3ed65a4e8d7bdaa84c26cdaa334d0908d939",
+  "selectedPolicy": {
+    "id": "budget-1-state-3",
+    "budgetFraction": 1,
+    "maxStateUnits": 3
+  },
+  "developmentEvidenceRole": "Policy selection only. These scores cannot satisfy validation or test gates.",
+  "nextPhase": "validation"
+}

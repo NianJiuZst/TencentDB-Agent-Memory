@@ -1,4 +1,5 @@
 import protocolJson from "../protocol.memops-target-state.v1.json" with { type: "json" };
+import selectionJson from "../protocol.memops-target-state-selection.v1.json" with { type: "json" };
 
 export type MemOpsTargetStatePhase = "development" | "validation" | "test";
 
@@ -84,9 +85,16 @@ interface MemOpsTargetStateProtocol {
 }
 
 export const MEMOPS_TARGET_STATE_PROTOCOL = protocolJson as MemOpsTargetStateProtocol;
+export const MEMOPS_TARGET_STATE_SELECTION = selectionJson;
 
 if (MEMOPS_TARGET_STATE_PROTOCOL.protocolVersion !== "lifecycle-memops-target-state-v1.0") {
   throw new Error("unexpected MemOps target-state protocol version");
+}
+if (MEMOPS_TARGET_STATE_SELECTION.selectionProtocolVersion
+  !== "lifecycle-memops-target-state-selection-v1.0"
+  || MEMOPS_TARGET_STATE_SELECTION.sourceProtocolVersion
+    !== MEMOPS_TARGET_STATE_PROTOCOL.protocolVersion) {
+  throw new Error("unexpected MemOps target-state selection protocol version");
 }
 const gridSize = MEMOPS_TARGET_STATE_PROTOCOL.policyGrid.budgetFractions.length
   * MEMOPS_TARGET_STATE_PROTOCOL.policyGrid.maxStateUnits.length;

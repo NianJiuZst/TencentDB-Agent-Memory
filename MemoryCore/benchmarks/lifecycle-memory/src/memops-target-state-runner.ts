@@ -23,6 +23,7 @@ import {
 } from "./memops-adapter.js";
 import {
   MEMOPS_TARGET_STATE_PROTOCOL,
+  MEMOPS_TARGET_STATE_SELECTION,
   type MemOpsTargetStatePhase,
 } from "./memops-target-state-protocol.js";
 import { buildMemOpsProfileSplitFromData } from "./memops-split.js";
@@ -550,6 +551,9 @@ async function verifyFrozenInputs(options: MemOpsTargetStateRunOptions) {
 async function loadDevelopmentSelection(options: MemOpsTargetStateRunOptions) {
   if (!options.selection) throw new Error("MemOps validation/test requires --selection");
   const selectionText = await readFile(options.selection, "utf8");
+  if (sha256(selectionText) !== MEMOPS_TARGET_STATE_SELECTION.developmentSelectionSha256) {
+    throw new Error("MemOps frozen development selection hash mismatch");
+  }
   const selection = JSON.parse(selectionText) as DevelopmentSelection;
   if (selection.protocolVersion !== MEMOPS_TARGET_STATE_PROTOCOL.protocolVersion
     || selection.phase !== "development" || selection.status !== "selected") {
@@ -558,12 +562,14 @@ async function loadDevelopmentSelection(options: MemOpsTargetStateRunOptions) {
   if (options.phase === "validation") {
     if (!options.developmentCases) throw new Error("MemOps validation requires --development-cases");
     const casesText = await readFile(options.developmentCases, "utf8");
-    if (sha256(casesText) !== selection.developmentCasesSha256) {
+    if (sha256(casesText) !== selection.developmentCasesSha256
+      || sha256(casesText) !== MEMOPS_TARGET_STATE_SELECTION.developmentCasesSha256) {
       throw new Error("MemOps development cases hash mismatch");
     }
     const rows = casesText.split("\n").filter(Boolean).map((line) => JSON.parse(line) as CaseRow);
     const recomputed = selectMemOpsTargetStatePolicy(rows)[0];
     if (recomputed.policy.id !== selection.selectedPolicy.id
+      || selection.selectedPolicy.id !== MEMOPS_TARGET_STATE_SELECTION.selectedPolicy.id
       || !close(recomputed.utility, selection.policyScores[0].utility)) {
       throw new Error("MemOps development policy selection did not replay");
     }
