@@ -53,6 +53,7 @@
     "validate:lifecycle-valid-state-packing": "tsx benchmarks/lifecycle-memory/src/valid-state-packing-validator-cli.ts",
     "select:lifecycle-valid-state-packing-e2e": "tsx benchmarks/lifecycle-memory/src/valid-state-packing-e2e-selection-cli.ts",
     "eval:lifecycle-valid-state-packing-e2e": "tsx benchmarks/lifecycle-memory/src/valid-state-packing-e2e-cli.ts",
+    "validate:lifecycle-valid-state-packing-e2e": "tsx benchmarks/lifecycle-memory/src/valid-state-packing-e2e-validator-cli.ts",
     "test:lifecycle-memory": "vitest run -c benchmarks/lifecycle-memory/vitest.config.ts",
     "test:standalone:memory": "bash __tests__/standalone/e2e.sh",
     "test:standalone:skill": "bash __tests__/standalone/skill-e2e.sh",

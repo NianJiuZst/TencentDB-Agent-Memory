@@ -13,7 +13,7 @@ This file is the persistent direction registry for iterative work above the fixe
 | D1 | Correction-aware evidence shield | Injection rendering after V1 | Write-time `obsoleteValues`; query-time deterministic masking | Rejected at answer gate | Stopped: MPA non-inferiority and reader-stability gates failed |
 | D2 | Query-conditioned evidence-risk routing | Choose V1 or shield rendering per query | Bounded sidecar features plus downstream utility | Rejected at cross-fitted gate | Stopped: MPA non-inferiority and reader-stability gates failed |
 | D3 | Delete-aware vacancy refill | Whether deletion successors consume Top-k slots | Typed lifecycle event kind plus the existing Base candidate pool | Rejected at proxy gate | Positive recall signal, but magnitude and token gates failed |
-| D4 | Feedback-optimized valid-state packing | Token fraction and item cap after validity filtering | Development-period proxy feedback; per-query V1 token budget | Passed proxy; answer panel next | New answer cases must exclude the prior frozen 50 |
+| D4 | Feedback-optimized valid-state packing | Token fraction and item cap after validity filtering | Development-period proxy feedback; per-query V1 token budget | Rejected at answer uncertainty gate | Positive point estimates are retained as a near-miss, not promoted |
 | D5 | Scope-aware coexistence | Branch/environment validity rather than global invalidation | Adapter-provided repository/branch/task scope | Queued | Requires a programming-session adapter or scoped public proxy |
 
 ## Why D1 is first
@@ -61,6 +61,8 @@ D4-v1.0 passed the proxy gate and an independent reconstruction check. Weekly/mo
 The answer-selection protocol is frozen before selection. It excludes all 50 prior answer-development case ids, admits only quarterly remembering/recommending questions with forgetting criteria, and selects exactly five cases per persona by a seeded SHA-256 ordering. The selector is outcome-blind: it cannot inspect proxy metrics or require a V1/candidate difference.
 
 The resulting fresh panel has 50 cases (31 remembering, 19 recommending), zero overlap with the prior panel, and 21 contexts that actually differ between V1 and D4. For the 29 exact no-op cases, the answer protocol generates and judges one canonical cell and clones it to both arms, preventing decoding noise from masquerading as a treatment effect. D4 passes only if answer FAMA and MPA improve, FAMA's persona-bootstrap lower bound is nonnegative, FAA loses at most 0.5 points, both readers have nonnegative FAMA direction, and tokens do not increase.
+
+D4 failed only the frozen uncertainty check. On the fresh 50-case panel, FAMA improved by 1.16 points, MPA by 0.61, FAA by 1.22, and criterion accuracy by 0.88, while mean injected tokens fell by 3.27%. Both reader-specific FAMA directions were positive. However, the persona-bootstrap 95% interval for FAMA was -0.14 to +2.90 points, so its lower bound remained below zero. An independent reconstruction reproduced all metrics, 142 reader calls, 284 judge calls, 58 exact no-op clones, and zero retries, model mismatches, schema mismatches, or arithmetic mismatches. This is a useful near-miss but not sufficient evidence to replace V1; the threshold and panel are left unchanged after scoring.
 
 ## Iteration rule
 

@@ -245,7 +245,7 @@
       "protocolVersion": "lifecycle-valid-state-packing-v1.0",
       "preScoreCommit": "9e946fea2b518075a70d504ee99c0d82b1c43894",
       "evidenceRole": "weekly/monthly feedback optimization with a policy-blind quarterly direct-proxy gate",
-      "status": "qualified_for_answer_development",
+      "status": "rejected_after_answer_confirmation",
       "candidate": {
         "policies": 9,
         "selectedPolicy": "budget-1-items-5",
@@ -279,7 +279,60 @@
         "independentValidation": "passed"
       },
       "failedChecks": [],
-      "interpretation": "The optimizer selected the full V1 token fraction with a five-item cap, showing that validity-aware packing rather than indiscriminate compression carried the development gain. On the policy-blind quarterly slice, recall proxy improved by 0.84 points with a positive persona-bootstrap lower bound while tokens fell by 5.09% and all safety checks passed. This qualifies a new, non-overlapping answer panel only; it is not yet an answer-level success."
+      "answerConfirmation": {
+        "protocolVersion": "lifecycle-valid-state-packing-e2e-v1.0",
+        "preScoreCommit": "1570037701361036db2386a592abc714305dbd03",
+        "status": "failed",
+        "actualEvaluationsSha256": "18f4000e58b1644e23fed71b9617dfe94a64dc88083d94d972a634fc35fb3eab",
+        "evaluationsSha256": "41ad5df24bdee235cba1508e07e0847ee82e58bfa87a4b32590a7c88d68fae82",
+        "summarySha256": "8e4dcb8ed08f2728cd0141da42a7099332ac994f13f28c54d0c222ca81dcc8b2",
+        "validationSha256": "11255d435a49fb8e32f9b1c9f0fbfc462b5961730dc4bb3f0fb9b15920ac9fbf",
+        "cases": 50,
+        "changedContexts": 21,
+        "unchangedContexts": 29,
+        "overlapWithPriorAnswerPanel": 0,
+        "primaryVsV1": {
+          "mpa": 0.006066666666666669,
+          "faa": 0.012175876411170532,
+          "fama": 0.011643333744196556,
+          "criterionAccuracy": 0.008777746699662138,
+          "meanInjectedTokenIncreaseFraction": -0.03274642093138069
+        },
+        "personaBootstrap95": {
+          "mpa": [-0.0026, 0.020400000000000005],
+          "faa": [-0.00450937950937951, 0.03652652576181988],
+          "fama": [-0.001401553062985335, 0.029023809523809528],
+          "criterionAccuracy": [-0.0024466272870069306, 0.022677944862155384]
+        },
+        "changedContextFama": {
+          "mean": 0.02772222320046799,
+          "improvedCases": 5,
+          "unchangedCases": 14,
+          "harmedCases": 2
+        },
+        "criterionTransitions": {
+          "memoryPresenceNetCorrectDelta": 4,
+          "forgettingAbsenceNetCorrectDelta": 6
+        },
+        "perReaderFamaDelta": {
+          "minimax-m3": 0.01392256492429055,
+          "deepseek-v4-flash": 0.009364102564102566
+        },
+        "operationalIntegrity": {
+          "readerCalls": 142,
+          "judgeCalls": 284,
+          "readerRetries": 0,
+          "judgeRetries": 0,
+          "returnedModelMismatches": 0,
+          "exactNoopClones": 58,
+          "noopCloneMismatches": 0,
+          "independentValidation": "passed"
+        },
+        "failedChecks": [
+          "famaUncertainty"
+        ]
+      },
+      "interpretation": "The optimizer selected the full V1 token fraction with a five-item cap, showing that validity-aware packing rather than indiscriminate compression carried the development gain. It passed the policy-blind proxy gate, and the fresh answer panel moved every primary point estimate in the desired direction while reducing tokens by 3.27%. However, the FAMA gain of 1.16 points had a persona-bootstrap interval of -0.14 to +2.90 points, missing the frozen nonnegative-lower-bound gate. D4 is promising but unconfirmed and is not promoted or rescued by changing the threshold after scoring."
     }
   ]
 }
