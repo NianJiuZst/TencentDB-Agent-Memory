@@ -1,0 +1,110 @@
+{
+  "protocolVersion": "lifecycle-longmemeval-v2-utility-gate-v1.0",
+  "direction": "D8 feedback-learned utility gate with a null action",
+  "evidenceRole": "D8 is designed after D7 validation failed. D7 development and validation are consumed feedback only; the 24 LongMemEval-V2 test questions remain untouched and are the sole fresh confirmation boundary.",
+  "preScoreCommitRequired": true,
+  "researchBasis": {
+    "memrl": {
+      "paper": "https://arxiv.org/abs/2601.03192",
+      "repository": "https://github.com/MemTensor/MemRL",
+      "revisionInspected": "c1b322ca43de36ddf64c6712f89d0095bfc35ce0",
+      "borrowedPrinciple": "Separate semantic candidate retrieval from feedback-updated per-memory utility and permit a null action."
+    },
+    "adamem": {
+      "paper": "https://arxiv.org/abs/2606.05684",
+      "repository": "https://github.com/yunx-z/AdaMEM",
+      "revisionInspected": "4ea93e239f8dbec2fa6013a28bc8555419037e12",
+      "borrowedPrinciple": "Use retrieved experience only when the current step requests or benefits from it rather than injecting it unconditionally."
+    },
+    "scopeDifference": "D8 does not train a model, synthesize strategies, use embeddings, or run online exploration. It tests a deterministic bounded utility sidecar above unchanged MemoryCore FTS5."
+  },
+  "dataset": {
+    "name": "LongMemEval-V2",
+    "benchmarkRepositoryRevision": "2cc8c540bdb87fe6761629b585e727e1c4704520",
+    "tier": "small",
+    "manifestSha256": "70a2be47e7117ef8f2ee77aa499c6126358b5f9ffa28a848b5c565a4ec8fc99a",
+    "splitCanonicalSha256": "1c6a0e6500b7ad1d34c041f4ab88d55c54854d213c3cae42cb606a84dcb0a87d",
+    "consumedFeedbackQuestions": 62,
+    "untouchedTestQuestions": 24,
+    "untouchedDirectProxyQuestions": 18
+  },
+  "feedback": {
+    "behaviorPolicy": "tc20-tf75-mi4",
+    "developmentCasesSha256": "ca7a6245d5efd6248e42322e9eb42b3c20b1b479683f94acbf0dd887cdb90f35",
+    "validationCasesSha256": "81506419219a623974ff1df4d7eeba88287cce934e5fd7646de73f305ea0a263",
+    "eligibleRows": "Only official phrase-set questions with a non-null answerAtomSupportRecallDelta.",
+    "creditAssignment": "Each distinct transition unit actually injected by the behavior policy receives that question's answer-atom support recall delta.",
+    "utility": "Arithmetic mean reward per transition memory id.",
+    "eligibility": "visits >= 1, mean utility > 0, and no observed negative reward for that memory id.",
+    "capacity": 1024,
+    "overflow": "fail closed and keep the utility sidecar unavailable",
+    "deploymentUpdateAdapter": "A portable FeedbackEvent adapter must supply memory ids, bounded reward, confidence, and provenance; public reference answers are evaluator-only and forbidden at runtime."
+  },
+  "runtimePolicy": {
+    "baseline": "Exact D7 raw-state MemoryCore FTS5 context with candidateLimit=40, resultLimit=6, and tokenBudget=3072.",
+    "transitionCandidateLimit": 20,
+    "maxUtilityItems": 1,
+    "selectionTimeoutMs": 5,
+    "candidateOrder": "Descending learned utility, descending visits, then original MemoryCore FTS5 rank.",
+    "trajectoryCoherence": "A transition is eligible only when its trajectory id occurs in at least one baseline-injected raw-state unit.",
+    "packing": "Pack one eligible transition followed by the unchanged raw candidate order under the shared 3072-token and six-item limits.",
+    "costCertificate": "Accept only if candidate injected tokens are no greater than that query's exact baseline injected tokens.",
+    "nullAction": "If no candidate passes utility, coherence, packing, and cost checks, return exact baseline.",
+    "forbiddenInputs": [
+      "reference answer",
+      "evaluator family",
+      "question id rules or allowlists",
+      "development, validation, or test phase label",
+      "current question outcome",
+      "gold trajectory or state attribution"
+    ]
+  },
+  "consumedDataAudit": {
+    "primary": "Leave-one-question-out: remove the current question's feedback before rebuilding the utility table and selecting its context.",
+    "deploymentArtifact": "A second full-feedback table is built from all 62 consumed questions for the untouched test run.",
+    "claimBoundary": "Neither leave-one-out nor full-feedback results on consumed questions are confirmation evidence.",
+    "admission": {
+      "minAcceptedChangedContexts": 1,
+      "minAnswerAtomSupportRecallDelta": 0,
+      "minAllAnswerAtomsSupportedRateDelta": 0,
+      "maxHarmedDirectProxyCases": 0,
+      "maxMeanInjectedTokenIncreaseFraction": 0,
+      "maxPerQueryTokenViolations": 0,
+      "maxOrdinaryFallbacks": 0,
+      "maxP95SelectionLatencyMs": 5,
+      "requireExactForcedFallbacks": true,
+      "requireIndependentValidation": true
+    }
+  },
+  "testReadRule": {
+    "baselineFirst": "Commit a passed consumed-data admission artifact and this candidate implementation before materializing the test baseline.",
+    "candidateOnce": "After the locked test baseline exists, run exactly one full-feedback utility-gated candidate; do not update the utility table from test outcomes.",
+    "noRetuning": "Any D8 gate failure rejects D8. Changing rewards, eligibility, coherence, capacity, cost, or thresholds requires a new protocol and cannot reuse the D8 test as confirmation."
+  },
+  "testGate": {
+    "minAnswerAtomSupportRecallDelta": 0.02,
+    "minAnswerAtomSupportRecallBootstrapLower": 0,
+    "minAllAnswerAtomsSupportedRateDelta": 0,
+    "minImprovedDirectProxyCases": 1,
+    "maxHarmedDirectProxyCases": 0,
+    "maxMeanInjectedTokenIncreaseFraction": 0,
+    "maxPerQueryTokenViolations": 0,
+    "maxOrdinaryFallbacks": 0,
+    "maxP95SelectionLatencyMs": 5,
+    "requireExactForcedFallbacks": true
+  },
+  "answerLevelGate": {
+    "runOnlyAfterDirectTestGatePasses": true,
+    "readers": ["MiniMax M3", "DeepSeek V4Flash"],
+    "noOpenRouter": true,
+    "claimBoundary": "Direct answer support only admits an answer experiment; it does not establish task accuracy."
+  },
+  "fallback": {
+    "disabled": "exact baseline context",
+    "missingUtilityTable": "exact baseline context",
+    "utilityTableOverflow": "exact baseline context",
+    "timeout": "exact baseline context",
+    "corruptUtilityEntryOrTransition": "exact baseline context",
+    "budgetOverflow": "exact baseline context"
+  }
+}

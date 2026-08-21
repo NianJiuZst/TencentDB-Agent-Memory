@@ -61,6 +61,7 @@
     "validate:lifecycle-longmemeval-v2-baseline": "tsx benchmarks/lifecycle-memory/src/longmemeval-v2-baseline-validator-cli.ts",
     "eval:lifecycle-longmemeval-v2-transition": "tsx benchmarks/lifecycle-memory/src/longmemeval-v2-transition-cli.ts",
     "validate:lifecycle-longmemeval-v2-transition": "tsx benchmarks/lifecycle-memory/src/longmemeval-v2-transition-validator-cli.ts",
+    "eval:lifecycle-longmemeval-v2-utility-gate": "tsx benchmarks/lifecycle-memory/src/longmemeval-v2-utility-gate-cli.ts",
     "split:lifecycle-memops": "tsx benchmarks/lifecycle-memory/src/memops-split-cli.ts",
     "eval:lifecycle-memops-target-state": "tsx benchmarks/lifecycle-memory/src/memops-target-state-cli.ts",
     "validate:lifecycle-memops-target-state": "tsx benchmarks/lifecycle-memory/src/memops-target-state-validator-cli.ts",
