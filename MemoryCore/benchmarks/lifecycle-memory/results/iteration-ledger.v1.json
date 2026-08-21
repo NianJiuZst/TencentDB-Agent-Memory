@@ -75,6 +75,38 @@
         "zeroFallbacks"
       ],
       "interpretation": "Compact shielding passed exposure, current-atom, identity, token, disabled, and forced-failure checks, but one ordinary call exceeded the fixed 10 ms budget. It is rejected; a final semantic-equivalent precompiled implementation is tested as V1.2."
+    },
+    {
+      "id": "D1-v1.2",
+      "direction": "precompiled compact correction-aware evidence shielding",
+      "protocolVersion": "lifecycle-evidence-shield-v1.2",
+      "preScoreCommit": "5b4772db25f06f3239549d73cc251ed630ef565d",
+      "evidenceRole": "post-hoc development feasibility on the previously analyzed frozen 50 cases",
+      "status": "qualified_for_answer_development",
+      "candidate": {
+        "replacement": "it",
+        "timeoutMs": 10,
+        "candidateIdentity": "exactly V1",
+        "queryPatternCompilation": "precompiled at sidecar construction"
+      },
+      "results": {
+        "cases": 50,
+        "casesWithChangedContent": 48,
+        "redactions": 119,
+        "v1ExactObsoleteContextAnyRate": 0.74,
+        "candidateExactObsoleteContextAnyRate": 0.08,
+        "currentAtomRecallLoss": 0,
+        "v1MeanInjectedTokens": 146.76,
+        "candidateMeanInjectedTokens": 141.96,
+        "meanInjectedTokenIncreaseFraction": -0.03270645952575624,
+        "fallbacks": 0,
+        "candidateIdMismatches": 0,
+        "disabledMismatches": 0,
+        "damagedMismatches": 0,
+        "timeoutMismatches": 0
+      },
+      "failedChecks": [],
+      "interpretation": "The final D1 feasibility candidate passed every predeclared mechanism, cost, identity, and fallback check. This is not an answer-quality result and only qualifies the candidate for the frozen development panel."
     }
   ]
 }

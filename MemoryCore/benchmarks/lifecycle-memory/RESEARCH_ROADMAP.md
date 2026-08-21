@@ -10,7 +10,7 @@ This file is the persistent direction registry for iterative work above the fixe
 
 | ID | Direction | Single changed dimension | Evidence source | Status | Promotion boundary |
 |---|---|---|---|---|---|
-| D1 | Correction-aware evidence shield | Injection rendering after V1 | Write-time `obsoleteValues`; query-time deterministic masking | V1.0/V1.1 rejected; precompiled V1.2 active | Frozen 50 are development-only; new public data required |
+| D1 | Correction-aware evidence shield | Injection rendering after V1 | Write-time `obsoleteValues`; query-time deterministic masking | V1.0/V1.1 rejected; V1.2 passed feasibility | Frozen 50 are development-only; new public data required |
 | D2 | Query-adaptive abstention/budget | Whether and how much memory to inject | Query features plus downstream utility | Queued | Must beat V1 under fixed or lower token cost |
 | D3 | Net-value lifecycle curation | Bounded retention/expiry priority | Utility, harm, bytes, provenance | Queued | Must report false-forgetting cost |
 | D4 | Query-time evidence distillation | Selection/rewriting within the V1 candidate set | Small local/open model with validity gates | Queued | Must hard-fallback on parse, timeout, or low confidence |
@@ -25,6 +25,8 @@ The design is informed by query-time evidence distillation in [DeferMem](https:/
 D1-v1.0 reduced exact obsolete-value context exposure from 74% to 12% with no measured current-atom recall loss, but it increased mean injected tokens by 2.70% and four of 50 cases exceeded its 5 ms budget. The predeclared gate rejected it before answer generation. D1-v1.1 keeps every quality gate fixed, replaces obsolete spans with the compact pronoun `it`, and uses a 10 ms shield budget matching the incumbent lifecycle budget.
 
 D1-v1.1 reduced exposure to 10% and token cost by 3.04% with no current-atom loss, but one call took 10.48 ms and failed the zero-fallback gate. D1-v1.2 is the final retry in this direction: it preserves V1.1 semantics and gates while moving regex compilation from query time to bounded sidecar construction. A V1.2 feasibility failure ends D1.
+
+D1-v1.2 passed the full feasibility gate: exact obsolete-value context exposure fell from 74% to 8%, current-atom recall was unchanged, mean injected tokens fell by 3.27%, candidate identity remained exact, and all ordinary, disabled, damaged, and forced-timeout checks returned without mismatch. This result only advances D1 to answer-development testing.
 
 ## Iteration rule
 

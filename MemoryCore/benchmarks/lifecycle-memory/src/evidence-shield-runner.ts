@@ -45,6 +45,15 @@ interface ShieldCase {
   shieldInjectedTokens: number;
 }
 
+interface ShieldContextManifestCase {
+  caseId: string;
+  groupId: string;
+  v1CandidateIds: string[];
+  shieldCandidates: RetrievedUnit[];
+  changedCandidates: number;
+  redactions: number;
+}
+
 export interface EvidenceShieldRunOptions {
   dataRoot: string;
   selection: string;
@@ -58,6 +67,12 @@ function sha256(value: string): string {
 
 function mean(values: number[]): number {
   return values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : 0;
+}
+
+function percentile(values: number[], fraction: number): number {
+  if (!values.length) return 0;
+  const sorted = [...values].sort((left, right) => left - right);
+  return sorted[Math.ceil(fraction * sorted.length) - 1];
 }
 
 function sameCandidates(left: RetrievedUnit[], right: RetrievedUnit[]): boolean {
@@ -152,6 +167,12 @@ export function summarizeEvidenceShieldCases(params: {
     v1MeanInjectedTokens: v1Tokens,
     shieldMeanInjectedTokens: shieldTokens,
     meanInjectedTokenIncreaseFraction: v1Tokens ? shieldTokens / v1Tokens - 1 : 0,
+    shieldLatencyMs: {
+      mean: mean(params.cases.map((item) => item.elapsedMs)),
+      p50: percentile(params.cases.map((item) => item.elapsedMs), 0.5),
+      p95: percentile(params.cases.map((item) => item.elapsedMs), 0.95),
+      max: Math.max(0, ...params.cases.map((item) => item.elapsedMs)),
+    },
     ...params.fallback,
   };
   return { summary, gate: evaluateGate(summary) };
@@ -178,6 +199,7 @@ export async function runEvidenceShieldFeasibility(
 
   const groups = new Map(loaded.groups.map((group) => [group.id, group]));
   const shields = new Map<string, LifecycleEvidenceShield>();
+  const manifestCases: ShieldContextManifestCase[] = [];
   const cases: ShieldCase[] = selection.selected.map((entry) => {
     const group = groups.get(entry.groupId);
     if (!group) throw new Error(`missing evidence shield group ${entry.groupId}`);
@@ -203,6 +225,14 @@ export async function runEvidenceShieldFeasibility(
     if (!sameCandidates(v1, shielded)) {
       throw new Error(`evidence shield changed candidate identity for ${entry.caseId}`);
     }
+    manifestCases.push({
+      caseId: entry.caseId,
+      groupId: entry.groupId,
+      v1CandidateIds: v1.map((item) => item.id),
+      shieldCandidates: shielded,
+      changedCandidates: applied.decision.changedCandidates,
+      redactions: applied.decision.redactions,
+    });
     return {
       caseId: entry.caseId,
       groupId: entry.groupId,
@@ -268,6 +298,14 @@ export async function runEvidenceShieldFeasibility(
     cases,
     fallback: { disabledMismatches, damagedMismatches, timeoutMismatches },
   });
+  const contextManifest = {
+    protocolVersion: EVIDENCE_SHIELD_PROTOCOL.protocolVersion,
+    selectionSha256: selectionHash,
+    datasetRevision: loaded.description.revision,
+    policy: EVIDENCE_SHIELD_PROTOCOL.candidate.policy,
+    cases: manifestCases,
+  };
+  const contextManifestText = `${JSON.stringify(contextManifest, null, 2)}\n`;
   const report = {
     status: evaluated.gate.passed ? "passed" : "failed",
     nextAction: evaluated.gate.passed ? "run_answer_development_panel" : "reject_candidate",
@@ -276,6 +314,7 @@ export async function runEvidenceShieldFeasibility(
     input: {
       selection: path.resolve(options.selection),
       selectionSha256: selectionHash,
+      contextManifestSha256: sha256(contextManifestText),
       dataset: loaded.description,
     },
     candidate: EVIDENCE_SHIELD_PROTOCOL.candidate,
@@ -289,6 +328,7 @@ export async function runEvidenceShieldFeasibility(
   await mkdir(options.outputDir, { recursive: true });
   await Promise.all([
     writeFile(path.join(options.outputDir, "cases.jsonl"), `${cases.map((item) => JSON.stringify(item)).join("\n")}\n`, "utf8"),
+    writeFile(path.join(options.outputDir, "context-manifest.json"), contextManifestText, "utf8"),
     writeFile(path.join(options.outputDir, "summary.json"), `${JSON.stringify(report, null, 2)}\n`, "utf8"),
   ]);
   return report;
