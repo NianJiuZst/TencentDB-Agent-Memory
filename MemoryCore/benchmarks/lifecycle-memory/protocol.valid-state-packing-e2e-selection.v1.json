@@ -1,0 +1,36 @@
+{
+  "protocolVersion": "lifecycle-valid-state-packing-e2e-selection-v1.0",
+  "seed": 20260823,
+  "source": {
+    "protocolVersion": "lifecycle-valid-state-packing-v1.0",
+    "casesSha256": "2d001bfb706f6da658af95375f59d938fb7290b5e78cbacdb58b25c3d92c54b0",
+    "summarySha256": "c6c9f0186243c09c660e8ed7a1e12b21b6fd74a750153bdf20340b82b519851e",
+    "validationSha256": "5ca1001254d795861dfb78dff838266ea6d5884a0bb8a0ad2693991e48207db5",
+    "requiredStatus": "passed",
+    "selectedPolicyId": "budget-1-items-5"
+  },
+  "exclusion": {
+    "protocolVersion": "lifecycle-adaptive-e2e-v1.1",
+    "selectionSha256": "1e3ab7b21bd1425f98f095ca76a31d350c47f3bb9c9cf0090139567859dadaf1",
+    "excludedCases": 50
+  },
+  "eligibility": {
+    "period": "quarterly",
+    "tasks": ["remembering", "recommending"],
+    "forgettingBearing": true,
+    "requirePairedV1AndCandidate": true,
+    "requireCandidateDifference": false
+  },
+  "sampling": {
+    "personas": 10,
+    "casesPerPersona": 5,
+    "totalCases": 50,
+    "ordering": "Within each persona, ascending SHA256 of UTF-8 seed + NUL + caseId, then caseId.",
+    "outcomeBlind": "The selector may read identity, period, task, forgetting-bearing flag, candidate ids, and token counts. It must not read any per-case metric, answer, judge verdict, or improvement value."
+  },
+  "manifest": {
+    "arms": ["v1", "valid_state_packing"],
+    "candidateIdentity": "Materialize exactly the ids recorded by the independently validated proxy run.",
+    "contentSource": "Released Memora shared-memory turns at revision a6493188efc836d6511ed5e4163fe3ba87da30ff."
+  }
+}

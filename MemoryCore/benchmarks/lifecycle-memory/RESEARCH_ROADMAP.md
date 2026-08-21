@@ -58,6 +58,8 @@ The frozen D4-v1.0 grid is the Cartesian product of token fractions `{0.75, 0.9,
 
 D4-v1.0 passed the proxy gate and an independent reconstruction check. Weekly/monthly feedback selected `budgetFraction=1.0, maxItems=5`; the smaller budgets lost protected recall. On 192 policy-blind quarterly primary questions, evidence-FAMA proxy and current recall improved by 0.84 points (independent 20,000-draw persona-bootstrap interval +0.31 to +1.47), mean tokens fell by 5.09%, no case lost proxy quality, and no query exceeded its own V1 token count. This only qualifies D4 for a new answer panel that excludes every D1/D2 answer case.
 
+The answer-selection protocol is frozen before selection. It excludes all 50 prior answer-development case ids, admits only quarterly remembering/recommending questions with forgetting criteria, and selects exactly five cases per persona by a seeded SHA-256 ordering. The selector is outcome-blind: it cannot inspect proxy metrics or require a V1/candidate difference.
+
 ## Iteration rule
 
 1. Freeze the candidate construction and gates before computing its scores.
