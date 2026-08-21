@@ -13,7 +13,7 @@ This file is the persistent direction registry for iterative work above the fixe
 | D1 | Correction-aware evidence shield | Injection rendering after V1 | Write-time `obsoleteValues`; query-time deterministic masking | Rejected at answer gate | Stopped: MPA non-inferiority and reader-stability gates failed |
 | D2 | Query-conditioned evidence-risk routing | Choose V1 or shield rendering per query | Bounded sidecar features plus downstream utility | Rejected at cross-fitted gate | Stopped: MPA non-inferiority and reader-stability gates failed |
 | D3 | Delete-aware vacancy refill | Whether deletion successors consume Top-k slots | Typed lifecycle event kind plus the existing Base candidate pool | Rejected at proxy gate | Positive recall signal, but magnitude and token gates failed |
-| D4 | Feedback-optimized valid-state packing | Token fraction and item cap after validity filtering | Development-period proxy feedback; per-query V1 token budget | Active | Must improve held-out proxy without exceeding V1 tokens |
+| D4 | Feedback-optimized valid-state packing | Token fraction and item cap after validity filtering | Development-period proxy feedback; per-query V1 token budget | Passed proxy; answer panel next | New answer cases must exclude the prior frozen 50 |
 | D5 | Scope-aware coexistence | Branch/environment validity rather than global invalidation | Adapter-provided repository/branch/task scope | Queued | Requires a programming-session adapter or scoped public proxy |
 
 ## Why D1 is first
@@ -55,6 +55,8 @@ D3-v1.0 failed two gates. On 192 quarterly current-state forgetting-bearing ques
 D3 shows that a valid-only candidate stream has useful signal, but fixed item count is not a cost guarantee. D4 separates validity from packing: it first produces a bounded ordered stream of valid candidates, then learns one of nine predeclared `(token fraction, max items)` policies using weekly/monthly feedback only. Each query's hard budget is a fraction of the tokens used by its actual V1 context, so no chosen policy can buy quality by spending more context. Quarterly remains the policy-blind proxy period.
 
 The frozen D4-v1.0 grid is the Cartesian product of token fractions `{0.75, 0.9, 1.0}` and item caps `{3, 4, 5}`. Packing preserves the valid-stream order and skips whole items that do not fit; it never truncates text. The optimizer maximizes development evidence-FAMA improvement with protected-slice harm, token fraction, and fallback penalties. The quarterly gate requires a positive evidence-FAMA effect with a persona-bootstrap lower bound above zero, nonnegative recall and forgetting directions, zero non-forgetting harm, and no token or fallback violation.
+
+D4-v1.0 passed the proxy gate and an independent reconstruction check. Weekly/monthly feedback selected `budgetFraction=1.0, maxItems=5`; the smaller budgets lost protected recall. On 192 policy-blind quarterly primary questions, evidence-FAMA proxy and current recall improved by 0.84 points (independent 20,000-draw persona-bootstrap interval +0.31 to +1.47), mean tokens fell by 5.09%, no case lost proxy quality, and no query exceeded its own V1 token count. This only qualifies D4 for a new answer panel that excludes every D1/D2 answer case.
 
 ## Iteration rule
 

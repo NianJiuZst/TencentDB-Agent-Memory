@@ -238,6 +238,48 @@
         "tokenBudget"
       ],
       "interpretation": "Validity-aware refill produced a consistent positive recall signal with no measured proxy harm, but the quarterly gain was 1.40 points rather than the frozen 2-point minimum and longer refill items increased tokens by 2.89%. It is not advanced to answer evaluation; D4 keeps validity filtering but changes the injection-budget decision."
+    },
+    {
+      "id": "D4-v1.0",
+      "direction": "feedback-optimized valid-state packing",
+      "protocolVersion": "lifecycle-valid-state-packing-v1.0",
+      "preScoreCommit": "9e946fea2b518075a70d504ee99c0d82b1c43894",
+      "evidenceRole": "weekly/monthly feedback optimization with a policy-blind quarterly direct-proxy gate",
+      "status": "qualified_for_answer_development",
+      "candidate": {
+        "policies": 9,
+        "selectedPolicy": "budget-1-items-5",
+        "budgetFraction": 1,
+        "maxItems": 5,
+        "validityPoolLimit": 15,
+        "finalResultLimit": 5
+      },
+      "results": {
+        "summarySha256": "c6c9f0186243c09c660e8ed7a1e12b21b6fd74a750153bdf20340b82b519851e",
+        "casesSha256": "2d001bfb706f6da658af95375f59d938fb7290b5e78cbacdb58b25c3d92c54b0",
+        "validationSha256": "5ca1001254d795861dfb78dff838266ea6d5884a0bb8a0ad2693991e48207db5",
+        "cases": 600,
+        "optimizationQualityDelta": 0.03572695035460993,
+        "optimizationHarm": 0,
+        "primaryQuarterlyCurrentStateForgettingCases": 192,
+        "primaryVsV1": {
+          "evidenceFamaProxy": 0.008388086601762967,
+          "independentBootstrap95": [0.0030862740196554964, 0.014673477564102566],
+          "currentSessionRecall": 0.008388086601762967,
+          "forgettingAbsence": 0,
+          "meanInjectedTokenIncreaseFraction": -0.050891515373055585
+        },
+        "primaryHarmedCases": 0,
+        "quarterlyCurrentStateNonForgettingHarmedCases": 0,
+        "perQueryTokenViolations": 0,
+        "ordinaryFallbacks": 0,
+        "disabledMismatches": 0,
+        "damagedMismatches": 0,
+        "timeoutMismatches": 0,
+        "independentValidation": "passed"
+      },
+      "failedChecks": [],
+      "interpretation": "The optimizer selected the full V1 token fraction with a five-item cap, showing that validity-aware packing rather than indiscriminate compression carried the development gain. On the policy-blind quarterly slice, recall proxy improved by 0.84 points with a positive persona-bootstrap lower bound while tokens fell by 5.09% and all safety checks passed. This qualifies a new, non-overlapping answer panel only; it is not yet an answer-level success."
     }
   ]
 }

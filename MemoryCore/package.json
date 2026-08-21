@@ -50,6 +50,7 @@
     "eval:lifecycle-evidence-risk-router": "tsx benchmarks/lifecycle-memory/src/evidence-risk-router-cli.ts",
     "eval:lifecycle-delete-vacancy": "tsx benchmarks/lifecycle-memory/src/delete-vacancy-cli.ts",
     "eval:lifecycle-valid-state-packing": "tsx benchmarks/lifecycle-memory/src/valid-state-packing-cli.ts",
+    "validate:lifecycle-valid-state-packing": "tsx benchmarks/lifecycle-memory/src/valid-state-packing-validator-cli.ts",
     "test:lifecycle-memory": "vitest run -c benchmarks/lifecycle-memory/vitest.config.ts",
     "test:standalone:memory": "bash __tests__/standalone/e2e.sh",
     "test:standalone:skill": "bash __tests__/standalone/skill-e2e.sh",
