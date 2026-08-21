@@ -10,6 +10,11 @@ export {
   LifecycleDeleteVacancy,
 } from "./delete-vacancy.js";
 export { applyLifecycleValidStatePacking } from "./valid-state-packer.js";
+export {
+  applyLifecycleTargetState,
+  DEFAULT_TARGET_STATE_LIMITS,
+  LifecycleTargetState,
+} from "./target-state.js";
 export { optimizeLifecyclePolicy } from "./optimizer.js";
 export { promoteLifecyclePolicy } from "./promotion.js";
 export type * from "./types.js";
@@ -34,3 +39,14 @@ export type {
   LifecycleValidStatePackingPolicy,
   LifecycleValidStatePackingResult,
 } from "./valid-state-packer.js";
+export type {
+  LifecycleTargetStateDecision,
+  LifecycleTargetStateKind,
+  LifecycleTargetStateLimits,
+  LifecycleTargetStateOperation,
+  LifecycleTargetStatePolicy,
+  LifecycleTargetStateResolution,
+  LifecycleTargetStateResult,
+  LifecycleTargetStateSource,
+  LifecycleTargetStateValidity,
+} from "./target-state.js";
