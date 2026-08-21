@@ -1,0 +1,10 @@
+{
+  "evidenceVersion": "lifecycle-longmemeval-v2-utility-test-baseline-read-v1.0",
+  "sourceProtocolVersion": "lifecycle-longmemeval-v2-utility-gate-v1.0",
+  "readLockVersion": "lifecycle-longmemeval-v2-utility-test-read-lock-v1.0",
+  "admissionSha256": "52ddbfe7d5447fb6900725901a85dc590f9e3a377893758debc790a4375a23bb",
+  "candidateRead": false,
+  "phase": "test",
+  "questions": 24,
+  "casesSha256": "5b6c8f0aa65a732f3f9611ccdfdce8de4d8a94d59083b8395e84cef7bd087c25"
+}
