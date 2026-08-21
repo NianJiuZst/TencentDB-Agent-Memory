@@ -1,0 +1,85 @@
+{
+  "resultCardVersion": "lifecycle-longmemeval-v2-transition-result-v1.0",
+  "protocolVersion": "lifecycle-longmemeval-v2-transition-v1.0",
+  "direction": "D7 bounded transition-diff auxiliary organization",
+  "status": "rejected_at_validation_gate",
+  "decision": "retain_lifecycle_adaptive_v1",
+  "dataset": {
+    "name": "LongMemEval-V2",
+    "revision": "2cc8c540bdb87fe6761629b585e727e1c4704520",
+    "tier": "small",
+    "manifestSha256": "70a2be47e7117ef8f2ee77aa499c6126358b5f9ffa28a848b5c565a4ec8fc99a",
+    "population": "86 text-only dynamic-environment questions",
+    "splitSha256": "1c6a0e6500b7ad1d34c041f4ab88d55c54854d213c3cae42cb606a84dcb0a87d"
+  },
+  "selectedPolicy": {
+    "id": "tc20-tf75-mi4",
+    "transitionCandidateLimit": 20,
+    "transitionTokenFraction": 0.75,
+    "maxTransitionItems": 4,
+    "selectionSha256": "4f7db05ffcbba97035833403f65ed0591c7e9916436e03d825fce99f3d734b3b"
+  },
+  "development": {
+    "status": "selected",
+    "questions": 42,
+    "directProxyQuestions": 32,
+    "policies": 18,
+    "casesSha256": "ca7a6245d5efd6248e42322e9eb42b3c20b1b479683f94acbf0dd887cdb90f35",
+    "summarySha256": "87ba80b71bfb475ac366389b5386e28c13a44020eb4d93635a21077f44fe6f17",
+    "independentValidationSha256": "fc8d4f305b39bda1f46a22c711053c851864da54c2b1517c13ac61030216a0ae",
+    "transitionVsBase": {
+      "answerAtomSupportRecallDelta": 0.08125,
+      "allAnswerAtomsSupportedRateDelta": 0.09375,
+      "meanInjectedTokenIncreaseFraction": 0.017024663269807894,
+      "improved": 3,
+      "equal": 28,
+      "harmed": 1
+    }
+  },
+  "validation": {
+    "status": "failed",
+    "questions": 20,
+    "directProxyQuestions": 15,
+    "casesSha256": "81506419219a623974ff1df4d7eeba88287cce934e5fd7646de73f305ea0a263",
+    "summarySha256": "880612f540e1d7a78e24beb2ae7b32f0d5d2d95e1b75226eee8e924dc8591058",
+    "independentValidationSha256": "1f66f26f4597c757ce02937f6522bc21cd1e39d7d41a1acdb20daddbae21899b",
+    "transitionVsBase": {
+      "answerAtomSupportRecallDelta": -0.06666666666666667,
+      "answerAtomSupportRecallBootstrap95": [-0.2, 0],
+      "allAnswerAtomsSupportedRateDelta": -0.06666666666666667,
+      "meanInjectedTokenIncreaseFraction": 0.035047517541522355,
+      "queryLatencyP95Ratio": 1.660358873549279,
+      "improved": 0,
+      "equal": 14,
+      "harmed": 1
+    },
+    "failedChecks": [
+      "answerAtomSupportRecallDelta",
+      "allAnswerAtomsSupportedRateDelta",
+      "meanInjectedTokens"
+    ],
+    "operationalIntegrity": {
+      "tokenViolations": 0,
+      "ordinaryFallbacks": 0,
+      "disabledMismatches": 0,
+      "missingIndexMismatches": 0,
+      "timeoutMismatches": 0,
+      "corruptIndexMismatches": 0,
+      "independentRecomputation": "passed"
+    }
+  },
+  "test": {
+    "status": "not_read",
+    "questions": 24,
+    "reason": "The frozen validation gate failed, so the protocol prohibited materializing test baseline or challenger outputs."
+  },
+  "failureAnalysis": {
+    "observedBoundary": "Unconditional transition-diff injection displaced useful raw-state evidence and spent more tokens. The development gain did not transfer: enterprise moved from a positive development delta to a negative validation delta, while web was unchanged on validation.",
+    "nextHypothesis": "Treat transition retrieval as a bounded action rather than an always-on memory form. Learn or certify a conservative Base-versus-transition decision under a per-query no-token-increase constraint, then evaluate exactly once on the still-untouched LongMemEval-V2 test questions."
+  },
+  "evidenceBoundary": [
+    "The direct metric is normalized answer-atom occurrence in injected memory, not gold trajectory retrieval recall or answer accuracy.",
+    "LongMemEval-V2 is public long-horizon agent data, not internal multi-turn programming-session evidence.",
+    "The failed validation gate prohibits D7 answer-level evaluation and any D7 test read."
+  ]
+}

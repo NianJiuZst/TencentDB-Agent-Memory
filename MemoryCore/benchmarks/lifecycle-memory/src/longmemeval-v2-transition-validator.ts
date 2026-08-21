@@ -804,21 +804,29 @@ export async function validateLongMemEvalV2Transition(params: {
       || selection.status !== "selected"
       || selection.phase !== "development"
       || JSON.stringify(selection.selectedPolicy) !== JSON.stringify(selected.policy)
-      || !sameIds(selection.ranking, expectedSummaries.map((item) => item.policy.id))
-      || selection.developmentCasesSha256 !== casesDigest
-      || selection.baselineCasesSha256 !== baselineCasesDigest
-      || selection.baselineSummarySha256 !== baselineSummaryDigest
       || selection.policyGridSha256 !== gridDigest) {
       increment(mismatches, "selection_identity_or_hash");
     }
-    const objectives = {
-      answerAtomSupportRecall: selected.metrics.answerAtomSupportRecall,
-      allAnswerAtomsSupportedRate: selected.metrics.allAnswerAtomsSupportedRate,
-      anyAnswerAtomSupportedRate: selected.metrics.anyAnswerAtomSupportedRate,
-      meanInjectedTokens: selected.metrics.meanInjectedTokens,
-      queryLatencyP95Ms: selected.metrics.queryLatencyP95Ms,
-    };
-    compareNumberRecord(mismatches, "selection_objectives", selection.objectiveValues, objectives);
+    if (params.phase === "development") {
+      if (!sameIds(selection.ranking, expectedSummaries.map((item) => item.policy.id))
+        || selection.developmentCasesSha256 !== casesDigest
+        || selection.baselineCasesSha256 !== baselineCasesDigest
+        || selection.baselineSummarySha256 !== baselineSummaryDigest) {
+        increment(mismatches, "development_selection_sources");
+      }
+      const objectives = {
+        answerAtomSupportRecall: selected.metrics.answerAtomSupportRecall,
+        allAnswerAtomsSupportedRate: selected.metrics.allAnswerAtomsSupportedRate,
+        anyAnswerAtomSupportedRate: selected.metrics.anyAnswerAtomSupportedRate,
+        meanInjectedTokens: selected.metrics.meanInjectedTokens,
+        queryLatencyP95Ms: selected.metrics.queryLatencyP95Ms,
+      };
+      compareNumberRecord(mismatches, "selection_objectives", selection.objectiveValues, objectives);
+    } else if (selection.ranking.length !== allPolicies.length
+      || selection.ranking[0] !== selection.selectedPolicy.id
+      || !sameIds([...selection.ranking].sort(), allPolicies.map((policy) => policy.id).sort())) {
+      increment(mismatches, "selection_grid_membership");
+    }
   }
   const selectionDigest = selectionText ? sha256(selectionText) : null;
   if (params.phase === "development") {

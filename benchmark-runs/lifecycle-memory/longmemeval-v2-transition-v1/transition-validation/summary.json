@@ -1,0 +1,132 @@
+{
+  "protocolVersion": "lifecycle-longmemeval-v2-transition-v1.0",
+  "mode": "transition_diff",
+  "phase": "validation",
+  "status": "validation_failed",
+  "preScoreCommit": "a099342c0fc592c1036f5af46134701c003a907e",
+  "selectionArtifactSha256": "4f7db05ffcbba97035833403f65ed0591c7e9916436e03d825fce99f3d734b3b",
+  "baseline": {
+    "casesSha256": "ec9746e23608bf0ba51fe991f79f64cc1771526d847fc3b4b81937194c5f7c47",
+    "summarySha256": "3ea495aad1ed89ce31b8e56971de1e3b2b624485134855d4f30de35487f5cad8"
+  },
+  "index": {
+    "enterprise": {
+      "trajectories": 100,
+      "states": 3358,
+      "rawUnits": 28903,
+      "rawTruncatedStates": 0,
+      "transitionUnits": 11124,
+      "transitions": 3258,
+      "noTextDeltaTransitions": 799,
+      "truncatedTransitions": 728,
+      "addedLines": 295192,
+      "removedLines": 269853,
+      "rawBuildLatencyMs": 318098.96187500004,
+      "transitionBuildLatencyMs": 39054.34787499998
+    },
+    "web": {
+      "trajectories": 100,
+      "states": 1737,
+      "rawUnits": 23532,
+      "rawTruncatedStates": 0,
+      "transitionUnits": 6426,
+      "transitions": 1637,
+      "noTextDeltaTransitions": 214,
+      "truncatedTransitions": 337,
+      "addedLines": 402847,
+      "removedLines": 381539,
+      "rawBuildLatencyMs": 172109.75283299992,
+      "transitionBuildLatencyMs": 13262.581666999962
+    }
+  },
+  "policySummaries": [
+    {
+      "policy": {
+        "id": "tc20-tf75-mi4",
+        "transitionCandidateLimit": 20,
+        "transitionTokenFraction": 0.75,
+        "maxTransitionItems": 4
+      },
+      "cases": 20,
+      "directProxyCases": 15,
+      "metrics": {
+        "answerAtomSupportRecall": 0.13333333333333333,
+        "anyAnswerAtomSupportedRate": 0.13333333333333333,
+        "allAnswerAtomsSupportedRate": 0.13333333333333333,
+        "meanInjectedTokens": 2913.4,
+        "meanInjectedItems": 4.1,
+        "queryLatencyP50Ms": 49.68583299999591,
+        "queryLatencyP95Ms": 99.69929200003389,
+        "tokenViolations": 0,
+        "fallbacks": 0,
+        "auxiliaryUseRate": 1
+      },
+      "deltas": {
+        "answerAtomSupportRecall": -0.06666666666666667,
+        "anyAnswerAtomSupportedRate": -0.06666666666666667,
+        "allAnswerAtomsSupportedRate": -0.06666666666666667,
+        "meanInjectedTokens": 98.65000000000009,
+        "meanInjectedTokenFraction": 0.035047517541522355,
+        "queryLatencyP95Ratio": 1.660358873549279
+      },
+      "directProxyOutcomes": {
+        "improved": 0,
+        "equal": 14,
+        "harmed": 1,
+        "harmedRate": 0.06666666666666667
+      },
+      "byDomain": {
+        "enterprise": {
+          "directProxyCases": 6,
+          "baseAnswerAtomSupportRecall": 0.16666666666666666,
+          "answerAtomSupportRecall": 0,
+          "answerAtomSupportRecallDelta": -0.16666666666666666,
+          "meanInjectedTokens": 2864.375
+        },
+        "web": {
+          "directProxyCases": 9,
+          "baseAnswerAtomSupportRecall": 0.2222222222222222,
+          "answerAtomSupportRecall": 0.2222222222222222,
+          "answerAtomSupportRecallDelta": 0,
+          "meanInjectedTokens": 2946.0833333333335
+        }
+      },
+      "forcedFallbackMismatches": {
+        "disabled": 0,
+        "missingIndex": 0,
+        "timeout": 0,
+        "corrupt": 0
+      },
+      "answerAtomSupportRecallDeltaBootstrap": {
+        "mean": -0.06666666666666667,
+        "lower": -0.2,
+        "upper": 0,
+        "questions": 15,
+        "strata": 2
+      }
+    }
+  ],
+  "selectedPolicy": {
+    "id": "tc20-tf75-mi4",
+    "transitionCandidateLimit": 20,
+    "transitionTokenFraction": 0.75,
+    "maxTransitionItems": 4
+  },
+  "casesSha256": "81506419219a623974ff1df4d7eeba88287cce934e5fd7646de73f305ea0a263",
+  "gate": {
+    "passed": false,
+    "checks": {
+      "answerAtomSupportRecallDelta": false,
+      "allAnswerAtomsSupportedRateDelta": false,
+      "harmedCaseRate": true,
+      "meanInjectedTokens": false,
+      "tokenViolations": true,
+      "ordinaryFallbacks": true,
+      "p95Latency": true,
+      "disabledFallback": true,
+      "missingIndexFallback": true,
+      "timeoutFallback": true,
+      "corruptFallback": true
+    }
+  }
+}

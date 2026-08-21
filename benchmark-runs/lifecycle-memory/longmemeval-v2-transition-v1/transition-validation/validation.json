@@ -1,0 +1,24 @@
+{
+  "validationVersion": "lifecycle-longmemeval-v2-transition-validation-v1.0",
+  "sourceProtocolVersion": "lifecycle-longmemeval-v2-transition-v1.0",
+  "phase": "validation",
+  "status": "passed",
+  "rows": 20,
+  "policies": 1,
+  "questions": 20,
+  "checkedDirectProxyRows": 15,
+  "mismatches": {},
+  "limitations": [
+    "The validator independently rebuilds raw-state and transition-diff contents from the pinned public snapshot, then recomputes packing, token counts, direct support, aggregates, policy ranking, bootstrap intervals, and gates.",
+    "It does not rerun MemoryCore FTS5 ranking; candidate ordering is checked for identity and provenance but remains covered by the production search path and focused tests.",
+    "Wall-clock index and query latency values are recomputed from recorded case timings rather than expected to reproduce across machines.",
+    "Forced failure branches are checked for exact-baseline behavior by focused unit tests; the validator checks their reported aggregate counters but does not inject new failures into the recorded run."
+  ],
+  "sourceSha256": {
+    "cases": "81506419219a623974ff1df4d7eeba88287cce934e5fd7646de73f305ea0a263",
+    "summary": "880612f540e1d7a78e24beb2ae7b32f0d5d2d95e1b75226eee8e924dc8591058",
+    "baselineCases": "ec9746e23608bf0ba51fe991f79f64cc1771526d847fc3b4b81937194c5f7c47",
+    "baselineSummary": "3ea495aad1ed89ce31b8e56971de1e3b2b624485134855d4f30de35487f5cad8",
+    "selection": "4f7db05ffcbba97035833403f65ed0591c7e9916436e03d825fce99f3d734b3b"
+  }
+}

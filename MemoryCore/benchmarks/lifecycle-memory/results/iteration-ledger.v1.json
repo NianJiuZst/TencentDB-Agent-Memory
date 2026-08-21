@@ -407,6 +407,53 @@
       "failedChecks": [],
       "promotionAllowed": false,
       "interpretation": "The structural guard retained a smaller but consistently non-harmful portion of D5's direct state signal. It returned V1 on every D5-harmed case, passed all forced fallback checks, and was independently reconstructed with zero metric, decision, or summary mismatch. Because the rule was invented after reading D5 test outcomes and still receives oracle operations, it is only a viable architecture for fresh confirmation; V1 remains the incumbent."
+    },
+    {
+      "id": "D7-v1.0",
+      "direction": "bounded transition-diff auxiliary organization",
+      "protocolVersion": "lifecycle-longmemeval-v2-transition-v1.0",
+      "preScoreCommit": "a099342c0fc592c1036f5af46134701c003a907e",
+      "evidenceRole": "fresh public LongMemEval-V2 development and validation study with an untouched test lock",
+      "status": "rejected_at_validation_gate",
+      "candidate": {
+        "selectedPolicy": "tc20-tf75-mi4",
+        "transitionCandidateLimit": 20,
+        "transitionTokenFraction": 0.75,
+        "maxTransitionItems": 4,
+        "memoryForm": "bounded deterministic pre/action/post transition diffs above unchanged MemoryCore FTS5"
+      },
+      "results": {
+        "resultCard": "longmemeval-v2-transition-result-card.v1.json",
+        "development": {
+          "questions": 42,
+          "directProxyQuestions": 32,
+          "answerAtomSupportRecallDelta": 0.08125,
+          "allAnswerAtomsSupportedRateDelta": 0.09375,
+          "meanInjectedTokenIncreaseFraction": 0.017024663269807894,
+          "improved": 3,
+          "equal": 28,
+          "harmed": 1
+        },
+        "validation": {
+          "questions": 20,
+          "directProxyQuestions": 15,
+          "answerAtomSupportRecallDelta": -0.06666666666666667,
+          "answerAtomSupportRecallBootstrap95": [-0.2, 0],
+          "allAnswerAtomsSupportedRateDelta": -0.06666666666666667,
+          "meanInjectedTokenIncreaseFraction": 0.035047517541522355,
+          "improved": 0,
+          "equal": 14,
+          "harmed": 1,
+          "independentValidation": "passed"
+        },
+        "test": "not_read"
+      },
+      "failedChecks": [
+        "validation.answerAtomSupportRecallDelta",
+        "validation.allAnswerAtomsSupportedRateDelta",
+        "validation.meanInjectedTokens"
+      ],
+      "interpretation": "The transition representation produced a sizable development proxy gain but did not transfer. On validation it displaced one useful raw-state answer and added 3.50% mean tokens, with no improved direct-support case. D7 is rejected before test or answer evaluation; the still-untouched test split may only be used by a separately frozen follow-up protocol."
     }
   ]
 }

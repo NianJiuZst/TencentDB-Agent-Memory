@@ -16,6 +16,7 @@ This file is the persistent direction registry for iterative work above the fixe
 | D4 | Feedback-optimized valid-state packing | Token fraction and item cap after validity filtering | Development-period proxy feedback; per-query V1 token budget | Rejected at answer uncertainty gate | Positive point estimates are retained as a near-miss, not promoted |
 | D5 | Target-keyed state projection on MemOps | Value-substring invalidation versus explicit operation target state | Public gold operation traces shared by every arm | Rejected at untouched test uncertainty gate | Positive stale-removal signal; no answer-level promotion |
 | D6 | Incumbent-preserving state composition | Select V1 or target-state projection under a structural dominance certificate | Graph-known current/stale units; no evaluation labels at runtime | Post-hoc safety viability passed | Requires a new confirmation boundary; V1 remains incumbent |
+| D7 | Bounded transition-diff auxiliary organization | Raw accessibility-tree windows versus pre/action/post change units | Fresh LongMemEval-V2 development and validation questions | Rejected at validation gate | Test stayed unread; unconditional auxiliary injection did not transfer |
 
 ## Why D1 is first
 
@@ -84,6 +85,16 @@ D5's failure is an incumbent-preservation failure, not evidence that explicit ta
 The rule uses no benchmark labels, relevant-target annotations, answers, or case-id allowlists. Across all 320 consumed MemOps CandidateDisambiguation cases, it accepted 42 changed contexts and returned V1 on 83 contexts. State-FAMA improved by 6.11 points (profile-bootstrap 95% interval +3.96 to +8.48), current-state recall by 1.88 points, stale absence by 7.37 points, and mean tokens fell by 1.34%. There were 28 improved, 292 unchanged, and zero harmed state-FAMA cases. The four D5 test harms were all routed back to V1. Independent validation reconstructed all metrics and decisions with zero mismatch.
 
 This is deliberately labeled post-hoc safety viability, not confirmation: D6 was designed after the D5 test failure, the same 320 cases are reused, and gold operations still supply the state graph. The observed drop in descriptive gold-provenance recall also shows why the guard must remain restricted to current-state mode; historical queries return exact V1. Fresh LongMemEval-V2 or internal programming-session evidence is required before any answer-level or deployment claim.
+
+## Why D7 changes to agent-state transitions
+
+D7 removes the MemOps oracle-operation dependency and tests a portable organization layer on the pinned public LongMemEval-V2 small tier. It keeps MemoryCore's SQLite L0 FTS5 search unchanged, adds a bounded side index of deterministic pre/action/post accessibility-tree diffs, and searches both raw state windows and transition units. The public questions do not expose gold trajectory or state attribution, so the primary direct metric is explicitly limited to normalized official answer-atom occurrence in injected memory; it is not called gold retrieval recall.
+
+The population contains 86 text-only dynamic-environment questions split once, stratified by domain and evaluator family, into 42 development, 20 validation, and 24 test questions. Development evaluates the frozen Cartesian grid of 18 candidate-pool, token-fraction, and item-cap policies. The selected `tc20-tf75-mi4` policy improved answer-atom support recall by 8.13 points and all-atom support by 9.38 points on 32 direct development questions, but increased mean injected tokens by 1.70%.
+
+That signal did not transfer. On the 15 direct validation questions, answer-atom support and all-atom support both fell by 6.67 points, no case improved, one was harmed, and mean tokens increased by 3.50%. The effect, all-support, and token checks failed; latency, capacity, ordinary operation, and exact disabled/missing/timeout/corrupt fallbacks passed. An independent validator rebuilt both representations and reproduced all 20 validation rows, aggregates, bootstrap values, and gates with zero mismatch. D7 is rejected, and the 24 test questions remain unread.
+
+The negative result narrows the next direction: transition diffs are sometimes useful evidence, but treating them as an always-on replacement budget is unsafe. A follow-up may treat Base versus transition augmentation as a bounded action with a per-query cost constraint and label-free runtime features. Because that hypothesis was formed after D7 validation, it requires a new frozen protocol and can use the untouched 24-question split only once.
 
 ## Iteration rule
 
