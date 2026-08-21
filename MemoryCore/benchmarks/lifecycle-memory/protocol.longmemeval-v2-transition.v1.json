@@ -1,0 +1,138 @@
+{
+  "protocolVersion": "lifecycle-longmemeval-v2-transition-v1.0",
+  "direction": "D7 bounded transition-diff auxiliary organization",
+  "evidenceRole": "Fresh confirmatory public method validation after D6 post-hoc mechanism work. LongMemEval-V2 has not been used to design or score D1-D6.",
+  "preScoreCommitRequired": true,
+  "dataset": {
+    "name": "LongMemEval-V2",
+    "benchmarkRepositoryRevision": "2cc8c540bdb87fe6761629b585e727e1c4704520",
+    "tier": "small",
+    "manifestSha256": "70a2be47e7117ef8f2ee77aa499c6126358b5f9ffa28a848b5c565a4ec8fc99a",
+    "questionsSha256": "0a3ae5ebea938c24d7800e1e0b0828e08ae1646f939a53853b2b8cdc08e292b7",
+    "haystackSha256": "9b5301defb23a088a5f06e45ff8d5f35e569d78305a66d492046a9fff9b46593",
+    "trajectoriesSha256": "363cec9a8e87aa8d9101ce4e600aadbf7031d674056ebe4f969e8424abc5f3c6",
+    "questions": 451,
+    "trajectoryRows": 1870,
+    "selectedTrajectories": 200
+  },
+  "population": {
+    "questionType": "dynamic-environment",
+    "modality": "text-only",
+    "questions": 86,
+    "directProxyQuestions": 65,
+    "directProxyEvaluatorFamily": "norm_phrase_set_match, including ordered",
+    "answerLevelOnlyQuestions": 21,
+    "answerLevelOnlyEvaluatorFamily": "mc_choice_match"
+  },
+  "split": {
+    "protocolVersion": "lifecycle-longmemeval-v2-question-split-v1.0",
+    "fileSha256": "f986571b5a52c95cb1e541cf252865a1bbdf7e8f2016db1ae4dda00882ca11e2",
+    "canonicalSha256": "1c6a0e6500b7ad1d34c041f4ab88d55c54854d213c3cae42cb606a84dcb0a87d",
+    "developmentQuestions": 42,
+    "validationQuestions": 20,
+    "testQuestions": 24,
+    "developmentDirectProxyQuestions": 32,
+    "validationDirectProxyQuestions": 15,
+    "testDirectProxyQuestions": 18,
+    "testReadRule": "No test case or baseline output may be materialized before one development-selected policy passes the frozen validation gate and a committed admission artifact exists."
+  },
+  "baseline": {
+    "engine": "MemoryCore SQLite L0 FTS5 through executeConversationSearch",
+    "embedding": "disabled",
+    "memoryForm": "bounded raw accessibility-tree character windows",
+    "rawChunkMaxCharacters": 3200,
+    "rawChunkOverlapCharacters": 320,
+    "maxRawChunksPerState": 128,
+    "candidateLimit": 40,
+    "resultLimit": 6,
+    "injectionTokenBudget": 3072,
+    "tokenizer": "cl100k_base",
+    "queryTransform": "Remove final-answer formatting instructions only; retain the substantive question and options."
+  },
+  "challenger": {
+    "memoryForm": "Baseline raw windows plus bounded deterministic pre/action/post transition-diff units above the unchanged MemoryCore FTS5 engine.",
+    "normalizeBracketedNodeIds": true,
+    "diffChunkMaxCharacters": 2400,
+    "maxDiffChunksPerTransition": 8,
+    "maxAuxiliaryUnits": 39160,
+    "transitionCandidateLimits": [10, 20],
+    "transitionTokenFractions": [0.25, 0.5, 0.75],
+    "maxTransitionItems": [1, 2, 4],
+    "policies": 18,
+    "sharedInjectionTokenBudget": 3072,
+    "forbiddenRuntimeInputs": [
+      "reference answer",
+      "evaluator family",
+      "question id allowlists",
+      "phase labels",
+      "question outcomes",
+      "gold trajectory or state attribution"
+    ]
+  },
+  "selfOptimization": {
+    "developmentObjectiveOrder": [
+      "maximize mean answer-atom support recall",
+      "maximize all-answer-atoms-supported rate",
+      "maximize any-answer-atom-supported rate",
+      "minimize mean injected tokens",
+      "minimize p95 total query latency",
+      "lexicographically smallest policy id"
+    ],
+    "selectionRule": "Select exactly one policy on development. Validation can accept or reject it but cannot choose another policy. Test can be read once only after validation admission.",
+    "evolutionBoundary": "Only the bounded transition index and the 18 frozen retrieval-budget policies evolve. FTS5, embeddings, extraction models, labels, and answer generation remain unchanged."
+  },
+  "directMetric": {
+    "primary": "answerAtomSupportRecall",
+    "definition": "Split the official phrase-set reference answer with its official separators, apply lower-case, hyphen and punctuation normalization, and count an atom only when the normalized atom occurs in an injected memory unit.",
+    "secondary": [
+      "allAnswerAtomsSupportedRate",
+      "anyAnswerAtomSupportedRate",
+      "meanInjectedTokens",
+      "queryLatencyP50Ms",
+      "queryLatencyP95Ms"
+    ],
+    "scopeWarning": "This is answer-support evidence, not gold retrieval recall: the public data has no question-to-trajectory attribution, occurrence can be coincidental, and absence does not prove that a reader cannot infer the answer."
+  },
+  "aggregation": {
+    "primaryUnit": "question",
+    "sharedHaystackSensitivity": "Report enterprise and web separately because each domain shares one haystack.",
+    "bootstrap": "paired stratified question bootstrap by domain",
+    "bootstrapSamples": 20000,
+    "bootstrapSeed": 20260829
+  },
+  "validationGate": {
+    "minAnswerAtomSupportRecallDelta": 0.02,
+    "minAllAnswerAtomsSupportedRateDelta": 0.0,
+    "maxDirectProxyHarmedCaseRate": 0.2,
+    "maxMeanInjectedTokenIncreaseFraction": 0.0,
+    "maxPerQueryTokenViolations": 0,
+    "maxOrdinaryFallbacks": 0,
+    "maxP95TotalQueryLatencyRatio": 2.0,
+    "requireExactDisabledBaseline": true,
+    "requireExactMissingIndexBaseline": true,
+    "requireExactTimeoutBaseline": true,
+    "requireExactCorruptIndexBaseline": true
+  },
+  "testGate": {
+    "requireCommittedValidationAdmissionBeforeRead": true,
+    "minAnswerAtomSupportRecallDelta": 0.0,
+    "minAnswerAtomSupportRecallBootstrapLower": 0.0,
+    "minAllAnswerAtomsSupportedRateDelta": 0.0,
+    "maxMeanInjectedTokenIncreaseFraction": 0.0,
+    "maxPerQueryTokenViolations": 0,
+    "maxOrdinaryFallbacks": 0
+  },
+  "answerLevelGate": {
+    "runOnlyAfterDirectTestGatePasses": true,
+    "readers": ["MiniMax M3", "DeepSeek V4Flash"],
+    "judging": "Blind arm labels, deterministic order randomization, both providers, no OpenRouter dependency.",
+    "claimBoundary": "Direct support can admit an answer-level experiment; it cannot by itself establish task accuracy."
+  },
+  "fallback": {
+    "disabled": "exact baseline context",
+    "missingAuxiliaryIndex": "exact baseline context",
+    "timeout": "exact baseline context",
+    "corruptAuxiliaryUnit": "exact baseline context",
+    "budgetOverflow": "exact baseline context"
+  }
+}
