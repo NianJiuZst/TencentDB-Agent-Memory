@@ -1,0 +1,92 @@
+{
+  "protocolVersion": "lifecycle-evidence-shield-e2e-v1.0",
+  "candidateProtocolVersion": "lifecycle-evidence-shield-v1.2",
+  "developmentStatus": "Answer-level development triage on the previously analyzed frozen 50 cases. Passing qualifies the candidate for new-data confirmation only; it cannot promote the candidate or create a fresh confirmatory claim.",
+  "seed": 20260822,
+  "selection": {
+    "protocolVersion": "lifecycle-adaptive-e2e-v1.1",
+    "sha256": "1e3ab7b21bd1425f98f095ca76a31d350c47f3bb9c9cf0090139567859dadaf1",
+    "cases": 50
+  },
+  "contextManifest": {
+    "sha256": "9472fede7c2a7e258333167dfbd57a68d4f6da10e0aa7c3c5e98684e98212d20",
+    "cases": 50
+  },
+  "reusedV1Evaluations": {
+    "protocolVersion": "lifecycle-contextual-e2e-v1.0",
+    "sha256": "fb9687dc1719e2a2507de03b7ab2240cc20178cde99ef34edd84716f6561d611",
+    "totalRows": 300,
+    "selectedArm": "v1",
+    "selectedRows": 100,
+    "validationSha256": "3c54882dfe559a003d94ba4ed2466043e910d564c2569995507c0c54957caf45",
+    "requiredValidationStatus": "passed"
+  },
+  "arms": [
+    "v1",
+    "shield"
+  ],
+  "readers": [
+    {
+      "id": "minimax-m3",
+      "provider": "minimax",
+      "model": "MiniMax-M3",
+      "baseUrl": "https://api.minimaxi.com/v1",
+      "apiKeyEnv": "MINIMAX_API_KEY",
+      "temperature": 0.1,
+      "topP": 0.95,
+      "maxTokens": 700,
+      "thinking": "disabled"
+    },
+    {
+      "id": "deepseek-v4-flash",
+      "provider": "deepseek",
+      "model": "deepseek-v4-flash",
+      "baseUrl": "https://api.deepseek.com",
+      "apiKeyEnv": "DEEPSEEK_API_KEY",
+      "temperature": 0,
+      "maxTokens": 700,
+      "thinking": "disabled"
+    }
+  ],
+  "judges": [
+    {
+      "id": "minimax-m3",
+      "provider": "minimax",
+      "model": "MiniMax-M3",
+      "baseUrl": "https://api.minimaxi.com/v1",
+      "apiKeyEnv": "MINIMAX_API_KEY",
+      "temperature": 0.1,
+      "topP": 0.95,
+      "maxTokens": 8192,
+      "thinking": "disabled"
+    },
+    {
+      "id": "deepseek-v4-flash",
+      "provider": "deepseek",
+      "model": "deepseek-v4-flash",
+      "baseUrl": "https://api.deepseek.com",
+      "apiKeyEnv": "DEEPSEEK_API_KEY",
+      "temperature": 0,
+      "maxTokens": 8192,
+      "thinking": "disabled"
+    }
+  ],
+  "retries": 3,
+  "aggregation": {
+    "primary": "cross-model mean: each reader answer is scored only by the other model",
+    "sensitivity": "full-factorial mean over both judges for both readers",
+    "uncertaintyUnit": "persona",
+    "bootstrapSamples": 5000
+  },
+  "gate": {
+    "requirePositiveShieldVsV1FamaDelta": true,
+    "minShieldVsV1FaaDelta": 0.01,
+    "maxShieldVsV1MpaLoss": 0.01,
+    "maxMeanInjectedTokenIncreaseFraction": 0,
+    "requireNonnegativeFamaDirectionForEachReader": true
+  },
+  "outcomeSemantics": {
+    "pass": "qualify_for_new_data_confirmation",
+    "fail": "reject_candidate_and_continue_direction_search"
+  }
+}

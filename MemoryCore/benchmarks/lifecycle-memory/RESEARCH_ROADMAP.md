@@ -28,6 +28,8 @@ D1-v1.1 reduced exposure to 10% and token cost by 3.04% with no current-atom los
 
 D1-v1.2 passed the full feasibility gate: exact obsolete-value context exposure fell from 74% to 8%, current-atom recall was unchanged, mean injected tokens fell by 3.27%, candidate identity remained exact, and all ordinary, disabled, damaged, and forced-timeout checks returned without mismatch. This result only advances D1 to answer-development testing.
 
+The answer-development protocol is frozen as `lifecycle-evidence-shield-e2e-v1.0`. It reuses the independently validated V1 cells, generates only the shield arm with the same MiniMax-M3/DeepSeek-V4-Flash crossed panel, and requires positive FAMA, at least +1 point FAA, no more than 1 point MPA loss, no token increase, and nonnegative FAMA direction for both readers.
+
 ## Iteration rule
 
 1. Freeze the candidate construction and gates before computing its scores.
