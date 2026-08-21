@@ -1,0 +1,44 @@
+{
+  "selectionVersion": "lifecycle-longmemeval-v2-transition-selection-v1.0",
+  "sourceProtocolVersion": "lifecycle-longmemeval-v2-transition-v1.0",
+  "status": "selected",
+  "phase": "development",
+  "preScoreCommit": "a099342c0fc592c1036f5af46134701c003a907e",
+  "selectedPolicy": {
+    "id": "tc20-tf75-mi4",
+    "transitionCandidateLimit": 20,
+    "transitionTokenFraction": 0.75,
+    "maxTransitionItems": 4
+  },
+  "ranking": [
+    "tc20-tf75-mi4",
+    "tc10-tf75-mi4",
+    "tc10-tf50-mi1",
+    "tc10-tf75-mi1",
+    "tc20-tf50-mi1",
+    "tc20-tf75-mi1",
+    "tc20-tf50-mi2",
+    "tc20-tf50-mi4",
+    "tc10-tf50-mi2",
+    "tc10-tf50-mi4",
+    "tc10-tf75-mi2",
+    "tc20-tf75-mi2",
+    "tc10-tf25-mi4",
+    "tc10-tf25-mi1",
+    "tc20-tf25-mi4",
+    "tc20-tf25-mi1",
+    "tc10-tf25-mi2",
+    "tc20-tf25-mi2"
+  ],
+  "developmentCasesSha256": "ca7a6245d5efd6248e42322e9eb42b3c20b1b479683f94acbf0dd887cdb90f35",
+  "baselineCasesSha256": "3079009845e4540d4fdfe5327d21d4626a0ca431c8a88ed7d1457918aa32f552",
+  "baselineSummarySha256": "9f7fc71fba9506c7e1f866113aa542cedd2512d2d768421ba35d0b46dcb5c3ce",
+  "policyGridSha256": "cfb25eea255a3659df1f333efede21fed61ad23cd22790da730184ae1dac0488",
+  "objectiveValues": {
+    "answerAtomSupportRecall": 0.26927083333333335,
+    "allAnswerAtomsSupportedRate": 0.21875,
+    "anyAnswerAtomSupportedRate": 0.34375,
+    "meanInjectedTokens": 2799.1666666666665,
+    "queryLatencyP95Ms": 83.56666600005701
+  }
+}
