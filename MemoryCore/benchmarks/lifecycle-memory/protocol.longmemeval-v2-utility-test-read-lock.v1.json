@@ -1,0 +1,23 @@
+{
+  "lockVersion": "lifecycle-longmemeval-v2-utility-test-read-lock-v1.0",
+  "sourceProtocolVersion": "lifecycle-longmemeval-v2-utility-gate-v1.0",
+  "candidatePreScoreCommit": "ab95ddec8e5fcd8c7ab6c09c38b2704b156487b5",
+  "validatorCommit": "759abd327bf631f13a0e7a2430c5a289da159330",
+  "admissionCommit": "83b42f638e250d8d40de3e8b6df812031fe4b26a",
+  "admissionSha256": "52ddbfe7d5447fb6900725901a85dc590f9e3a377893758debc790a4375a23bb",
+  "admissionDecision": "authorize_locked_test_baseline_read",
+  "admissionSourceSha256": {
+    "cases": "fdf5935b89aa95af8ae16aae285b9b7a37f7641d4471ec0988421fd1a816041c",
+    "summary": "dd500920020024c0bc5164e0a697fa6c3d46ffd5b59ba3fd21a08a7cecf513b3",
+    "utility": "1b3f8ccbc38ecd53111775379805b506bd94ebd066ce625092f77c8efc6c88cd",
+    "independentValidation": "3d451b8fdf00ad5d1326bb893f9ffd0e8b5b0f3b916a65e98dd63721d127a718"
+  },
+  "authorizedRead": {
+    "phase": "test",
+    "questions": 24,
+    "artifact": "baseline only",
+    "candidateForbiddenUntilBaselineCommitted": true,
+    "baseline": "Exact frozen D7 raw-state MemoryCore FTS5 configuration reused unchanged by D8."
+  },
+  "failure": "Any identity or hash mismatch aborts before loading test questions."
+}
