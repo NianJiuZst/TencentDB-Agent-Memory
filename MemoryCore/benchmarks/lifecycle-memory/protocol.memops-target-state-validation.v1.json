@@ -1,0 +1,35 @@
+{
+  "validationProtocolVersion": "lifecycle-memops-target-state-validation-v1.0",
+  "sourceProtocolVersion": "lifecycle-memops-target-state-v1.0",
+  "preValidationCommit": "c1ad7255e2ba0d8bc7e7b5bdc1dae9638e4912c0",
+  "developmentSelectionSha256": "192cd510602507534f7e1703d264b6232966241d82ea90a6ca8a399245d55354",
+  "validationCasesSha256": "5aa5d96f5b831415c78360b02e87db9203ca0b7eb429bca506d75815330e7c59",
+  "validationSummarySha256": "ae8aab7f3722d642632b0cc5b124a37d5394fe6700562438b1da580b4a32c88d",
+  "independentValidationSha256": "16c3d8bba5845bda9319e38089c1fa5206bd89b53c9f2d93d548525652d49f77",
+  "status": "passed",
+  "selectedPolicy": {
+    "id": "budget-1-state-3",
+    "budgetFraction": 1,
+    "maxStateUnits": 3
+  },
+  "validationProfiles": 20,
+  "validationPrimaryCases": 66,
+  "targetStateVsV1": {
+    "stateFamaDelta": 0.12929292929292932,
+    "stateFamaBootstrap95": [0.043589743589743594, 0.21971830985915491],
+    "alternateSeedStateFamaBootstrap95": [0.04427083333333333, 0.22051282051282053],
+    "currentStateRecallDelta": 0.0808080808080808,
+    "staleAbsenceDelta": 0.12373737373737373,
+    "meanInjectedTokenIncreaseFraction": -0.04634044332915088
+  },
+  "integrity": {
+    "rows": 392,
+    "metricMismatches": 0,
+    "summaryMismatches": 0,
+    "historyMismatches": 0,
+    "tokenViolations": 0,
+    "ordinaryFallbacks": 0
+  },
+  "validationEvidenceRole": "Frozen public synthetic operation-level confirmation. It unlocks the untouched test split but is not extraction, answer-level, or programming-task evidence.",
+  "nextPhase": "test"
+}

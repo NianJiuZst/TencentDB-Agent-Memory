@@ -78,4 +78,18 @@ describe("MemOps target-state runner", () => {
       validationSummary: validation,
     })).rejects.toThrow(/locked until validation passes/);
   });
+
+  it("requires the frozen independent validator artifact before reading test data", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "memops-test-validator-lock-"));
+    roots.push(root);
+    const validation = path.join(root, "validation-summary.json");
+    await writeFile(validation, JSON.stringify({ status: "passed" }));
+    await expect(runMemOpsTargetState({
+      dataRoot: path.join(root, "missing-data"),
+      split: path.join(root, "missing-split.json"),
+      phase: "test",
+      outputDir: path.join(root, "output"),
+      validationSummary: validation,
+    })).rejects.toThrow(/validation summary hash mismatch/);
+  });
 });

@@ -12,13 +12,14 @@ const { values } = parseArgs({
     selection: { type: "string" },
     "development-cases": { type: "string" },
     "validation-summary": { type: "string" },
+    validation: { type: "string" },
   },
 });
 
 if (!values.data || !values.split || !values.phase || !values.output
   || !["development", "validation", "test"].includes(values.phase)) {
   throw new Error(
-    "usage: pnpm eval:lifecycle-memops-target-state -- --data <MemOps/generated_result> --split <split.json> --phase <development|validation|test> --output <dir> [--selection <selection.json> --development-cases <cases.jsonl> --validation-summary <summary.json>]",
+    "usage: pnpm eval:lifecycle-memops-target-state -- --data <MemOps/generated_result> --split <split.json> --phase <development|validation|test> --output <dir> [--selection <selection.json> --development-cases <cases.jsonl> --validation-summary <summary.json> --validation <validation.json>]",
   );
 }
 
@@ -34,6 +35,7 @@ const report = await runMemOpsTargetState({
   ...(values["validation-summary"]
     ? { validationSummary: path.resolve(values["validation-summary"]) }
     : {}),
+  ...(values.validation ? { validation: path.resolve(values.validation) } : {}),
 });
 
 process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);

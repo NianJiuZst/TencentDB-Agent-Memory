@@ -24,6 +24,7 @@ import {
 import {
   MEMOPS_TARGET_STATE_PROTOCOL,
   MEMOPS_TARGET_STATE_SELECTION,
+  MEMOPS_TARGET_STATE_VALIDATION,
   type MemOpsTargetStatePhase,
 } from "./memops-target-state-protocol.js";
 import { buildMemOpsProfileSplitFromData } from "./memops-split.js";
@@ -121,6 +122,7 @@ export interface MemOpsTargetStateRunOptions {
   selection?: string;
   split: string;
   validationSummary?: string;
+  validation?: string;
 }
 
 const encoding = getEncoding("cl100k_base");
@@ -860,10 +862,25 @@ export async function runMemOpsTargetState(
   if (options.phase === "test") {
     if (!options.validationSummary) throw new Error("MemOps test requires --validation-summary");
     const validationText = await readFile(options.validationSummary, "utf8");
-    const validation = JSON.parse(validationText);
+    const validationSummary = JSON.parse(validationText);
     if (MEMOPS_TARGET_STATE_PROTOCOL.testGate.requireValidationPassBeforeRead
-      && validation.status !== "passed") {
+      && validationSummary.status !== "passed") {
       throw new Error("MemOps test is locked until validation passes");
+    }
+    if (sha256(validationText) !== MEMOPS_TARGET_STATE_VALIDATION.validationSummarySha256) {
+      throw new Error("MemOps test validation summary hash mismatch");
+    }
+    if (!options.validation) throw new Error("MemOps test requires --validation");
+    const independentText = await readFile(options.validation, "utf8");
+    const independentValidation = JSON.parse(independentText);
+    if (sha256(independentText) !== MEMOPS_TARGET_STATE_VALIDATION.independentValidationSha256
+      || independentValidation.status !== "passed"
+      || independentValidation.phase !== "validation"
+      || independentValidation.input.casesSha256
+        !== MEMOPS_TARGET_STATE_VALIDATION.validationCasesSha256
+      || independentValidation.input.summarySha256
+        !== MEMOPS_TARGET_STATE_VALIDATION.validationSummarySha256) {
+      throw new Error("MemOps test independent validation artifact mismatch");
     }
   }
   const frozen = await verifyFrozenInputs(options);
@@ -882,7 +899,8 @@ export async function runMemOpsTargetState(
     if (options.phase === "test") {
       const validationText = await readFile(options.validationSummary!, "utf8");
       const validation = JSON.parse(validationText);
-      if (validation.input.selectionSha256 !== selectionSha256) {
+      if (validation.input.selectionSha256 !== selectionSha256
+        || selectionSha256 !== MEMOPS_TARGET_STATE_VALIDATION.developmentSelectionSha256) {
         throw new Error("MemOps test selection differs from passed validation");
       }
     }
@@ -975,6 +993,7 @@ export async function runMemOpsTargetState(
       casesSha256: sha256(casesText),
       ...(options.phase === "test" ? {
         validationSummarySha256: sha256(await readFile(options.validationSummary!, "utf8")),
+        independentValidationSha256: sha256(await readFile(options.validation!, "utf8")),
       } : {}),
     },
     instances: instanceIds.length,

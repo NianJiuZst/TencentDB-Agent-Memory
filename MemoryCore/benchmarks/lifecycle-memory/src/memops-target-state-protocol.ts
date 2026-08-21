@@ -1,5 +1,6 @@
 import protocolJson from "../protocol.memops-target-state.v1.json" with { type: "json" };
 import selectionJson from "../protocol.memops-target-state-selection.v1.json" with { type: "json" };
+import validationJson from "../protocol.memops-target-state-validation.v1.json" with { type: "json" };
 
 export type MemOpsTargetStatePhase = "development" | "validation" | "test";
 
@@ -86,6 +87,7 @@ interface MemOpsTargetStateProtocol {
 
 export const MEMOPS_TARGET_STATE_PROTOCOL = protocolJson as MemOpsTargetStateProtocol;
 export const MEMOPS_TARGET_STATE_SELECTION = selectionJson;
+export const MEMOPS_TARGET_STATE_VALIDATION = validationJson;
 
 if (MEMOPS_TARGET_STATE_PROTOCOL.protocolVersion !== "lifecycle-memops-target-state-v1.0") {
   throw new Error("unexpected MemOps target-state protocol version");
@@ -95,6 +97,17 @@ if (MEMOPS_TARGET_STATE_SELECTION.selectionProtocolVersion
   || MEMOPS_TARGET_STATE_SELECTION.sourceProtocolVersion
     !== MEMOPS_TARGET_STATE_PROTOCOL.protocolVersion) {
   throw new Error("unexpected MemOps target-state selection protocol version");
+}
+if (MEMOPS_TARGET_STATE_VALIDATION.validationProtocolVersion
+  !== "lifecycle-memops-target-state-validation-v1.0"
+  || MEMOPS_TARGET_STATE_VALIDATION.sourceProtocolVersion
+    !== MEMOPS_TARGET_STATE_PROTOCOL.protocolVersion
+  || MEMOPS_TARGET_STATE_VALIDATION.status !== "passed"
+  || MEMOPS_TARGET_STATE_VALIDATION.developmentSelectionSha256
+    !== MEMOPS_TARGET_STATE_SELECTION.developmentSelectionSha256
+  || MEMOPS_TARGET_STATE_VALIDATION.selectedPolicy.id
+    !== MEMOPS_TARGET_STATE_SELECTION.selectedPolicy.id) {
+  throw new Error("unexpected MemOps target-state validation lock");
 }
 const gridSize = MEMOPS_TARGET_STATE_PROTOCOL.policyGrid.budgetFractions.length
   * MEMOPS_TARGET_STATE_PROTOCOL.policyGrid.maxStateUnits.length;
