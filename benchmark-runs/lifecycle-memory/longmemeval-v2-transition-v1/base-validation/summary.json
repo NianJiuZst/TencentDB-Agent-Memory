@@ -1,0 +1,58 @@
+{
+  "protocolVersion": "lifecycle-longmemeval-v2-transition-v1.0",
+  "mode": "base",
+  "phase": "validation",
+  "status": "completed",
+  "dataset": {
+    "name": "LongMemEval-V2",
+    "revision": "2cc8c540bdb87fe6761629b585e727e1c4704520",
+    "tier": "small",
+    "manifestSha256": "70a2be47e7117ef8f2ee77aa499c6126358b5f9ffa28a848b5c565a4ec8fc99a"
+  },
+  "cases": 20,
+  "directProxyCases": 15,
+  "metrics": {
+    "answerAtomSupportRecall": 0.2,
+    "anyAnswerAtomSupportedRate": 0.2,
+    "allAnswerAtomsSupportedRate": 0.2,
+    "meanInjectedTokens": 2814.75,
+    "meanInjectedItems": 3.2,
+    "queryLatencyP50Ms": 34.81958399998257,
+    "queryLatencyP95Ms": 60.04683299997123,
+    "tokenViolations": 0,
+    "fallbacks": 0
+  },
+  "byDomain": {
+    "enterprise": {
+      "cases": 8,
+      "directProxyCases": 6,
+      "answerAtomSupportRecall": 0.16666666666666666,
+      "allAnswerAtomsSupportedRate": 0.16666666666666666,
+      "meanInjectedTokens": 2848.875
+    },
+    "web": {
+      "cases": 12,
+      "directProxyCases": 9,
+      "answerAtomSupportRecall": 0.2222222222222222,
+      "allAnswerAtomsSupportedRate": 0.2222222222222222,
+      "meanInjectedTokens": 2792
+    }
+  },
+  "index": {
+    "enterprise": {
+      "trajectories": 100,
+      "states": 3358,
+      "units": 28903,
+      "truncatedStates": 0,
+      "buildLatencyMs": 320214.47795800003
+    },
+    "web": {
+      "trajectories": 100,
+      "states": 1737,
+      "units": 23532,
+      "truncatedStates": 0,
+      "buildLatencyMs": 158655.61524999997
+    }
+  },
+  "casesSha256": "ec9746e23608bf0ba51fe991f79f64cc1771526d847fc3b4b81937194c5f7c47"
+}
