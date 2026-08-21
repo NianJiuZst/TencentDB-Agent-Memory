@@ -1,0 +1,78 @@
+{
+  "protocolVersion": "lifecycle-contextual-e2e-v1.0",
+  "contextualProtocolVersion": "lifecycle-contextual-v2.1",
+  "seed": 20260821,
+  "selection": {
+    "protocolVersion": "lifecycle-adaptive-e2e-v1.1",
+    "sha256": "1e3ab7b21bd1425f98f095ca76a31d350c47f3bb9c9cf0090139567859dadaf1",
+    "cases": 50
+  },
+  "contextManifest": {
+    "sha256": "a272a6c5d15d7f344231362d96b3c630e92001fe6181f79c3c2e47a353c85b19",
+    "cases": 600
+  },
+  "arms": ["base", "v1", "contextual"],
+  "readers": [
+    {
+      "id": "minimax-m3",
+      "provider": "minimax",
+      "model": "MiniMax-M3",
+      "baseUrl": "https://api.minimaxi.com/v1",
+      "apiKeyEnv": "MINIMAX_API_KEY",
+      "temperature": 0.1,
+      "topP": 0.95,
+      "maxTokens": 700,
+      "thinking": "disabled"
+    },
+    {
+      "id": "deepseek-v4-flash",
+      "provider": "deepseek",
+      "model": "deepseek-v4-flash",
+      "baseUrl": "https://api.deepseek.com",
+      "apiKeyEnv": "DEEPSEEK_API_KEY",
+      "temperature": 0,
+      "maxTokens": 700,
+      "thinking": "disabled"
+    }
+  ],
+  "judges": [
+    {
+      "id": "minimax-m3",
+      "provider": "minimax",
+      "model": "MiniMax-M3",
+      "baseUrl": "https://api.minimaxi.com/v1",
+      "apiKeyEnv": "MINIMAX_API_KEY",
+      "temperature": 0.1,
+      "topP": 0.95,
+      "maxTokens": 8192,
+      "thinking": "disabled"
+    },
+    {
+      "id": "deepseek-v4-flash",
+      "provider": "deepseek",
+      "model": "deepseek-v4-flash",
+      "baseUrl": "https://api.deepseek.com",
+      "apiKeyEnv": "DEEPSEEK_API_KEY",
+      "temperature": 0,
+      "maxTokens": 8192,
+      "thinking": "disabled"
+    }
+  ],
+  "retries": 3,
+  "aggregation": {
+    "primary": "cross-model mean: DeepSeek judges MiniMax reader and MiniMax judges DeepSeek reader; average the two per case",
+    "sensitivity": "full-factorial mean over both judges for both readers",
+    "agreement": "exact agreement and Cohen kappa between judges on the same reader answer"
+  },
+  "uncertainty": {
+    "unit": "persona",
+    "bootstrapSamples": 5000
+  },
+  "gate": {
+    "minContextualVsBaseFamaDelta": 0.05,
+    "minContextualVsBaseFaaDelta": 0.1,
+    "requireContextualVsBaseFamaCiLowerAboveZero": true,
+    "requirePositiveContextualVsV1FamaDelta": true,
+    "maxContextualInjectedTokenIncreaseFraction": 0.5
+  }
+}

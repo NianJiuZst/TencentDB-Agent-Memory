@@ -28,6 +28,7 @@ export interface DirectJudgeRequest {
   spec: DirectJudgeSpec;
   apiKey: string;
   messages: ChatMessage[];
+  responseFormat?: "json" | "text";
 }
 
 class JudgeHttpError extends Error {
@@ -63,7 +64,7 @@ function requestBody(request: DirectJudgeRequest): Record<string, unknown> {
     ...common,
     max_tokens: request.spec.maxTokens,
     thinking: { type: "disabled" },
-    response_format: { type: "json_object" },
+    ...(request.responseFormat === "text" ? {} : { response_format: { type: "json_object" } }),
   };
 }
 

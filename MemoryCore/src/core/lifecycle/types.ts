@@ -67,10 +67,12 @@ export interface LifecyclePolicyFeedback {
   quality: number;
   meanCost: number;
   fallbackRate: number;
+  /** Mean positive quality loss on a protected or otherwise safety-critical slice. */
+  harm?: number;
 }
 
-export interface LifecyclePolicyTrial {
-  policy: LifecyclePolicy;
+export interface LifecyclePolicyTrial<TPolicy extends LifecyclePolicy = LifecyclePolicy> {
+  policy: TPolicy;
   feedback: LifecyclePolicyFeedback;
   utility: number;
 }
@@ -78,4 +80,19 @@ export interface LifecyclePolicyTrial {
 export interface LifecycleOptimizerWeights {
   costPenalty: number;
   fallbackPenalty: number;
+  harmPenalty?: number;
+}
+
+export interface LifecyclePromotionCheck {
+  name: string;
+  passed: boolean;
+  observed?: number;
+  threshold?: string;
+}
+
+export interface LifecyclePromotionResult<TPolicy extends LifecyclePolicy = LifecyclePolicy> {
+  selected: TPolicy;
+  outcome: "promote_challenger" | "retain_incumbent";
+  checks: LifecyclePromotionCheck[];
+  failedChecks: string[];
 }

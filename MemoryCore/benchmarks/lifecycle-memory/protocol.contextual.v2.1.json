@@ -1,0 +1,54 @@
+{
+  "protocolVersion": "lifecycle-contextual-v2.1",
+  "supersedes": "lifecycle-contextual-v2.0",
+  "changeReason": "The v2.0 pre-score intent validation found 30 reasoning-template false negatives: weekly 'Am I meeting my ... goal?' and monthly 'Which week ...?' questions. V2.1 adds only those query-text patterns. The candidate grid, optimizer objective, samples, metrics, uncertainty method, and gates are unchanged, and all cases are rerun in a fresh output directory.",
+  "retrievalProtocolVersion": "lifecycle-headroom-v3.1",
+  "seed": 20260821,
+  "split": {
+    "optimizationPeriods": ["weekly", "monthly"],
+    "confirmationPeriods": ["quarterly"],
+    "usesConfirmationFeedback": false
+  },
+  "queryIntent": {
+    "classifier": "deterministic query-text classifier in the replaceable Memora adapter",
+    "protectedIntent": "historical_aggregate",
+    "usesTaskLabelsAtInference": false
+  },
+  "candidateGrid": {
+    "minConfidence": [0.85, 0.91, 0.96],
+    "maxHops": [1, 2],
+    "maxExtraSlots": [0, 1, 2],
+    "protectHistoricalAggregate": [false, true],
+    "baseResultLimit": 5,
+    "maxExpansions": 64,
+    "timeoutMs": 10,
+    "maxPolicies": 64
+  },
+  "optimizer": {
+    "quality": "mean evidenceFamaProxy on optimization-period forgetting-bearing questions",
+    "harm": "mean positive evidenceFamaProxy loss on optimization-period non-forgetting questions",
+    "cost": "mean positive injected-token increase over Base on all optimization-period questions, in kilotokens",
+    "harmPenalty": 1.0,
+    "costPenalty": 0.05,
+    "fallbackPenalty": 1.0
+  },
+  "uncertainty": {
+    "unit": "persona",
+    "bootstrapSamples": 5000
+  },
+  "frozenAnswerLevelSelection": {
+    "protocolVersion": "lifecycle-adaptive-e2e-v1.1",
+    "selectionSha256": "1e3ab7b21bd1425f98f095ca76a31d350c47f3bb9c9cf0090139567859dadaf1",
+    "cases": 50,
+    "reusePriorAnswersOnlyIfCandidateIdsMatch": true
+  },
+  "confirmationGate": {
+    "minForgettingFamaDelta": 0.02,
+    "requireForgettingFamaCiLowerAboveZero": true,
+    "requireZeroProtectedIntentMismatches": true,
+    "requireNoMoreHarmedNonForgettingCasesThanV1": true,
+    "maxMeanTokenIncreaseFraction": 0.2,
+    "requireDisabledEquivalence": true,
+    "requireForcedFailureFallback": true
+  }
+}

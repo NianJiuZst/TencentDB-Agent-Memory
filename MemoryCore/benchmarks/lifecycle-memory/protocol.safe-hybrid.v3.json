@@ -1,0 +1,54 @@
+{
+  "protocolVersion": "lifecycle-safe-hybrid-v3.0",
+  "parentProtocols": [
+    "lifecycle-adaptive-v1.0",
+    "lifecycle-contextual-v2.1",
+    "lifecycle-contextual-e2e-v1.0"
+  ],
+  "developmentStatus": "Post-hoc safety contraction defined after the contextual-v2.1 answer-level gate failed. Results are diagnostic and require a new external holdout before a fresh confirmatory claim.",
+  "seed": 20260821,
+  "policy": {
+    "enabled": true,
+    "minConfidence": 0.85,
+    "maxHops": 1,
+    "maxExpansions": 64,
+    "resultLimit": 5,
+    "timeoutMs": 10,
+    "baseResultLimit": 5,
+    "maxExtraSlots": 0,
+    "protectHistoricalAggregate": true
+  },
+  "routing": {
+    "historicalAggregate": "byte-equivalent Base candidates",
+    "allOtherQueries": "byte-equivalent lifecycle-v1 candidates",
+    "usesTaskLabelsAtInference": false,
+    "maxInjectedItems": 5
+  },
+  "evaluation": {
+    "periods": [
+      "weekly",
+      "monthly",
+      "quarterly"
+    ],
+    "usesEvaluationFeedbackForPolicyFit": false,
+    "uncertainty": {
+      "unit": "persona",
+      "bootstrapSamples": 5000
+    }
+  },
+  "frozenAnswerLevelSelection": {
+    "protocolVersion": "lifecycle-adaptive-e2e-v1.1",
+    "selectionSha256": "1e3ab7b21bd1425f98f095ca76a31d350c47f3bb9c9cf0090139567859dadaf1",
+    "cases": 50,
+    "reusePriorAnswersOnlyIfCandidateIdsMatchV1": true
+  },
+  "gate": {
+    "requireHistoricalAggregateExactBase": true,
+    "requireOtherQueriesExactV1": true,
+    "requireFrozenSelectionExactV1": true,
+    "requireAllQuestionFamaNotBelowV1": true,
+    "maxMeanTokenIncreaseOverV1Fraction": 0,
+    "requireDisabledEquivalence": true,
+    "requireForcedFailureFallback": true
+  }
+}

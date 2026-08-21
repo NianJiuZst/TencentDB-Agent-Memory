@@ -26,4 +26,24 @@ describe("optimizeLifecyclePolicy", () => {
     expect(result.selected.maxHops).toBe(2);
     expect(result.trials).toHaveLength(3);
   });
+
+  it("can select an extended policy using an explicit protected-slice harm penalty", async () => {
+    const policies = [
+      { ...base, maxHops: 1, protectHistory: false },
+      { ...base, maxHops: 1, protectHistory: true },
+    ];
+    const result = await optimizeLifecyclePolicy({
+      policies,
+      evaluate: (policy) => ({
+        quality: 0.7,
+        meanCost: 0.1,
+        fallbackRate: 0,
+        harm: policy.protectHistory ? 0 : 0.05,
+      }),
+      weights: { costPenalty: 0.01, fallbackPenalty: 1, harmPenalty: 1 },
+    });
+
+    expect(result.selected.protectHistory).toBe(true);
+    expect(result.trials[0].feedback.harm).toBe(0);
+  });
 });

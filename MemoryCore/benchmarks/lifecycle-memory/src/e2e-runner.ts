@@ -96,7 +96,7 @@ function formatMemories(candidates: RetrievedUnit[]): string {
   }).join("\n");
 }
 
-function readerMessages(question: LifecycleEvalQuestion, candidates: RetrievedUnit[]) {
+export function readerMessages(question: LifecycleEvalQuestion, candidates: RetrievedUnit[]) {
   return [
     {
       role: "system" as const,

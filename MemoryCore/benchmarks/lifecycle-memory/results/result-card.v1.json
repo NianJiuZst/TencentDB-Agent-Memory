@@ -1,5 +1,5 @@
 {
-  "resultVersion": "lifecycle-result-card-v1.1",
+  "resultVersion": "lifecycle-result-card-v1.2",
   "dataset": {
     "name": "Memora",
     "revision": "a6493188efc836d6511ed5e4163fe3ba87da30ff",
@@ -16,6 +16,12 @@
     "maxExpansions": 64,
     "resultLimit": 5,
     "timeoutMs": 10
+  },
+  "currentRecommendation": {
+    "bestTestedPolicy": "lifecycle-adaptive-v1.0",
+    "decision": "retain_research_incumbent",
+    "productionPromotion": "not_met",
+    "reason": "The contextual-v2.1 challenger improved the direct retrieval proxy but did not beat V1 at answer level and reduced FAA while using more context. V1 remains the best-supported policy for the next internal pilot behind the switch and hard fallback."
   },
   "directHeldOut": {
     "period": "quarterly",
@@ -111,6 +117,197 @@
         "famaCi": true,
         "individualJudgeFamaDirection": true
       }
+    }
+  },
+  "contextualV2Direct": {
+    "protocol": "lifecycle-contextual-v2.1",
+    "developmentSplit": {
+      "optimizationPeriods": ["weekly", "monthly"],
+      "cases": 300,
+      "forgettingBearing": 188,
+      "nonForgetting": 112
+    },
+    "selectedPolicy": {
+      "enabled": true,
+      "minConfidence": 0.96,
+      "maxHops": 2,
+      "maxExpansions": 64,
+      "resultLimit": 7,
+      "timeoutMs": 10,
+      "baseResultLimit": 5,
+      "maxExtraSlots": 2,
+      "protectHistoricalAggregate": true
+    },
+    "contextManifestSha256": "a272a6c5d15d7f344231362d96b3c630e92001fe6181f79c3c2e47a353c85b19",
+    "quarterly": {
+      "all": {
+        "cases": 300,
+        "baseFamaProxy": 0.4229478693483455,
+        "v1FamaProxy": 0.4394551491688384,
+        "contextualFamaProxy": 0.44464729847605855,
+        "contextualVsBase": { "mean": 0.02169942912771313, "ci95": [0.011479747394862573, 0.0325069291657011] },
+        "contextualVsV1": { "mean": 0.0051921493072202285, "ci95": [0.0015480769230769233, 0.00946691620698713] },
+        "baseMeanInjectedTokens": 133.67666666666668,
+        "contextualMeanInjectedTokens": 156.75666666666666
+      },
+      "forgettingBearing": {
+        "cases": 192,
+        "baseFamaProxy": 0.45016774937889864,
+        "v1FamaProxy": 0.47700513196360017,
+        "contextualFamaProxy": 0.48146894072428387,
+        "contextualVsBase": { "mean": 0.03130119134538511, "ci95": [0.015428006776666144, 0.04872737556561086] },
+        "contextualVsV1": { "mean": 0.00446380876068376, "ci95": [0.0008765044479330194, 0.00873144399460189] }
+      },
+      "staleExposed": {
+        "cases": 61,
+        "baseFamaProxy": 0.09069454069888164,
+        "v1FamaProxy": 0.18356531446695376,
+        "contextualFamaProxy": 0.19353799206258224,
+        "contextualVsBase": { "mean": 0.10284345136370057, "ci95": [0.06164073924876339, 0.14412315750494867] },
+        "contextualVsV1": { "mean": 0.009972677595628416, "ci95": [0.002645502645502645, 0.018817204301075266] }
+      },
+      "reasoningProtection": {
+        "cases": 100,
+        "baseFamaProxy": 0.3828548625708846,
+        "v1FamaProxy": 0.38251559413640346,
+        "contextualFamaProxy": 0.3828548625708846,
+        "contextualVsBase": 0
+      }
+    },
+    "intentClassifierValidation": {
+      "cases": 600,
+      "falsePositives": 0,
+      "falseNegatives": 0,
+      "taskLabelsUsedAtInference": false
+    },
+    "fallbackValidation": {
+      "cases": 600,
+      "disabledMismatches": 0,
+      "damagedMismatches": 0,
+      "timeoutMismatches": 0,
+      "protectedIntentMismatches": 0
+    },
+    "directGatePassed": true,
+    "caveat": "Quarterly was observed during V1 development and is a confirmation split, not a pristine external holdout."
+  },
+  "crossReaderAnswerLevel": {
+    "protocol": "lifecycle-contextual-e2e-v1.0",
+    "selectionSha256": "1e3ab7b21bd1425f98f095ca76a31d350c47f3bb9c9cf0090139567859dadaf1",
+    "contextManifestSha256": "a272a6c5d15d7f344231362d96b3c630e92001fe6181f79c3c2e47a353c85b19",
+    "cases": 50,
+    "arms": ["base", "v1", "contextual-v2.1"],
+    "readers": ["MiniMax-M3", "deepseek-v4-flash"],
+    "judges": ["MiniMax-M3", "deepseek-v4-flash"],
+    "primaryAggregation": "cross-model mean; each answer is scored only by the other model",
+    "primary": {
+      "base": {
+        "mpa": 0.38554116137130845,
+        "faa": 0.8530634686049225,
+        "fama": 0.31946014911226056,
+        "criterionAccuracy": 0.7040138695699593,
+        "meanInjectedTokens": 144.52
+      },
+      "v1": {
+        "mpa": 0.4342113911415382,
+        "faa": 0.9368809135996458,
+        "fama": 0.4003776759108192,
+        "criterionAccuracy": 0.7606296700385441,
+        "meanInjectedTokens": 146.76
+      },
+      "contextualV2": {
+        "mpa": 0.446093479886127,
+        "faa": 0.8961194172052818,
+        "fama": 0.39607050547933426,
+        "criterionAccuracy": 0.7382103099832513,
+        "meanInjectedTokens": 201.84
+      }
+    },
+    "v1VsBase": {
+      "mpa": { "mean": 0.04867022977022978, "ci95": [0.01963103563103563, 0.09283278388278388] },
+      "faa": { "mean": 0.08381744499472354, "ci95": [0.059919717157420005, 0.10670863931538373] },
+      "fama": { "mean": 0.0809175267985587, "ci95": [0.05167652629579349, 0.12592070678850337] }
+    },
+    "contextualV2VsBase": {
+      "mpa": { "mean": 0.060552318514818515, "ci95": [0.021620983183483187, 0.10902835497835495] },
+      "faa": { "mean": 0.04305594860035951, "ci95": [0.0029267694481470373, 0.08476295363330269] },
+      "fama": { "mean": 0.07661035636707371, "ci95": [0.04407982505198358, 0.1141202635350691] }
+    },
+    "contextualV2VsV1": {
+      "mpa": { "mean": 0.011882088744588746, "ci95": [-0.00385220612720613, 0.02760979020979021] },
+      "faa": { "mean": -0.04076149639436407, "ci95": [-0.07616180989114558, -0.006437811937058922] },
+      "fama": { "mean": -0.004307170431484983, "ci95": [-0.02062359298183076, 0.010876513041904378] }
+    },
+    "fullFactorialSensitivity": {
+      "v1VsBaseFama": 0.08260157675702816,
+      "contextualV2VsBaseFama": 0.07664644792902782,
+      "contextualV2VsV1Fama": -0.005955128828000342
+    },
+    "judgeAgreement": {
+      "pairedCriteria": 8532,
+      "exactRate": 0.9678856071261135,
+      "cohensKappa": 0.8990478551154092,
+      "unclearVerdicts": 3
+    },
+    "operationalIntegrity": {
+      "readerArmEvaluations": 300,
+      "readerCalls": 300,
+      "judgeCalls": 600,
+      "readerRetries": 0,
+      "judgeRetries": 0,
+      "readerModelMismatches": 0,
+      "judgeModelMismatches": 0
+    },
+    "v1PersonaHeterogeneity": {
+      "positivePersonas": 10,
+      "negativePersonas": 0,
+      "medianFamaDelta": 0.059147408963585425,
+      "leaveOnePersonaOutRange": [0.06073963882967426, 0.0862545169556635]
+    },
+    "gate": {
+      "passed": false,
+      "checks": {
+        "contextualVsBaseFama": true,
+        "contextualVsBaseFaa": false,
+        "contextualVsBaseFamaCi": true,
+        "contextualVsV1Fama": false,
+        "tokenBudget": true
+      }
+    },
+    "promotion": {
+      "outcome": "retain_incumbent",
+      "selectedPolicy": "lifecycle-adaptive-v1.0",
+      "failedChecks": ["contextualVsBaseFaa", "contextualVsV1Fama"]
+    }
+  },
+  "safeHybridDiagnostic": {
+    "protocol": "lifecycle-safe-hybrid-v3.0",
+    "developmentStatus": "post-hoc safety contraction",
+    "routing": "Base for historical aggregates; V1 for all other queries; fixed k=5",
+    "cases": 600,
+    "safeHybridFamaProxy": 0.41907611330746536,
+    "v1FamaProxy": 0.41912346042815946,
+    "safeHybridVsV1": { "mean": -0.00004734712069401261, "ci95": [-0.0002895521813127153, 0.00019646812303257866] },
+    "safeHybridMeanInjectedTokens": 126.43333333333334,
+    "v1MeanInjectedTokens": 125.975,
+    "routingMismatches": 0,
+    "frozenV1CandidateMismatches": 0,
+    "disabledMismatches": 0,
+    "damagedMismatches": 0,
+    "timeoutMismatches": 0,
+    "gatePassed": false,
+    "failedChecks": ["allQuestionFamaNotBelowV1", "tokenBudget"]
+  },
+  "independentValidation": {
+    "contextualE2ERows": 300,
+    "uniqueReaderArmKeys": 300,
+    "recomputedMetricMismatches": 0,
+    "recomputedSummaryMismatches": 0,
+    "verdictConsistencyMismatches": 0,
+    "alternative20000SamplePersonaBootstrap": {
+      "v1VsBaseFama": [0.05194004225621874, 0.1253398046398046],
+      "contextualV2VsBaseFama": [0.04456500484809309, 0.11472617102627072],
+      "contextualV2VsV1Fama": [-0.020145386273377284, 0.010415830520242291],
+      "contextualV2VsV1Faa": [-0.07571593391649936, -0.007298815183576841]
     }
   },
   "fallbackValidation": {

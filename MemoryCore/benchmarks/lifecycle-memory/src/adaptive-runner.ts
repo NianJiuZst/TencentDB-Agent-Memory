@@ -27,16 +27,16 @@ import type {
 const runFile = promisify(execFile);
 const encoding = getEncoding("cl100k_base");
 
-interface PreparedCase {
+export interface PreparedCase {
   question: LifecycleEvalQuestion;
   candidates: RetrievedUnit[];
   queryLatencyMs: number;
-  resolver?: LifecycleLedger;
+  resolver?: LifecycleResolver;
   materialize: (id: string) => RetrievedUnit | undefined;
   ledgerError?: string;
 }
 
-interface AdaptiveCaseResult {
+export interface AdaptiveCaseResult {
   caseId: string;
   groupId: string;
   persona: string;
@@ -52,7 +52,7 @@ interface AdaptiveCaseResult {
   decision?: LifecycleDecisionLog;
 }
 
-interface PreparedData {
+export interface PreparedData {
   dataset: DatasetDescription;
   cases: PreparedCase[];
   ledgerStats: Array<{
@@ -74,7 +74,7 @@ function mean(values: number[]): number {
   return values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : 0;
 }
 
-function baseResult(prepared: PreparedCase): AdaptiveCaseResult {
+export function baseResult(prepared: PreparedCase): AdaptiveCaseResult {
   const candidates = prepared.candidates.slice(0, PROTOCOL.retrieval.resultLimit);
   return {
     caseId: prepared.question.id,
@@ -92,7 +92,7 @@ function baseResult(prepared: PreparedCase): AdaptiveCaseResult {
   };
 }
 
-function adaptiveResult(prepared: PreparedCase, policy: LifecyclePolicy): AdaptiveCaseResult {
+export function adaptiveResult(prepared: PreparedCase, policy: LifecyclePolicy): AdaptiveCaseResult {
   const applied = applyLifecyclePolicy({
     candidates: prepared.candidates,
     resolver: prepared.resolver,
@@ -119,7 +119,7 @@ function adaptiveResult(prepared: PreparedCase, policy: LifecyclePolicy): Adapti
   };
 }
 
-async function prepare(options: AdaptiveRunOptions): Promise<PreparedData> {
+export async function prepareAdaptiveData(options: AdaptiveRunOptions): Promise<PreparedData> {
   const loaded = await loadMemora(options.dataRoot, !options.skipHashVerification);
   const cases: PreparedCase[] = [];
   const ledgerStats: PreparedData["ledgerStats"] = [];
@@ -277,7 +277,7 @@ function fallbackChecks(prepared: PreparedCase[], selected: LifecyclePolicy) {
   };
 }
 
-async function sourceRevision(): Promise<{ head: string; branch: string; base: string }> {
+export async function sourceRevision(): Promise<{ head: string; branch: string; base: string }> {
   const cwd = path.resolve(import.meta.dirname, "../../..");
   const [head, branch, base] = await Promise.all([
     runFile("git", ["rev-parse", "HEAD"], { cwd }),
@@ -288,7 +288,7 @@ async function sourceRevision(): Promise<{ head: string; branch: string; base: s
 }
 
 export async function runAdaptive(options: AdaptiveRunOptions): Promise<Record<string, unknown>> {
-  const prepared = await prepare(options);
+  const prepared = await prepareAdaptiveData(options);
   const optimizationCases = prepared.cases.filter((entry) =>
     ADAPTIVE_PROTOCOL.split.optimizationPeriods.includes(entry.question.period)
     && entry.question.obsoleteAtoms.length > 0

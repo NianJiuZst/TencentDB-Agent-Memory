@@ -1,62 +1,25 @@
 # Adaptive lifecycle memory benchmark
 
-This benchmark evaluates a sidecar lifecycle controller for MemoryCore L0 retrieval. It does not replace FTS5, vector search, extraction, or the Gateway path. The controller consumes write-time correction events, builds bounded predecessor-to-successor links, and redirects stale retrieval hits to the latest correction node. A bounded optimizer selects policy parameters from controlled feedback on an optimization split.
+This benchmark evaluates a switchable lifecycle sidecar above MemoryCore L0 retrieval. It keeps the existing FTS5/vector candidate path, learns a bounded correction policy from controlled feedback, and returns the original Base prefix on disablement, timeout, corruption, or missing state.
 
 ## Outcome
 
-The deployable controller improves held-out, stale-exposed quarterly questions, but the final composite promotion gate is not fully passed.
+**V1 is the best-tested policy; the larger V2 challenger is rejected.** V2 improved the direct retrieval proxy, but the frozen answer-level experiment did not show an improvement over V1 and found a statistically negative FAA difference. A preregistered promotion gate therefore retains V1 as the research incumbent. No result here authorizes an unconditional production rollout or establishes effectiveness on real programming sessions.
 
-| Evaluation | Base FAMA | Adaptive FAMA | Paired delta | 95% persona-cluster CI | Status |
-|---|---:|---:|---:|---:|---|
-| Direct evidence proxy, quarterly forgetting-bearing (192) | 0.4502 | 0.4770 | +0.0268 | [+0.0147, +0.0413] | passed |
-| Direct evidence proxy, quarterly stale-exposed (61) | 0.0907 | 0.1836 | +0.0929 | [+0.0585, +0.1278] | passed |
-| Answer-level FAMA, dual-judge panel, frozen stale-exposed sample (50) | 0.3413 | 0.3990 | +0.0577 | [+0.0123, +0.1171] | primary metric passed |
+| Frozen 50-case cross-model evaluation | Base | V1 | V2 | V1 vs Base [95% CI] | V2 vs V1 [95% CI] |
+|---|---:|---:|---:|---:|---:|
+| MPA | 0.3855 | 0.4342 | 0.4461 | +0.0487 [+0.0196, +0.0928] | +0.0119 [-0.0039, +0.0276] |
+| FAA | 0.8531 | 0.9369 | 0.8961 | +0.0838 [+0.0599, +0.1067] | -0.0408 [-0.0762, -0.0064] |
+| FAMA | 0.3195 | **0.4004** | 0.3961 | **+0.0809 [+0.0517, +0.1259]** | -0.0043 [-0.0206, +0.0109] |
+| Mean injected tokens | 144.52 | **146.76** | 201.84 | +1.55% | +37.53% |
 
-Answer-level FAA improves by +0.0846, with a 95% CI of [+0.0641, +0.1058]. This misses the unchanged, predeclared +0.10 point threshold, so `lifecycle-adaptive-dual-judge-v2.1` retains machine-readable status `failed`. MiniMax-M3 and DeepSeek-V4-Flash agree on 97.71% of 2,844 paired criterion votes (Cohen's kappa 0.923), and both estimate a positive FAMA effect. The result should be interpreted as promising conditional evidence, not a completed claim about all conversations or real programming agents.
+Both MiniMax-M3 and DeepSeek-V4-Flash act as readers and judges. The primary crossed aggregation lets DeepSeek judge MiniMax answers and MiniMax judge DeepSeek answers, excluding self-judgment. The full-factorial sensitivity result agrees with the primary ordering: V1 versus Base is +8.26 FAMA points, V2 versus Base is +7.66, and V2 versus V1 is -0.60.
 
-## Components
+The two judges agree on 96.79% of 8,532 paired criterion votes (Cohen's kappa 0.899). The run completed 300 reader calls and 600 judge calls with zero retries and zero returned-model mismatches; three of 8,532 DeepSeek verdicts were `unclear` and counted as incorrect.
 
-- `src/core/lifecycle/`: dataset-independent bounded ledger, resolver, optimizer, switch, decision log, and hard fallback, exposed as opt-in named exports from the package root.
-- `src/memora-events.ts`: replaceable Memora write-event adapter. It never reads evaluation evidence.
-- `src/adaptive-runner.ts`: weekly/monthly optimization and quarterly held-out direct evaluation.
-- `src/e2e-runner.ts`: frozen answer-level evaluation with Base, Oracle, or adaptive comparators.
-- `src/judge-provider.ts` and `src/dual-judge-runner.ts`: direct-provider MiniMax/DeepSeek judging, equal-weight panel aggregation, per-judge effects, agreement, and unanimous sensitivity analysis.
-- `protocol*.json`: immutable protocol history. Every semantic change increments the protocol version.
-- `results/result-card.v1.json`: compact checked-in result record. Raw case files are emitted under the chosen output directory.
+## What was optimized
 
-## Reproduction
-
-The frozen dataset is [geniesinc/Memora](https://github.com/geniesinc/Memora) revision `a6493188efc836d6511ed5e4163fe3ba87da30ff`. The benchmark verifies the aggregate data manifest SHA-256:
-
-```text
-dfc82711dd6647bcb0ba590f43a336f0dac02420e981ce957dd1fd13ae331bfc
-```
-
-From `MemoryCore`, with dependencies installed:
-
-```bash
-tsx benchmarks/lifecycle-memory/src/adaptive-cli.ts \
-  --data /path/to/Memora/data \
-  --output benchmark-runs/lifecycle-memory/adaptive-v1
-
-tsx benchmarks/lifecycle-memory/src/e2e-cli.ts \
-  --data /path/to/Memora/data \
-  --output benchmark-runs/lifecycle-memory/e2e-adaptive-v1.1
-
-tsx benchmarks/lifecycle-memory/src/dual-judge-cli.ts \
-  --data /path/to/Memora/data \
-  --input benchmark-runs/lifecycle-memory/e2e-adaptive-v1.1/cases.jsonl \
-  --output benchmark-runs/lifecycle-memory/dual-judge-v2.1
-
-vitest run -c benchmarks/lifecycle-memory/vitest.config.ts
-vitest run src/core/lifecycle/ledger.test.ts src/core/lifecycle/optimizer.test.ts
-```
-
-The source-answer E2E command requires `OPENROUTER_API_KEY` for its frozen reader. The final judging command reads `MINIMAX_API_KEY` and `DEEPSEEK_API_KEY`, calls the vendors' official APIs directly, and never writes credentials to results. The protocol fixes exact model IDs, endpoints, sampling parameters, aggregation, thresholds, source-case hash, and selection hash before calls are made. Batched criteria make this protocol cheaper than, and not directly comparable to, Memora Table 3.
-
-## Optimization and leakage boundary
-
-The policy grid is fixed at two confidence thresholds and four hop limits. Weekly and monthly forgetting-bearing questions provide optimization feedback. Quarterly data is held out. The optimizer selected:
+V1 uses fixed-budget successor redirection:
 
 ```json
 {
@@ -69,34 +32,109 @@ The policy grid is fixed at two confidence thresholds and four hop limits. Weekl
 }
 ```
 
-Evaluation labels are used only for scoring and for defining the stale-exposed diagnostic population. Ledger construction uses `session_type`, `operation`, `operation_details`, and shared-memory turns. The E2E selection is therefore conditional but the adaptive controller is label-free at inference.
+V2 expands the bounded search space to 36 policies over confidence, hop count, zero-to-two extra injection slots, and a query-text historical-aggregate guard. The optimizer observes 300 weekly/monthly questions (188 forgetting-bearing and 112 non-forgetting), penalizes protected-slice harm and token cost, and selects confidence 0.96, two hops, at most two extra slots, and aggregate protection.
 
-## Switch and hard fallback
+On quarterly direct evidence, V2 improves FAMA proxy over Base by +3.13 points on 192 forgetting-bearing questions and +10.28 points on 61 stale-exposed questions. It also exceeds V1 by +0.45 and +1.00 points on those slices. However, those direct gains do not survive answer generation: V2 mentions more superseded preferences, including in negated form, and loses FAA. This failure analysis is consistent with over-injection, but it is not a fully isolated causal ablation because V1 and V2 differ in several policy parameters.
 
-`applyLifecyclePolicy` returns the unmodified Base prefix when the policy is disabled. Missing ledgers, resolver exceptions, timeouts, cycles, capacity violations, and missing successor materialization produce the same Base result with a `fallback` decision and reason. The experiment checks all 600 questions:
+A post-hoc Safe-Hybrid diagnostic (V1 for current-state queries, Base for historical aggregates, fixed `k=5`) is intentionally not promoted either. It is byte-equivalent to V1 on the frozen answer-level sample, but across all 600 direct cases it is 0.0047 FAMA points below V1 and uses 0.36% more tokens, failing its strict no-regression/no-extra-cost gate.
 
-- disabled equivalence mismatches: 0/600;
-- forced damaged-state fallback mismatches: 0/600;
-- forced timeout fallback mismatches: 0/600.
+## Components
 
-Default per-scope limits are 10,000 units, 5,000 events, and 50,000 edges. Query traversal is additionally bounded by hop, expansion, result-count, and wall-time budgets.
+- `src/core/lifecycle/`: dataset-independent bounded ledger, resolver, optimizer, promotion gate, switch, decision log, and hard fallback.
+- `src/memora-events.ts`: replaceable Memora write-event adapter; it never reads evaluation labels.
+- `src/adaptive-runner.ts`: V1 weekly/monthly optimization and quarterly direct evaluation.
+- `src/contextual-runner.ts`: V2 bounded policy search, intent protection, direct comparison, decision logs, and stable context manifest.
+- `src/contextual-e2e-runner.ts`: Base/V1/V2 two-reader, two-judge answer evaluation with crossed primary aggregation.
+- `src/safe-hybrid-runner.ts`: explicitly post-hoc safety-contraction diagnostic.
+- `protocol*.json`: immutable protocol history; semantic changes receive new versions.
+- `results/result-card.v1.json`: checked-in structured result record. Raw answers and per-case outputs stay in the selected run directory.
+
+## Reproduction
+
+Use [geniesinc/Memora](https://github.com/geniesinc/Memora) at revision `a6493188efc836d6511ed5e4163fe3ba87da30ff`. The adapter verifies this aggregate data-manifest SHA-256:
+
+```text
+dfc82711dd6647bcb0ba590f43a336f0dac02420e981ce957dd1fd13ae331bfc
+```
+
+From `MemoryCore`, with dependencies installed:
+
+```bash
+# V1 direct run and deterministic frozen selection; --dry-run makes no model call.
+pnpm eval:lifecycle-adaptive -- \
+  --data /path/to/Memora/data \
+  --output benchmark-runs/lifecycle-memory/adaptive-v1
+
+pnpm eval:lifecycle-e2e -- \
+  --data /path/to/Memora/data \
+  --output benchmark-runs/lifecycle-memory/e2e-adaptive-v1.1 \
+  --dry-run
+
+# V2 direct optimization/confirmation and stable candidate manifest.
+pnpm eval:lifecycle-contextual -- \
+  --data /path/to/Memora/data \
+  --selection benchmark-runs/lifecycle-memory/e2e-adaptive-v1.1/selection.json \
+  --output benchmark-runs/lifecycle-memory/contextual-v2.1
+
+# Final answer-level run: official provider APIs only; no OpenRouter dependency.
+pnpm eval:lifecycle-contextual-e2e -- \
+  --data /path/to/Memora/data \
+  --selection benchmark-runs/lifecycle-memory/e2e-adaptive-v1.1/selection.json \
+  --contexts benchmark-runs/lifecycle-memory/contextual-v2.1/context-manifest.json \
+  --output benchmark-runs/lifecycle-memory/contextual-e2e-v1
+
+pnpm validate:lifecycle-contextual-e2e -- \
+  --evaluations benchmark-runs/lifecycle-memory/contextual-e2e-v1/evaluations.jsonl \
+  --summary benchmark-runs/lifecycle-memory/contextual-e2e-v1/summary.json \
+  --output benchmark-runs/lifecycle-memory/contextual-e2e-v1/validation.json
+
+# Post-hoc diagnostic; not part of the confirmatory claim.
+pnpm eval:lifecycle-safe-hybrid -- \
+  --data /path/to/Memora/data \
+  --selection benchmark-runs/lifecycle-memory/e2e-adaptive-v1.1/selection.json \
+  --output benchmark-runs/lifecycle-memory/safe-hybrid-v3
+
+pnpm test:lifecycle-memory
+vitest run src/core/lifecycle
+```
+
+The final answer-level command reads `MINIMAX_API_KEY` and `DEEPSEEK_API_KEY`, uses the vendors' official endpoints, and never writes credentials. Protocols pin exact model IDs, endpoints, sampling settings, hashes, metrics, aggregation, and gates before answer calls. The runner is resumable and records calls, retries, returned model IDs, latency, and usage.
+
+## Evaluation and leakage boundary
+
+- Public data: 600 questions, 27,614 sessions, and 10 personas across weekly, monthly, and quarterly horizons.
+- V1 optimization: weekly/monthly forgetting-bearing questions; quarterly was its original held-out split.
+- V2 optimization: all weekly/monthly questions. Quarterly had already been observed during V1 development, so V2 calls it a confirmation split rather than a pristine holdout.
+- Answer-level sample: the same frozen 50 quarterly, Base-stale-exposed cases (five per persona; 43 recommending and seven remembering). V2 candidate IDs differed on all 50, so all Base, V1, and V2 answers were generated afresh.
+- Labels score results and validate the query-intent adapter; they are not available to the runtime controller. The public classifier matches Memora's repeated templates with zero errors on 600 cases, which should not be interpreted as general-language accuracy.
+- Batched criterion scoring is not directly comparable to Memora Table 3.
+
+## Switch, promotion, and hard fallback
+
+`applyLifecyclePolicy` returns the unmodified Base prefix when disabled. Missing ledgers, resolver exceptions, timeouts, cycles, capacity violations, and missing successor materialization return the same Base prefix with a `fallback` decision and reason. All direct protocols report zero mismatches over 600 disabled, forced-damage, and forced-timeout checks.
+
+`promoteLifecyclePolicy` separates proposal from deployment: an optimized challenger replaces the incumbent only if every predeclared quality, safety, cost, and fallback check passes. V2 misses the answer-level FAA magnitude threshold and the positive V2-versus-V1 FAMA check, so the machine-readable outcome is `retain_incumbent`.
+
+Default per-scope capacities are 10,000 units, 5,000 events, and 50,000 edges. Query traversal is additionally bounded by hop, expansion, result-count, and wall-time budgets.
 
 ## Internal programming-data adapter
 
-To transfer the method to long programming sessions, keep `src/core/lifecycle/` unchanged and replace only the event adapter. The internal adapter must emit:
+To transfer the method to long programming sessions, keep `src/core/lifecycle/` and replace the public-data adapters. The internal adapter must provide:
 
-- a monotonic event sequence;
-- obsolete values or identifiers from explicit correction, revert, rename, or deletion signals;
-- successor memory-unit IDs that contain the corrected state or tombstone;
-- calibrated confidence and signal provenance.
+- a monotonic event sequence and stable memory-unit IDs;
+- obsolete values or identifiers from explicit correction, revert, rename, deletion, or environment-change signals;
+- successor memory-unit IDs containing the corrected state or tombstone;
+- calibrated confidence and signal provenance;
+- query scope such as repository, branch, environment, component, and task when available.
 
-Likely programming signals include “use X instead of Y,” renamed files or symbols, reverted plans, updated test expectations, tool-confirmed deletion, and explicit user correction. Weak linguistic cues should receive lower confidence and be admitted only if optimization feedback selects them. Assumptions that may fail internally include unavailable structured operation metadata, corrections that do not quote the old value, branch-specific truths, and concurrently valid alternatives.
+Likely signals include “use X instead of Y,” renamed files or symbols, reverted plans, changed tests, tool-confirmed deletion, and explicit user correction. Weak linguistic cues should receive lower confidence and enter policy optimization only after adapter-specific calibration. Memora has no repository/branch/environment fields, so scope-aware coexistence remains an interface requirement, not a validated public-data claim.
 
 ## Known limitations
 
-- Main evidence comes from public personalized dialogue, not private multi-turn programming data.
-- The final E2E set is deliberately stale-exposed and contains 43 recommending versus 7 remembering questions. Panel FAMA improves by 6.67 points on recommending but only 0.19 points on remembering.
-- The fixed two-judge panel is not a random sample of judge models. Its strict unanimous sensitivity estimate is +4.77 FAMA points with a 95% CI of [-0.30, +11.21], so the strongest conservative aggregation is not statistically decisive.
-- Effects are heterogeneous: seven personas improve and three decline; the median persona effect is +3.40 points, while leave-one-persona-out means range from +3.23 to +6.64 points.
-- Exact value matching misses paraphrased corrections and can collide on short or reused values.
-- The implementation is a reviewable sidecar module and benchmark integration; wiring it into a production Gateway should occur only after internal adapter validation.
+- Main evidence comes from personalized dialogue, not private multi-turn programming data.
+- The answer-level set is conditional on stale exposure and is task-imbalanced; it is not a population estimate over all 600 questions.
+- Neither V1 nor V2 meets every strict production-style magnitude gate; V1 is the best-tested research policy, not an unconditional deployment recommendation.
+- The crossed design reduces self-judging bias but still uses a fixed two-model pool.
+- The V2 direct proxy selected a policy that did not improve answer-level FAMA, demonstrating proxy-to-generation mismatch.
+- Exact value matching misses paraphrases and can collide on short or reused values.
+- Branch-local and concurrently valid facts require an internal scope adapter and new evaluation data.
