@@ -137,6 +137,42 @@ describe("target-keyed lifecycle state", () => {
       });
   });
 
+  it("classifies the full current state even when projection has a smaller emission cap", () => {
+    const source = new LifecycleTargetState(
+      [
+        { id: "prior", sequence: 1 },
+        { id: "current-a", sequence: 2 },
+        { id: "current-b", sequence: 2 },
+      ],
+      [
+        {
+          id: "remember-multi",
+          targetId: "multi",
+          kind: "remember",
+          validity: "confirmed",
+          confidence: 1,
+          sequence: 1,
+          sourceUnitIds: ["prior"],
+          successorUnitIds: ["prior"],
+        },
+        {
+          id: "update-multi",
+          targetId: "multi",
+          kind: "update",
+          validity: "confirmed",
+          confidence: 1,
+          sequence: 2,
+          sourceUnitIds: ["current-a", "current-b"],
+          successorUnitIds: ["current-a", "current-b"],
+        },
+      ],
+    );
+    expect(source.resolveIds(["prior"], { ...policy, maxStateUnits: 1 }).ids)
+      .toEqual(["current-a"]);
+    expect(source.classifyIds(["current-b"], { ...policy, maxStateUnits: 1 }).currentIds)
+      .toEqual(["current-b"]);
+  });
+
   it("accepts only a cost-bounded replacement that preserves current and unknown units", () => {
     const source = new LifecycleTargetState(units, operations);
     const candidate = (id: string) => ({ id, tokens: 1 });

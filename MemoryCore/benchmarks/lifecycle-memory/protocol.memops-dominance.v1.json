@@ -1,0 +1,86 @@
+{
+  "protocolVersion": "lifecycle-memops-dominance-v1.0",
+  "direction": "D6 incumbent-preserving target-state dominance guard",
+  "evidenceRole": "Post-hoc mechanism and invariant validation after the D5 untouched test was consumed. This protocol cannot provide a new confirmatory efficacy claim.",
+  "preScoreCommitRequired": true,
+  "dataset": {
+    "name": "MemOps",
+    "revision": "312af65e2c7b6d1b70f062ffa8b4cde32aaf6f35",
+    "manifestSha256": "b55278a63656421edb2080d65631ffe91ef67fabdd4fa490da6bc4002c2ee012",
+    "profiles": 100,
+    "syntheticPublicBenchmark": true
+  },
+  "inputs": {
+    "sourceProtocolVersion": "lifecycle-memops-target-state-v1.0",
+    "sourceResultCardSha256": "5e269bdcef06a0d3349d4b718e93076534b13947d3710b2b493fd92955b4b54c",
+    "selectedPolicyId": "budget-1-state-3",
+    "developmentCasesSha256": "1183eb2f74142a561c1f998a3490ffc09d574dccd2668186f9f652c4383da939",
+    "validationCasesSha256": "5aa5d96f5b831415c78360b02e87db9203ca0b7eb429bca506d75815330e7c59",
+    "testCasesSha256": "036a7b3a5e0e9c807b74b8a0e933f9b2290194702f980bd6d86e2f84f4a8f2cf",
+    "expectedPrimaryCases": {
+      "development": 188,
+      "validation": 66,
+      "test": 66,
+      "all": 320
+    }
+  },
+  "arms": {
+    "incumbent": "Exact D5-study V1 context.",
+    "challenger": "Exact D5 target-state context produced by budget-1-state-3.",
+    "guarded": "Return the challenger only with a label-free structural dominance certificate; otherwise return exact V1."
+  },
+  "guard": {
+    "minConfidence": 0.85,
+    "maxCandidates": 30,
+    "maxExpansions": 64,
+    "maxStateUnits": 3,
+    "maxTargets": 64,
+    "resultLimit": 5,
+    "timeoutMs": 10,
+    "acceptanceRules": [
+      "Every graph-known current V1 unit is retained.",
+      "Every graph-unknown V1 unit is retained.",
+      "No graph-known stale unit is newly introduced.",
+      "Challenger tokens do not exceed the actual V1 tokens."
+    ],
+    "forbiddenRuntimeInputs": [
+      "question type",
+      "relevant target labels",
+      "gold provenance",
+      "gold answer",
+      "case id allowlists",
+      "D5 outcome metrics"
+    ]
+  },
+  "invariant": {
+    "scope": "When the operation graph is complete and matches the evaluation state, the selected context cannot lose graph-known current-state recall, cannot worsen graph-known stale absence, retains every graph-unknown V1 item by identity, and cannot spend more tokens than V1.",
+    "nonClaims": [
+      "The operation graph is not extracted by this experiment.",
+      "Identity preservation does not prove answer-level semantic non-inferiority.",
+      "A post-hoc MemOps gain is not confirmation on new data."
+    ]
+  },
+  "aggregation": {
+    "primary": "All 320 CandidateDisambiguation cases, reported together and by their original D5 phase.",
+    "uncertaintyUnit": "profile",
+    "bootstrapSamples": 20000,
+    "bootstrapSeed": 20260827
+  },
+  "viabilityGate": {
+    "minAcceptedChangedContexts": 1,
+    "maxCurrentStateRecallHarmedCases": 0,
+    "maxStaleAbsenceHarmedCases": 0,
+    "maxStateFamaHarmedCases": 0,
+    "maxTokenViolations": 0,
+    "maxOrdinaryFallbacks": 0,
+    "requireExactDisabledV1": true,
+    "requireExactMissingInspectorV1": true,
+    "requireExactTimeoutV1": true,
+    "requireExactInvalidCostV1": true
+  },
+  "outcomeSemantics": {
+    "pass": "The guard is a viable safety contraction for future fresh-data testing; V1 remains the incumbent.",
+    "fail": "Reject D6-v1.0 and retain V1.",
+    "promotion": "Forbidden from this post-hoc protocol regardless of point estimates."
+  }
+}
