@@ -12,8 +12,8 @@ This file is the persistent direction registry for iterative work above the fixe
 |---|---|---|---|---|---|
 | D1 | Correction-aware evidence shield | Injection rendering after V1 | Write-time `obsoleteValues`; query-time deterministic masking | Rejected at answer gate | Stopped: MPA non-inferiority and reader-stability gates failed |
 | D2 | Query-conditioned evidence-risk routing | Choose V1 or shield rendering per query | Bounded sidecar features plus downstream utility | Rejected at cross-fitted gate | Stopped: MPA non-inferiority and reader-stability gates failed |
-| D3 | Delete-aware vacancy refill | Whether deletion successors consume Top-k slots | Typed lifecycle event kind plus the existing Base candidate pool | Active | Must improve current recall and forgetting under the fixed k=5 budget |
-| D4 | Query-time evidence distillation | Selection/rewriting within the V1 candidate set | Small local/open model with validity gates | Queued | Must hard-fallback on parse, timeout, or low confidence |
+| D3 | Delete-aware vacancy refill | Whether deletion successors consume Top-k slots | Typed lifecycle event kind plus the existing Base candidate pool | Rejected at proxy gate | Positive recall signal, but magnitude and token gates failed |
+| D4 | Feedback-optimized valid-state packing | Token fraction and item cap after validity filtering | Development-period proxy feedback; per-query V1 token budget | Active | Must improve held-out proxy without exceeding V1 tokens |
 | D5 | Scope-aware coexistence | Branch/environment validity rather than global invalidation | Adapter-provided repository/branch/task scope | Queued | Requires a programming-session adapter or scoped public proxy |
 
 ## Why D1 is first
@@ -47,6 +47,12 @@ The failure is upstream of rendering: many high-ranked stale hits are redirected
 This choice follows the retain-versus-supersede boundary reported by MemStrata: lossy merging can destroy static recall, while unfiltered retention leaks stale facts. It also responds to STALE's distinction between retrieving an update and acting on the represented state. D3 remains a bounded sidecar with exact Base fallback.
 
 The frozen D3-v1.0 protocol makes no fitted choices: `minConfidence=0.85`, one hop, the existing 30-item candidate pool, and final `k=5` all remain fixed. The primary proxy subset is quarterly current-state, forgetting-bearing questions; historical/reasoning and non-forgetting slices are reported separately. Qualification requires at least +2 points evidence-FAMA proxy with a persona-bootstrap lower bound above zero, no recall or forgetting loss, no token increase, no non-forgetting harm, and exact fallback behavior.
+
+D3-v1.0 failed two gates. On 192 quarterly current-state forgetting-bearing questions, evidence-FAMA proxy and current-session recall improved by 1.40 points with a persona-bootstrap interval of +0.63 to +2.28 and zero harmed cases, but the gain missed the frozen +2-point minimum. Mean injected tokens increased by 2.89% because lower-ranked refill items were longer. All 600 normal calls and disabled/damaged/timeout checks completed without fallback mismatches.
+
+## Why D4 follows D3
+
+D3 shows that a valid-only candidate stream has useful signal, but fixed item count is not a cost guarantee. D4 separates validity from packing: it first produces a bounded ordered stream of valid candidates, then learns one of nine predeclared `(token fraction, max items)` policies using weekly/monthly feedback only. Each query's hard budget is a fraction of the tokens used by its actual V1 context, so no chosen policy can buy quality by spending more context. Quarterly remains the policy-blind proxy period.
 
 ## Iteration rule
 

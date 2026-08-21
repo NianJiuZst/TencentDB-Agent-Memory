@@ -197,6 +197,47 @@
         "perReaderFamaDirection"
       ],
       "interpretation": "Cross-fitting reduced D1's MPA loss but did not remove it: the loss remained 1.15 points, just beyond the frozen 1-point bound, and DeepSeek-reader FAMA stayed negative. Simple exposure and token features do not reliably predict semantic-anchor loss, so no thresholds are tuned after this result."
+    },
+    {
+      "id": "D3-v1.0",
+      "direction": "delete-aware vacancy refill",
+      "protocolVersion": "lifecycle-delete-vacancy-v1.0",
+      "preScoreCommit": "b3c14aa3d58b8445eefc593d32d3cb67b5f3c0d4",
+      "evidenceRole": "predeclared direct-proxy development/held-out-period study on all 600 Memora questions",
+      "status": "rejected",
+      "candidate": {
+        "candidateLimit": 30,
+        "resultLimit": 5,
+        "minConfidence": 0.85,
+        "deleteSuccessorConsumesSlot": false,
+        "updatePath": "V1-equivalent"
+      },
+      "results": {
+        "summarySha256": "90871bd3e11352bda04295d7f57d3a08d07cc1267c409c743168b798bb0a62d1",
+        "casesSha256": "c60f02c3c17d2c29cac0a9e457cd8b03f46708c0c7e1ac636406e7ac6f27b535",
+        "cases": 600,
+        "primaryQuarterlyCurrentStateForgettingCases": 192,
+        "primaryVsV1": {
+          "evidenceFamaProxy": 0.014007767746767388,
+          "evidenceFamaProxyBootstrap95": [0.006300150242981459, 0.022766117296944156],
+          "currentSessionRecall": 0.014007767746767388,
+          "forgettingAbsence": 0,
+          "meanInjectedTokenIncreaseFraction": 0.028918402989318137
+        },
+        "primaryHarmedCases": 0,
+        "quarterlyCurrentStateNonForgettingHarmedCases": 0,
+        "callsWithBackfill": 353,
+        "meanBackfilled": 1.295,
+        "ordinaryFallbacks": 0,
+        "disabledMismatches": 0,
+        "damagedMismatches": 0,
+        "timeoutMismatches": 0
+      },
+      "failedChecks": [
+        "evidenceFamaMagnitude",
+        "tokenBudget"
+      ],
+      "interpretation": "Validity-aware refill produced a consistent positive recall signal with no measured proxy harm, but the quarterly gain was 1.40 points rather than the frozen 2-point minimum and longer refill items increased tokens by 2.89%. It is not advanced to answer evaluation; D4 keeps validity filtering but changes the injection-budget decision."
     }
   ]
 }
