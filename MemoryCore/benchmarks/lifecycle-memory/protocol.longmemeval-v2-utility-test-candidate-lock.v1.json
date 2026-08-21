@@ -1,0 +1,28 @@
+{
+  "lockVersion": "lifecycle-longmemeval-v2-utility-test-candidate-lock-v1.0",
+  "sourceProtocolVersion": "lifecycle-longmemeval-v2-utility-gate-v1.0",
+  "candidatePreScoreCommit": "ab95ddec8e5fcd8c7ab6c09c38b2704b156487b5",
+  "baselineCommit": "368eaf99012e6c7953ad8d1534f0d3f499132211",
+  "baselineSha256": {
+    "cases": "5b6c8f0aa65a732f3f9611ccdfdce8de4d8a94d59083b8395e84cef7bd087c25",
+    "summary": "0c227ebd9aae5ca946459d3b9b0286400d14570085192e4265a55b74222f5af2",
+    "readEvidence": "b0c869205cb220e6e436246ba329e20adb0808ecd2558e3b1ed1ef8f91b631de",
+    "validation": "2d0b2fbd333751a5994c4476d020313dbd2af0586e4834ed1766d5ef8ba4e010"
+  },
+  "utilityArtifactSha256": "1b3f8ccbc38ecd53111775379805b506bd94ebd066ce625092f77c8efc6c88cd",
+  "admissionSha256": "52ddbfe7d5447fb6900725901a85dc590f9e3a377893758debc790a4375a23bb",
+  "aggregation": {
+    "primaryUnit": "question",
+    "bootstrap": "paired stratified question bootstrap by domain",
+    "samples": 20000,
+    "seed": 20260908
+  },
+  "authorizedRun": {
+    "phase": "test",
+    "questions": 24,
+    "candidateRuns": 1,
+    "utilityUpdatesFromTest": 0,
+    "answerGeneration": "forbidden unless the frozen direct test gate passes"
+  },
+  "failure": "Any lock, baseline, utility, or admission mismatch aborts before candidate retrieval."
+}
