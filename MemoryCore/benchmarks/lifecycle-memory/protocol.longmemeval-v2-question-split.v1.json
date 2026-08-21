@@ -1,0 +1,143 @@
+{
+  "protocolVersion": "lifecycle-longmemeval-v2-question-split-v1.0",
+  "seed": 20260822,
+  "unit": "question",
+  "population": "text-only dynamic-environment",
+  "strata": "domain x evaluator-family",
+  "allocation": {
+    "development": 0.5,
+    "validation": 0.25,
+    "test": 0.25
+  },
+  "development": [
+    "00aa905a",
+    "01307e07",
+    "06a5a25f",
+    "0d07143c",
+    "1defc293",
+    "233f9f09",
+    "2721ca7f",
+    "2ee130d2",
+    "32d04f31",
+    "41a18e5c",
+    "4329b535",
+    "4c6d1eb7",
+    "5a85ca0f",
+    "5c826b28",
+    "609acb91",
+    "63a1b94b",
+    "658fa827",
+    "65fbcbdf",
+    "6652c337",
+    "691cd1da",
+    "6a5bbcdb",
+    "6cb8ce37",
+    "78686f4e",
+    "876c720a",
+    "87711b62",
+    "8955b988",
+    "90dc7e66",
+    "984022b1",
+    "a12b7094",
+    "aa64a8bd",
+    "b5a25676",
+    "b8cabd09",
+    "c36b0d68",
+    "c843c4ec",
+    "d0d61088",
+    "d3300354",
+    "dd53ab77",
+    "e71f7c92",
+    "e9bb843a",
+    "eab07e81",
+    "edb69441",
+    "edea0219"
+  ],
+  "validation": [
+    "11dac74b",
+    "2d4e08b9",
+    "5cb7289b",
+    "6f9cb5fc",
+    "744dbdad",
+    "82cdfcc3",
+    "882965b7",
+    "901b7d17",
+    "b2595523",
+    "b828a6b2",
+    "bdb825a3",
+    "c0696888",
+    "d83c4bf7",
+    "dea446d0",
+    "deb008ed",
+    "e033e796",
+    "e83245c5",
+    "f9f9cd61",
+    "fe18a443",
+    "ffa4e57e"
+  ],
+  "test": [
+    "07d86be1",
+    "14a823df",
+    "17d63ad8",
+    "3fd81278",
+    "4dffe641",
+    "50711c52",
+    "5387d23d",
+    "5edd2533",
+    "6a23675f",
+    "6a73e32b",
+    "7ea13f14",
+    "820d56e2",
+    "85fc5722",
+    "8cb3280c",
+    "91d0775e",
+    "96497069",
+    "9c24f41e",
+    "b54161f8",
+    "bdf0e84b",
+    "c738b934",
+    "dae9f7e9",
+    "ee68431d",
+    "f35bac4a",
+    "f93031d2"
+  ],
+  "counts": {
+    "development": {
+      "questions": 42,
+      "directProxyQuestions": 32,
+      "byDomain": {
+        "enterprise": 17,
+        "web": 25
+      },
+      "byEvaluatorFamily": {
+        "phrase": 32,
+        "multiple_choice": 10
+      }
+    },
+    "validation": {
+      "questions": 20,
+      "directProxyQuestions": 15,
+      "byDomain": {
+        "enterprise": 8,
+        "web": 12
+      },
+      "byEvaluatorFamily": {
+        "phrase": 15,
+        "multiple_choice": 5
+      }
+    },
+    "test": {
+      "questions": 24,
+      "directProxyQuestions": 18,
+      "byDomain": {
+        "enterprise": 10,
+        "web": 14
+      },
+      "byEvaluatorFamily": {
+        "phrase": 18,
+        "multiple_choice": 6
+      }
+    }
+  },
+  "canonicalSha256": "1c6a0e6500b7ad1d34c041f4ab88d55c54854d213c3cae42cb606a84dcb0a87d"
+}

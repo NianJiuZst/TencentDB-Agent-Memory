@@ -56,6 +56,7 @@
     "validate:lifecycle-valid-state-packing-e2e": "tsx benchmarks/lifecycle-memory/src/valid-state-packing-e2e-validator-cli.ts",
     "audit:lifecycle-memops-adapter": "tsx benchmarks/lifecycle-memory/src/memops-adapter-cli.ts",
     "audit:lifecycle-longmemeval-v2": "tsx benchmarks/lifecycle-memory/src/longmemeval-v2-adapter-cli.ts",
+    "split:lifecycle-longmemeval-v2": "tsx benchmarks/lifecycle-memory/src/longmemeval-v2-split-cli.ts",
     "split:lifecycle-memops": "tsx benchmarks/lifecycle-memory/src/memops-split-cli.ts",
     "eval:lifecycle-memops-target-state": "tsx benchmarks/lifecycle-memory/src/memops-target-state-cli.ts",
     "validate:lifecycle-memops-target-state": "tsx benchmarks/lifecycle-memory/src/memops-target-state-validator-cli.ts",
