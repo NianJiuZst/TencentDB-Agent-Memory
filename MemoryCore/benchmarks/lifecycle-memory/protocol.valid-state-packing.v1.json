@@ -1,0 +1,95 @@
+{
+  "protocolVersion": "lifecycle-valid-state-packing-v1.0",
+  "researchDirection": "D4",
+  "seed": 20260822,
+  "dataset": {
+    "name": "Memora",
+    "revision": "a6493188efc836d6511ed5e4163fe3ba87da30ff",
+    "dataManifestSha256": "dfc82711dd6647bcb0ba590f43a336f0dac02420e981ce957dd1fd13ae331bfc"
+  },
+  "split": {
+    "optimizationPeriods": ["weekly", "monthly"],
+    "heldOutProxyPeriod": "quarterly",
+    "usesHeldOutFeedbackForPolicy": false
+  },
+  "incumbent": {
+    "name": "lifecycle-adaptive-v1.0",
+    "enabled": true,
+    "minConfidence": 0.85,
+    "maxHops": 1,
+    "maxExpansions": 64,
+    "resultLimit": 5,
+    "timeoutMs": 10
+  },
+  "validityStream": {
+    "sourceProtocolVersion": "lifecycle-delete-vacancy-v1.0",
+    "candidateLimit": 30,
+    "validityPoolLimit": 15,
+    "minConfidence": 0.85,
+    "maxHops": 1,
+    "maxExpansions": 64,
+    "timeoutMs": 10,
+    "maxCandidates": 30,
+    "deleteSemantics": "Skip delete predecessors and delete successors; retain V1 update redirection."
+  },
+  "policyGrid": {
+    "budgetFractionOfPerQueryV1Tokens": [0.75, 0.9, 1],
+    "maxItems": [3, 4, 5],
+    "maxPolicies": 9,
+    "packing": "Greedily retain validity-stream order; skip an item when adding it would exceed floor(V1 injected tokens times budgetFraction); never reorder or partially truncate content.",
+    "zeroBudgetBehavior": "Inject no memory rather than exceed the hard budget."
+  },
+  "optimizer": {
+    "trainingSubset": "weekly/monthly current-state questions with at least one obsolete atom",
+    "quality": "mean evidence-FAMA proxy delta versus V1",
+    "protectedSubset": "all other weekly/monthly questions",
+    "harm": "mean positive per-case evidence-FAMA proxy loss versus V1 on the protected subset",
+    "cost": "mean packed-token fraction of per-query V1 tokens on all weekly/monthly questions",
+    "utility": "quality - harmPenalty * harm - costPenalty * cost - fallbackPenalty * fallbackRate",
+    "harmPenalty": 1,
+    "costPenalty": 0.01,
+    "fallbackPenalty": 1,
+    "selectionTieBreak": "higher quality, lower harm, lower cost, lower maxItems, lower budget fraction"
+  },
+  "capacity": {
+    "maxUnitsPerGroup": 10000,
+    "maxEventsPerGroup": 5000,
+    "maxEdgesPerGroup": 50000,
+    "maxTombstonesPerGroup": 5000
+  },
+  "evaluation": {
+    "primarySubset": "quarterly questions with at least one obsolete atom and task in {remembering, recommending}",
+    "secondarySubsets": [
+      "all periods",
+      "optimization primary",
+      "quarterly all",
+      "quarterly current-state non-forgetting",
+      "quarterly reasoning"
+    ],
+    "uncertaintyUnit": "persona",
+    "bootstrapSamples": 5000
+  },
+  "proxyGate": {
+    "requirePositivePrimaryEvidenceFamaProxyDelta": true,
+    "requirePrimaryEvidenceFamaProxyCiLowerAboveZero": true,
+    "minPrimaryCurrentSessionRecallDelta": 0,
+    "minPrimaryForgettingAbsenceDelta": 0,
+    "maxQuarterlyCurrentStateNonForgettingHarmedCasesVsV1": 0,
+    "maxMeanInjectedTokenIncreaseFractionVsV1": 0,
+    "requireAtMostFiveCandidates": true,
+    "requireZeroOrdinaryFallbacks": true,
+    "requireDisabledBaseEquivalence": true,
+    "requireForcedFailureBaseFallback": true
+  },
+  "fallback": {
+    "disabled": "Return exact Base Top-k.",
+    "invalidPolicyOrFeature": "Return exact Base Top-k for the whole call.",
+    "validityTimeoutOrDamage": "Return exact Base Top-k for the whole call.",
+    "packingException": "Return exact Base Top-k for the whole call."
+  },
+  "outcomeSemantics": {
+    "pass": "freeze_new_answer_panel",
+    "fail": "reject_candidate_and_continue_to_D5"
+  },
+  "claimBoundary": "Optimization and held-out direct proxies can qualify answer testing only. They cannot establish answer quality or programming-task utility."
+}

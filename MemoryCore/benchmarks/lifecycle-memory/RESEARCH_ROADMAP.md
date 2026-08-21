@@ -54,6 +54,8 @@ D3-v1.0 failed two gates. On 192 quarterly current-state forgetting-bearing ques
 
 D3 shows that a valid-only candidate stream has useful signal, but fixed item count is not a cost guarantee. D4 separates validity from packing: it first produces a bounded ordered stream of valid candidates, then learns one of nine predeclared `(token fraction, max items)` policies using weekly/monthly feedback only. Each query's hard budget is a fraction of the tokens used by its actual V1 context, so no chosen policy can buy quality by spending more context. Quarterly remains the policy-blind proxy period.
 
+The frozen D4-v1.0 grid is the Cartesian product of token fractions `{0.75, 0.9, 1.0}` and item caps `{3, 4, 5}`. Packing preserves the valid-stream order and skips whole items that do not fit; it never truncates text. The optimizer maximizes development evidence-FAMA improvement with protected-slice harm, token fraction, and fallback penalties. The quarterly gate requires a positive evidence-FAMA effect with a persona-bootstrap lower bound above zero, nonnegative recall and forgetting directions, zero non-forgetting harm, and no token or fallback violation.
+
 ## Iteration rule
 
 1. Freeze the candidate construction and gates before computing its scores.
