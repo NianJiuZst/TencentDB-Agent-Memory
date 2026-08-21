@@ -1,0 +1,127 @@
+{
+  "protocolVersion": "lifecycle-evidence-risk-router-v1.0",
+  "developmentStatus": "Offline cross-fitted policy development on the already analyzed frozen 50-case answer panel. Passing can only justify implementation and untouched-data confirmation; it cannot promote a new incumbent or support a fresh confirmatory claim.",
+  "seed": 20260822,
+  "inputs": {
+    "contextManifest": {
+      "protocolVersion": "lifecycle-evidence-shield-v1.2",
+      "sha256": "9472fede7c2a7e258333167dfbd57a68d4f6da10e0aa7c3c5e98684e98212d20",
+      "cases": 50
+    },
+    "v1Evaluations": {
+      "protocolVersion": "lifecycle-contextual-e2e-v1.0",
+      "sha256": "fb9687dc1719e2a2507de03b7ab2240cc20178cde99ef34edd84716f6561d611",
+      "selectedArm": "v1",
+      "selectedRows": 100
+    },
+    "shieldEvaluations": {
+      "protocolVersion": "lifecycle-evidence-shield-e2e-v1.0",
+      "sha256": "12b2b3077fb16bba28c2534848d548fd75761f0020130a21dd83571af0484aeb",
+      "selectedArm": "shield",
+      "selectedRows": 100
+    },
+    "independentValidation": {
+      "requiredStatus": "passed",
+      "sha256": "3b735e6b1855611fa429704430b8175684f9307ac1425ae68e1d5ddc31bd0668"
+    }
+  },
+  "actions": [
+    "v1",
+    "shield"
+  ],
+  "features": {
+    "allowed": [
+      {
+        "id": "redactionCount",
+        "definition": "Number of obsolete spans replaced across the query-selected V1 candidate set.",
+        "thresholds": [1, 2, 3, 4]
+      },
+      {
+        "id": "changedCandidateCount",
+        "definition": "Number of query-selected V1 candidates whose rendering changed.",
+        "thresholds": [1, 2, 3, 4]
+      },
+      {
+        "id": "redactionDensity",
+        "definition": "redactionCount divided by max(1, selected V1 candidate count).",
+        "thresholds": [0.2, 0.4, 0.6, 0.8]
+      },
+      {
+        "id": "tokenSavingsFraction",
+        "definition": "(V1 injected tokens - shield injected tokens) divided by max(1, V1 injected tokens). Both renderings are computed before routing.",
+        "thresholds": [0, 0.02, 0.05, 0.1]
+      }
+    ],
+    "forbidden": [
+      "persona identity",
+      "benchmark task label",
+      "gold atoms or criteria",
+      "reader or judge identity",
+      "answer text or answer outcome"
+    ]
+  },
+  "policyClass": {
+    "type": "one-dimensional deterministic decision stump",
+    "comparators": [
+      "gte",
+      "lte"
+    ],
+    "trueAction": "shield",
+    "falseAction": "v1",
+    "selectablePolicies": 32,
+    "fallbackPolicy": "always-v1",
+    "diagnosticPolicies": [
+      "always-v1",
+      "always-shield"
+    ],
+    "capacityLimit": "Exactly the 32 predeclared stumps; no post-score thresholds, conjunctions, trees, or task-specific exceptions."
+  },
+  "crossFitting": {
+    "unit": "persona",
+    "folds": 10,
+    "selectionData": "All personas except the held-out persona.",
+    "evaluationData": "The held-out persona only.",
+    "trainingConstraintsVsV1": {
+      "minFamaDelta": 0,
+      "minFaaDelta": 0,
+      "maxMpaLoss": 0.005,
+      "maxMeanInjectedTokenIncreaseFraction": 0,
+      "requireNonnegativeFamaDirectionForEachReader": true,
+      "minShieldActionRate": 0.1,
+      "maxShieldActionRate": 0.9
+    },
+    "selectionOrder": [
+      "largest FAMA delta",
+      "largest criterion-accuracy delta",
+      "largest FAA delta",
+      "largest token reduction",
+      "lexicographically smallest policy id"
+    ],
+    "selectionTolerance": 1e-12,
+    "whenNoStumpIsEligible": "Use always-v1 for that held-out fold."
+  },
+  "aggregation": {
+    "primary": "Cross-model mean: each reader answer is scored only by the other model.",
+    "uncertaintyUnit": "persona",
+    "bootstrapSamples": 20000,
+    "counterfactualAssumption": "Each routed outcome is copied from the already observed answer cell for the selected action; no model response is synthesized or imputed."
+  },
+  "gate": {
+    "requirePositiveCrossFittedFamaDelta": true,
+    "minCrossFittedFaaDelta": 0.01,
+    "maxCrossFittedMpaLoss": 0.01,
+    "maxMeanInjectedTokenIncreaseFraction": 0,
+    "requireNonnegativeFamaDirectionForEachReader": true,
+    "minOverallShieldActionRate": 0.1,
+    "requireEveryPersonaHeldOutExactlyOnce": true,
+    "requireDeterministicReplay": true
+  },
+  "fallback": {
+    "runtime": "Malformed policy, missing or non-finite feature, timeout, or exception returns the unchanged V1 candidate rendering for the whole call.",
+    "offlineEvaluation": "Missing paired outcomes, duplicated cells, input hash mismatch, or persona leakage fails the run rather than imputing an outcome."
+  },
+  "outcomeSemantics": {
+    "pass": "implement_bounded_sidecar_then_seek_untouched_confirmation",
+    "fail": "reject_candidate_and_continue_to_D3"
+  }
+}

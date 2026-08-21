@@ -36,6 +36,8 @@ D1 failed that answer gate. Independent recomputation found that exact obsolete-
 
 D1 demonstrates heterogeneous treatment effects: shielding removes harmful obsolete mentions but sometimes destroys the entity anchors needed to recover valid facts. D2 treats V1 and shield as two bounded actions and learns a conservative query-conditioned routing rule from downstream feedback. The first experiment is offline and cross-fitted by persona: every held-out persona is routed by a rule selected without that persona's outcomes. It remains development evidence because both action outcomes come from the already analyzed 50-case panel.
 
+The frozen D2-v1.0 policy class contains exactly 32 deterministic decision stumps over four bounded features: redaction count, changed-candidate count, redaction density, and token savings. Persona identity, benchmark task labels, gold criteria, model identity, and answer text are forbidden features. For every held-out persona, a rule is selected on the other nine personas under stricter training safety constraints; if no rule is eligible, the fold uses unchanged V1. This cross-fitting reduces direct memorization but does not turn the reused panel into confirmation data.
+
 ## Iteration rule
 
 1. Freeze the candidate construction and gates before computing its scores.
