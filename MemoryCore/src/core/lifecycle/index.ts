@@ -9,6 +9,7 @@ export {
   DEFAULT_DELETE_VACANCY_LIMITS,
   LifecycleDeleteVacancy,
 } from "./delete-vacancy.js";
+export { applyLifecycleValidStatePacking } from "./valid-state-packer.js";
 export { optimizeLifecyclePolicy } from "./optimizer.js";
 export { promoteLifecyclePolicy } from "./promotion.js";
 export type * from "./types.js";
@@ -28,3 +29,8 @@ export type {
   LifecycleDeleteVacancyResult,
   LifecycleDeleteVacancySource,
 } from "./delete-vacancy.js";
+export type {
+  LifecycleValidStatePackingDecision,
+  LifecycleValidStatePackingPolicy,
+  LifecycleValidStatePackingResult,
+} from "./valid-state-packer.js";

@@ -21,7 +21,7 @@ import type { BootstrapInterval, CaseMetrics, LifecycleEvalQuestion, RetrievedUn
 type Arm = "v1" | "delete_vacancy";
 type DirectMetric = "evidenceFamaProxy" | "currentSessionRecall" | "forgettingAbsence";
 
-interface PreparedCase {
+export interface DeleteVacancyPreparedCase {
   question: LifecycleEvalQuestion;
   candidates: RetrievedUnit[];
   queryLatencyMs: number;
@@ -65,7 +65,7 @@ function prepareResult(params: {
   arm: Arm;
   candidates: RetrievedUnit[];
   decision: LifecycleDecisionLog | LifecycleDeleteVacancyDecision;
-  prepared: PreparedCase;
+  prepared: DeleteVacancyPreparedCase;
 }): DeleteVacancyCaseResult {
   return {
     arm: params.arm,
@@ -82,7 +82,7 @@ function prepareResult(params: {
   };
 }
 
-function v1Result(prepared: PreparedCase): DeleteVacancyCaseResult {
+function v1Result(prepared: DeleteVacancyPreparedCase): DeleteVacancyCaseResult {
   const applied = applyLifecyclePolicy({
     candidates: prepared.candidates,
     resolver: prepared.ledger,
@@ -97,7 +97,7 @@ function v1Result(prepared: PreparedCase): DeleteVacancyCaseResult {
   });
 }
 
-function candidateResult(prepared: PreparedCase): DeleteVacancyCaseResult {
+function candidateResult(prepared: DeleteVacancyPreparedCase): DeleteVacancyCaseResult {
   const applied = applyLifecycleDeleteVacancy({
     candidates: prepared.candidates,
     source: prepared.vacancy,
@@ -112,13 +112,13 @@ function candidateResult(prepared: PreparedCase): DeleteVacancyCaseResult {
   });
 }
 
-async function prepare(options: DeleteVacancyRunOptions) {
+export async function prepareDeleteVacancyData(options: DeleteVacancyRunOptions) {
   const loaded = await loadMemora(options.dataRoot, !options.skipHashVerification);
   if (loaded.description.revision !== DELETE_VACANCY_PROTOCOL.dataset.revision
     || loaded.description.dataManifestSha256 !== DELETE_VACANCY_PROTOCOL.dataset.dataManifestSha256) {
     throw new Error("delete-vacancy dataset provenance mismatch");
   }
-  const cases: PreparedCase[] = [];
+  const cases: DeleteVacancyPreparedCase[] = [];
   const groups: Array<Record<string, unknown>> = [];
   for (let index = 0; index < loaded.groups.length; index += 1) {
     const group = loaded.groups[index];
@@ -237,7 +237,7 @@ function subsetReport(params: {
   };
 }
 
-function fallbackChecks(prepared: PreparedCase[]) {
+function fallbackChecks(prepared: DeleteVacancyPreparedCase[]) {
   const disabledPolicy = { ...DELETE_VACANCY_PROTOCOL.candidate, enabled: false };
   const damaged: LifecycleDeleteVacancySource = {
     resolveIds: () => {
@@ -329,7 +329,7 @@ export function evaluateDeleteVacancyGate(params: {
 export async function runDeleteVacancy(
   options: DeleteVacancyRunOptions,
 ): Promise<Record<string, unknown>> {
-  const prepared = await prepare(options);
+  const prepared = await prepareDeleteVacancyData(options);
   const v1 = prepared.cases.map(v1Result);
   const candidate = prepared.cases.map(candidateResult);
   const currentState = (item: DeleteVacancyCaseResult) => item.task !== "reasoning";
