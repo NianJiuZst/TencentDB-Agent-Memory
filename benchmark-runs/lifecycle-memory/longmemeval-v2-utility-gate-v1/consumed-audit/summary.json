@@ -1,0 +1,156 @@
+{
+  "protocolVersion": "lifecycle-longmemeval-v2-utility-gate-v1.0",
+  "mode": "utility_gate",
+  "status": "mechanism_passed_pending_independent_validation",
+  "preScoreCommit": "ab95ddec8e5fcd8c7ab6c09c38b2704b156487b5",
+  "sourceSha256": {
+    "developmentCases": "ca7a6245d5efd6248e42322e9eb42b3c20b1b479683f94acbf0dd887cdb90f35",
+    "validationCases": "81506419219a623974ff1df4d7eeba88287cce934e5fd7646de73f305ea0a263"
+  },
+  "utilityArtifactSha256": "1b3f8ccbc38ecd53111775379805b506bd94ebd066ce625092f77c8efc6c88cd",
+  "casesSha256": "fdf5935b89aa95af8ae16aae285b9b7a37f7641d4471ec0988421fd1a816041c",
+  "sourceQuestions": 62,
+  "directFeedbackQuestions": 47,
+  "audit": {
+    "leave_one_question_out": {
+      "auditMode": "leave_one_question_out",
+      "cases": 62,
+      "directProxyCases": 47,
+      "metrics": {
+        "answerAtomSupportRecall": 0.19184397163120565,
+        "answerAtomSupportRecallDelta": 0,
+        "anyAnswerAtomSupportedRate": 0.23404255319148937,
+        "anyAnswerAtomSupportedRateDelta": 0,
+        "allAnswerAtomsSupportedRate": 0.14893617021276595,
+        "allAnswerAtomsSupportedRateDelta": 0,
+        "meanInjectedTokens": 2731.7741935483873,
+        "meanBaseInjectedTokens": 2772.451612903226,
+        "meanInjectedTokenFraction": -0.01467200335094121,
+        "acceptedChangedContexts": 18,
+        "auxiliaryUseRate": 0.2903225806451613,
+        "improved": 0,
+        "equal": 47,
+        "harmed": 0,
+        "tokenViolations": 0,
+        "ordinaryFallbacks": 0,
+        "selectionLatencyP50Ms": 0.013874999999643478,
+        "selectionLatencyP95Ms": 0.030208999999558728
+      },
+      "nullReasons": {
+        "no_cost_certified_candidate": 8,
+        "no_positive_utility": 18,
+        "no_trajectory_coherence": 18
+      },
+      "forcedFallbackMismatches": {
+        "disabled": 0,
+        "missingTable": 0,
+        "overflow": 0,
+        "timeout": 0,
+        "corrupt": 0
+      },
+      "byDomain": {
+        "enterprise": {
+          "cases": 25,
+          "directProxyCases": 19,
+          "answerAtomSupportRecallDelta": 0,
+          "meanInjectedTokenFraction": -0.0017080277303326286,
+          "acceptedChangedContexts": 2,
+          "improved": 0,
+          "harmed": 0
+        },
+        "web": {
+          "cases": 37,
+          "directProxyCases": 28,
+          "answerAtomSupportRecallDelta": 0,
+          "meanInjectedTokenFraction": -0.023507889768247137,
+          "acceptedChangedContexts": 16,
+          "improved": 0,
+          "harmed": 0
+        }
+      }
+    },
+    "deployment_full_feedback": {
+      "auditMode": "deployment_full_feedback",
+      "cases": 62,
+      "directProxyCases": 47,
+      "metrics": {
+        "answerAtomSupportRecall": 0.2131205673758865,
+        "answerAtomSupportRecallDelta": 0.02127659574468085,
+        "anyAnswerAtomSupportedRate": 0.2553191489361702,
+        "anyAnswerAtomSupportedRateDelta": 0.02127659574468085,
+        "allAnswerAtomsSupportedRate": 0.1702127659574468,
+        "allAnswerAtomsSupportedRateDelta": 0.02127659574468085,
+        "meanInjectedTokens": 2724.1129032258063,
+        "meanBaseInjectedTokens": 2772.451612903226,
+        "meanInjectedTokenFraction": -0.01743536639285137,
+        "acceptedChangedContexts": 21,
+        "auxiliaryUseRate": 0.3387096774193548,
+        "improved": 1,
+        "equal": 46,
+        "harmed": 0,
+        "tokenViolations": 0,
+        "ordinaryFallbacks": 0,
+        "selectionLatencyP50Ms": 0.008374999999432475,
+        "selectionLatencyP95Ms": 0.03562500000043656
+      },
+      "nullReasons": {
+        "no_cost_certified_candidate": 8,
+        "no_positive_utility": 15,
+        "no_trajectory_coherence": 18
+      },
+      "forcedFallbackMismatches": {
+        "disabled": 0,
+        "missingTable": 0,
+        "overflow": 0,
+        "timeout": 0,
+        "corrupt": 0
+      },
+      "byDomain": {
+        "enterprise": {
+          "cases": 25,
+          "directProxyCases": 19,
+          "answerAtomSupportRecallDelta": 0.05263157894736842,
+          "meanInjectedTokenFraction": -0.0062436307789468515,
+          "acceptedChangedContexts": 4,
+          "improved": 1,
+          "harmed": 0
+        },
+        "web": {
+          "cases": 37,
+          "directProxyCases": 28,
+          "answerAtomSupportRecallDelta": 0,
+          "meanInjectedTokenFraction": -0.025063343148667983,
+          "acceptedChangedContexts": 17,
+          "improved": 0,
+          "harmed": 0
+        }
+      }
+    }
+  },
+  "mechanismGate": {
+    "passed": true,
+    "checks": {
+      "acceptedChangedContexts": true,
+      "answerAtomSupportRecallDelta": true,
+      "allAnswerAtomsSupportedRateDelta": true,
+      "harmedDirectProxyCases": true,
+      "meanInjectedTokens": true,
+      "tokenViolations": true,
+      "ordinaryFallbacks": true,
+      "selectionLatency": true,
+      "disabledFallback": true,
+      "missingTableFallback": true,
+      "overflowFallback": true,
+      "timeoutFallback": true,
+      "corruptFallback": true,
+      "utilityCapacity": true
+    }
+  },
+  "testState": "unread",
+  "limitations": [
+    "All 62 consumed questions influenced D8 design or utility learning; their audit metrics are mechanism evidence, not confirmation.",
+    "Leave-one-question-out prevents direct self-credit but questions share two domain haystacks, so it is not an independent environment split.",
+    "Answer-atom occurrence is a direct support proxy, not gold retrieval recall or answer accuracy.",
+    "The exact-memory utility table tests within-environment reuse; internal transfer requires stable memory ids and a high-confidence FeedbackEvent adapter."
+  ]
+}

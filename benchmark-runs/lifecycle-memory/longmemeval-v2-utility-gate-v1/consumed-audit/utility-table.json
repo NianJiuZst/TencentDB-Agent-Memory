@@ -1,0 +1,665 @@
+{
+  "utilityVersion": "lifecycle-longmemeval-v2-transition-utility-v1.0",
+  "sourceProtocolVersion": "lifecycle-longmemeval-v2-utility-gate-v1.0",
+  "preScoreCommit": "ab95ddec8e5fcd8c7ab6c09c38b2704b156487b5",
+  "behaviorPolicy": "tc20-tf75-mi4",
+  "sourceSha256": {
+    "developmentCases": "ca7a6245d5efd6248e42322e9eb42b3c20b1b479683f94acbf0dd887cdb90f35",
+    "validationCases": "81506419219a623974ff1df4d7eeba88287cce934e5fd7646de73f305ea0a263"
+  },
+  "feedback": {
+    "eligibleQuestions": 47,
+    "events": 139,
+    "rewardPositive": 3,
+    "rewardZero": 42,
+    "rewardNegative": 2
+  },
+  "table": {
+    "entries": [
+      {
+        "memoryId": "lmev2:transition:013696c4:41:42:0",
+        "visits": 1,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:110d48d3:30:31:2",
+        "visits": 1,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:110d48d3:46:47:0",
+        "visits": 1,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:140c90d8:10:11:0",
+        "visits": 1,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:140c90d8:11:12:0",
+        "visits": 1,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:140c90d8:13:14:0",
+        "visits": 2,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:18deaf75:11:12:3",
+        "visits": 1,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:18deaf75:8:9:3",
+        "visits": 1,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:1d56a4d6:10:11:0",
+        "visits": 1,
+        "rewardSum": 1,
+        "meanUtility": 1,
+        "minReward": 1,
+        "negativeVisits": 0,
+        "eligible": true
+      },
+      {
+        "memoryId": "lmev2:transition:1d56a4d6:11:12:7",
+        "visits": 1,
+        "rewardSum": 1,
+        "meanUtility": 1,
+        "minReward": 1,
+        "negativeVisits": 0,
+        "eligible": true
+      },
+      {
+        "memoryId": "lmev2:transition:2305e825:0:1:0",
+        "visits": 1,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:2e8f6477:5:6:1",
+        "visits": 1,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:317e3887:1:2:2",
+        "visits": 1,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:3331c568:2:3:0",
+        "visits": 1,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:366f17da:16:17:0",
+        "visits": 1,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:366f17da:17:18:0",
+        "visits": 1,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:366f17da:29:30:0",
+        "visits": 1,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:366f17da:32:33:0",
+        "visits": 1,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:366f17da:33:34:0",
+        "visits": 2,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:3fafa5c3:64:65:2",
+        "visits": 1,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:3fafa5c3:68:69:1",
+        "visits": 2,
+        "rewardSum": 1,
+        "meanUtility": 0.5,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": true
+      },
+      {
+        "memoryId": "lmev2:transition:3fafa5c3:70:71:0",
+        "visits": 1,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:49886eee:1:2:0",
+        "visits": 1,
+        "rewardSum": -0.39999999999999997,
+        "meanUtility": -0.39999999999999997,
+        "minReward": -0.39999999999999997,
+        "negativeVisits": 1,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:4ba5e9cb:0:1:7",
+        "visits": 1,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:518d6fea:0:1:2",
+        "visits": 2,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:518d6fea:0:1:6",
+        "visits": 18,
+        "rewardSum": -0.39999999999999997,
+        "meanUtility": -0.02222222222222222,
+        "minReward": -0.39999999999999997,
+        "negativeVisits": 1,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:52836f8d:19:20:0",
+        "visits": 1,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:53f7b75e:16:17:4",
+        "visits": 4,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:53f7b75e:5:6:4",
+        "visits": 4,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:6d5f3f24:24:25:0",
+        "visits": 1,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:6ea56646:1:2:0",
+        "visits": 1,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:787ceaeb:11:12:0",
+        "visits": 2,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:787ceaeb:13:14:0",
+        "visits": 2,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:868ad4c0:4:5:3",
+        "visits": 24,
+        "rewardSum": 1,
+        "meanUtility": 0.041666666666666664,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": true
+      },
+      {
+        "memoryId": "lmev2:transition:868ad4c0:5:6:0",
+        "visits": 3,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:8b74ffaa:7:8:0",
+        "visits": 2,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:90d36b63:1:2:0",
+        "visits": 1,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:90d36b63:21:22:1",
+        "visits": 1,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:90d36b63:22:23:1",
+        "visits": 1,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:90d36b63:33:34:1",
+        "visits": 1,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:90d36b63:34:35:1",
+        "visits": 1,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:90d36b63:42:43:1",
+        "visits": 1,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:96131e7b:10:11:2",
+        "visits": 2,
+        "rewardSum": 1,
+        "meanUtility": 0.5,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": true
+      },
+      {
+        "memoryId": "lmev2:transition:96131e7b:10:11:6",
+        "visits": 2,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:96131e7b:16:17:2",
+        "visits": 1,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:96131e7b:16:17:6",
+        "visits": 2,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:96131e7b:2:3:6",
+        "visits": 4,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:96131e7b:22:23:3",
+        "visits": 1,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:96131e7b:22:23:6",
+        "visits": 2,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:96131e7b:3:4:2",
+        "visits": 1,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:96131e7b:9:10:2",
+        "visits": 2,
+        "rewardSum": -1,
+        "meanUtility": -0.5,
+        "minReward": -1,
+        "negativeVisits": 1,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:96131e7b:9:10:4",
+        "visits": 1,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:96131e7b:9:10:5",
+        "visits": 1,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:aacfe598:11:12:0",
+        "visits": 2,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:ab3a3f6b:1:2:0",
+        "visits": 1,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:ac3ecf96:3:4:0",
+        "visits": 1,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:af969ebc:7:8:1",
+        "visits": 1,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:c605a94c:1:2:0",
+        "visits": 1,
+        "rewardSum": -0.39999999999999997,
+        "meanUtility": -0.39999999999999997,
+        "minReward": -0.39999999999999997,
+        "negativeVisits": 1,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:c7fec7e9:1:2:2",
+        "visits": 2,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:cfd9c5e9:0:1:0",
+        "visits": 1,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:cfd9c5e9:2:3:1",
+        "visits": 1,
+        "rewardSum": -1,
+        "meanUtility": -1,
+        "minReward": -1,
+        "negativeVisits": 1,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:cfd9c5e9:3:4:3",
+        "visits": 1,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:cfd9c5e9:3:4:4",
+        "visits": 2,
+        "rewardSum": -1,
+        "meanUtility": -0.5,
+        "minReward": -1,
+        "negativeVisits": 1,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:d4949793:10:11:1",
+        "visits": 1,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:dc083cd0:33:34:0",
+        "visits": 1,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:dce5a79b:1:2:1",
+        "visits": 1,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:e9a95d4f:18:19:0",
+        "visits": 1,
+        "rewardSum": 1,
+        "meanUtility": 1,
+        "minReward": 1,
+        "negativeVisits": 0,
+        "eligible": true
+      },
+      {
+        "memoryId": "lmev2:transition:e9a95d4f:21:22:0",
+        "visits": 3,
+        "rewardSum": 1,
+        "meanUtility": 0.3333333333333333,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": true
+      },
+      {
+        "memoryId": "lmev2:transition:ef39085f:9:10:0",
+        "visits": 2,
+        "rewardSum": 0,
+        "meanUtility": 0,
+        "minReward": 0,
+        "negativeVisits": 0,
+        "eligible": false
+      },
+      {
+        "memoryId": "lmev2:transition:f92c1020:42:43:1",
+        "visits": 1,
+        "rewardSum": 1,
+        "meanUtility": 1,
+        "minReward": 1,
+        "negativeVisits": 0,
+        "eligible": true
+      }
+    ],
+    "sourceQuestions": 47,
+    "feedbackEvents": 139,
+    "capacity": 1024
+  },
+  "eligibleMemoryIds": [
+    "lmev2:transition:1d56a4d6:10:11:0",
+    "lmev2:transition:1d56a4d6:11:12:7",
+    "lmev2:transition:3fafa5c3:68:69:1",
+    "lmev2:transition:868ad4c0:4:5:3",
+    "lmev2:transition:96131e7b:10:11:2",
+    "lmev2:transition:e9a95d4f:18:19:0",
+    "lmev2:transition:e9a95d4f:21:22:0",
+    "lmev2:transition:f92c1020:42:43:1"
+  ],
+  "tableSha256": "7e3f6ccffaf7f1cbab829fb19bceeb602e98a49288c001c9d5e76213c12149d4"
+}

@@ -1,0 +1,19 @@
+{
+  "admissionVersion": "lifecycle-longmemeval-v2-utility-gate-admission-v1.0",
+  "sourceProtocolVersion": "lifecycle-longmemeval-v2-utility-gate-v1.0",
+  "status": "passed",
+  "decision": "authorize_locked_test_baseline_read",
+  "candidatePreScoreCommit": "ab95ddec8e5fcd8c7ab6c09c38b2704b156487b5",
+  "validatorCommit": "759abd327bf631f13a0e7a2430c5a289da159330",
+  "sourceSha256": {
+    "cases": "fdf5935b89aa95af8ae16aae285b9b7a37f7641d4471ec0988421fd1a816041c",
+    "summary": "dd500920020024c0bc5164e0a697fa6c3d46ffd5b59ba3fd21a08a7cecf513b3",
+    "utility": "1b3f8ccbc38ecd53111775379805b506bd94ebd066ce625092f77c8efc6c88cd",
+    "developmentFeedback": "ca7a6245d5efd6248e42322e9eb42b3c20b1b479683f94acbf0dd887cdb90f35",
+    "validationFeedback": "81506419219a623974ff1df4d7eeba88287cce934e5fd7646de73f305ea0a263",
+    "independentValidation": "3d451b8fdf00ad5d1326bb893f9ffd0e8b5b0f3b916a65e98dd63721d127a718"
+  },
+  "mechanismGatePassed": true,
+  "independentValidationPassed": true,
+  "testStateAtAdmission": "unread"
+}
