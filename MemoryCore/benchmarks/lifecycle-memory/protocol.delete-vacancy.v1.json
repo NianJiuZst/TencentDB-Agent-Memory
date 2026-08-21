@@ -15,6 +15,7 @@
   },
   "incumbent": {
     "name": "lifecycle-adaptive-v1.0",
+    "enabled": true,
     "minConfidence": 0.85,
     "maxHops": 1,
     "maxExpansions": 64,

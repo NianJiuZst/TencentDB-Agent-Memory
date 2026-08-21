@@ -48,6 +48,7 @@
     "eval:lifecycle-evidence-shield-e2e": "tsx benchmarks/lifecycle-memory/src/evidence-shield-e2e-cli.ts",
     "validate:lifecycle-evidence-shield-e2e": "tsx benchmarks/lifecycle-memory/src/evidence-shield-e2e-validator-cli.ts",
     "eval:lifecycle-evidence-risk-router": "tsx benchmarks/lifecycle-memory/src/evidence-risk-router-cli.ts",
+    "eval:lifecycle-delete-vacancy": "tsx benchmarks/lifecycle-memory/src/delete-vacancy-cli.ts",
     "test:lifecycle-memory": "vitest run -c benchmarks/lifecycle-memory/vitest.config.ts",
     "test:standalone:memory": "bash __tests__/standalone/e2e.sh",
     "test:standalone:skill": "bash __tests__/standalone/skill-e2e.sh",

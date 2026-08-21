@@ -4,6 +4,11 @@ export {
   DEFAULT_EVIDENCE_SHIELD_LIMITS,
   LifecycleEvidenceShield,
 } from "./evidence-shield.js";
+export {
+  applyLifecycleDeleteVacancy,
+  DEFAULT_DELETE_VACANCY_LIMITS,
+  LifecycleDeleteVacancy,
+} from "./delete-vacancy.js";
 export { optimizeLifecyclePolicy } from "./optimizer.js";
 export { promoteLifecyclePolicy } from "./promotion.js";
 export type * from "./types.js";
@@ -15,3 +20,11 @@ export type {
   LifecycleEvidenceShieldResult,
   LifecycleEvidenceShieldSource,
 } from "./evidence-shield.js";
+export type {
+  LifecycleDeleteVacancyDecision,
+  LifecycleDeleteVacancyLimits,
+  LifecycleDeleteVacancyPolicy,
+  LifecycleDeleteVacancyResolution,
+  LifecycleDeleteVacancyResult,
+  LifecycleDeleteVacancySource,
+} from "./delete-vacancy.js";
