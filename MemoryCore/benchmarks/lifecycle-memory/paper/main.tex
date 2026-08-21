@@ -5,12 +5,16 @@
 \usepackage{graphicx}
 \usepackage{float}
 \usepackage{microtype}
+\usepackage{tikz}
+\usepackage{xurl}
 \usepackage{hyperref}
 \usepackage{xcolor}
 \usepackage{xspace}
 \hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+\definecolor{proxyblue}{HTML}{2F6B9A}
+\definecolor{answerorange}{HTML}{C26B32}
 
-\title{Correction-Linked Lifecycle Memory for Evolving Long-Horizon Dialogues}
+\title{Downstream-Gated Correction-Linked Memory for Evolving Long-Horizon Dialogues}
 \author{Anonymous Author(s)}
 \date{}
 
@@ -23,23 +27,25 @@
 \maketitle
 
 \begin{abstract}
-Long-running programming agents must preserve decisions while avoiding constraints that were later corrected, renamed, reverted, or deleted. Static retrieval can surface obsolete statements, whereas deletion alone may discard the correction needed to recover current state. We introduce Correction-Linked Lifecycle Memory (CLLM), a bounded sidecar for an existing memory retriever. Write-time correction events create predecessor--successor links, query-time traversal redirects stale hits, and controlled feedback selects retrieval policy without retraining the extractor or replacing the base index. We further separate proxy optimization from policy promotion: a challenger is deployed only after preregistered answer-quality, forgetting, cost, and fallback gates pass.
+Long-running programming agents must preserve decisions while avoiding constraints that were later corrected, renamed, reverted, or deleted. Static retrieval can surface obsolete statements, whereas deletion alone may discard the correction needed to recover current state. We introduce Correction-Linked Lifecycle Memory (CLLM), a bounded sidecar for an existing memory retriever. Write-time correction events create predecessor--successor links, query-time traversal redirects stale hits, and controlled feedback proposes retrieval policies without retraining the extractor or replacing the base index. We separate proxy optimization from policy promotion: a challenger replaces the incumbent only after predeclared downstream quality, forgetting, cost, and fallback checks pass.
 
-We evaluate the method in MemoryCore on the public Memora long-dialogue benchmark as a methodological proxy for long programming sessions. The fixed-budget \vone policy improves answer-level FAMA from 0.319 to 0.400 on 50 frozen Base-stale-exposed questions, a gain of 8.09 points (95\% persona-cluster CI: 5.17--12.59). MiniMax-M3 and DeepSeek-V4-Flash serve as both readers and judges; the primary crossed estimator excludes self-judgment. A larger \vtwo policy, selected from 36 candidates using direct feedback, improves the direct quarterly proxy over \vone but fails to improve answer FAMA ($-0.43$ points; 95\% CI: $-2.06$--1.09), reduces FAA by 4.08 points (95\% CI: $-7.62$--$-0.64$), and uses 37.5\% more context. The promotion gate therefore retains \vone. This negative result shows why memory self-optimization should be downstream-gated rather than driven by retrieval recall alone. All switch-off and forced-failure tests return the original Base path exactly. The evidence supports a bounded correction-linked mechanism and a conservative optimization protocol, not effectiveness on private programming-agent traffic.
+We evaluate the method in MemoryCore on the public Memora long-dialogue benchmark as a methodological proxy for long programming sessions. The fixed-budget \vone policy improves answer-level FAMA from 0.319 to 0.400 on 50 frozen Base-stale-exposed questions, a gain of 8.09 points (95\% persona-cluster CI: 5.17--12.59). MiniMax-M3 and DeepSeek-V4-Flash serve as both readers and judges; the primary crossed estimator excludes self-judgment. A larger \vtwo policy, selected from 36 candidates using direct feedback, improves the direct quarterly proxy over \vone but fails to improve answer FAMA ($-0.43$ points; 95\% CI: $-2.06$--1.09), reduces FAA by 4.08 points (95\% CI: $-7.62$--$-0.64$), and uses 37.5\% more context. The gate therefore retains \vone. A post-hoc audit finds more exact obsolete-value exposure in \vtwo contexts and answers, but does not identify which jointly changed policy dimension caused the regression. This negative result shows why memory self-optimization should be downstream-gated rather than driven by retrieval recall alone. All switch-off and forced-failure tests return the original Base path exactly. The evidence supports a bounded correction-linked mechanism and a conservative optimization protocol, not effectiveness on private programming-agent traffic.
 \end{abstract}
 
 \section{Introduction}
 Interactive programming tasks evolve. A user may replace REST with GraphQL, rename an interface, invalidate a test expectation, revert an implementation plan, or switch environments. A memory system that retrieves both the old and new statements can confidently reintroduce a rejected constraint. Permanently deleting the old record, however, loses provenance and may prevent the system from finding the correction that explains current state.
 
-Long-term agent memory research studies hierarchical context management~\cite{packer2023memgpt}, dynamic organization~\cite{xu2025amem}, scalable extraction and consolidation~\cite{chhikara2025mem0}, and temporal knowledge graphs~\cite{rasmussen2025zep}. Benchmarks such as LoCoMo~\cite{maharana2024locomo} and LongMemEval~\cite{wu2024longmemeval} reveal failures in temporal reasoning and knowledge updates. Memora makes forgetting explicit through invalidated-memory annotations and Forgetting-Aware Memory Accuracy (FAMA)~\cite{uddin2026memora}. Three practical gaps remain: whether obsolete retrieval can be diagnosed before relying on end-task success, whether linking to a correction is better than merely filtering an old hit, and whether feedback optimization can avoid overfitting a retrieval proxy.
+Long-term agent memory research studies hierarchical context management~\cite{packer2023memgpt}, dynamic organization~\cite{xu2025amem}, scalable extraction and consolidation~\cite{chhikara2025mem0}, and temporal knowledge graphs~\cite{rasmussen2025zep}. Benchmarks such as LoCoMo~\cite{maharana2024locomo} and LongMemEval~\cite{wu2024longmemeval} reveal failures in temporal reasoning and knowledge updates. Memora makes forgetting explicit through invalidated-memory annotations and Forgetting-Aware Memory Accuracy (FAMA)~\cite{uddin2026memora}. A central deployment gap remains: a policy can improve retrieval-side evidence coverage while degrading the answer that consumes that evidence.
+
+We ask three questions. \textbf{RQ1:} can bounded correction links improve stale-exposed answers without increasing the injection budget? \textbf{RQ2:} does a richer policy selected by direct memory feedback also dominate after answer generation? \textbf{RQ3:} can a predeclared promotion rule detect and reject a proxy-selected regression? These questions separate mechanism efficacy, optimization efficacy, and deployment safety.
 
 We study these questions in MemoryCore, an open-source layered memory service with L0 conversation retrieval and higher-level memories~\cite{memorycore2026}. Our contributions are:
 \begin{itemize}
   \item a replaceable write-event interface and bounded lifecycle ledger above the existing FTS/vector retriever;
   \item fixed-budget correction-linked redirection that preserves the latest correction rather than deleting provenance;
   \item a bounded contextual policy search over confidence, traversal, query intent, and injection budget;
-  \item a tiered promotion rule that retains the incumbent when a proxy-selected challenger fails downstream quality, forgetting, cost, or fallback gates;
-  \item a protocol-versioned public evaluation with direct evidence, a two-reader/two-judge crossed panel, exact fallback checks, and an explicit negative result.
+  \item proposal--promotion separation that retains the incumbent when a proxy-selected challenger fails downstream quality, forgetting, or cost checks;
+  \item a protocol-versioned public evaluation with direct evidence, a two-reader/two-judge crossed panel, exact fallback checks, an independently recomputed result, and an explicit negative finding.
 \end{itemize}
 
 \section{Related Work}
@@ -47,7 +53,7 @@ MemGPT treats context as a hierarchy managed like virtual memory~\cite{packer202
 
 LoCoMo evaluates very long multi-session dialogue~\cite{maharana2024locomo}; LongMemEval isolates extraction, multi-session reasoning, temporal reasoning, updates, and abstention~\cite{wu2024longmemeval}. Memora is particularly suitable here because its public protocol separates memory-presence from forgetting-absence criteria~\cite{uddin2026memora}. We use it for method validation, not as evidence about private programming interactions.
 
-Feedback-driven agents such as Reflexion update behavior from verbal or scalar feedback without weight training~\cite{shinn2023reflexion}. Our optimizer shares the test-time adaptation motivation but evolves only a bounded retrieval policy. Unlike a single proxy maximization step, our final policy decision requires downstream promotion gates and preserves the incumbent on failure.
+Feedback-driven agents such as Reflexion update behavior from verbal or scalar feedback without weight training~\cite{shinn2023reflexion}. Memory-R1 learns structured add, update, delete, and no-op operations together with answer-time memory use~\cite{yan2025memoryr1}; SelfMem lets an agent refine its memory strategy from environmental feedback~\cite{yang2026selfmem}; and DeferMem trains query-time evidence selection and rewriting with gated rewards~\cite{yin2026defermem}. These systems establish that memory behavior can be learned rather than fixed. Our scope is complementary and deliberately narrower: we evolve a bounded sidecar policy for an existing retriever, preserve a hard Base fallback, and study whether the proxy used to propose a policy agrees with downstream forgetting-aware answers. The observed rank reversal motivates explicit promotion safety rather than a single optimization score.
 
 \section{Method}
 \subsection{Correction-linked retrieval}
@@ -57,7 +63,7 @@ e=(t_e,c_e,V_e^{-},S_e,s_e),
 \]
 where $t_e$ is a monotonic sequence, $c_e\in[0,1]$ is confidence, $V_e^{-}$ contains invalidated values, $S_e$ contains successor memory identifiers, and $s_e$ records provenance. A predecessor $m$ receives an edge to $S_e$ when it predates $e$ and contains a value in $V_e^{-}$.
 
-At query time, method examines candidates in base rank order. If no eligible edge meets confidence threshold $\tau$, the candidate is unchanged. Otherwise, only the latest eligible correction event is followed. Traversal stops at a leaf, tombstone, hop budget $H$, expansion budget $E$, result budget $k$, or wall-time budget $T$. Duplicate leaves are removed and later base candidates refill the list. Cycles, missing successors, timeouts, malformed state, and capacity violations return $B(q)_{1:k}$ for the entire call.
+At query time, the method examines candidates in base rank order. If no eligible edge meets confidence threshold $\tau$, the candidate is unchanged. Otherwise, only the latest eligible correction event is followed. Traversal stops at a leaf, tombstone, hop budget $H$, expansion budget $E$, result budget $k$, or wall-time budget $T$. Duplicate leaves are removed and later base candidates refill the list. Cycles, missing successors, timeouts, malformed state, and capacity violations return $B(q)_{1:k}$ for the entire call.
 
 The research incumbent \vone is $\theta_1=(\tau=.85,H=1,E=64,k=5,T=10\text{ ms})$. It was selected by the original weekly/monthly optimization protocol before quarterly evaluation. The ledger links predecessors directly to the latest eligible correction, so one query-time hop can represent a longer update history.
 
@@ -82,14 +88,14 @@ where $Q_f$ is mean direct FAMA proxy on 188 forgetting-bearing questions, $H_n$
 The optimizer selects $\tau=.96$, $H=2$, $s=2$, and aggregate protection. This is a proposal, not an automatic deployment decision.
 
 \subsection{Tiered promotion}
-We separate policy fitting from promotion. Given incumbent $\theta_I$, challenger $\theta_C$, and preregistered checks $g_1,\ldots,g_J$, the deployed research policy is
+We separate policy fitting from promotion. Stage one admits a proposal only if direct quality, protected-slice harm, cost, disabled-equivalence, and forced-failure checks pass. Stage two evaluates the surviving challenger after answer generation. Given incumbent $\theta_I$, challenger $\theta_C$, and predeclared downstream checks $g_1,\ldots,g_J$, the deployed research policy is
 \[
 \theta^{*}=\begin{cases}
 \theta_C,&\text{if }\bigwedge_{j=1}^{J}g_j=1,\\
 \theta_I,&\text{otherwise.}
 \end{cases}
 \]
-Checks cover answer FAMA magnitude and confidence, FAA, relative improvement over the incumbent, injection cost, disabled equivalence, and forced-failure fallback. The decision log records every observed value, threshold, and failed check. Thus optimization may learn from feedback without allowing a retrieval-only proxy to silently replace a safer incumbent.
+The downstream checks cover answer FAMA magnitude and confidence, FAA, relative improvement over the incumbent, and injection cost; stage-one equivalence and fallback checks remain prerequisites. The decision log records every observed value, threshold, and failed check. Thus optimization may learn from feedback without allowing a retrieval-only proxy to silently replace a safer incumbent.
 
 \section{Experimental Protocol}
 \paragraph{System and data.}
@@ -100,6 +106,9 @@ The ledger uses released write-time fields (session type, operation, operation d
 
 Memora has no repository, branch, environment, or component scope labels. It can validate correction chains and forgetting, but not programming-specific coexistence. The query-intent classifier uses query text only and matches the benchmark's repeated templates with zero false positives and zero false negatives over 600 questions; this is template validation, not general-language accuracy.
 
+\paragraph{Protocol chronology.}
+Protocol v2.0 fixed the candidate grid, objective, split, uncertainty method, and gates before direct scores were computed. A pre-score intent check then found 30 false negatives in two repeated reasoning templates (weekly goal-status and monthly week-comparison questions). Protocol v2.1 changed only those query-text patterns and reran all 600 cases in a fresh output directory; no score, threshold, or candidate dimension was changed. The answer-panel protocol and hashes were recorded before model calls. These are versioned repository artifacts, not a third-party timestamped preregistration, so we use \emph{predeclared} rather than \emph{preregistered}.
+
 \paragraph{Metrics.}
 Memory Presence Accuracy (MPA) measures required current facts; Forgetting Absence Accuracy (FAA) measures avoidance of invalid facts. Following Memora,
 \[
@@ -107,7 +116,7 @@ Memory Presence Accuracy (MPA) measures required current facts; Forgetting Absen
 \qquad
 \lambda=\frac{N_f}{N_p+N_f}.
 \]
-Direct evidence metrics align retrieved memory units with current and obsolete evidence before answer generation. Batched answer-level criteria are not directly comparable to Memora Table~3. All confidence intervals use 5,000-sample paired persona-cluster bootstrap.
+The direct proxy counts a current atom only when its annotated source session and normalized value are both retrieved; it counts an obsolete atom only when the value occurs in a candidate predating its invalidation sequence. It applies the same FAMA form to these two rates before answer generation. This provenance-sensitive exact matching is cheap and deterministic, but it cannot score paraphrases, answer wording, or downstream use of a correction statement that repeats an obsolete value. Batched answer-level criteria are not directly comparable to Memora Table~3. All primary confidence intervals use 5,000-sample paired persona-cluster bootstrap.
 
 \paragraph{Frozen answer panel.}
 Among 192 quarterly forgetting-bearing questions, 61 have at least one obsolete Base Top-5 hit. Hash stratification selects five cases per persona, producing 50 cases (43 recommending and seven remembering); the selection SHA-256 is \texttt{1e3ab7b2...dadaf1}. The \vtwo context-manifest SHA-256 is \texttt{a272a6c5...85b19}. Candidate lists differ from \vone on all 50 cases, so every Base, \vone, and \vtwo answer is generated afresh.
@@ -160,12 +169,53 @@ Criterion acc. & 0.704 & \textbf{0.761} & 0.738 & +0.057 [0.039, 0.076] & +0.034
 
 The full-factorial sensitivity ordering is the same: \vone versus Base is +8.26 FAMA points, \vtwo versus Base is +7.66, and \vtwo versus \vone is $-0.60$. \vone improves FAMA in all 10 persona clusters; the median cluster effect is +5.91 points, and leave-one-persona-out means range from +6.07 to +8.63 points. \vtwo improves over Base in nine clusters but exceeds \vone in only three.
 
+Figure~\ref{fig:reversal} places the within-stage \vtwo-minus-\vone effects on one percentage-point axis. The direct proxy has a positive interval, while answer FAMA does not improve and answer FAA is significantly negative. Absolute proxy and answer scores are not compared; the figure displays only paired policy differences within each measurement stage.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=0.58cm,y=0.72cm,font=\footnotesize]
+  \draw[gray!25,line width=0.7pt] (0,0.65) -- (0,4.55);
+  \foreach \x in {-8,-6,-4,-2,0,2} {
+    \draw[gray!45] (\x,0.55) -- (\x,0.40);
+    \node[below,text=gray!75!black] at (\x,0.40) {\x};
+  }
+  \draw[->,gray!70!black] (-8.35,0.55) -- (3.25,0.55);
+  \node[below] at (-2.5,-0.02) {\vtwo$-$\vone effect (percentage points)};
+
+  \node[anchor=east] at (-8.55,4.0) {Direct proxy FAMA};
+  \node[anchor=east] at (-8.55,3.0) {Answer MPA};
+  \node[anchor=east] at (-8.55,2.0) {Answer FAMA};
+  \node[anchor=east] at (-8.55,1.0) {Answer FAA};
+
+  \draw[proxyblue,line width=1.2pt] (0.155,4.0) -- (0.947,4.0);
+  \fill[proxyblue] (0.519,4.0) circle (2.2pt);
+  \draw[answerorange,line width=1.2pt] (-0.385,3.0) -- (2.761,3.0);
+  \node[draw=answerorange,fill=white,rectangle,minimum size=4.2pt,inner sep=0pt]
+    at (1.188,3.0) {};
+  \draw[answerorange,line width=1.2pt] (-2.062,2.0) -- (1.088,2.0);
+  \node[draw=answerorange,fill=white,rectangle,minimum size=4.2pt,inner sep=0pt]
+    at (-0.431,2.0) {};
+  \draw[answerorange,line width=1.2pt] (-7.616,1.0) -- (-0.644,1.0);
+  \node[draw=answerorange,fill=answerorange,rectangle,minimum size=4.2pt,inner sep=0pt]
+    at (-4.076,1.0) {};
+
+  \node[anchor=west,text=proxyblue] at (3.55,4.0) {+0.52};
+  \node[anchor=west,text=answerorange] at (3.55,3.0) {+1.19};
+  \node[anchor=west,text=answerorange] at (3.55,2.0) {$-0.43$};
+  \node[anchor=west,text=answerorange] at (3.55,1.0) {$-4.08$};
+\end{tikzpicture}
+\caption{Proxy-to-answer rank reversal. Points are mean \vtwo-minus-\vone effects and lines are 95\% persona-cluster bootstrap intervals. Blue denotes the direct proxy; orange denotes answer metrics.}
+\label{fig:reversal}
+\end{figure}
+
 The judges agree on 8,258 of 8,532 paired criterion votes (96.79\%, Cohen's $\kappa=0.899$). The run contains 300 unique reader-arm records, 300 reader calls, and 600 judge calls with no retry and no returned-model mismatch. Three DeepSeek verdicts are \texttt{unclear} and counted as incorrect. An independent implementation recomputes all criterion scores and summary means with zero mismatches. A separate 20,000-sample bootstrap with another seed preserves every key inference.
 
 \subsection{Promotion outcome and failure analysis}
 The \vtwo promotion gate passes Base-relative FAMA magnitude, positive FAMA confidence bound, and token budget. It fails the required +10-point Base-relative FAA magnitude (observed +4.31) and positive \vtwo-versus-\vone FAMA direction (observed $-0.43$). The machine-readable decision is therefore \texttt{retain\_incumbent}.
 
-The result exposes a proxy-to-generation gap. In large-loss cases, extra \vtwo items contain earlier preferences that the user later rejected. A reader may faithfully say ``you no longer like X,'' yet Memora's forgetting-absence criterion still counts the mention of X as exposure. This pattern is consistent with the FAA loss and explains why additional current-fact recall is not automatically beneficial. It does not isolate extra slots as the sole cause because \vtwo also changes confidence and hop limits; the supported conclusion concerns the selected policy as a whole.
+The result exposes a proxy-to-generation gap. We therefore run a post-hoc, descriptive exact-value audit over the 100 paired reader answers. At least one normalized obsolete value occurs in 86 \vtwo contexts versus 74 \vone contexts, and in 81 \vtwo answers versus 66 \vone answers. \vtwo also produces longer answers (126.7 versus 112.0 mean completion tokens). Across 1,866 paired forgetting-criterion comparisons, 96 move from correct under \vone to wrong under \vtwo, while 41 move in the opposite direction (net $-55$). Case inspection includes correction statements and removed to-do items repeated in negated or historical form.
+
+This audit is consistent with increased exposure, but it is not a causal explanation. Exact substring matching misses paraphrases and does not distinguish negation from affirmation; criteria within an answer are correlated; and \vtwo jointly changes confidence, hops, intent protection, and extra slots. The supported conclusion is therefore policy-level: the selected challenger overfits the direct proxy. Isolating the responsible component requires one-factor answer-level ablations.
 
 An explicitly post-hoc Safe-Hybrid diagnostic uses Base for historical aggregates and \vone for other queries while keeping $k=5$. It is byte-identical to \vone on the frozen answer sample and passes all routing and fallback equivalence checks. Across all 600 direct cases, however, its FAMA proxy is 0.419076 versus 0.419123 for \vone, and its token count is 0.36\% higher. It fails a strict no-regression/no-extra-cost diagnostic and is not promoted.
 
@@ -174,8 +224,15 @@ The earlier fixed GPT-4o-mini-reader panel estimated a \vone FAMA gain of 5.77 p
 \subsection{Safety behavior}
 Across all 600 questions, disabling \method produces zero candidate-ID mismatches against Base. Forced damaged-state and timeout checks also produce zero mismatches, as do protected-intent equivalence checks where applicable. Each group is bounded to 10,000 units, 5,000 events, and 50,000 edges, with query-time hop, expansion, result-count, and wall-time budgets.
 
+\section{What the Negative Result Changes}
+The next confirmatory candidate should not be another joint expansion. We retain \vone, keep $k=5$, and vary one dimension at a time: confidence calibration, a second traversal hop, or one additional slot. A two-fidelity optimizer can use the deterministic proxy only to discard clearly weak candidates, then use a development answer panel to estimate forgetting harm before any promotion decision. The current 50 cases must not be reused to fit that answer-level objective; they are now analysis data.
+
+For each one-factor candidate, the decisive estimand is paired answer FAMA relative to \vone with FAA as a non-inferiority safety outcome and injected tokens as cost. An additional slot should be admitted only if its own ablation clears those checks. External confirmation should then use an untouched public update/abstention split or internal programming sessions with repository, branch, environment, and task scope. This sequence directly tests the failure identified here instead of optimizing the same surrogate more aggressively.
+
+Three questions remain open: whether a cheap high-precision surrogate can predict answer-level forgetting harm, whether promotion decisions are stable under a broader reader/judge panel, and how version chains should represent facts that remain concurrently valid in different branches or environments. Each requires new data or a new frozen split; none can be answered by further tuning on the current 50 cases.
+
 \section{Limitations and Transfer}
-First, Memora is personalized dialogue, not a programming-agent benchmark. Internal sessions may contain branch-local truths, implicit corrections, code moves, and tool-grounded changes that do not quote the invalidated value. Second, the answer sample is conditional on Base stale exposure and has 43 recommendation versus seven remembering questions; it is not a population estimate over all 600 questions. Third, quarterly and the frozen sample were observed during earlier \vone development, so the \vtwo results are confirmation and ablation evidence rather than pristine external validation. Fourth, the two-model crossed panel reduces self-judging bias but is not a random sample of readers or judges. Fifth, direct evidence selected a challenger that did not improve downstream FAMA, so future optimization requires answer-level safety feedback or a better calibrated surrogate. Sixth, neither policy clears every strict production-style magnitude gate; \vone is the best-tested research incumbent, not an unconditional default.
+First, Memora is personalized dialogue, not a programming-agent benchmark. Internal sessions may contain branch-local truths, implicit corrections, code moves, and tool-grounded changes that do not quote the invalidated value. Second, the answer sample is conditional on Base stale exposure and has 43 recommendation versus seven remembering questions; it is not a population estimate over all 600 questions. Third, quarterly and the frozen sample were observed during earlier \vone development, so the \vtwo results are confirmation and ablation evidence rather than pristine external validation. Fourth, the two-model crossed panel reduces self-judging bias but is not a random sample of readers or judges. Fifth, the post-hoc exposure audit diagnoses association after seeing the outcome and cannot identify a causal policy component. Sixth, the protocol artifacts are versioned but not externally timestamped preregistrations. Seventh, neither policy clears every strict production-style magnitude gate; \vone is the best-tested research incumbent, not an unconditional default.
 
 For programming transfer, the core ledger, policy bounds, decision log, promotion rule, and fallback remain unchanged. Internal adapters must supply stable unit IDs, monotonic events, correction provenance, calibrated confidence, and query scope such as repository, branch, environment, component, and task. Explicit user corrections, rename/refactor events, reverted plans, changed tests, and tool-confirmed deletion are high-value signals. Concurrently valid branch-specific alternatives should coexist rather than invalidate one another. Those assumptions require an internal adapter and a new task-level protocol; Memora cannot validate them.
 
@@ -183,5 +240,6 @@ For programming transfer, the core ledger, policy bounds, decision log, promotio
 Static retrieval can convert historical truth into current error. Correction-linked redirection is a useful bounded mechanism: the fixed-budget \vone policy substantially improves crossed answer-level FAMA at nearly constant context cost and with exact fallback behavior. A more aggressive proxy-optimized \vtwo policy looks better before answer generation but loses forgetting safety and fails to beat \vone downstream. The central lesson is therefore procedural as well as algorithmic: memory self-optimization should propose bounded challengers, test them against frozen downstream gates, and retain the incumbent on failure. This warrants an internal programming-session pilot, not a broad deployment claim.
 
 \bibliographystyle{plain}
+\small
 \bibliography{references}
 \end{document}

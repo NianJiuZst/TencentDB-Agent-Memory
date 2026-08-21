@@ -62,9 +62,16 @@ These results made V2 a reasonable challenger but not a safe promotion. The down
 
 ## Failure analysis
 
-V2 increases MPA slightly over V1 but lowers FAA. Inspection of the largest-loss cases shows extra injected items containing prior preferences such as an artist or destination the user no longer likes. Readers often restate those items in a negated phrase (“you no longer like ...”); Memora's forgetting-absence criteria still count that as exposure. This is a plausible mechanism for the FAA loss and illustrates that retrieved evidence quality cannot be reduced to current-fact recall.
+V2 increases MPA slightly over V1 but lowers FAA. A post-hoc exact-value audit over the 100 paired reader answers makes the exposure pattern measurable:
 
-The evidence does **not** isolate extra slots as the sole cause: V2 also changes confidence and hop limits. The correct conclusion is that the selected V2 policy as a whole overfits the direct proxy. A future candidate should isolate one policy dimension at a time and require answer-level safety feedback before promotion.
+- At least one normalized obsolete value occurs in 86 V2 contexts versus 74 V1 contexts.
+- The corresponding answer rates are 81/100 for V2 and 66/100 for V1.
+- V2 answers average 126.73 completion tokens versus 111.99 for V1.
+- Across 1,866 paired forgetting-criterion comparisons, 96 move from correct under V1 to wrong under V2, while 41 move in the other direction, for a net loss of 55 correct decisions.
+
+Case inspection includes correction statements and removed to-do items repeated in negated or historical form. This is consistent with greater exposure, but it is not a causal explanation: exact matching misses paraphrases and cannot distinguish negation, the criteria within an answer are correlated, and the audit was defined after seeing the outcome.
+
+The evidence does **not** isolate extra slots as the sole cause: V2 also changes confidence, hop limits, and aggregate protection. The correct conclusion is that the selected V2 policy as a whole overfits the direct proxy. A future candidate should keep V1's fixed budget, isolate one policy dimension at a time, and require answer-level safety feedback before promotion.
 
 ## Safe-Hybrid diagnostic
 

@@ -1,5 +1,5 @@
 {
-  "resultVersion": "lifecycle-result-card-v1.2",
+  "resultVersion": "lifecycle-result-card-v1.3",
   "dataset": {
     "name": "Memora",
     "revision": "a6493188efc836d6511ed5e4163fe3ba87da30ff",
@@ -278,6 +278,34 @@
       "selectedPolicy": "lifecycle-adaptive-v1.0",
       "failedChecks": ["contextualVsBaseFaa", "contextualVsV1Fama"]
     }
+  },
+  "postHocFailureAnalysis": {
+    "status": "descriptive only; not a promotion gate",
+    "evaluationsSha256": "fb9687dc1719e2a2507de03b7ab2240cc20178cde99ef34edd84716f6561d611",
+    "pairedReaderAnswers": 100,
+    "v1": {
+      "exactObsoleteAnswerAnyRate": 0.66,
+      "exactObsoleteContextAnyRate": 0.74,
+      "meanReaderCompletionTokens": 111.99
+    },
+    "contextualV2": {
+      "exactObsoleteAnswerAnyRate": 0.81,
+      "exactObsoleteContextAnyRate": 0.86,
+      "meanReaderCompletionTokens": 126.73
+    },
+    "forgettingCriterionTransitions": {
+      "comparisons": 1866,
+      "v1CorrectV2Wrong": 96,
+      "v1WrongV2Correct": 41,
+      "netCorrectDelta": -55
+    },
+    "exactObsoleteExposureTransitions": {
+      "answerIntroduced": 18,
+      "answerRemoved": 3,
+      "contextIntroduced": 12,
+      "contextRemoved": 0
+    },
+    "caveat": "Exact matching misses paraphrases and cannot distinguish negation; correlated criteria and joint policy changes prevent causal attribution."
   },
   "safeHybridDiagnostic": {
     "protocol": "lifecycle-safe-hybrid-v3.0",

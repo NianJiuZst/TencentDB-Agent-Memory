@@ -4,7 +4,7 @@ This benchmark evaluates a switchable lifecycle sidecar above MemoryCore L0 retr
 
 ## Outcome
 
-**V1 is the best-tested policy; the larger V2 challenger is rejected.** V2 improved the direct retrieval proxy, but the frozen answer-level experiment did not show an improvement over V1 and found a statistically negative FAA difference. A preregistered promotion gate therefore retains V1 as the research incumbent. No result here authorizes an unconditional production rollout or establishes effectiveness on real programming sessions.
+**V1 is the best-tested policy; the larger V2 challenger is rejected.** V2 improved the direct retrieval proxy, but the frozen answer-level experiment did not show an improvement over V1 and found a statistically negative FAA difference. A predeclared promotion gate therefore retains V1 as the research incumbent. The protocol is versioned in the repository but was not externally timestamped. No result here authorizes an unconditional production rollout or establishes effectiveness on real programming sessions.
 
 | Frozen 50-case cross-model evaluation | Base | V1 | V2 | V1 vs Base [95% CI] | V2 vs V1 [95% CI] |
 |---|---:|---:|---:|---:|---:|
@@ -34,7 +34,7 @@ V1 uses fixed-budget successor redirection:
 
 V2 expands the bounded search space to 36 policies over confidence, hop count, zero-to-two extra injection slots, and a query-text historical-aggregate guard. The optimizer observes 300 weekly/monthly questions (188 forgetting-bearing and 112 non-forgetting), penalizes protected-slice harm and token cost, and selects confidence 0.96, two hops, at most two extra slots, and aggregate protection.
 
-On quarterly direct evidence, V2 improves FAMA proxy over Base by +3.13 points on 192 forgetting-bearing questions and +10.28 points on 61 stale-exposed questions. It also exceeds V1 by +0.45 and +1.00 points on those slices. However, those direct gains do not survive answer generation: V2 mentions more superseded preferences, including in negated form, and loses FAA. This failure analysis is consistent with over-injection, but it is not a fully isolated causal ablation because V1 and V2 differ in several policy parameters.
+On quarterly direct evidence, V2 improves FAMA proxy over Base by +3.13 points on 192 forgetting-bearing questions and +10.28 points on 61 stale-exposed questions. It also exceeds V1 by +0.45 and +1.00 points on those slices. However, those direct gains do not survive answer generation. A post-hoc audit finds exact obsolete values in 86 V2 contexts versus 74 V1 contexts and in 81 V2 answers versus 66 V1 answers; 96 forgetting criteria move from V1-correct to V2-wrong, while 41 move in the opposite direction. This is descriptive evidence, not a causal ablation: exact matching cannot distinguish negation, and V1/V2 differ in several parameters.
 
 A post-hoc Safe-Hybrid diagnostic (V1 for current-state queries, Base for historical aggregates, fixed `k=5`) is intentionally not promoted either. It is byte-equivalent to V1 on the frozen answer-level sample, but across all 600 direct cases it is 0.0047 FAMA points below V1 and uses 0.36% more tokens, failing its strict no-regression/no-extra-cost gate.
 
@@ -45,6 +45,7 @@ A post-hoc Safe-Hybrid diagnostic (V1 for current-state queries, Base for histor
 - `src/adaptive-runner.ts`: V1 weekly/monthly optimization and quarterly direct evaluation.
 - `src/contextual-runner.ts`: V2 bounded policy search, intent protection, direct comparison, decision logs, and stable context manifest.
 - `src/contextual-e2e-runner.ts`: Base/V1/V2 two-reader, two-judge answer evaluation with crossed primary aggregation.
+- `src/contextual-e2e-failure-analysis.ts`: deterministic post-hoc exposure and criterion-transition audit.
 - `src/safe-hybrid-runner.ts`: explicitly post-hoc safety-contraction diagnostic.
 - `protocol*.json`: immutable protocol history; semantic changes receive new versions.
 - `results/result-card.v1.json`: checked-in structured result record. Raw answers and per-case outputs stay in the selected run directory.
@@ -88,6 +89,11 @@ pnpm validate:lifecycle-contextual-e2e -- \
   --summary benchmark-runs/lifecycle-memory/contextual-e2e-v1/summary.json \
   --output benchmark-runs/lifecycle-memory/contextual-e2e-v1/validation.json
 
+pnpm analyze:lifecycle-contextual-e2e -- \
+  --data /path/to/Memora/data \
+  --evaluations benchmark-runs/lifecycle-memory/contextual-e2e-v1/evaluations.jsonl \
+  --output benchmark-runs/lifecycle-memory/contextual-e2e-v1/failure-analysis.json
+
 # Post-hoc diagnostic; not part of the confirmatory claim.
 pnpm eval:lifecycle-safe-hybrid -- \
   --data /path/to/Memora/data \
@@ -105,6 +111,7 @@ The final answer-level command reads `MINIMAX_API_KEY` and `DEEPSEEK_API_KEY`, u
 - Public data: 600 questions, 27,614 sessions, and 10 personas across weekly, monthly, and quarterly horizons.
 - V1 optimization: weekly/monthly forgetting-bearing questions; quarterly was its original held-out split.
 - V2 optimization: all weekly/monthly questions. Quarterly had already been observed during V1 development, so V2 calls it a confirmation split rather than a pristine holdout.
+- Protocol v2.0 fixed the grid, objective, split, uncertainty, and gates. A pre-score intent check found 30 repeated-template false negatives; v2.1 changed only those query-text patterns and reran all 600 cases. The repository protocols are predeclared artifacts, not externally timestamped preregistrations.
 - Answer-level sample: the same frozen 50 quarterly, Base-stale-exposed cases (five per persona; 43 recommending and seven remembering). V2 candidate IDs differed on all 50, so all Base, V1, and V2 answers were generated afresh.
 - Labels score results and validate the query-intent adapter; they are not available to the runtime controller. The public classifier matches Memora's repeated templates with zero errors on 600 cases, which should not be interpreted as general-language accuracy.
 - Batched criterion scoring is not directly comparable to Memora Table 3.
@@ -113,7 +120,7 @@ The final answer-level command reads `MINIMAX_API_KEY` and `DEEPSEEK_API_KEY`, u
 
 `applyLifecyclePolicy` returns the unmodified Base prefix when disabled. Missing ledgers, resolver exceptions, timeouts, cycles, capacity violations, and missing successor materialization return the same Base prefix with a `fallback` decision and reason. All direct protocols report zero mismatches over 600 disabled, forced-damage, and forced-timeout checks.
 
-`promoteLifecyclePolicy` separates proposal from deployment: an optimized challenger replaces the incumbent only if every predeclared quality, safety, cost, and fallback check passes. V2 misses the answer-level FAA magnitude threshold and the positive V2-versus-V1 FAMA check, so the machine-readable outcome is `retain_incumbent`.
+The admission pipeline separates proposal from deployment. Direct quality, harm, cost, equivalence, and forced-fallback checks must pass before answer evaluation. `promoteLifecyclePolicy` then requires every predeclared downstream quality, forgetting, relative-improvement, and token check to pass. V2 misses the answer-level FAA magnitude threshold and the positive V2-versus-V1 FAMA check, so the machine-readable outcome is `retain_incumbent`.
 
 Default per-scope capacities are 10,000 units, 5,000 events, and 50,000 edges. Query traversal is additionally bounded by hop, expansion, result-count, and wall-time budgets.
 
