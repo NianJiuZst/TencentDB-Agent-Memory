@@ -14,7 +14,8 @@ This file is the persistent direction registry for iterative work above the fixe
 | D2 | Query-conditioned evidence-risk routing | Choose V1 or shield rendering per query | Bounded sidecar features plus downstream utility | Rejected at cross-fitted gate | Stopped: MPA non-inferiority and reader-stability gates failed |
 | D3 | Delete-aware vacancy refill | Whether deletion successors consume Top-k slots | Typed lifecycle event kind plus the existing Base candidate pool | Rejected at proxy gate | Positive recall signal, but magnitude and token gates failed |
 | D4 | Feedback-optimized valid-state packing | Token fraction and item cap after validity filtering | Development-period proxy feedback; per-query V1 token budget | Rejected at answer uncertainty gate | Positive point estimates are retained as a near-miss, not promoted |
-| D5 | Target-keyed state projection on MemOps | Value-substring invalidation versus explicit operation target state | Public gold operation traces shared by every arm | Adapter audit passed; protocol design next | Oracle-management evidence only; public JSON has no independent scope field |
+| D5 | Target-keyed state projection on MemOps | Value-substring invalidation versus explicit operation target state | Public gold operation traces shared by every arm | Rejected at untouched test uncertainty gate | Positive stale-removal signal; no answer-level promotion |
+| D6 | Incumbent-preserving state composition | Compose V1 successors with target-state projection under a structural dominance certificate | Graph-known current/stale units; no evaluation labels at runtime | Hypothesis design | Requires a new confirmation boundary because D5 test is consumed |
 
 ## Why D1 is first
 
@@ -71,6 +72,16 @@ D1 through D4 repeatedly show that a value-substring version edge is useful but 
 The pinned public artifact contains 403 paired long-conversation instances, 2,558 operations, and 2,006 longitudinal probes. All gold spans map to MemoryCore L0-shaped units under a fail-closed adapter. D5 will give Base, V1, and the challenger the same oracle operation objects, then vary only state management: V1 retains value-substring edges, while the challenger maintains a bounded current state keyed by operation target. This isolates management from extraction and will be reported as oracle-management evidence.
 
 The released JSON does not expose a separate scope field despite the paper's broader formulation. D5 therefore does not validate repository or branch coexistence. That direction remains an internal-adapter requirement; no public result will be relabeled as programming-task evidence.
+
+D5 selected `budget-1-state-3` on 60 development profiles. It then passed the frozen 20-profile validation gate: state-FAMA improved by 12.93 points over V1 (profile-bootstrap 95% interval +4.36 to +21.97), current-state recall improved by 8.08 points, stale absence by 12.37 points, and mean injected tokens fell by 4.63%. An independent reconstruction reproduced all 392 rows and every aggregate with zero mismatch, so validation unlocked the untouched test split.
+
+The untouched 20-profile test did not confirm D5. Its state-FAMA point estimate remained positive at +6.46 points and stale absence improved by 7.58 points while tokens fell by 6.40%, but the profile-bootstrap interval was -2.40 to +15.10 points. That uncertainty check was the only frozen test-gate failure. Four of 66 cases were harmed, all in the Update family; in each, D5's independent Base-stream packing omitted a current successor already recovered by V1. D5 is therefore rejected before answer evaluation.
+
+## Why D6 composes rather than replaces V1
+
+D5's failure is an incumbent-preservation failure, not evidence that explicit target state has no value. The candidate removed stale target history consistently, but it sometimes discarded a V1 successor while satisfying a token cap. D6 will investigate a conservative composition rule: start from both V1 and target-state views, then use only graph-derived runtime facts to accept a changed context when it preserves all graph-known current units already present in V1, introduces no additional graph-known stale units, and stays within the exact V1 token budget. Otherwise it returns exact V1.
+
+This rule cannot use benchmark labels, relevant-target annotations, answers, or the four known failing case ids. The D5 test split is already consumed and may be used only for failure diagnosis, not as D6 confirmation. Before implementation, D6 must identify either another public update-aware evidence source or a protocol whose confirmatory claim does not reuse those outcomes.
 
 ## Iteration rule
 

@@ -1,0 +1,90 @@
+{
+  "resultCardVersion": "lifecycle-memops-target-state-result-v1.0",
+  "protocolVersion": "lifecycle-memops-target-state-v1.0",
+  "direction": "D5 target-keyed current-state projection",
+  "status": "rejected_at_untouched_test_uncertainty_gate",
+  "decision": "retain_lifecycle_adaptive_v1",
+  "dataset": {
+    "name": "MemOps",
+    "revision": "312af65e2c7b6d1b70f062ffa8b4cde32aaf6f35",
+    "manifestSha256": "b55278a63656421edb2080d65631ffe91ef67fabdd4fa490da6bc4002c2ee012",
+    "syntheticPublicBenchmark": true
+  },
+  "selectedPolicy": {
+    "id": "budget-1-state-3",
+    "budgetFraction": 1,
+    "maxStateUnits": 3
+  },
+  "validation": {
+    "status": "passed",
+    "profiles": 20,
+    "primaryCases": 66,
+    "casesSha256": "5aa5d96f5b831415c78360b02e87db9203ca0b7eb429bca506d75815330e7c59",
+    "summarySha256": "ae8aab7f3722d642632b0cc5b124a37d5394fe6700562438b1da580b4a32c88d",
+    "independentValidationSha256": "16c3d8bba5845bda9319e38089c1fa5206bd89b53c9f2d93d548525652d49f77",
+    "targetStateVsV1": {
+      "stateFamaDelta": 0.12929292929292932,
+      "stateFamaBootstrap95": [0.043589743589743594, 0.21971830985915491],
+      "currentStateRecallDelta": 0.0808080808080808,
+      "staleAbsenceDelta": 0.12373737373737373,
+      "meanInjectedTokenIncreaseFraction": -0.04634044332915088
+    }
+  },
+  "test": {
+    "status": "failed",
+    "profiles": 20,
+    "primaryCases": 66,
+    "preReadCommit": "eab779744820202756cf51cb1781d899c075ba01",
+    "casesSha256": "036a7b3a5e0e9c807b74b8a0e933f9b2290194702f980bd6d86e2f84f4a8f2cf",
+    "summarySha256": "87818d0a2a755246eccc773d4464b6e311d064ca297b3a6d0f8611194dd214eb",
+    "independentValidationSha256": "d2fd9dbe11f4f0eae33c8dca95537a29692c1766f312ef12a041d492b6772570",
+    "targetStateVsV1": {
+      "stateFamaDelta": 0.06464646464646466,
+      "stateFamaBootstrap95": [-0.024019607843137253, 0.15101010101010104],
+      "alternateSeedStateFamaBootstrap95": [-0.02070707070707071, 0.1510752688172043],
+      "currentStateRecallDelta": 0.03585858585858587,
+      "staleAbsenceDelta": 0.07575757575757576,
+      "staleAnyAbsenceDelta": 0.15151515151515152,
+      "goldProvenanceRecallDelta": -0.04166666666666666,
+      "meanInjectedTokenIncreaseFraction": -0.06399934722297773
+    },
+    "caseTransitions": {
+      "improved": 14,
+      "unchanged": 48,
+      "harmed": 4
+    },
+    "harmedCaseRate": 0.06060606060606061,
+    "perOperationFamilyStateFamaDelta": {
+      "Forget": 0.15625,
+      "Reflect": 0.09333333333333334,
+      "Remember": 0,
+      "Update": -0.005555555555555554
+    },
+    "failedChecks": ["stateFamaUncertainty"],
+    "operationalIntegrity": {
+      "tokenViolations": 0,
+      "ordinaryFallbacks": 0,
+      "disabledMismatches": 0,
+      "missingSourceMismatches": 0,
+      "timeoutMismatches": 0,
+      "historyModeMismatches": 0,
+      "independentRecomputation": "passed"
+    }
+  },
+  "failureAnalysis": {
+    "harmedFamilies": ["Update"],
+    "harmedCaseIds": [
+      "B01_update:p4_candidate_disambiguation",
+      "B24_update:p4_candidate_disambiguation",
+      "B30_update:p4_candidate_disambiguation",
+      "D18_update:p4_candidate_disambiguation"
+    ],
+    "observedMechanism": "D5 independently projected and packed the Base stream under the actual V1 token budget. In each harmed case, packing omitted a current successor that V1 had recovered, so D5 lost incumbent recall despite avoiding stale units.",
+    "nextHypothesis": "Compose target-state projection with V1 and accept it only when a label-free structural certificate preserves graph-known current units, does not increase graph-known stale units, and respects the exact V1 token budget. D5 test outcomes cannot serve as confirmatory evidence for that new hypothesis."
+  },
+  "evidenceBoundary": [
+    "All arms receive the same gold operation objects, so this isolates oracle lifecycle management and does not test extraction.",
+    "MemOps is public synthetic dialogue data, not multi-turn programming-task evidence.",
+    "The failed test gate prohibits answer-level promotion or threshold changes after scoring."
+  ]
+}

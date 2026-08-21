@@ -333,6 +333,47 @@
         ]
       },
       "interpretation": "The optimizer selected the full V1 token fraction with a five-item cap, showing that validity-aware packing rather than indiscriminate compression carried the development gain. It passed the policy-blind proxy gate, and the fresh answer panel moved every primary point estimate in the desired direction while reducing tokens by 3.27%. However, the FAMA gain of 1.16 points had a persona-bootstrap interval of -0.14 to +2.90 points, missing the frozen nonnegative-lower-bound gate. D4 is promising but unconfirmed and is not promoted or rescued by changing the threshold after scoring."
+    },
+    {
+      "id": "D5-v1.0",
+      "direction": "target-keyed current-state projection",
+      "protocolVersion": "lifecycle-memops-target-state-v1.0",
+      "preScoreCommit": "bd51d02064b37fa38e0efb8a26bf1e8c143d349f",
+      "preTestReadCommit": "eab779744820202756cf51cb1781d899c075ba01",
+      "evidenceRole": "public synthetic operation-level oracle-management study with profile-disjoint development, validation, and untouched test splits",
+      "status": "rejected_at_untouched_test_uncertainty_gate",
+      "candidate": {
+        "selectedPolicy": "budget-1-state-3",
+        "budgetFraction": 1,
+        "maxStateUnits": 3,
+        "resultLimit": 5,
+        "operationInput": "gold target-keyed operation objects shared by V1 and D5"
+      },
+      "results": {
+        "resultCard": "memops-target-state-result-card.v1.json",
+        "validation": {
+          "status": "passed",
+          "primaryCases": 66,
+          "stateFamaDelta": 0.12929292929292932,
+          "stateFamaBootstrap95": [0.043589743589743594, 0.21971830985915491],
+          "meanInjectedTokenIncreaseFraction": -0.04634044332915088
+        },
+        "test": {
+          "status": "failed",
+          "primaryCases": 66,
+          "stateFamaDelta": 0.06464646464646466,
+          "stateFamaBootstrap95": [-0.024019607843137253, 0.15101010101010104],
+          "currentStateRecallDelta": 0.03585858585858587,
+          "staleAbsenceDelta": 0.07575757575757576,
+          "meanInjectedTokenIncreaseFraction": -0.06399934722297773,
+          "improvedCases": 14,
+          "unchangedCases": 48,
+          "harmedCases": 4,
+          "independentValidation": "passed"
+        }
+      },
+      "failedChecks": ["test.stateFamaUncertainty"],
+      "interpretation": "Target-keyed state projection produced a useful stale-removal signal and reduced tokens, but the untouched profile-level test interval crossed zero. All four harms were Update cases where independent Base-stream packing omitted a current successor already recovered by V1. D5 is rejected before answer evaluation; a later direction may test incumbent-preserving composition, but this consumed test split cannot confirm that new hypothesis."
     }
   ]
 }
