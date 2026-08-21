@@ -44,6 +44,7 @@
     "eval:lifecycle-safe-hybrid": "tsx benchmarks/lifecycle-memory/src/safe-hybrid-cli.ts",
     "validate:lifecycle-contextual-e2e": "tsx benchmarks/lifecycle-memory/src/contextual-e2e-validator-cli.ts",
     "analyze:lifecycle-contextual-e2e": "tsx benchmarks/lifecycle-memory/src/contextual-e2e-failure-analysis-cli.ts",
+    "eval:lifecycle-evidence-shield": "tsx benchmarks/lifecycle-memory/src/evidence-shield-cli.ts",
     "test:lifecycle-memory": "vitest run -c benchmarks/lifecycle-memory/vitest.config.ts",
     "test:standalone:memory": "bash __tests__/standalone/e2e.sh",
     "test:standalone:skill": "bash __tests__/standalone/skill-e2e.sh",
