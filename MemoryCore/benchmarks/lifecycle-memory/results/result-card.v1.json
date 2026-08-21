@@ -1,5 +1,5 @@
 {
-  "resultVersion": "lifecycle-result-card-v1.0",
+  "resultVersion": "lifecycle-result-card-v1.1",
   "dataset": {
     "name": "Memora",
     "revision": "a6493188efc836d6511ed5e4163fe3ba87da30ff",
@@ -35,32 +35,82 @@
     }
   },
   "answerLevelHeldOut": {
-    "protocol": "lifecycle-adaptive-e2e-v1.1",
+    "protocol": "lifecycle-adaptive-dual-judge-v2.1",
+    "sourceAnswerProtocol": "lifecycle-adaptive-e2e-v1.1",
+    "sourceCasesSha256": "dbfe9fbf3a9e3e02c74b05ee484b0fc9ae5631cf0acb88ad953cddb67c78089b",
     "mode": "stale-exposed-quarterly",
     "cases": 50,
     "selectionSha256": "1e3ab7b21bd1425f98f095ca76a31d350c47f3bb9c9cf0090139567859dadaf1",
+    "reader": "openai/gpt-4o-mini",
+    "judges": [
+      { "provider": "minimax", "model": "MiniMax-M3", "thinking": "disabled" },
+      { "provider": "deepseek", "model": "deepseek-v4-flash", "thinking": "disabled" }
+    ],
+    "aggregation": "equal-weight mean of per-judge, per-case metrics",
     "base": {
-      "mpa": 0.38814856369121065,
-      "faa": 0.8655525536090398,
-      "fama": 0.33360150602950234,
+      "mpa": 0.38822610420625125,
+      "faa": 0.8797906103638844,
+      "fama": 0.3413134320936343,
+      "criterionAccuracy": 0.7237816245678167,
       "meanInjectedTokens": 144.52
     },
     "adaptive": {
-      "mpa": 0.4399308647235118,
-      "faa": 0.9407781849152879,
-      "fama": 0.40140064569932987,
+      "mpa": 0.4202687143738613,
+      "faa": 0.9643503344340515,
+      "fama": 0.3989641561268109,
+      "criterionAccuracy": 0.7718254428092169,
       "meanInjectedTokens": 146.76,
       "fallbackRate": 0.0,
       "meanLifecycleLatencyMs": 0.01823079999994661
     },
     "deltas": {
-      "mpa": { "mean": 0.051782301032301026, "ci95": [0.0043333333333333305, 0.10961111111111112] },
-      "faa": { "mean": 0.07522563130624789, "ci95": [0.05041583162880116, 0.10234958741549809] },
-      "fama": { "mean": 0.06779913966982759, "ci95": [0.02120684753930018, 0.12321624277830652] }
+      "mpa": { "mean": 0.032042610167610175, "ci95": [-0.015442307692307686, 0.09014102564102565] },
+      "faa": { "mean": 0.08455972407016694, "ci95": [0.06408860951140362, 0.10579277846899551] },
+      "fama": { "mean": 0.05765072403317667, "ci95": [0.012264210898034427, 0.11708968414713673] },
+      "criterionAccuracy": { "mean": 0.04804381824140053, "ci95": [0.025139067870209884, 0.07110964892314389] }
+    },
+    "judgeAgreement": {
+      "pairedCriteria": 2844,
+      "exactRate": 0.9771448663853727,
+      "cohensKappa": 0.9231130121432028,
+      "missingOrNonBinaryVerdicts": 0,
+      "returnedModelMismatches": 0,
+      "retries": 0
+    },
+    "individualJudges": {
+      "minimax-m3": {
+        "famaDelta": 0.05133980918549714,
+        "famaCi95": [-0.0015686917362390952, 0.1152736917268323],
+        "faaDelta": 0.07076145436699824
+      },
+      "deepseek-v4-flash": {
+        "famaDelta": 0.06396163888085622,
+        "famaCi95": [0.020261811391223156, 0.12064293973999851],
+        "faaDelta": 0.09835799377333564
+      }
+    },
+    "unanimousSensitivity": {
+      "famaDelta": 0.047734497830185775,
+      "famaCi95": [-0.0030097135435370637, 0.11205537695106489]
+    },
+    "subgroups": {
+      "recommending": { "cases": 43, "famaDelta": 0.06672621600813755 },
+      "remembering": { "cases": 7, "famaDelta": 0.0019012733298447992 }
+    },
+    "personaHeterogeneity": {
+      "positivePersonas": 7,
+      "negativePersonas": 3,
+      "medianPersonaFamaDelta": 0.0339924944336709,
+      "leaveOnePersonaOutFamaDeltaRange": [0.03228681271176009, 0.06641747114797408]
     },
     "gate": {
       "passed": false,
-      "checks": { "famaDelta": true, "faaDelta": false, "famaCi": true }
+      "checks": {
+        "famaDelta": true,
+        "faaDelta": false,
+        "famaCi": true,
+        "individualJudgeFamaDirection": true
+      }
     }
   },
   "fallbackValidation": {
@@ -68,13 +118,5 @@
     "disabledMismatches": 0,
     "damagedMismatches": 0,
     "timeoutMismatches": 0
-  },
-  "multiJudgeReplication": {
-    "protocol": "lifecycle-adaptive-rejudge-v1.0",
-    "status": "incomplete",
-    "completedCases": 22,
-    "plannedCases": 50,
-    "excludedFromClaims": true,
-    "reason": "OpenRouter HTTP 402 insufficient credits"
   }
 }

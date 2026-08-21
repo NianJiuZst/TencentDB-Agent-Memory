@@ -134,12 +134,31 @@ export function judgeMessages(answer: string, criteria: EvaluationCriterion[]) {
 }
 
 export function parseJudge(content: string, criteria: EvaluationCriterion[]): CriterionVerdict[] {
-  const cleaned = content.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "");
-  const parsed = JSON.parse(cleaned) as { results?: Array<{ id?: unknown; answer?: unknown; confidence?: unknown }> };
+  const cleaned = content.trim()
+    .replace(/<think>[\s\S]*?<\/think>/gi, "")
+    .replace(/^```(?:json)?\s*/i, "")
+    .replace(/\s*```$/, "")
+    .trim();
+  let parsed: { results?: Array<{ id?: unknown; answer?: unknown; confidence?: unknown }> };
+  try {
+    parsed = JSON.parse(cleaned);
+  } catch (error) {
+    const firstBrace = cleaned.indexOf("{");
+    const lastBrace = cleaned.lastIndexOf("}");
+    if (firstBrace < 0 || lastBrace <= firstBrace) throw error;
+    parsed = JSON.parse(cleaned.slice(firstBrace, lastBrace + 1));
+  }
   if (!Array.isArray(parsed.results)) throw new Error("judge JSON has no results array");
-  const resultById = new Map(parsed.results.map((result) => [String(result.id), result]));
+  const resultsById = new Map<string, Array<{ id?: unknown; answer?: unknown; confidence?: unknown }>>();
+  for (const result of parsed.results) {
+    const id = String(result.id);
+    const matches = resultsById.get(id) ?? [];
+    matches.push(result);
+    resultsById.set(id, matches);
+  }
   return criteria.map((criterion) => {
-    const result = resultById.get(criterion.id);
+    const matches = resultsById.get(criterion.id) ?? [];
+    const result = matches.length === 1 ? matches[0] : undefined;
     const rawAnswer = String(result?.answer).toLowerCase();
     const answer = rawAnswer === "yes" || rawAnswer === "no" ? rawAnswer : "unclear";
     const confidence = Number(result?.confidence);

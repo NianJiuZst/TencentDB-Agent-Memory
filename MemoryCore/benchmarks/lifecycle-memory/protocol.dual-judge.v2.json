@@ -1,0 +1,48 @@
+{
+  "protocolVersion": "lifecycle-adaptive-dual-judge-v2.0",
+  "supersedes": "lifecycle-adaptive-rejudge-v1.0",
+  "changeReason": "Replace the incomplete legacy three-judge OpenRouter replication with a fresh, user-specified two-judge direct-provider panel. No legacy partial verdict is reused.",
+  "sourceProtocolVersion": "lifecycle-adaptive-e2e-v1.1",
+  "sourceCasesSha256": "dbfe9fbf3a9e3e02c74b05ee484b0fc9ae5631cf0acb88ad953cddb67c78089b",
+  "seed": 20260821,
+  "judges": [
+    {
+      "id": "minimax-m3",
+      "provider": "minimax",
+      "model": "MiniMax-M3",
+      "baseUrl": "https://api.minimaxi.com/v1",
+      "apiKeyEnv": "MINIMAX_API_KEY",
+      "temperature": 0.1,
+      "topP": 0.95,
+      "maxTokens": 8192,
+      "thinking": "provider-default-with-reasoning-split"
+    },
+    {
+      "id": "deepseek-v4-flash",
+      "provider": "deepseek",
+      "model": "deepseek-v4-flash",
+      "baseUrl": "https://api.deepseek.com",
+      "apiKeyEnv": "DEEPSEEK_API_KEY",
+      "temperature": 0,
+      "maxTokens": 8192,
+      "thinking": "disabled"
+    }
+  ],
+  "retries": 3,
+  "reuseFrozenReaderAnswers": true,
+  "aggregation": {
+    "primary": "equal-weight mean of per-judge, per-case MPA, FAA, FAMA, and criterion accuracy",
+    "twoJudgeDisagreement": "no tiebreaker; report exact vote agreement and both judge-specific effects",
+    "sensitivity": "unanimous verdict; a disagreement, duplicate, missing, or non-binary vote is unclear and incorrect"
+  },
+  "uncertainty": {
+    "unit": "persona",
+    "bootstrapSamples": 5000
+  },
+  "gate": {
+    "minFamaDelta": 0.05,
+    "minFaaDelta": 0.1,
+    "requireFamaCiLowerAboveZero": true,
+    "requirePositiveFamaDeltaForEveryJudge": true
+  }
+}

@@ -38,6 +38,7 @@
     "eval:lifecycle-e2e": "tsx benchmarks/lifecycle-memory/src/e2e-cli.ts",
     "eval:lifecycle-adaptive": "tsx benchmarks/lifecycle-memory/src/adaptive-cli.ts",
     "eval:lifecycle-rejudge": "tsx benchmarks/lifecycle-memory/src/rejudge-cli.ts",
+    "eval:lifecycle-dual-judge": "tsx benchmarks/lifecycle-memory/src/dual-judge-cli.ts",
     "test:lifecycle-memory": "vitest run -c benchmarks/lifecycle-memory/vitest.config.ts",
     "test:standalone:memory": "bash __tests__/standalone/e2e.sh",
     "test:standalone:skill": "bash __tests__/standalone/skill-e2e.sh",

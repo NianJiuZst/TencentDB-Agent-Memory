@@ -31,4 +31,34 @@ describe("lifecycle E2E judge parsing", () => {
     }]);
     expect(verdicts[0]).toMatchObject({ answer: "unclear", confidence: 0, correct: false });
   });
+
+  it("maps duplicate criterion ids to unclear instead of choosing one", () => {
+    const verdicts = parseJudge(JSON.stringify({
+      results: [
+        { id: "criterion-1", answer: "yes", confidence: 0.9 },
+        { id: "criterion-1", answer: "no", confidence: 0.8 },
+      ],
+    }), [{
+      id: "criterion-1",
+      question: "Does the response contain the active fact?",
+      expectedAnswer: "yes",
+      type: "memory_presence",
+    }]);
+
+    expect(verdicts[0]).toMatchObject({ answer: "unclear", confidence: 0, correct: false });
+  });
+
+  it("extracts JSON after a separated reasoning block", () => {
+    const verdicts = parseJudge(
+      '<think>private reasoning</think>\nResult: {"results":[{"id":"criterion-1","answer":"yes","confidence":0.7}]}',
+      [{
+        id: "criterion-1",
+        question: "Does the response contain the active fact?",
+        expectedAnswer: "yes",
+        type: "memory_presence",
+      }],
+    );
+
+    expect(verdicts[0]).toMatchObject({ answer: "yes", confidence: 0.7, correct: true });
+  });
 });

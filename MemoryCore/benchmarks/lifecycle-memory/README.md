@@ -10,9 +10,9 @@ The deployable controller improves held-out, stale-exposed quarterly questions, 
 |---|---:|---:|---:|---:|---|
 | Direct evidence proxy, quarterly forgetting-bearing (192) | 0.4502 | 0.4770 | +0.0268 | [+0.0147, +0.0413] | passed |
 | Direct evidence proxy, quarterly stale-exposed (61) | 0.0907 | 0.1836 | +0.0929 | [+0.0585, +0.1278] | passed |
-| Answer-level FAMA, frozen quarterly stale-exposed sample (50) | 0.3336 | 0.4014 | +0.0678 | [+0.0212, +0.1232] | primary metric passed |
+| Answer-level FAMA, dual-judge panel, frozen stale-exposed sample (50) | 0.3413 | 0.3990 | +0.0577 | [+0.0123, +0.1171] | primary metric passed |
 
-Answer-level FAA improves by +0.0752, with a 95% CI of [+0.0504, +0.1023]. This misses the predeclared +0.10 point threshold, so `lifecycle-adaptive-e2e-v1.1` retains machine-readable status `failed`. The result should be interpreted as promising conditional evidence, not a completed claim about all conversations or real programming agents.
+Answer-level FAA improves by +0.0846, with a 95% CI of [+0.0641, +0.1058]. This misses the unchanged, predeclared +0.10 point threshold, so `lifecycle-adaptive-dual-judge-v2.1` retains machine-readable status `failed`. MiniMax-M3 and DeepSeek-V4-Flash agree on 97.71% of 2,844 paired criterion votes (Cohen's kappa 0.923), and both estimate a positive FAMA effect. The result should be interpreted as promising conditional evidence, not a completed claim about all conversations or real programming agents.
 
 ## Components
 
@@ -20,6 +20,7 @@ Answer-level FAA improves by +0.0752, with a 95% CI of [+0.0504, +0.1023]. This 
 - `src/memora-events.ts`: replaceable Memora write-event adapter. It never reads evaluation evidence.
 - `src/adaptive-runner.ts`: weekly/monthly optimization and quarterly held-out direct evaluation.
 - `src/e2e-runner.ts`: frozen answer-level evaluation with Base, Oracle, or adaptive comparators.
+- `src/judge-provider.ts` and `src/dual-judge-runner.ts`: direct-provider MiniMax/DeepSeek judging, equal-weight panel aggregation, per-judge effects, agreement, and unanimous sensitivity analysis.
 - `protocol*.json`: immutable protocol history. Every semantic change increments the protocol version.
 - `results/result-card.v1.json`: compact checked-in result record. Raw case files are emitted under the chosen output directory.
 
@@ -42,11 +43,16 @@ tsx benchmarks/lifecycle-memory/src/e2e-cli.ts \
   --data /path/to/Memora/data \
   --output benchmark-runs/lifecycle-memory/e2e-adaptive-v1.1
 
+tsx benchmarks/lifecycle-memory/src/dual-judge-cli.ts \
+  --data /path/to/Memora/data \
+  --input benchmark-runs/lifecycle-memory/e2e-adaptive-v1.1/cases.jsonl \
+  --output benchmark-runs/lifecycle-memory/dual-judge-v2.1
+
 vitest run -c benchmarks/lifecycle-memory/vitest.config.ts
 vitest run src/core/lifecycle/ledger.test.ts src/core/lifecycle/optimizer.test.ts
 ```
 
-The E2E command requires `OPENROUTER_API_KEY`. Its protocol fixes the reader, judge, sample, temperature, thresholds, and selection hash before calls are made. The cheaper single-judge protocol is not comparable to Memora Table 3.
+The source-answer E2E command requires `OPENROUTER_API_KEY` for its frozen reader. The final judging command reads `MINIMAX_API_KEY` and `DEEPSEEK_API_KEY`, calls the vendors' official APIs directly, and never writes credentials to results. The protocol fixes exact model IDs, endpoints, sampling parameters, aggregation, thresholds, source-case hash, and selection hash before calls are made. Batched criteria make this protocol cheaper than, and not directly comparable to, Memora Table 3.
 
 ## Optimization and leakage boundary
 
@@ -89,7 +95,8 @@ Likely programming signals include “use X instead of Y,” renamed files or sy
 ## Known limitations
 
 - Main evidence comes from public personalized dialogue, not private multi-turn programming data.
-- The final E2E set is deliberately stale-exposed and contains 43 recommending versus 7 remembering questions.
-- The answer-level result uses one fixed batched judge. A predeclared three-judge replication stopped at 22/50 because OpenRouter returned HTTP 402; partial results are excluded.
+- The final E2E set is deliberately stale-exposed and contains 43 recommending versus 7 remembering questions. Panel FAMA improves by 6.67 points on recommending but only 0.19 points on remembering.
+- The fixed two-judge panel is not a random sample of judge models. Its strict unanimous sensitivity estimate is +4.77 FAMA points with a 95% CI of [-0.30, +11.21], so the strongest conservative aggregation is not statistically decisive.
+- Effects are heterogeneous: seven personas improve and three decline; the median persona effect is +3.40 points, while leave-one-persona-out means range from +3.23 to +6.64 points.
 - Exact value matching misses paraphrased corrections and can collide on short or reused values.
 - The implementation is a reviewable sidecar module and benchmark integration; wiring it into a production Gateway should occur only after internal adapter validation.

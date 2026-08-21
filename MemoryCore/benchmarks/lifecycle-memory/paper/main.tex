@@ -18,7 +18,7 @@
 \maketitle
 
 \begin{abstract}
-Long-running programming agents must remember decisions while avoiding constraints that were later corrected, renamed, reverted, or deleted. Static retrieval can surface obsolete statements, whereas deletion alone may discard the very correction needed to recover the current state. We introduce Correction-Linked Lifecycle Memory (CLLM), a bounded sidecar for an existing memory retriever. Write-time correction events create predecessor--successor links; query-time traversal redirects stale hits to their latest correction nodes; and a small policy grid is selected from controlled feedback without retraining the retriever or extractor. The controller is switchable and hard-falls back to the original result list on missing state, corruption, timeout, or capacity failure. We evaluate the method in MemoryCore using the public Memora benchmark as a methodological proxy for long programming sessions. The optimizer observes weekly/monthly feedback and is frozen before quarterly evaluation. Across 192 held-out forgetting-bearing questions, direct evidence FAMA improves by 2.68 points (95\% persona-cluster CI: 1.47--4.13). On 50 frozen quarterly questions where the baseline actually retrieves stale evidence, answer-level FAMA improves from 0.334 to 0.401, a 6.78-point gain (95\% CI: 2.12--12.32), with a 1.55\% increase in injected tokens. The primary FAMA gate passes, but a predeclared secondary FAA gain of 10 points is missed (observed: 7.52), so the composite promotion gate remains failed. These results support correction-linked retrieval as a promising conditional mechanism, not a claim of validation on real programming-agent traffic.
+Long-running programming agents must remember decisions while avoiding constraints that were later corrected, renamed, reverted, or deleted. Static retrieval can surface obsolete statements, whereas deletion alone may discard the very correction needed to recover the current state. We introduce Correction-Linked Lifecycle Memory (CLLM), a bounded sidecar for an existing memory retriever. Write-time correction events create predecessor--successor links; query-time traversal redirects stale hits to their latest correction nodes; and a small policy grid is selected from controlled feedback without retraining the retriever or extractor. The controller is switchable and hard-falls back to the original result list on missing state, corruption, timeout, or capacity failure. We evaluate the method in MemoryCore using the public Memora benchmark as a methodological proxy for long programming sessions. The optimizer observes weekly/monthly feedback and is frozen before quarterly evaluation. Across 192 held-out forgetting-bearing questions, direct evidence FAMA improves by 2.68 points (95\% persona-cluster CI: 1.47--4.13). On 50 frozen quarterly questions where the baseline retrieves stale evidence, an equal-weight MiniMax-M3 and DeepSeek-V4-Flash judge panel estimates that answer-level FAMA improves from 0.341 to 0.399, a 5.77-point gain (95\% CI: 1.23--11.71), with a 1.55\% increase in injected tokens. The judges agree on 97.71\% of criterion votes (Cohen's $\kappa=0.923$). The primary FAMA gate passes, but a predeclared secondary FAA gain of 10 points is missed (observed: 8.46), so the composite promotion gate remains failed. These results support correction-linked retrieval as a promising conditional mechanism, not a claim of validation on real programming-agent traffic.
 \end{abstract}
 
 \section{Introduction}
@@ -70,26 +70,26 @@ Memory Presence Accuracy (MPA) measures required current facts; Forgetting Absen
 \quad
 \lambda=\frac{N_f}{N_p+N_f}.
 \]
-Direct evidence metrics use value and temporal-boundary alignment before answer generation. Answer-level metrics use a fixed GPT-4o-mini reader and a fixed Gemini-2.5-Flash-Lite judge with temperature zero. This cheaper batched-judge protocol is not directly comparable to Memora Table~3. We report paired 5,000-sample persona-cluster bootstrap intervals.
+Direct evidence metrics use value and temporal-boundary alignment before answer generation. Answer-level evaluation reuses the frozen GPT-4o-mini reader outputs from the source protocol and scores every criterion with two direct-provider judges: MiniMax-M3 and DeepSeek-V4-Flash~\cite{minimax2026m3,deepseek2026v4}. Both run with thinking disabled; temperatures are 0.1 and 0, respectively. With no principled tiebreaker for two judges, the primary panel metric is the equal-weight mean of the two per-judge, per-case metrics. We additionally report each judge and a strict unanimous sensitivity analysis that marks disagreement as unclear and incorrect. Batched criteria make this protocol not directly comparable to Memora Table~3. We report paired 5,000-sample persona-cluster bootstrap intervals.
 
 \paragraph{Frozen answer-level subset.}
 Among 192 held-out forgetting-bearing quarterly questions, 61 have at least one stale Base Top-5 hit. Before answer generation, we hash-stratify five cases per persona, yielding 50 cases (43 recommending and seven remembering). The selection SHA-256 is \texttt{1e3ab7b2...dadaf1}.
 
 \section{Results}
-Table~\ref{tab:results} reports the main comparisons. On all held-out forgetting-bearing questions, the direct proxy improves by 2.68 points. Conditional on actual stale exposure, the proxy gain is 9.29 points. At answer level, FAMA increases by 6.78 points with a confidence interval excluding zero. Both MPA and FAA improve, showing that correction links can recover current information rather than trading recall solely for forgetting.
+Table~\ref{tab:results} reports the main comparisons. On all held-out forgetting-bearing questions, the direct proxy improves by 2.68 points. Conditional on actual stale exposure, the proxy gain is 9.29 points. At answer level, panel FAMA increases by 5.77 points with a confidence interval excluding zero. FAA improves reliably, while the MPA interval crosses zero; the combined FAMA result therefore reflects strong obsolete-fact suppression with a less certain current-fact recall gain.
 
 \begin{table}[t]
 \centering
-\small
+\footnotesize
 \begin{tabular}{lrrrr}
 \toprule
 Evaluation & $n$ & Base & CLLM & Delta [95\% CI] \\
 \midrule
 Direct FAMA, held-out forgetting & 192 & 0.450 & 0.477 & +0.027 [0.015, 0.041] \\
 Direct FAMA, stale-exposed & 61 & 0.091 & 0.184 & +0.093 [0.059, 0.128] \\
-Answer MPA, stale-exposed & 50 & 0.388 & 0.440 & +0.052 [0.004, 0.110] \\
-Answer FAA, stale-exposed & 50 & 0.866 & 0.941 & +0.075 [0.050, 0.102] \\
-Answer FAMA, stale-exposed & 50 & 0.334 & 0.401 & +0.068 [0.021, 0.123] \\
+Answer MPA, stale-exposed & 50 & 0.388 & 0.420 & +0.032 [-0.015, 0.090] \\
+Answer FAA, stale-exposed & 50 & 0.880 & 0.964 & +0.085 [0.064, 0.106] \\
+Answer FAMA, stale-exposed & 50 & 0.341 & 0.399 & +0.058 [0.012, 0.117] \\
 \bottomrule
 \end{tabular}
 \caption{Held-out results. Intervals use paired persona-cluster bootstrap.}
@@ -98,7 +98,11 @@ Answer FAMA, stale-exposed & 50 & 0.334 & 0.401 & +0.068 [0.021, 0.123] \\
 
 The optimizer selects $\tau=0.85$ and $H=1$. Although the gold ablation requires transitive traversal, ledger construction links a predecessor to every detected later correction and the resolver chooses the latest eligible edge, allowing one-hop query-time redirection. Mean injected context changes from 144.52 to 146.76 tokens (+1.55\%). Mean lifecycle computation is 0.018 ms in the answer-level run, and no evaluated call falls back.
 
-The primary preregistered checks---FAMA gain of at least five points and a positive lower confidence bound---pass. The composite gate nevertheless remains failed because the observed FAA gain (7.52 points) is below the predeclared 10-point secondary threshold. We retain this failure rather than revising the threshold post hoc.
+The judges agree on 97.71\% of 2,844 paired criterion votes (Cohen's $\kappa=0.923$). MiniMax-M3 estimates a 5.13-point FAMA gain (95\% CI: -0.16--11.53), and DeepSeek-V4-Flash estimates 6.40 points (2.03--12.06). The strict unanimous sensitivity estimate is 4.77 points (-0.30--11.21), so the most conservative aggregation is not statistically decisive.
+
+The primary preregistered checks---panel FAMA gain of at least five points, a positive lower confidence bound, and a positive point estimate from each judge---pass. The composite gate nevertheless remains failed because the observed panel FAA gain (8.46 points) is below the unchanged 10-point secondary threshold. We retain this failure rather than revising the threshold post hoc.
+
+Effects are heterogeneous. Recommending questions (43/50) gain 6.67 FAMA points, whereas remembering questions (7/50) gain only 0.19 points. Seven persona clusters improve and three decline; the median persona effect is 3.40 points. Leave-one-persona-out means remain positive (3.23--6.64 points), but excluding the largest-gain persona reduces the effect below the five-point magnitude gate.
 
 \paragraph{Ablation.}
 Gold invalidation-only filtering raises FAA but yields only a 2.64-point answer FAMA gain with an interval crossing zero. Gold transitive successor traversal yields a 9.97-point gain (95\% CI: 1.75--19.27). This contrast motivates preserving correction links rather than treating forgetting as deletion.
@@ -107,10 +111,10 @@ Gold invalidation-only filtering raises FAA but yields only a 2.64-point answer 
 Across all 600 questions, disabling CLLM produces zero candidate-ID mismatches against Base. Forced damaged-state and timeout tests also produce zero mismatches (600/600 each). The implementation bounds each group to 10,000 units, 5,000 events, and 50,000 edges, in addition to query-time budgets.
 
 \section{Limitations and Transfer}
-First, Memora is personalized dialogue, not a programming-agent benchmark. Internal programming sessions may contain branch-local truths, implicit corrections, code moves, and tool-grounded state changes that do not quote the invalidated value. Second, the answer-level experiment is conditional on stale exposure and task-imbalanced toward recommendation. Third, it uses one batched judge. A predeclared three-judge replication stopped at 22/50 because of an external HTTP 402 credit error; partial results are excluded. Fourth, structured Memora operation metadata is stronger than typical weak conversational feedback. An internal adapter must calibrate signals such as explicit user correction, rename/refactor events, reverted plans, changed tests, and tool-confirmed deletion. Finally, no production Gateway integration is claimed; the current contribution is a sidecar module, adapter contract, and reproducible protocol.
+First, Memora is personalized dialogue, not a programming-agent benchmark. Internal programming sessions may contain branch-local truths, implicit corrections, code moves, and tool-grounded state changes that do not quote the invalidated value. Second, the answer-level experiment is conditional on stale exposure and strongly task-imbalanced toward recommendation; the remembering subgroup shows essentially no FAMA gain. Third, the two judges are a fixed panel rather than a random sample of judge models, and the strict unanimous sensitivity interval crosses zero. Fourth, effects vary across personas, with three of ten cluster means negative. Fifth, structured Memora operation metadata is stronger than typical weak conversational feedback. An internal adapter must calibrate signals such as explicit user correction, rename/refactor events, reverted plans, changed tests, and tool-confirmed deletion. Finally, no production Gateway integration is claimed; the current contribution is a sidecar module, adapter contract, and reproducible protocol.
 
 \section{Conclusion}
-Static retrieval can convert historical truth into current error. In this study, deletion alone is insufficient: the useful operation is to retain a bounded link from a stale predecessor to the correction that supersedes it. A label-free, feedback-selected controller improves held-out direct and answer-level FAMA at nearly constant context cost while preserving exact fallback behavior. The result justifies an internal programming-session evaluation, but not yet a broad claim about long-horizon coding agents.
+Static retrieval can convert historical truth into current error. In this study, deletion alone is insufficient: the useful operation is to retain a bounded link from a stale predecessor to the correction that supersedes it. A label-free, feedback-selected controller improves held-out direct evidence and dual-judge answer-level FAMA at nearly constant context cost while preserving exact fallback behavior. The effect is strongest for stale-exposed recommendation questions and is not established for remembering questions. The result justifies an internal programming-session evaluation, but not yet a broad claim about long-horizon coding agents.
 
 \bibliographystyle{plain}
 \bibliography{references}
