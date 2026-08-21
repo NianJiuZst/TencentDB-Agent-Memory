@@ -11,8 +11,8 @@ This file is the persistent direction registry for iterative work above the fixe
 | ID | Direction | Single changed dimension | Evidence source | Status | Promotion boundary |
 |---|---|---|---|---|---|
 | D1 | Correction-aware evidence shield | Injection rendering after V1 | Write-time `obsoleteValues`; query-time deterministic masking | Rejected at answer gate | Stopped: MPA non-inferiority and reader-stability gates failed |
-| D2 | Query-conditioned evidence-risk routing | Choose V1 or shield rendering per query | Bounded sidecar features plus downstream utility | Active | Cross-fitted development gate, then untouched-data confirmation |
-| D3 | Net-value lifecycle curation | Bounded retention/expiry priority | Utility, harm, bytes, provenance | Queued | Must report false-forgetting cost |
+| D2 | Query-conditioned evidence-risk routing | Choose V1 or shield rendering per query | Bounded sidecar features plus downstream utility | Rejected at cross-fitted gate | Stopped: MPA non-inferiority and reader-stability gates failed |
+| D3 | Delete-aware vacancy refill | Whether deletion successors consume Top-k slots | Typed lifecycle event kind plus the existing Base candidate pool | Active | Must improve current recall and forgetting under the fixed k=5 budget |
 | D4 | Query-time evidence distillation | Selection/rewriting within the V1 candidate set | Small local/open model with validity gates | Queued | Must hard-fallback on parse, timeout, or low confidence |
 | D5 | Scope-aware coexistence | Branch/environment validity rather than global invalidation | Adapter-provided repository/branch/task scope | Queued | Requires a programming-session adapter or scoped public proxy |
 
@@ -37,6 +37,14 @@ D1 failed that answer gate. Independent recomputation found that exact obsolete-
 D1 demonstrates heterogeneous treatment effects: shielding removes harmful obsolete mentions but sometimes destroys the entity anchors needed to recover valid facts. D2 treats V1 and shield as two bounded actions and learns a conservative query-conditioned routing rule from downstream feedback. The first experiment is offline and cross-fitted by persona: every held-out persona is routed by a rule selected without that persona's outcomes. It remains development evidence because both action outcomes come from the already analyzed 50-case panel.
 
 The frozen D2-v1.0 policy class contains exactly 32 deterministic decision stumps over four bounded features: redaction count, changed-candidate count, redaction density, and token savings. Persona identity, benchmark task labels, gold criteria, model identity, and answer text are forbidden features. For every held-out persona, a rule is selected on the other nine personas under stricter training safety constraints; if no rule is eligible, the fold uses unchanged V1. This cross-fitting reduces direct memorization but does not turn the reused panel into confirmation data.
+
+D2-v1.0 failed. It routed 18 of 50 cases through shield, improved FAA by 2.83 points, reduced tokens by 0.30%, and limited MPA loss to 1.15 points, but still missed the frozen 1-point non-inferiority bound and retained a negative DeepSeek-reader FAMA direction. The result suggests that surface-change and token features do not identify semantic-anchor loss reliably enough.
+
+## Why D3 follows D2
+
+The failure is upstream of rendering: many high-ranked stale hits are redirected to deletion utterances, so tombstones consume the fixed five-slot injection budget while current active facts remain lower in the existing 30-item Base pool. D3 keeps update redirection but lets high-confidence deletion events vacate their slots and deterministically backfills from the same Base candidate pool. It does not enlarge Top-k, rewrite FTS5/vector retrieval, or synthesize current facts. This directly tests whether validity filtering can recover recall without reintroducing stale values.
+
+This choice follows the retain-versus-supersede boundary reported by MemStrata: lossy merging can destroy static recall, while unfiltered retention leaks stale facts. It also responds to STALE's distinction between retrieving an update and acting on the represented state. D3 remains a bounded sidecar with exact Base fallback.
 
 ## Iteration rule
 

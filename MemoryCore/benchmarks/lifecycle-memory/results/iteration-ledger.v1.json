@@ -144,6 +144,59 @@
         ]
       },
       "interpretation": "D1 passed every mechanism, cost, identity, and fallback check and sharply reduced obsolete answer exposure, but the answer gate rejected it. FAA improved by 5.42 points while MPA fell by 2.02 points with a persona-bootstrap interval below zero, and DeepSeek-reader FAMA moved in the wrong direction. The direction is stopped rather than promoted from its positive proxy result."
+    },
+    {
+      "id": "D2-v1.0",
+      "direction": "cross-fitted query-conditioned evidence-risk routing",
+      "protocolVersion": "lifecycle-evidence-risk-router-v1.0",
+      "preScoreCommit": "ee0ce3ba44ffc8ddfa21508611d83e8a11d274e5",
+      "evidenceRole": "offline cross-fitted development on the already analyzed paired V1/shield answer panel",
+      "status": "rejected",
+      "candidate": {
+        "actions": ["v1", "shield"],
+        "policies": 32,
+        "features": [
+          "redactionCount",
+          "changedCandidateCount",
+          "redactionDensity",
+          "tokenSavingsFraction"
+        ],
+        "crossFitUnit": "persona",
+        "folds": 10
+      },
+      "results": {
+        "summarySha256": "f370d1cd45ab223cfe96c3fc36cd9678fb0965046c10a40426fad8a6fe7756b5",
+        "cases": 50,
+        "shieldCases": 18,
+        "shieldActionRate": 0.36,
+        "routedVsV1": {
+          "mpa": -0.01146464646464651,
+          "faa": 0.028333924358265206,
+          "fama": 0.003110007777754442,
+          "criterionAccuracy": 0.016604631410463977,
+          "meanInjectedTokenIncreaseFraction": -0.0029980921231943514
+        },
+        "personaBootstrap95": {
+          "mpa": [-0.03515151515151515, 0.007222222222222225],
+          "faa": [0.009837420861761634, 0.04738805987791789],
+          "fama": [-0.01570899674713234, 0.023099547511312223]
+        },
+        "perReaderFamaDelta": {
+          "minimax-m3": 0.007260101010101011,
+          "deepseek-v4-flash": -0.0010400854545919358
+        },
+        "policySelectionCounts": {
+          "tokenSavingsFraction.lte.0p02": 9,
+          "changedCandidateCount.gte.3": 1
+        },
+        "personaCoverage": true,
+        "deterministicReplay": true
+      },
+      "failedChecks": [
+        "mpaNonInferiority",
+        "perReaderFamaDirection"
+      ],
+      "interpretation": "Cross-fitting reduced D1's MPA loss but did not remove it: the loss remained 1.15 points, just beyond the frozen 1-point bound, and DeepSeek-reader FAMA stayed negative. Simple exposure and token features do not reliably predict semantic-anchor loss, so no thresholds are tuned after this result."
     }
   ]
 }

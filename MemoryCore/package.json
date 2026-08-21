@@ -47,6 +47,7 @@
     "eval:lifecycle-evidence-shield": "tsx benchmarks/lifecycle-memory/src/evidence-shield-cli.ts",
     "eval:lifecycle-evidence-shield-e2e": "tsx benchmarks/lifecycle-memory/src/evidence-shield-e2e-cli.ts",
     "validate:lifecycle-evidence-shield-e2e": "tsx benchmarks/lifecycle-memory/src/evidence-shield-e2e-validator-cli.ts",
+    "eval:lifecycle-evidence-risk-router": "tsx benchmarks/lifecycle-memory/src/evidence-risk-router-cli.ts",
     "test:lifecycle-memory": "vitest run -c benchmarks/lifecycle-memory/vitest.config.ts",
     "test:standalone:memory": "bash __tests__/standalone/e2e.sh",
     "test:standalone:skill": "bash __tests__/standalone/skill-e2e.sh",
