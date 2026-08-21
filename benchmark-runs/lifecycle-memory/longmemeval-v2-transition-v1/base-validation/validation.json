@@ -1,0 +1,18 @@
+{
+  "validationVersion": "lifecycle-longmemeval-v2-baseline-validation-v1.0",
+  "sourceProtocolVersion": "lifecycle-longmemeval-v2-transition-v1.0",
+  "phase": "validation",
+  "status": "passed",
+  "rows": 20,
+  "checkedDirectProxyRows": 15,
+  "mismatches": {},
+  "limitations": [
+    "The validator independently rebuilds source units, token counts, labels, and aggregates from public data.",
+    "It does not rerun MemoryCore FTS5 ranking; candidate ordering remains covered by the production search path and its focused tests.",
+    "Wall-clock latency and one-time index build latency are recorded but not expected to reproduce exactly."
+  ],
+  "sourceSha256": {
+    "cases": "ec9746e23608bf0ba51fe991f79f64cc1771526d847fc3b4b81937194c5f7c47",
+    "summary": "3ea495aad1ed89ce31b8e56971de1e3b2b624485134855d4f30de35487f5cad8"
+  }
+}
