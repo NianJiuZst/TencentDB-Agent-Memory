@@ -82,7 +82,7 @@
       "protocolVersion": "lifecycle-evidence-shield-v1.2",
       "preScoreCommit": "5b4772db25f06f3239549d73cc251ed630ef565d",
       "evidenceRole": "post-hoc development feasibility on the previously analyzed frozen 50 cases",
-      "status": "qualified_for_answer_development",
+      "status": "rejected_after_answer_development",
       "candidate": {
         "replacement": "it",
         "timeoutMs": 10,
@@ -106,7 +106,44 @@
         "timeoutMismatches": 0
       },
       "failedChecks": [],
-      "interpretation": "The final D1 feasibility candidate passed every predeclared mechanism, cost, identity, and fallback check. This is not an answer-quality result and only qualifies the candidate for the frozen development panel."
+      "answerDevelopment": {
+        "protocolVersion": "lifecycle-evidence-shield-e2e-v1.0",
+        "preScoreCommit": "1846b6895f053dbf72d1e2bf259116764c95d528",
+        "status": "failed",
+        "evaluationsSha256": "12b2b3077fb16bba28c2534848d548fd75761f0020130a21dd83571af0484aeb",
+        "summarySha256": "072d5e68fdfff189ca461cbb43bc0714f0f61543eca66ac0d1f9cb6dea0f4c98",
+        "validationSha256": "3b735e6b1855611fa429704430b8175684f9307ac1425ae68e1d5ddc31bd0668",
+        "primaryShieldVsV1": {
+          "mpa": -0.02019001276501277,
+          "faa": 0.05424729152855911,
+          "fama": 0.008116101411789346,
+          "criterionAccuracy": 0.029450872632981122,
+          "meanInjectedTokenIncreaseFraction": -0.03270645952575624
+        },
+        "alternativePersonaBootstrap95": {
+          "mpa": [-0.04171143578643579, -0.0013321067821067867],
+          "faa": [0.03404024989547302, 0.07332310633404411],
+          "fama": [-0.008119189114677648, 0.025462805663005062]
+        },
+        "answerExposure": {
+          "pairedReaderAnswers": 100,
+          "v1ExactObsoleteValueRate": 0.66,
+          "shieldExactObsoleteValueRate": 0.19
+        },
+        "criterionTransitions": {
+          "memoryPresenceNetCorrectDelta": -13,
+          "forgettingAbsenceNetCorrectDelta": 77
+        },
+        "perReaderFamaDelta": {
+          "minimax-m3": 0.018806748044983338,
+          "deepseek-v4-flash": -0.0025745452214046395
+        },
+        "failedChecks": [
+          "mpaNonInferiority",
+          "perReaderFamaDirection"
+        ]
+      },
+      "interpretation": "D1 passed every mechanism, cost, identity, and fallback check and sharply reduced obsolete answer exposure, but the answer gate rejected it. FAA improved by 5.42 points while MPA fell by 2.02 points with a persona-bootstrap interval below zero, and DeepSeek-reader FAMA moved in the wrong direction. The direction is stopped rather than promoted from its positive proxy result."
     }
   ]
 }

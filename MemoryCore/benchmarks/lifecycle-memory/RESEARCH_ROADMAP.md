@@ -10,8 +10,8 @@ This file is the persistent direction registry for iterative work above the fixe
 
 | ID | Direction | Single changed dimension | Evidence source | Status | Promotion boundary |
 |---|---|---|---|---|---|
-| D1 | Correction-aware evidence shield | Injection rendering after V1 | Write-time `obsoleteValues`; query-time deterministic masking | V1.0/V1.1 rejected; V1.2 passed feasibility | Frozen 50 are development-only; new public data required |
-| D2 | Query-adaptive abstention/budget | Whether and how much memory to inject | Query features plus downstream utility | Queued | Must beat V1 under fixed or lower token cost |
+| D1 | Correction-aware evidence shield | Injection rendering after V1 | Write-time `obsoleteValues`; query-time deterministic masking | Rejected at answer gate | Stopped: MPA non-inferiority and reader-stability gates failed |
+| D2 | Query-conditioned evidence-risk routing | Choose V1 or shield rendering per query | Bounded sidecar features plus downstream utility | Active | Cross-fitted development gate, then untouched-data confirmation |
 | D3 | Net-value lifecycle curation | Bounded retention/expiry priority | Utility, harm, bytes, provenance | Queued | Must report false-forgetting cost |
 | D4 | Query-time evidence distillation | Selection/rewriting within the V1 candidate set | Small local/open model with validity gates | Queued | Must hard-fallback on parse, timeout, or low confidence |
 | D5 | Scope-aware coexistence | Branch/environment validity rather than global invalidation | Adapter-provided repository/branch/task scope | Queued | Requires a programming-session adapter or scoped public proxy |
@@ -29,6 +29,12 @@ D1-v1.1 reduced exposure to 10% and token cost by 3.04% with no current-atom los
 D1-v1.2 passed the full feasibility gate: exact obsolete-value context exposure fell from 74% to 8%, current-atom recall was unchanged, mean injected tokens fell by 3.27%, candidate identity remained exact, and all ordinary, disabled, damaged, and forced-timeout checks returned without mismatch. This result only advances D1 to answer-development testing.
 
 The answer-development protocol is frozen as `lifecycle-evidence-shield-e2e-v1.0`. It reuses the independently validated V1 cells, generates only the shield arm with the same MiniMax-M3/DeepSeek-V4-Flash crossed panel, and requires positive FAMA, at least +1 point FAA, no more than 1 point MPA loss, no token increase, and nonnegative FAMA direction for both readers.
+
+D1 failed that answer gate. Independent recomputation found that exact obsolete-value answer exposure fell from 66% to 19% and forgetting-absence judgments gained 77 net correct criteria, but memory-presence judgments lost 13 net correct criteria. Relative to V1, shield MPA fell by 2.02 points (alternate persona-bootstrap 95% interval -4.17 to -0.13), while FAMA gained only 0.81 points with an interval crossing zero; the DeepSeek-reader FAMA direction was also negative. D1 is therefore a useful negative result, not the new incumbent.
+
+## Why D2 follows D1
+
+D1 demonstrates heterogeneous treatment effects: shielding removes harmful obsolete mentions but sometimes destroys the entity anchors needed to recover valid facts. D2 treats V1 and shield as two bounded actions and learns a conservative query-conditioned routing rule from downstream feedback. The first experiment is offline and cross-fitted by persona: every held-out persona is routed by a rule selected without that persona's outcomes. It remains development evidence because both action outcomes come from the already analyzed 50-case panel.
 
 ## Iteration rule
 
