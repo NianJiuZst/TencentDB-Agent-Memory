@@ -1,0 +1,43 @@
+{
+  "name": "LongMemEval-V2",
+  "revision": "2cc8c540bdb87fe6761629b585e727e1c4704520",
+  "tier": "small",
+  "manifestSha256": "70a2be47e7117ef8f2ee77aa499c6126358b5f9ffa28a848b5c565a4ec8fc99a",
+  "questions": 451,
+  "textOnlyQuestions": 422,
+  "questionTypes": {
+    "dynamic-environment": 86,
+    "dynamic-environment-abs": 41,
+    "errors-gotchas": 29,
+    "procedure": 74,
+    "procedure-abs": 32,
+    "static-environment": 134,
+    "static-environment-abs": 55
+  },
+  "trajectoryRows": 1870,
+  "selectedTrajectories": 200,
+  "sharedHaystacks": 2,
+  "states": 5095,
+  "observationCharacters": 145272488,
+  "thoughtCharacters": 1175342,
+  "actionCharacters": 273675,
+  "emptyObservationStates": 0,
+  "initialStatesWithAction": 0,
+  "trajectoryDomains": {
+    "enterprise": 100,
+    "web": 100
+  },
+  "trajectoryEnvironments": {
+    "webarena": 100,
+    "workarena": 100
+  },
+  "outcomes": {
+    "failure": 100,
+    "success": 100
+  },
+  "sourceSha256": {
+    "haystacks/lme_v2_small.json": "9b5301defb23a088a5f06e45ff8d5f35e569d78305a66d492046a9fff9b46593",
+    "questions.jsonl": "0a3ae5ebea938c24d7800e1e0b0828e08ae1646f939a53853b2b8cdc08e292b7",
+    "trajectories.jsonl": "363cec9a8e87aa8d9101ce4e600aadbf7031d674056ebe4f969e8424abc5f3c6"
+  }
+}
