@@ -1,0 +1,74 @@
+{
+  "resultCardVersion": "lifecycle-memops-dominance-result-v1.0",
+  "protocolVersion": "lifecycle-memops-dominance-v1.0",
+  "direction": "D6 incumbent-preserving target-state dominance guard",
+  "status": "posthoc_safety_viability_passed",
+  "decision": "retain_lifecycle_adaptive_v1_and_seek_fresh_confirmation",
+  "preScoreCommit": "0f092c167c016ee86693d5f8bdb22bfdbc7b4bfb",
+  "evidence": {
+    "casesSha256": "24f9cf4903e17b3500c8885e6bf39de3a891f11527b7153ff1d49918dcb71f8b",
+    "summarySha256": "3587d202648f006be171438834d27c17984408d607a7dcb3d610f332f542a41f",
+    "independentValidationSha256": "136fe0e4c4905871fbe265aef89be8b7173ccdbef6af2646357f0e4e1501c414",
+    "independentValidation": "passed"
+  },
+  "primary": {
+    "profiles": 99,
+    "cases": 320,
+    "guardedVsV1": {
+      "currentStateRecallDelta": 0.01875,
+      "currentStateRecallBootstrap95": [0.006191950464396285, 0.03426791277258567],
+      "staleAbsenceDelta": 0.07369791666666667,
+      "staleAbsenceBootstrap95": [0.05362537764350454, 0.09595162986330177],
+      "stateFamaDelta": 0.06114583333333332,
+      "stateFamaBootstrap95": [0.03964248159831756, 0.0848297213622291],
+      "alternateSeedStateFamaBootstrap95": [0.039570552147239264, 0.08536458333333333],
+      "goldProvenanceRecallDelta": -0.04557291666666667,
+      "meanInjectedTokenIncreaseFraction": -0.013420823745719956
+    },
+    "caseTransitions": {
+      "improved": 28,
+      "unchanged": 292,
+      "harmed": 0
+    },
+    "routing": {
+      "acceptedChangedContexts": 42,
+      "acceptedNoopContexts": 195,
+      "returnedIncumbentContexts": 83,
+      "ordinaryFallbacks": 0
+    }
+  },
+  "consumedD5TestSliceDiagnostic": {
+    "cases": 66,
+    "stateFamaDelta": 0.03636363636363636,
+    "stateFamaBootstrap95": [0.0064516129032258064, 0.07343749999999999],
+    "currentStateRecallDelta": 0.015151515151515152,
+    "staleAbsenceDelta": 0.06818181818181818,
+    "meanInjectedTokenIncreaseFraction": -0.01841375183593541,
+    "caseTransitions": {
+      "improved": 4,
+      "unchanged": 62,
+      "harmed": 0
+    },
+    "interpretation": "The guard returned V1 on all four D5-harmed Update cases. This is a post-hoc failure-mechanism check, not test confirmation."
+  },
+  "safety": {
+    "currentStateRecallHarmedCases": 0,
+    "staleAbsenceHarmedCases": 0,
+    "stateFamaHarmedCases": 0,
+    "tokenViolations": 0,
+    "disabledMismatches": 0,
+    "missingInspectorMismatches": 0,
+    "timeoutMismatches": 0,
+    "invalidCostMismatches": 0,
+    "validatorMetricMismatches": 0,
+    "validatorDecisionMismatches": 0,
+    "validatorSummaryMismatches": 0
+  },
+  "tradeoff": "The guard retains less of D5's raw state-FAMA gain but removes every observed state-FAMA harm and preserves every graph-unknown V1 item by identity. Gold provenance recall falls because current-state contexts intentionally omit historical evidence; historical queries must use exact V1 mode.",
+  "evidenceBoundary": [
+    "The rule was designed after D5 test failure analysis, so all MemOps efficacy numbers are post-hoc.",
+    "The certificate assumes a complete, correct operation graph supplied here from gold operations.",
+    "The experiment does not validate extraction, answer quality, programming sessions, or branch/environment scope.",
+    "This result cannot promote D6; it only qualifies the architecture for fresh-data testing."
+  ]
+}

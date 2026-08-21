@@ -374,6 +374,39 @@
       },
       "failedChecks": ["test.stateFamaUncertainty"],
       "interpretation": "Target-keyed state projection produced a useful stale-removal signal and reduced tokens, but the untouched profile-level test interval crossed zero. All four harms were Update cases where independent Base-stream packing omitted a current successor already recovered by V1. D5 is rejected before answer evaluation; a later direction may test incumbent-preserving composition, but this consumed test split cannot confirm that new hypothesis."
+    },
+    {
+      "id": "D6-v1.0",
+      "direction": "incumbent-preserving target-state dominance guard",
+      "protocolVersion": "lifecycle-memops-dominance-v1.0",
+      "preScoreCommit": "0f092c167c016ee86693d5f8bdb22bfdbc7b4bfb",
+      "evidenceRole": "post-hoc mechanism and invariant validation over all consumed MemOps D5 cases",
+      "status": "posthoc_safety_viability_passed",
+      "candidate": {
+        "incumbent": "exact V1 context",
+        "challenger": "exact D5 budget-1-state-3 context",
+        "acceptance": "retain all graph-current and graph-unknown V1 units, add no stale unit, and spend no more V1 tokens",
+        "runtimeLabels": "none"
+      },
+      "results": {
+        "resultCard": "memops-dominance-result-card.v1.json",
+        "cases": 320,
+        "profiles": 99,
+        "stateFamaDelta": 0.06114583333333332,
+        "stateFamaBootstrap95": [0.03964248159831756, 0.0848297213622291],
+        "currentStateRecallDelta": 0.01875,
+        "staleAbsenceDelta": 0.07369791666666667,
+        "meanInjectedTokenIncreaseFraction": -0.013420823745719956,
+        "improvedCases": 28,
+        "unchangedCases": 292,
+        "harmedCases": 0,
+        "acceptedChangedContexts": 42,
+        "ordinaryFallbacks": 0,
+        "independentValidation": "passed"
+      },
+      "failedChecks": [],
+      "promotionAllowed": false,
+      "interpretation": "The structural guard retained a smaller but consistently non-harmful portion of D5's direct state signal. It returned V1 on every D5-harmed case, passed all forced fallback checks, and was independently reconstructed with zero metric, decision, or summary mismatch. Because the rule was invented after reading D5 test outcomes and still receives oracle operations, it is only a viable architecture for fresh confirmation; V1 remains the incumbent."
     }
   ]
 }

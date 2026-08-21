@@ -15,7 +15,7 @@ This file is the persistent direction registry for iterative work above the fixe
 | D3 | Delete-aware vacancy refill | Whether deletion successors consume Top-k slots | Typed lifecycle event kind plus the existing Base candidate pool | Rejected at proxy gate | Positive recall signal, but magnitude and token gates failed |
 | D4 | Feedback-optimized valid-state packing | Token fraction and item cap after validity filtering | Development-period proxy feedback; per-query V1 token budget | Rejected at answer uncertainty gate | Positive point estimates are retained as a near-miss, not promoted |
 | D5 | Target-keyed state projection on MemOps | Value-substring invalidation versus explicit operation target state | Public gold operation traces shared by every arm | Rejected at untouched test uncertainty gate | Positive stale-removal signal; no answer-level promotion |
-| D6 | Incumbent-preserving state composition | Compose V1 successors with target-state projection under a structural dominance certificate | Graph-known current/stale units; no evaluation labels at runtime | Hypothesis design | Requires a new confirmation boundary because D5 test is consumed |
+| D6 | Incumbent-preserving state composition | Select V1 or target-state projection under a structural dominance certificate | Graph-known current/stale units; no evaluation labels at runtime | Post-hoc safety viability passed | Requires a new confirmation boundary; V1 remains incumbent |
 
 ## Why D1 is first
 
@@ -79,9 +79,11 @@ The untouched 20-profile test did not confirm D5. Its state-FAMA point estimate 
 
 ## Why D6 composes rather than replaces V1
 
-D5's failure is an incumbent-preservation failure, not evidence that explicit target state has no value. The candidate removed stale target history consistently, but it sometimes discarded a V1 successor while satisfying a token cap. D6 will investigate a conservative composition rule: start from both V1 and target-state views, then use only graph-derived runtime facts to accept a changed context when it preserves all graph-known current units already present in V1, introduces no additional graph-known stale units, and stays within the exact V1 token budget. Otherwise it returns exact V1.
+D5's failure is an incumbent-preservation failure, not evidence that explicit target state has no value. The candidate removed stale target history consistently, but it sometimes discarded a V1 successor while satisfying a token cap. D6 implements a conservative selector over the exact V1 and D5 contexts. It accepts D5 only when every graph-known current and graph-unknown V1 item is retained, no graph-known stale item is newly introduced, and the exact V1 token budget is respected. Otherwise it returns exact V1.
 
-This rule cannot use benchmark labels, relevant-target annotations, answers, or the four known failing case ids. The D5 test split is already consumed and may be used only for failure diagnosis, not as D6 confirmation. Before implementation, D6 must identify either another public update-aware evidence source or a protocol whose confirmatory claim does not reuse those outcomes.
+The rule uses no benchmark labels, relevant-target annotations, answers, or case-id allowlists. Across all 320 consumed MemOps CandidateDisambiguation cases, it accepted 42 changed contexts and returned V1 on 83 contexts. State-FAMA improved by 6.11 points (profile-bootstrap 95% interval +3.96 to +8.48), current-state recall by 1.88 points, stale absence by 7.37 points, and mean tokens fell by 1.34%. There were 28 improved, 292 unchanged, and zero harmed state-FAMA cases. The four D5 test harms were all routed back to V1. Independent validation reconstructed all metrics and decisions with zero mismatch.
+
+This is deliberately labeled post-hoc safety viability, not confirmation: D6 was designed after the D5 test failure, the same 320 cases are reused, and gold operations still supply the state graph. The observed drop in descriptive gold-provenance recall also shows why the guard must remain restricted to current-state mode; historical queries return exact V1. Fresh LongMemEval-V2 or internal programming-session evidence is required before any answer-level or deployment claim.
 
 ## Iteration rule
 
