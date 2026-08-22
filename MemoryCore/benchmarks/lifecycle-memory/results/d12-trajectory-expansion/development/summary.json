@@ -1,0 +1,306 @@
+{
+  "protocolVersion": "lifecycle-longmemeval-v2-trajectory-expansion-v1.0",
+  "mode": "trajectory_evidence_expansion",
+  "phase": "development",
+  "status": "development_failed",
+  "preScoreCommit": "4a74191",
+  "authorizationSha256": null,
+  "baselineArtifact": {
+    "casesSha256": "5f78dc67bf8e331f17076358400aada51eea6eb9983d37c5f3343450e707ca28",
+    "summarySha256": "f4189c57ffa7cb1c0924fe1a60f8feafd83e9fbb81f3adcbc8898baac17df044"
+  },
+  "splitCanonicalSha256": "00e6807d69871f6f4bed5ba58ecdd95fb07bfcdd0c484e2cc43c1af4e7af1b8b",
+  "index": {
+    "enterprise": {
+      "trajectories": 100,
+      "states": 3358,
+      "rawUnits": 28903,
+      "rawTruncatedStates": 0,
+      "procedureUnits": 100,
+      "actions": 3258,
+      "locallyVerifiedActions": 2314,
+      "maskedTargets": 566,
+      "truncatedProcedures": 12,
+      "rawBuildLatencyMs": 309395.705958,
+      "procedureBuildLatencyMs": 1923.3883749999804
+    },
+    "web": {
+      "trajectories": 100,
+      "states": 1737,
+      "rawUnits": 23532,
+      "rawTruncatedStates": 0,
+      "procedureUnits": 100,
+      "actions": 1637,
+      "locallyVerifiedActions": 1405,
+      "maskedTargets": 562,
+      "truncatedProcedures": 0,
+      "rawBuildLatencyMs": 155930.42879100004,
+      "procedureBuildLatencyMs": 2114.766834000009
+    }
+  },
+  "feedback": {
+    "events": 4895,
+    "entries": 4895,
+    "capacity": 5200,
+    "available": true,
+    "failureReason": null,
+    "locallyVerifiedEvents": 3719
+  },
+  "armSummaries": [
+    {
+      "policyId": "trajectory-expansion-local-maxnovel-pc20-rc40-x1-es128-sc1024-ec6000",
+      "arm": "step_agnostic",
+      "cases": 66,
+      "directProxyCases": 60,
+      "orderedProxyCases": 2,
+      "metrics": {
+        "answerAtomSupportRecall": 0.2875,
+        "anyAnswerAtomSupportedRate": 0.31666666666666665,
+        "allAnswerAtomsSupportedRate": 0.26666666666666666,
+        "orderedSequenceSupportedRate": 0,
+        "meanInjectedTokens": 2087.6969696969695,
+        "meanInjectedItems": 2.287878787878788,
+        "queryLatencyP50Ms": 34.397082999988925,
+        "queryLatencyP95Ms": 60.362083000014536,
+        "tokenViolations": 0,
+        "fallbacks": 0,
+        "d11UseRate": 0.7878787878787878,
+        "expansionUseRate": 0.5606060606060606,
+        "inheritedD11Rate": 0.22727272727272727,
+        "selectionLatencyP50Ms": 2.0758749999804422,
+        "selectionLatencyP95Ms": 3.930500000016764,
+        "meanBaseEvidenceSpans": 18.954545454545453,
+        "meanNovelExternalEvidenceSpans": 11.5,
+        "meanNovelExternalEvidenceCharacters": 542.7424242424242,
+        "meanExternalCandidateRank": 19.027027027027028
+      },
+      "deltasVsBase": {
+        "answerAtomSupportRecall": -0.008333333333333333,
+        "anyAnswerAtomSupportedRate": 0,
+        "allAnswerAtomsSupportedRate": 0,
+        "orderedSequenceSupportedRate": 0,
+        "meanInjectedTokens": -740.9242424242425,
+        "meanInjectedTokenFraction": -0.2619383038100799
+      },
+      "deltasVsD11": {
+        "answerAtomSupportRecall": 0.03333333333333333,
+        "meanInjectedTokens": 173.43939393939377,
+        "meanInjectedTokenFraction": 0.09060400028494309
+      },
+      "directOutcomesVsBase": {
+        "improved": 2,
+        "equal": 55,
+        "harmed": 3
+      },
+      "directOutcomesVsD11": {
+        "improved": 2,
+        "equal": 58,
+        "harmed": 0
+      },
+      "answerAtomSupportRecallDeltaBootstrapVsBase": {
+        "mean": -0.008333333333333333,
+        "lower": -0.075,
+        "upper": 0.058333333333333334,
+        "questions": 60,
+        "strata": 2
+      },
+      "answerAtomSupportRecallDeltaBootstrapVsD11": {
+        "mean": 0.03333333333333333,
+        "lower": 0,
+        "upper": 0.08333333333333333,
+        "questions": 60,
+        "strata": 2
+      },
+      "byDomain": {
+        "enterprise": {
+          "directProxyCases": 37,
+          "baseAnswerAtomSupportRecall": 0.3716216216216216,
+          "d11AnswerAtomSupportRecall": 0.30405405405405406,
+          "answerAtomSupportRecall": 0.3310810810810811,
+          "deltaVsBase": -0.040540540540540515,
+          "deltaVsD11": 0.02702702702702703,
+          "meanInjectedTokens": 2204.027027027027
+        },
+        "web": {
+          "directProxyCases": 23,
+          "baseAnswerAtomSupportRecall": 0.17391304347826086,
+          "d11AnswerAtomSupportRecall": 0.17391304347826086,
+          "answerAtomSupportRecall": 0.21739130434782608,
+          "deltaVsBase": 0.043478260869565216,
+          "deltaVsD11": 0.043478260869565216,
+          "meanInjectedTokens": 1939.2758620689656
+        }
+      },
+      "certificateViolations": {
+        "baseCapsulePreservation": 0,
+        "externalEvidenceCoverage": 0,
+        "externalEvidenceOrder": 0,
+        "externalProvenanceCoverage": 0,
+        "unrelatedBasePreservation": 0
+      },
+      "decisionReasons": {
+        "accepted": 37,
+        "no_novel_external_evidence": 7,
+        "base_substitution_decline": 14,
+        "cost_certificate_decline": 7,
+        "no_external_same_trajectory_candidate": 1
+      },
+      "forcedFallbackMismatches": {
+        "disabled": 0,
+        "missingProcedureIndex": 0,
+        "missingFeedbackTable": 0,
+        "feedbackTableOverflow": 0,
+        "timeout": 0,
+        "corrupt": 0,
+        "budgetOverflow": 0,
+        "missingRawCandidatePool": 0,
+        "externalCorrupt": 0,
+        "externalCertificate": 0
+      }
+    },
+    {
+      "policyId": "trajectory-expansion-local-maxnovel-pc20-rc40-x1-es128-sc1024-ec6000",
+      "arm": "locally_verified",
+      "cases": 66,
+      "directProxyCases": 60,
+      "orderedProxyCases": 2,
+      "metrics": {
+        "answerAtomSupportRecall": 0.2625,
+        "anyAnswerAtomSupportedRate": 0.2833333333333333,
+        "allAnswerAtomsSupportedRate": 0.25,
+        "orderedSequenceSupportedRate": 0,
+        "meanInjectedTokens": 2059.030303030303,
+        "meanInjectedItems": 2.272727272727273,
+        "queryLatencyP50Ms": 34.26129100000253,
+        "queryLatencyP95Ms": 59.90154099999927,
+        "tokenViolations": 0,
+        "fallbacks": 0,
+        "d11UseRate": 0.7878787878787878,
+        "expansionUseRate": 0.5757575757575758,
+        "inheritedD11Rate": 0.21212121212121213,
+        "selectionLatencyP50Ms": 1.7468750000116415,
+        "selectionLatencyP95Ms": 3.345541000016965,
+        "meanBaseEvidenceSpans": 19.424242424242426,
+        "meanNovelExternalEvidenceSpans": 11.409090909090908,
+        "meanNovelExternalEvidenceCharacters": 547.060606060606,
+        "meanExternalCandidateRank": 18.763157894736842
+      },
+      "deltasVsBase": {
+        "answerAtomSupportRecall": -0.03333333333333333,
+        "anyAnswerAtomSupportedRate": -0.033333333333333326,
+        "allAnswerAtomsSupportedRate": -0.016666666666666663,
+        "orderedSequenceSupportedRate": 0,
+        "meanInjectedTokens": -769.590909090909,
+        "meanInjectedTokenFraction": -0.2720728055750472
+      },
+      "deltasVsD11": {
+        "answerAtomSupportRecall": 0.03333333333333333,
+        "meanInjectedTokens": 174.16666666666674,
+        "meanInjectedTokenFraction": 0.09240279418975739
+      },
+      "directOutcomesVsBase": {
+        "improved": 2,
+        "equal": 53,
+        "harmed": 5
+      },
+      "directOutcomesVsD11": {
+        "improved": 2,
+        "equal": 58,
+        "harmed": 0
+      },
+      "answerAtomSupportRecallDeltaBootstrapVsBase": {
+        "mean": -0.03333333333333333,
+        "lower": -0.10833333333333334,
+        "upper": 0.041666666666666664,
+        "questions": 60,
+        "strata": 2
+      },
+      "answerAtomSupportRecallDeltaBootstrapVsD11": {
+        "mean": 0.03333333333333333,
+        "lower": 0,
+        "upper": 0.08333333333333333,
+        "questions": 60,
+        "strata": 2
+      },
+      "byDomain": {
+        "enterprise": {
+          "directProxyCases": 37,
+          "baseAnswerAtomSupportRecall": 0.3716216216216216,
+          "d11AnswerAtomSupportRecall": 0.2635135135135135,
+          "answerAtomSupportRecall": 0.2905405405405405,
+          "deltaVsBase": -0.08108108108108109,
+          "deltaVsD11": 0.02702702702702703,
+          "meanInjectedTokens": 2174.4324324324325
+        },
+        "web": {
+          "directProxyCases": 23,
+          "baseAnswerAtomSupportRecall": 0.17391304347826086,
+          "d11AnswerAtomSupportRecall": 0.17391304347826086,
+          "answerAtomSupportRecall": 0.21739130434782608,
+          "deltaVsBase": 0.043478260869565216,
+          "deltaVsD11": 0.043478260869565216,
+          "meanInjectedTokens": 1911.7931034482758
+        }
+      },
+      "certificateViolations": {
+        "baseCapsulePreservation": 0,
+        "externalEvidenceCoverage": 0,
+        "externalEvidenceOrder": 0,
+        "externalProvenanceCoverage": 0,
+        "unrelatedBasePreservation": 0
+      },
+      "decisionReasons": {
+        "accepted": 38,
+        "no_novel_external_evidence": 7,
+        "base_substitution_decline": 14,
+        "cost_certificate_decline": 6,
+        "no_external_same_trajectory_candidate": 1
+      },
+      "forcedFallbackMismatches": {
+        "disabled": 0,
+        "missingProcedureIndex": 0,
+        "missingFeedbackTable": 0,
+        "feedbackTableOverflow": 0,
+        "timeout": 0,
+        "corrupt": 0,
+        "budgetOverflow": 0,
+        "missingRawCandidatePool": 0,
+        "externalCorrupt": 0,
+        "externalCertificate": 0
+      }
+    }
+  ],
+  "localFeedbackComparison": {
+    "changedContexts": 52,
+    "answerAtomSupportRecallDelta": -0.025,
+    "meanInjectedTokenDelta": -28.666666666666668,
+    "improved": 0,
+    "equal": 58,
+    "harmed": 2
+  },
+  "casesSha256": "992825f5c895647330c7255fd81be05a88955114512958dd65866bb9d0fb72f6",
+  "gate": {
+    "passed": false,
+    "checks": {
+      "answerAtomSupportRecallDeltaVsBase": false,
+      "improvedDirectProxyCasesVsBase": true,
+      "harmedDirectProxyCasesVsBase": false,
+      "answerAtomSupportRecallDeltaVsD11": true,
+      "improvedDirectProxyCasesVsD11": true,
+      "harmedDirectProxyCasesVsD11": true,
+      "bootstrapLowerVsBase": false,
+      "bootstrapLowerVsD11": true,
+      "changedContextsVsAgnostic": true,
+      "answerAtomSupportRecallDeltaVsAgnostic": false,
+      "harmedDirectProxyCasesVsAgnostic": false,
+      "meanInjectedTokenDeltaVsAgnostic": true,
+      "meanInjectedTokenIncreaseFractionVsBase": true,
+      "perQueryTokenViolations": true,
+      "certificateViolations": true,
+      "ordinaryFallbacks": true,
+      "selectionLatencyP95Ms": true,
+      "exactForcedFallbacks": true
+    }
+  },
+  "laterPhaseState": "unread"
+}

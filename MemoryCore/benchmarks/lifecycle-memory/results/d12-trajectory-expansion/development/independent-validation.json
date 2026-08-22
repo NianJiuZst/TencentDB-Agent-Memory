@@ -1,0 +1,45 @@
+{
+  "validationVersion": "lifecycle-longmemeval-v2-trajectory-expansion-independent-validation-v1.0",
+  "sourceProtocolVersion": "lifecycle-longmemeval-v2-trajectory-expansion-v1.0",
+  "phase": "development",
+  "sourceStatus": "development_failed",
+  "sourceGatePassed": false,
+  "artifactSha256": {
+    "baselineCases": "5f78dc67bf8e331f17076358400aada51eea6eb9983d37c5f3343450e707ca28",
+    "baselineSummary": "f4189c57ffa7cb1c0924fe1a60f8feafd83e9fbb81f3adcbc8898baac17df044",
+    "cases": "992825f5c895647330c7255fd81be05a88955114512958dd65866bb9d0fb72f6",
+    "summary": "a1a6638265c7a01163938dc45989d3a115c99c42760d039142d1f0906f90d2a5"
+  },
+  "counts": {
+    "baselineRows": 66,
+    "candidateRows": 132,
+    "questions": 66,
+    "directProxyQuestions": 60
+  },
+  "mismatches": {
+    "artifactIdentity": 0,
+    "coverage": 0,
+    "rowProtocol": 0,
+    "baselineReplay": 0,
+    "arithmetic": 8,
+    "selectionStructure": 0,
+    "certificate": 0,
+    "forcedFallback": 0,
+    "summaryRecomputation": 1,
+    "gateRecomputation": 0
+  },
+  "checks": {
+    "allArtifactIdentitiesMatch": true,
+    "exactQuestionAndArmCoverage": true,
+    "allRowsUseFrozenProtocol": true,
+    "allBaselineFieldsReplay": true,
+    "allArithmeticMatches": false,
+    "allSelectionStructuresMatch": true,
+    "zeroCertificateViolations": true,
+    "exactForcedFallbacks": true,
+    "summaryRecomputedExactly": false,
+    "gateRecomputedExactly": true
+  },
+  "validationPassed": false,
+  "admissionEligible": false
+}
