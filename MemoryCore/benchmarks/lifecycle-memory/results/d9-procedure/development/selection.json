@@ -1,0 +1,35 @@
+{
+  "selectionVersion": "lifecycle-longmemeval-v2-procedure-selection-v1.0",
+  "sourceProtocolVersion": "lifecycle-longmemeval-v2-procedure-v1.0",
+  "status": "selected",
+  "phase": "development",
+  "preScoreCommit": "85656d1deacae439bdd970c188d4597b223f02eb",
+  "selectedPolicy": {
+    "id": "pc20-tf50-mi2",
+    "procedureCandidateLimit": 20,
+    "procedureTokenFraction": 0.5,
+    "maxProcedureItems": 2
+  },
+  "ranking": [
+    "pc20-tf50-mi2",
+    "pc20-tf25-mi2",
+    "pc10-tf50-mi2",
+    "pc10-tf25-mi2",
+    "pc20-tf50-mi1",
+    "pc20-tf25-mi1",
+    "pc10-tf50-mi1",
+    "pc10-tf25-mi1"
+  ],
+  "developmentCasesSha256": "b7f54e45d3cecc2b73486d7a6210c2c919964ca5459d71c26cd988b3ee3e6208",
+  "baselineCasesSha256": "2d2908babe05e878adf2a870b003e77ce8bde71a9409b684f06d27f33f731a60",
+  "baselineSummarySha256": "a64a941f54b8aa65483f35847f3a14edc33337f20427ccf629af9710c1f204e8",
+  "policyGridSha256": "b1208b9284866fd06efcba5dd942b1cad904f150fc677d21833540111635539f",
+  "objectiveValues": {
+    "answerAtomSupportRecall": 0.2222222222222222,
+    "orderedSequenceSupportedRate": 0.14285714285714285,
+    "allAnswerAtomsSupportedRate": 0.2222222222222222,
+    "improvedDirectProxyCasesVsOutcomeAgnostic": 0,
+    "meanInjectedTokens": 2713.294117647059,
+    "selectionLatencyP95Ms": 0.009749999735504389
+  }
+}
