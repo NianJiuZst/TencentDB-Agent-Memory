@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { LongTaskQuestion, LongTaskTrajectory } from "./long-task-adapter.js";
 import {
   buildPremiseEvidenceIndex,
+  LONGMEMEVAL_V2_PREMISE_EVIDENCE_SCOPE_ADAPTER,
   selectPremiseEvidence,
   type PremiseEvidenceConfig,
 } from "./longmemeval-v2-premise-evidence.js";
@@ -128,5 +129,27 @@ describe("LongMemEval-V2 premise evidence", () => {
     });
     expect(decision.mode).toBe("fallback_baseline");
     expect(decision.fallback).toBe(true);
+  });
+
+  it("uses an adapter to reconcile benchmark question and trajectory environments", () => {
+    const value = trajectory("t1", [
+      "RootWebArea 'Search Terms / Magento Admin'",
+      "\trow ''",
+      "\t\tcolumnheader 'Store'",
+      "\t\tcolumnheader 'Results'",
+    ].join("\n"), "Inspect the Search Terms Report grid");
+    value.environment = "webarena";
+    value.states[0].url = "http://localhost:9083/admin/reports/search/";
+    const index = buildPremiseEvidenceIndex({
+      trajectories: [value],
+      config,
+      scopeAdapter: LONGMEMEVAL_V2_PREMISE_EVIDENCE_SCOPE_ADAPTER,
+    });
+    const scopedQuestion = {
+      ...question("In the Search Terms Report, what is between `Store` and `Results`?"),
+      environment: "webarena-cms",
+    };
+    expect(selectPremiseEvidence({ question: scopedQuestion, index }).usedPremiseEvidence).toBe(true);
+    expect(index.scopeAdapterId).toBe("longmemeval-v2-url-scope-v1");
   });
 });

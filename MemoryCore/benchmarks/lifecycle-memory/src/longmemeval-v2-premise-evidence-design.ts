@@ -10,6 +10,7 @@ import {
 } from "./longmemeval-v2-premise-evidence-split.js";
 import {
   buildPremiseEvidenceIndex,
+  LONGMEMEVAL_V2_PREMISE_EVIDENCE_SCOPE_ADAPTER,
   selectPremiseEvidence,
   type PremiseEvidenceConfig,
   type PremiseEvidenceDecision,
@@ -98,6 +99,7 @@ export interface PremiseEvidenceDesignSummary {
     supersededInventories: number;
     available: boolean;
     failureReason: string | null;
+    scopeAdapterId: string;
   };
   search: {
     policies: number;
@@ -316,7 +318,11 @@ export async function runPremiseEvidenceDesign(params: {
     allowedInventoryKinds: ["tabs", "list", "columns", "fields", "actions"],
   };
   const startedAt = performance.now();
-  const index = buildPremiseEvidenceIndex({ trajectories, config: baseConfig });
+  const index = buildPremiseEvidenceIndex({
+    trajectories,
+    config: baseConfig,
+    scopeAdapter: LONGMEMEVAL_V2_PREMISE_EVIDENCE_SCOPE_ADAPTER,
+  });
   const buildLatencyMs = performance.now() - startedAt;
   const policies = candidatePolicies(baseConfig);
   const scored = policies.map((policy) => scorePolicy({
@@ -359,6 +365,7 @@ export async function runPremiseEvidenceDesign(params: {
         supersededInventories: index.supersededInventories,
         available: index.available,
         failureReason: index.failureReason,
+        scopeAdapterId: index.scopeAdapterId,
       },
       search: {
         policies: policies.length,

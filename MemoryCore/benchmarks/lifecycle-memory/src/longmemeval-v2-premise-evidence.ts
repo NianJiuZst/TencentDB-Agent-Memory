@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import type { LongTaskQuestion, LongTaskTrajectory } from "./long-task-adapter.js";
+import type { LongTaskQuestion, LongTaskState, LongTaskTrajectory } from "./long-task-adapter.js";
 import { normalizeLongTaskSupportText } from "./longmemeval-v2-baseline.js";
 
 export type PremiseEvidenceOperator = "between_adjacent" | "boundary_after" | "boundary_before";
@@ -62,6 +62,15 @@ export interface PremiseEvidenceIndex {
   states: number;
   skippedOversizedInventories: number;
   supersededInventories: number;
+  scopeAdapterId: string;
+}
+
+export interface PremiseEvidenceScopeAdapter {
+  id: string;
+  stateScope(trajectory: LongTaskTrajectory, state: LongTaskState): {
+    domain: string;
+    environment: string;
+  };
 }
 
 export type PremiseEvidenceDecisionReason =
@@ -317,7 +326,7 @@ function addBounded(map: Map<string, PremiseEvidenceInventory[]>, key: string,
 }
 
 function unavailableIndex(config: PremiseEvidenceConfig, reason: PremiseEvidenceIndexFailureReason,
-  trajectories: number, states: number): PremiseEvidenceIndex {
+  trajectories: number, states: number, scopeAdapterId = "dataset-native-v1"): PremiseEvidenceIndex {
   return {
     available: false,
     failureReason: reason,
@@ -330,21 +339,49 @@ function unavailableIndex(config: PremiseEvidenceConfig, reason: PremiseEvidence
     states,
     skippedOversizedInventories: 0,
     supersededInventories: 0,
+    scopeAdapterId,
   };
 }
+
+export const DATASET_NATIVE_PREMISE_EVIDENCE_SCOPE_ADAPTER: PremiseEvidenceScopeAdapter = {
+  id: "dataset-native-v1",
+  stateScope: (trajectory) => ({
+    domain: trajectory.domain,
+    environment: trajectory.environment,
+  }),
+};
+
+export const LONGMEMEVAL_V2_PREMISE_EVIDENCE_SCOPE_ADAPTER: PremiseEvidenceScopeAdapter = {
+  id: "longmemeval-v2-url-scope-v1",
+  stateScope: (trajectory, state) => {
+    let environment = trajectory.environment;
+    try {
+      const parsed = new URL(state.url);
+      if (parsed.port === "9083") environment = "webarena-cms";
+      else if (parsed.port === "9082") environment = "webarena-onestopshop";
+      else if (parsed.port === "9080") environment = "webarena-reddit";
+      else if (/service-now\.com$/iu.test(parsed.hostname)) environment = "workarena";
+    } catch {
+      // Preserve the dataset-native environment; selection still has the domain guard.
+    }
+    return { domain: trajectory.domain, environment };
+  },
+};
 
 export function buildPremiseEvidenceIndex(params: {
   trajectories: LongTaskTrajectory[];
   config: PremiseEvidenceConfig;
+  scopeAdapter?: PremiseEvidenceScopeAdapter;
 }): PremiseEvidenceIndex {
   validateConfig(params.config);
+  const scopeAdapter = params.scopeAdapter ?? DATASET_NATIVE_PREMISE_EVIDENCE_SCOPE_ADAPTER;
   const trajectories = [...params.trajectories].sort((left, right) => left.id.localeCompare(right.id));
   if (trajectories.length > params.config.maxTrajectories) {
-    return unavailableIndex(params.config, "trajectory_overflow", trajectories.length, 0);
+    return unavailableIndex(params.config, "trajectory_overflow", trajectories.length, 0, scopeAdapter.id);
   }
   const states = trajectories.reduce((sum, trajectory) => sum + trajectory.states.length, 0);
   if (states > params.config.maxStates) {
-    return unavailableIndex(params.config, "state_overflow", trajectories.length, states);
+    return unavailableIndex(params.config, "state_overflow", trajectories.length, states, scopeAdapter.id);
   }
   const allowedKinds = new Set(params.config.allowedInventoryKinds);
   const inventoryByScope = new Map<string, PremiseEvidenceInventory>();
@@ -353,6 +390,8 @@ export function buildPremiseEvidenceIndex(params: {
   try {
     for (const trajectory of trajectories) {
       for (const state of trajectory.states) {
+        const scope = scopeAdapter.stateScope(trajectory, state);
+        if (!scope.domain.trim() || !scope.environment.trim()) throw new Error("empty premise evidence scope");
         const roots = parseAxTree(state.observation);
         if (roots.length === 0) throw new Error("empty parsed tree");
         const title = pageTitle(roots);
@@ -384,8 +423,8 @@ export function buildPremiseEvidenceIndex(params: {
             const inventory: PremiseEvidenceInventory = {
               id: `lmev2:premise-inventory:${createHash("sha256").update(identity).digest("hex").slice(0, 24)}`,
               trajectoryId: trajectory.id,
-              domain: trajectory.domain,
-              environment: trajectory.environment,
+              domain: scope.domain,
+              environment: scope.environment,
               stateIndex: state.index,
               pageTitle: title,
               url: state.url,
@@ -409,14 +448,26 @@ export function buildPremiseEvidenceIndex(params: {
             if (inventoryByScope.has(scopeKey)) supersededInventories += 1;
             inventoryByScope.set(scopeKey, inventory);
             if (inventoryByScope.size > params.config.maxInventories) {
-              return unavailableIndex(params.config, "inventory_overflow", trajectories.length, states);
+              return unavailableIndex(
+                params.config,
+                "inventory_overflow",
+                trajectories.length,
+                states,
+                scopeAdapter.id,
+              );
             }
           }
         }
       }
     }
   } catch {
-    return unavailableIndex(params.config, "corrupt_accessibility_tree", trajectories.length, states);
+    return unavailableIndex(
+      params.config,
+      "corrupt_accessibility_tree",
+      trajectories.length,
+      states,
+      scopeAdapter.id,
+    );
   }
   const inventories = [...inventoryByScope.values()];
   inventories.sort((left, right) => left.id.localeCompare(right.id));
@@ -433,7 +484,13 @@ export function buildPremiseEvidenceIndex(params: {
     addBounded(terminalBefore, inventory.items[0].normalized, inventory, params.config.maxSupportsPerKey);
     addBounded(terminalAfter, inventory.items.at(-1)!.normalized, inventory, params.config.maxSupportsPerKey);
     if (adjacency.size + terminalAfter.size + terminalBefore.size > params.config.maxIndexKeys) {
-      return unavailableIndex(params.config, "index_key_overflow", trajectories.length, states);
+      return unavailableIndex(
+        params.config,
+        "index_key_overflow",
+        trajectories.length,
+        states,
+        scopeAdapter.id,
+      );
     }
   }
   return {
@@ -448,6 +505,7 @@ export function buildPremiseEvidenceIndex(params: {
     states,
     skippedOversizedInventories,
     supersededInventories,
+    scopeAdapterId: scopeAdapter.id,
   };
 }
 
