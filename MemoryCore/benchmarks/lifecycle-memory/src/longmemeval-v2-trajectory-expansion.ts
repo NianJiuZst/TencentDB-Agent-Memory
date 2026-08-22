@@ -248,6 +248,9 @@ export function selectTrajectoryEvidenceExpansionContext(params: {
     d11ContextSha256,
   });
   if (params.rawCandidatePoolAvailable === false) return fallback("missing_raw_candidate_pool");
+  if (params.forceExternalCorrupt || params.forceExternalCoverageFailure) {
+    return fallback("corrupt_procedure_or_feedback");
+  }
 
   const d11 = selectSourceEvidenceSubstitutionContext({
     baseline: params.baseline,
@@ -298,8 +301,7 @@ export function selectTrajectoryEvidenceExpansionContext(params: {
   let overflowReason: TrajectoryEvidenceExpansionDecisionReason | null = null;
   for (let index = 0; index < externalCandidates.length; index += 1) {
     const value = externalCandidates[index];
-    if ((params.forceExternalCorrupt && index === 0)
-      || corruptRawCandidate(value.candidate, record.trajectoryId)) {
+    if (corruptRawCandidate(value.candidate, record.trajectoryId)) {
       return fallback("corrupt_procedure_or_feedback", d11.contextSha256);
     }
     let extracted;
@@ -357,8 +359,7 @@ export function selectTrajectoryEvidenceExpansionContext(params: {
   if (tokenCount > removedTokens) return inherit("cost_certificate_decline");
 
   const baseCapsuleViolations = text.startsWith(`${d11Capsule.content}\n`) ? 0 : 1;
-  const externalEvidenceViolations = sourceEvidenceCoverageViolations(novel, text)
-    + (params.forceExternalCoverageFailure ? 1 : 0);
+  const externalEvidenceViolations = sourceEvidenceCoverageViolations(novel, text);
   const externalOrderViolations = evidenceOrderViolations(novel, text);
   const externalProvenanceViolations = text.includes(`[source ${external.id}]`) ? 0 : 1;
   if (baseCapsuleViolations > 0) {
