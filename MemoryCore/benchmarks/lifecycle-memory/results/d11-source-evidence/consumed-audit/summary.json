@@ -1,0 +1,291 @@
+{
+  "protocolVersion": "lifecycle-longmemeval-v2-source-evidence-substitution-v1.0",
+  "mode": "source_evidence_substitution",
+  "phase": "consumed_audit",
+  "status": "consumed_audit_passed",
+  "preScoreCommit": "f055acd80b7a16a919ec09a583803a7b3a37345f",
+  "authorizationSha256": null,
+  "baselineArtifacts": [
+    {
+      "casesSha256": "2d2908babe05e878adf2a870b003e77ce8bde71a9409b684f06d27f33f731a60",
+      "summarySha256": "a64a941f54b8aa65483f35847f3a14edc33337f20427ccf629af9710c1f204e8"
+    },
+    {
+      "casesSha256": "2e55aedd4c8b526b18012dc899c816cd354b7e2f892d1ecd18e8e19c6aedddb8",
+      "summarySha256": "bc52409ef1243f2f52dc26f3513b707458398ae90a84ed10088a54cb9a18165c"
+    }
+  ],
+  "d10ComparatorArtifacts": {
+    "casesSha256": "ac188849cc346ba4c7b817682586b6ea82496c4d8a9ee7c4cea60f86437c1076",
+    "summarySha256": "f818000b94e4911f6d81b50683ec603f06401c1baa3b737be1b23c35aaca551f"
+  },
+  "index": {
+    "enterprise": {
+      "trajectories": 100,
+      "states": 3358,
+      "rawUnits": 28903,
+      "rawTruncatedStates": 0,
+      "procedureUnits": 100,
+      "actions": 3258,
+      "locallyVerifiedActions": 2314,
+      "maskedTargets": 566,
+      "truncatedProcedures": 12,
+      "rawBuildLatencyMs": 94.9922919999999,
+      "procedureBuildLatencyMs": 3880.2355420000385
+    },
+    "web": {
+      "trajectories": 100,
+      "states": 1737,
+      "rawUnits": 23532,
+      "rawTruncatedStates": 0,
+      "procedureUnits": 100,
+      "actions": 1637,
+      "locallyVerifiedActions": 1405,
+      "maskedTargets": 562,
+      "truncatedProcedures": 0,
+      "rawBuildLatencyMs": 72.3813749999972,
+      "procedureBuildLatencyMs": 3780.9597080000676
+    }
+  },
+  "feedback": {
+    "events": 4895,
+    "entries": 4895,
+    "capacity": 5200,
+    "available": true,
+    "failureReason": null,
+    "locallyVerifiedEvents": 3719
+  },
+  "armSummaries": [
+    {
+      "policyId": "evidence-local-pc20-ms1-ma64-a128-es256-sc1024-ec12000",
+      "arm": "step_agnostic",
+      "cases": 76,
+      "directProxyCases": 27,
+      "orderedProxyCases": 11,
+      "metrics": {
+        "answerAtomSupportRecall": 0.21604938271604937,
+        "anyAnswerAtomSupportedRate": 0.25925925925925924,
+        "allAnswerAtomsSupportedRate": 0.18518518518518517,
+        "orderedSequenceSupportedRate": 0.09090909090909091,
+        "meanInjectedTokens": 2153.8815789473683,
+        "meanInjectedItems": 2.460526315789474,
+        "queryLatencyP50Ms": 87.59754200000316,
+        "queryLatencyP95Ms": 210.47966699977405,
+        "tokenViolations": 0,
+        "fallbacks": 0,
+        "substitutionUseRate": 0.7368421052631579,
+        "selectionLatencyP50Ms": 1.400249999947846,
+        "selectionLatencyP95Ms": 5.398375000106171,
+        "meanSafeAnchors": 7.184210526315789,
+        "meanSourceEvidenceSpans": 21.526315789473685,
+        "meanSourceEvidenceCharacters": 1034.8552631578948,
+        "meanVerifiedActions": 20.81578947368421,
+        "meanDeliveredActions": 21.43421052631579
+      },
+      "deltasVsBaseline": {
+        "answerAtomSupportRecall": 0.06790123456790123,
+        "anyAnswerAtomSupportedRate": 0.037037037037037035,
+        "allAnswerAtomsSupportedRate": 0.07407407407407407,
+        "orderedSequenceSupportedRate": 0.09090909090909091,
+        "meanInjectedTokens": -626.8289473684213,
+        "meanInjectedTokenFraction": -0.22542042454124758
+      },
+      "directProxyOutcomesVsBaseline": {
+        "improved": 3,
+        "equal": 24,
+        "harmed": 0
+      },
+      "comparisonVsD10": {
+        "changedContexts": 57,
+        "answerAtomSupportRecallDelta": 0.037037037037037035,
+        "meanInjectedTokenDelta": 276.22368421052624,
+        "improved": 1,
+        "equal": 26,
+        "harmed": 0
+      },
+      "byDomain": {
+        "enterprise": {
+          "directProxyCases": 5,
+          "baseAnswerAtomSupportRecall": 0.7,
+          "answerAtomSupportRecall": 0.8,
+          "answerAtomSupportRecallDelta": 0.10000000000000009,
+          "meanInjectedTokens": 1824.59375
+        },
+        "web": {
+          "directProxyCases": 22,
+          "baseAnswerAtomSupportRecall": 0.022727272727272728,
+          "answerAtomSupportRecall": 0.08333333333333333,
+          "answerAtomSupportRecallDelta": 0.0606060606060606,
+          "meanInjectedTokens": 2393.3636363636365
+        }
+      },
+      "answerAtomSupportRecallDeltaBootstrap": {
+        "mean": 0.06790123456790123,
+        "lower": 0,
+        "upper": 0.16049382716049385,
+        "questions": 27,
+        "strata": 2
+      },
+      "certificateViolations": {
+        "anchorCoverage": 0,
+        "evidenceCoverage": 0,
+        "evidenceOrder": 0,
+        "provenanceCoverage": 0,
+        "actionCoverage": 0,
+        "unrelatedBasePreservation": 0
+      },
+      "decisionReasons": {
+        "no_same_trajectory_candidate": 19,
+        "accepted": 56,
+        "cost_certificate_decline": 1
+      },
+      "forcedFallbackMismatches": {
+        "disabled": 0,
+        "missingProcedureIndex": 0,
+        "missingFeedbackTable": 0,
+        "feedbackTableOverflow": 0,
+        "timeout": 0,
+        "corrupt": 0,
+        "budgetOverflow": 0,
+        "anchorCertificate": 0,
+        "evidenceCertificate": 0,
+        "evidenceCorrupt": 0
+      }
+    },
+    {
+      "policyId": "evidence-local-pc20-ms1-ma64-a128-es256-sc1024-ec12000",
+      "arm": "locally_verified",
+      "cases": 76,
+      "directProxyCases": 27,
+      "orderedProxyCases": 11,
+      "metrics": {
+        "answerAtomSupportRecall": 0.21604938271604937,
+        "anyAnswerAtomSupportedRate": 0.25925925925925924,
+        "allAnswerAtomsSupportedRate": 0.18518518518518517,
+        "orderedSequenceSupportedRate": 0.09090909090909091,
+        "meanInjectedTokens": 2143.092105263158,
+        "meanInjectedItems": 2.473684210526316,
+        "queryLatencyP50Ms": 86.76133299991488,
+        "queryLatencyP95Ms": 209.51458299951628,
+        "tokenViolations": 0,
+        "fallbacks": 0,
+        "substitutionUseRate": 0.6973684210526315,
+        "selectionLatencyP50Ms": 1.2509589998517185,
+        "selectionLatencyP95Ms": 4.665458000032231,
+        "meanSafeAnchors": 6.671052631578948,
+        "meanSourceEvidenceSpans": 20.210526315789473,
+        "meanSourceEvidenceCharacters": 976.9078947368421,
+        "meanVerifiedActions": 19.236842105263158,
+        "meanDeliveredActions": 16.236842105263158
+      },
+      "deltasVsBaseline": {
+        "answerAtomSupportRecall": 0.06790123456790123,
+        "anyAnswerAtomSupportedRate": 0.037037037037037035,
+        "allAnswerAtomsSupportedRate": 0.07407407407407407,
+        "orderedSequenceSupportedRate": 0.09090909090909091,
+        "meanInjectedTokens": -637.6184210526317,
+        "meanInjectedTokenFraction": -0.22930053848410575
+      },
+      "directProxyOutcomesVsBaseline": {
+        "improved": 3,
+        "equal": 24,
+        "harmed": 0
+      },
+      "comparisonVsD10": {
+        "changedContexts": 57,
+        "answerAtomSupportRecallDelta": 0.037037037037037035,
+        "meanInjectedTokenDelta": 295.43421052631584,
+        "improved": 1,
+        "equal": 26,
+        "harmed": 0
+      },
+      "byDomain": {
+        "enterprise": {
+          "directProxyCases": 5,
+          "baseAnswerAtomSupportRecall": 0.7,
+          "answerAtomSupportRecall": 0.8,
+          "answerAtomSupportRecallDelta": 0.10000000000000009,
+          "meanInjectedTokens": 1817
+        },
+        "web": {
+          "directProxyCases": 22,
+          "baseAnswerAtomSupportRecall": 0.022727272727272728,
+          "answerAtomSupportRecall": 0.08333333333333333,
+          "answerAtomSupportRecallDelta": 0.0606060606060606,
+          "meanInjectedTokens": 2380.25
+        }
+      },
+      "answerAtomSupportRecallDeltaBootstrap": {
+        "mean": 0.06790123456790123,
+        "lower": 0,
+        "upper": 0.16049382716049382,
+        "questions": 27,
+        "strata": 2
+      },
+      "certificateViolations": {
+        "anchorCoverage": 0,
+        "evidenceCoverage": 0,
+        "evidenceOrder": 0,
+        "provenanceCoverage": 0,
+        "actionCoverage": 0,
+        "unrelatedBasePreservation": 0
+      },
+      "decisionReasons": {
+        "no_same_trajectory_candidate": 19,
+        "accepted": 53,
+        "cost_certificate_decline": 3,
+        "evidence_span_character_overflow_decline": 1
+      },
+      "forcedFallbackMismatches": {
+        "disabled": 0,
+        "missingProcedureIndex": 0,
+        "missingFeedbackTable": 0,
+        "feedbackTableOverflow": 0,
+        "timeout": 0,
+        "corrupt": 0,
+        "budgetOverflow": 0,
+        "anchorCertificate": 0,
+        "evidenceCertificate": 0,
+        "evidenceCorrupt": 0
+      }
+    }
+  ],
+  "localFeedbackComparison": {
+    "changedContexts": 57,
+    "answerAtomSupportRecallDelta": 0,
+    "meanInjectedTokenDelta": -10.789473684210526,
+    "improved": 0,
+    "equal": 27,
+    "harmed": 0
+  },
+  "casesSha256": "02004a9c04798b106949271952121e9c0673986a823dbe095126c9dcb8eea3d6",
+  "gate": {
+    "passed": true,
+    "checks": {
+      "answerAtomSupportRecallDeltaVsBaseline": true,
+      "answerAtomSupportRecallBootstrapLowerVsBaseline": true,
+      "improvedDirectProxyCasesVsBaseline": true,
+      "harmedDirectProxyCasesVsBaseline": true,
+      "orderedSequenceSupportedRateDeltaVsBaseline": true,
+      "answerAtomSupportRecallDeltaVsD10": true,
+      "improvedDirectProxyCasesVsD10": true,
+      "harmedDirectProxyCasesVsD10": true,
+      "changedContextsVsAgnostic": true,
+      "answerAtomSupportRecallDeltaVsAgnostic": true,
+      "harmedDirectProxyCasesVsAgnostic": true,
+      "meanInjectedTokenDeltaVsAgnostic": true,
+      "meanInjectedTokenIncreaseFraction": true,
+      "perQueryTokenViolations": true,
+      "anchorCoverageViolations": true,
+      "evidenceCoverageViolations": true,
+      "evidenceOrderViolations": true,
+      "provenanceCoverageViolations": true,
+      "actionCoverageViolations": true,
+      "unrelatedBasePreservationViolations": true,
+      "ordinaryFallbacks": true,
+      "selectionLatencyP95Ms": true,
+      "exactForcedFallbacks": true
+    }
+  },
+  "testState": "unread"
+}

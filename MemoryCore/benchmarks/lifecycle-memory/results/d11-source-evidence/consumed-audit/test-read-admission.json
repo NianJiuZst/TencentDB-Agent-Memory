@@ -1,0 +1,10 @@
+{
+  "admissionVersion": "lifecycle-longmemeval-v2-source-evidence-admission-v1.0",
+  "sourceProtocolVersion": "lifecycle-longmemeval-v2-source-evidence-substitution-v1.0",
+  "status": "consumed_audit_passed",
+  "decision": "authorize_locked_test_read",
+  "candidatePolicyId": "evidence-local-pc20-ms1-ma64-a128-es256-sc1024-ec12000",
+  "validatorCommit": "f055acd80b7a16a919ec09a583803a7b3a37345f",
+  "independentValidationSha256": "7f88fba744f1eda1b57ad8f1a33137e5c19c187fc3aa480117ec24229013ea31",
+  "testStateAtAdmission": "unread"
+}
