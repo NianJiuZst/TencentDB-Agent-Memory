@@ -134,18 +134,26 @@ interface AbstractAction {
   maskedTarget: boolean;
 }
 
-interface SafeAnchor {
-  role: SafeAnchorRole;
-  label: string;
+interface EvidenceAnchor {
   rendered: string;
   normalized: string;
+}
+
+export interface LocalSubstitutionEvidenceAdapter {
+  id: string;
+  classifyProgress(params: {
+    action: string;
+    pre: LongTaskState;
+    post: LongTaskState;
+  }): { verified: boolean; reason: LocalProgressReason };
+  extractAnchors(content: string): string[];
 }
 
 interface CandidatePlan {
   record: LocalProcedureRecord;
   rank: number;
   removed: RetrievedUnit[];
-  anchors: SafeAnchor[];
+  anchors: EvidenceAnchor[];
   actionLines: string[];
   verifiedActions: number;
   totalActions: number;
@@ -207,7 +215,7 @@ function abstractAction(action: string, pre: LongTaskState): AbstractAction {
   };
 }
 
-function parseSafeAnchor(line: string): SafeAnchor | null {
+function parseSafeAnchor(line: string): EvidenceAnchor | null {
   const normalizedLine = normalizeAxTreeLine(line);
   const match = /^(?:\[[^\]]+\]\s+)?(button|link|heading|columnheader|textbox|combobox|option|checkbox|tab)\s+['"]([^'"]+)['"]/iu.exec(normalizedLine);
   if (!match) return null;
@@ -215,11 +223,11 @@ function parseSafeAnchor(line: string): SafeAnchor | null {
   const label = match[2].trim();
   if (labelLooksBound(label)) return null;
   const rendered = `${role} \"${label}\"`;
-  return { role, label, rendered, normalized: normalizeLongTaskSupportText(rendered) };
+  return { rendered, normalized: normalizeLongTaskSupportText(rendered) };
 }
 
 export function extractSafeUiAnchors(content: string): string[] {
-  const anchors = new Map<string, SafeAnchor>();
+  const anchors = new Map<string, EvidenceAnchor>();
   for (const line of content.split("\n")) {
     const anchor = parseSafeAnchor(line);
     if (anchor && !anchors.has(anchor.normalized)) anchors.set(anchor.normalized, anchor);
@@ -227,13 +235,14 @@ export function extractSafeUiAnchors(content: string): string[] {
   return [...anchors.values()].map((anchor) => anchor.rendered);
 }
 
-function safeAnchors(content: string): SafeAnchor[] {
-  return extractSafeUiAnchors(content).map((rendered) => ({
-    role: rendered.slice(0, rendered.indexOf(" ")) as SafeAnchorRole,
-    label: rendered.slice(rendered.indexOf(" \"") + 2, -1),
+function evidenceAnchors(
+  content: string,
+  adapter: LocalSubstitutionEvidenceAdapter,
+): EvidenceAnchor[] {
+  return adapter.extractAnchors(content).map((rendered) => ({
     rendered,
     normalized: normalizeLongTaskSupportText(rendered),
-  }));
+  })).filter((anchor) => Boolean(anchor.normalized));
 }
 
 function hasExplicitError(lines: readonly string[]): boolean {
@@ -274,6 +283,12 @@ function classifyLocalProgress(params: {
   return { verified: false, reason: "no_verifiable_progress" };
 }
 
+export const LONGMEMEVAL_V2_UI_EVIDENCE_ADAPTER: LocalSubstitutionEvidenceAdapter = {
+  id: "longmemeval-v2-ui-v1",
+  classifyProgress: classifyLocalProgress,
+  extractAnchors: extractSafeUiAnchors,
+};
+
 function boundedActionIndexes(length: number, limit: number): number[] {
   if (length <= limit) return Array.from({ length }, (_, index) => index);
   const head = Math.ceil(limit / 2);
@@ -297,8 +312,10 @@ function validateConfig(config: LocalSubstitutionConfig): void {
 export function buildLocalProcedureIndex(params: {
   trajectories: LongTaskTrajectory[];
   config: LocalSubstitutionConfig;
+  evidenceAdapter?: LocalSubstitutionEvidenceAdapter;
 }): LocalProcedureIndexResult {
   validateConfig(params.config);
+  const evidenceAdapter = params.evidenceAdapter ?? LONGMEMEVAL_V2_UI_EVIDENCE_ADAPTER;
   const trajectories = [...params.trajectories].sort((left, right) => left.id.localeCompare(right.id));
   if (trajectories.length > params.config.maxProcedureUnits) {
     throw new Error(`local procedure index exceeded maxProcedureUnits=${params.config.maxProcedureUnits}`);
@@ -310,7 +327,7 @@ export function buildLocalProcedureIndex(params: {
       const action = trajectory.states[postIndex].transitionAction?.trim();
       if (!action) continue;
       const abstracted = abstractAction(action, trajectory.states[postIndex - 1]);
-      const progress = classifyLocalProgress({
+      const progress = evidenceAdapter.classifyProgress({
         action,
         pre: trajectory.states[postIndex - 1],
         post: trajectory.states[postIndex],
@@ -470,7 +487,7 @@ function exactBaseline(params: {
 function capsuleText(params: {
   record: LocalProcedureRecord;
   arm: LocalSubstitutionArm;
-  anchors: SafeAnchor[];
+  anchors: EvidenceAnchor[];
   actionLines: string[];
 }): string {
   return [
@@ -493,12 +510,13 @@ function planCandidate(params: {
   arm: LocalSubstitutionArm;
   feedbackTable?: LocalProgressTable;
   config: LocalSubstitutionConfig;
+  evidenceAdapter: LocalSubstitutionEvidenceAdapter;
 }): CandidatePlan | LocalSubstitutionDecisionReason {
   const removed = params.baseline.items.filter((item) => item.sessionId === params.record.trajectoryId);
   if (removed.length === 0) return "no_same_trajectory_candidate";
-  const anchorsByNormalized = new Map<string, SafeAnchor>();
+  const anchorsByNormalized = new Map<string, EvidenceAnchor>();
   for (const item of removed) {
-    for (const anchor of safeAnchors(item.content)) {
+    for (const anchor of evidenceAnchors(item.content, params.evidenceAdapter)) {
       if (!anchorsByNormalized.has(anchor.normalized)) anchorsByNormalized.set(anchor.normalized, anchor);
     }
   }
@@ -585,8 +603,10 @@ export function selectLocalSubstitutionContext(params: {
   forceCorrupt?: boolean;
   forceBudgetOverflow?: boolean;
   forceAnchorFailure?: boolean;
+  evidenceAdapter?: LocalSubstitutionEvidenceAdapter;
 }): LocalSubstitutionSelectionResult {
   validateConfig(params.config);
+  const evidenceAdapter = params.evidenceAdapter ?? LONGMEMEVAL_V2_UI_EVIDENCE_ADAPTER;
   const fallback = (reason: LocalSubstitutionFallbackReason) => exactBaseline({
     baseline: params.baseline,
     arm: params.arm,
@@ -631,6 +651,7 @@ export function selectLocalSubstitutionContext(params: {
     arm: params.arm,
     feedbackTable: params.feedbackTable,
     config: params.config,
+    evidenceAdapter,
   }));
   const plans = planned.filter((value): value is CandidatePlan => typeof value !== "string");
   if (plans.length === 0) {

@@ -101,6 +101,7 @@
     "updateRule": "Latest valid event for a procedure/action pair replaces the prior event. Unknown ids, invalid indexes or confidence, overflow, corruption, or timeout make the sidecar unavailable and force exact Base.",
     "verifiedArm": "Rank same-trajectory procedure candidates by Wilson lower bound of verified-step rate, then verified-step count, FTS rank, and id. Deliver only locally verified abstract actions plus preserved safe anchors.",
     "agnosticAblation": "Use the identical candidate pool, replacement rule, anchors, certificates, and bounds, but retain every bounded abstract action and preserve FTS order; do not use local feedback for ranking or action curation.",
+    "portabilityAdapter": "The selector consumes a dataset-neutral LocalSubstitutionEvidenceAdapter with classifyProgress(pre, action, post) and extractAnchors(memoryText). This public experiment instantiates the frozen LongMemEval-V2 UI adapter; an internal programming adapter may substitute test-status, diagnostic, repository-diff, file, symbol, and constraint signals without changing selection, certificates, bounds, or fallback logic.",
     "evolutionBoundary": "Only the bounded step-feedback table, same-trajectory procedure ranking, and capsule contents evolve. FTS5, embeddings, raw indexing, question labels, and answer generation remain unchanged."
   },
   "forbiddenRuntimeInputs": [

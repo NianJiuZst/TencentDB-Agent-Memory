@@ -136,6 +136,42 @@ describe("LongMemEval-V2 locally verified procedure substitution", () => {
     ]);
   });
 
+  it("accepts a dataset-neutral programming progress and evidence adapter", () => {
+    const evidenceAdapter = {
+      id: "programming-smoke-v1",
+      classifyProgress: () => ({ verified: true as const, reason: "new_safe_anchor" as const }),
+      extractAnchors: (content: string) => content.includes("compileProject")
+        ? ["symbol \"compileProject\""] : [],
+    };
+    const built = buildLocalProcedureIndex({
+      trajectories: [trajectory({ id: "programming", firstProgress: false, secondProgress: false })],
+      config,
+      evidenceAdapter,
+    });
+    const feedback = buildLocalProgressTable({
+      events: buildLocalProgressEvents(built.records),
+      capacity: 8,
+      knownActionCounts: new Map([[built.records[0].id, built.records[0].totalActions]]),
+    });
+    const raw = retrieved({
+      id: "raw:programming",
+      sessionId: "programming",
+      content: "changed symbol compileProject",
+    });
+    const selected = selectLocalSubstitutionContext({
+      baseline: { items: [raw], injectedTokens: raw.tokenCount, tokenViolation: false },
+      procedureCandidates: [retrieved({ id: built.records[0].id, sessionId: "programming", tokenCount: 20 })],
+      procedureRecords: recordMap(built.records),
+      feedbackTable: feedback,
+      config,
+      arm: "locally_verified",
+      evidenceAdapter,
+    });
+    expect(built.locallyVerifiedActions).toBe(2);
+    expect(selected.safeAnchors).toEqual(["symbol \"compileProject\""]);
+    expect(selected.items[0].content).toContain("symbol \"compileProject\"");
+  });
+
   it("uses latest bounded step feedback and fails the whole table closed", () => {
     const built = buildLocalProcedureIndex({
       trajectories: [trajectory({ id: "one", firstProgress: true, secondProgress: true })],
