@@ -26,8 +26,8 @@
     },
     "consumedDesignDecision": {
       "artifact": "results/d12-trajectory-expansion/design-decision.v1.json",
-      "selectedDiagnostic": "results/d12-trajectory-expansion/design-diagnostic.v5.json",
-      "selectedDiagnosticSha256": "f6e44a8c8bbe695dfa80df15498df950b3362982c9110b43789ccbea84904a66",
+      "selectedDiagnostic": "results/d12-trajectory-expansion/design-diagnostic-summary.v1.json",
+      "selectedDiagnosticSha256": "e02cd9376547a206e119bac4921cc2d86aed7f4d5eb7059dbc83003a16a6fe62",
       "boundary": "The selected policy used only previously consumed procedure questions. Its one-case gain is a design signal and cannot confirm D12."
     }
   },

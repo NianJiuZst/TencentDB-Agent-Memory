@@ -1,0 +1,136 @@
+{
+  "diagnosticVersion": "lifecycle-longmemeval-v2-trajectory-expansion-design-summary-v1.0",
+  "status": "consumed_design_only",
+  "evidenceBoundary": "All 106 procedure questions and their D11 outcomes were consumed before this search. Candidate identities came from frozen D11 Top-40 artifacts and contents were deterministically rebuilt from the same public snapshot. No static-environment D12 development, validation, or test score was read.",
+  "sourceProtocolVersion": "lifecycle-longmemeval-v2-source-evidence-substitution-v1.0",
+  "inputArtifacts": [
+    {
+      "path": "results/d11-source-evidence/consumed-audit/cases.jsonl",
+      "sha256": "02004a9c04798b106949271952121e9c0673986a823dbe095126c9dcb8eea3d6"
+    },
+    {
+      "path": "results/d11-source-evidence/test/cases.jsonl",
+      "sha256": "d1b6f6546ae7050920ed39df8fb5b2bbfdb308430e5846d0a08adb5011bc1cce"
+    }
+  ],
+  "population": {
+    "questions": 106,
+    "directProxyQuestions": 39,
+    "answerOnlyQuestions": 67
+  },
+  "sharedBounds": {
+    "maxProcedureUnits": 200,
+    "maxActionsPerProcedure": 64,
+    "maxSafeAnchors": 128,
+    "maxD11CapsuleCharacters": 12000,
+    "procedureCandidateLimit": 20,
+    "maxBaseEvidenceSpans": 256,
+    "maxBaseEvidenceSpanCharacters": 1024,
+    "maxBaseEvidenceCharacters": 12000,
+    "rawCandidateLimit": 40,
+    "maxExternalCandidatesInjected": 1,
+    "maxExpansionCapsuleCharacters": 18000,
+    "maxExternalEvidenceSpans": 128,
+    "maxExternalEvidenceSpanCharacters": 1024,
+    "maxExternalEvidenceCharacters": 6000
+  },
+  "iterations": [
+    {
+      "id": "first-ranked-strict-base",
+      "rule": "Use the first same-trajectory non-Base candidate; ordinary ineligibility returns Base.",
+      "locallyVerified": {
+        "useRate": 0.24528301886792453,
+        "answerAtomSupportRecallDeltaVsBase": 0.01282051282051282,
+        "answerAtomSupportRecallDeltaVsD11": -0.034188034188034185,
+        "improvedVsBase": 1,
+        "harmedVsBase": 0,
+        "improvedVsD11": 0,
+        "harmedVsD11": 2,
+        "meanInjectedTokens": 2557.867924528302,
+        "selectedExternalAnswerGainCases": 0
+      },
+      "decision": "reject"
+    },
+    {
+      "id": "first-novel-strict-base",
+      "rule": "Skip semantic duplicates and use the first novel candidate; ordinary ineligibility returns Base.",
+      "locallyVerified": {
+        "useRate": 0.4716981132075472,
+        "answerAtomSupportRecallDeltaVsBase": 0.021367521367521364,
+        "answerAtomSupportRecallDeltaVsD11": -0.02564102564102564,
+        "improvedVsBase": 2,
+        "harmedVsBase": 0,
+        "improvedVsD11": 0,
+        "harmedVsD11": 1,
+        "meanInjectedTokens": 2308.264150943396,
+        "selectedExternalAnswerGainCases": 0
+      },
+      "decision": "reject"
+    },
+    {
+      "id": "first-novel-layered",
+      "rule": "Use the first novel candidate; ordinary external ineligibility retains D11 and operational failure returns Base.",
+      "locallyVerified": {
+        "useRate": 0.4716981132075472,
+        "answerAtomSupportRecallDeltaVsBase": 0.04700854700854701,
+        "answerAtomSupportRecallDeltaVsD11": 0,
+        "improvedVsBase": 3,
+        "harmedVsBase": 0,
+        "improvedVsD11": 0,
+        "harmedVsD11": 0,
+        "meanInjectedTokens": 2228.9245283018868,
+        "selectedExternalAnswerGainCases": 0
+      },
+      "decision": "retain_as_ablation"
+    },
+    {
+      "id": "max-novel-spans-layered",
+      "rule": "Select one candidate by descending novel span count, ascending novel characters, ascending FTS rank, and stable id; retain D11 on ordinary ineligibility.",
+      "locallyVerified": {
+        "useRate": 0.4716981132075472,
+        "baseAnswerAtomSupportRecall": 0.16666666666666669,
+        "d11AnswerAtomSupportRecall": 0.2136752136752137,
+        "d12AnswerAtomSupportRecall": 0.2200854700854701,
+        "answerAtomSupportRecallDeltaVsBase": 0.05341880341880341,
+        "answerAtomSupportRecallDeltaVsD11": 0.00641025641025641,
+        "improvedVsBase": 4,
+        "equalVsBase": 35,
+        "harmedVsBase": 0,
+        "improvedVsD11": 1,
+        "equalVsD11": 38,
+        "harmedVsD11": 0,
+        "meanBaseInjectedTokens": 2785.264150943396,
+        "meanD11InjectedTokens": 2163.122641509434,
+        "meanD12InjectedTokens": 2257.6603773584907,
+        "meanTokenFractionVsBase": -0.18942683529897908,
+        "meanTokenFractionVsD11": 0.0437042884369645,
+        "selectedExternalAnswerGainCases": 1,
+        "anyExternalAnswerHeadroomCasesVsD11": 1
+      },
+      "stepAgnostic": {
+        "d12AnswerAtomSupportRecall": 0.2200854700854701,
+        "meanD12InjectedTokens": 2284
+      },
+      "decision": "select_for_fresh_static_evaluation"
+    }
+  ],
+  "selectedHeadroomCase": {
+    "questionId": "a59d50f7",
+    "arm": "locally_verified",
+    "baseAnswerAtomSupportRecall": 0,
+    "d11AnswerAtomSupportRecall": 0,
+    "d12AnswerAtomSupportRecall": 0.25,
+    "baseInjectedTokens": 2729,
+    "d11InjectedTokens": 2383,
+    "d12InjectedTokens": 2634,
+    "externalCandidateId": "lmev2:raw:53f7b75e:7:2",
+    "externalCandidateRankZeroBased": 27,
+    "novelExternalEvidenceSpans": 22,
+    "newAnswerAtomsVsD11": 1
+  },
+  "reproduction": {
+    "cli": "src/longmemeval-v2-trajectory-expansion-design-cli.ts",
+    "fullRowsCommitted": false,
+    "reason": "The 212 arm-level rows and per-candidate diagnostics are deterministic but exceed 60000 review lines; the CLI regenerates them from the two hash-locked D11 inputs."
+  }
+}
