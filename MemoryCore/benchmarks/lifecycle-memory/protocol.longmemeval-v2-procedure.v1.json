@@ -1,0 +1,187 @@
+{
+  "protocolVersion": "lifecycle-longmemeval-v2-procedure-v1.0",
+  "direction": "D9 outcome-gated binding-safe procedure memory",
+  "evidenceRole": "Fresh method validation on the 106 text-only LongMemEval-V2 procedure questions. D7 and D8 used only dynamic-environment questions. The D9 split was frozen before any D9 answer-support score was materialized.",
+  "preScoreCommitRequired": true,
+  "researchBasis": {
+    "qcr": {
+      "paper": "https://arxiv.org/abs/2608.12847",
+      "borrowedPrinciple": "Keep retrieval and the reader fixed while replacing a selected successful source trajectory with a target-bound workflow invariant, runtime bindings, applicability conditions, and a verification guard.",
+      "scopeDifference": "D9 uses deterministic action abstraction, a shared candidate pool, and explicit success/failure feedback. It does not use QCR's learned note writer or a gold selected source trajectory."
+    },
+    "awm": {
+      "paper": "https://arxiv.org/abs/2409.07429",
+      "repository": "https://github.com/zorazrw/agent-workflow-memory",
+      "revisionInspected": "8c0ff8cd11d648c8fceb99e4e42f37e3b75381b1",
+      "borrowedPrinciple": "Abstract reusable workflows from successful trajectories while removing concrete variable bindings."
+    },
+    "longmemevalV2": {
+      "repository": "https://github.com/xiaowu0162/LongMemEval-V2",
+      "revisionInspected": "2cc8c540bdb87fe6761629b585e727e1c4704520",
+      "borrowedPrinciple": "Evaluate procedural memory on shared enterprise and web trajectory haystacks and keep abstention evidence separate."
+    },
+    "experienceFaithfulness": {
+      "paper": "https://arxiv.org/abs/2601.22436",
+      "borrowedWarning": "Condensed experience can be ignored or misread, so direct support is only an admission gate and answer-level evaluation is required for a task-accuracy claim."
+    }
+  },
+  "dataset": {
+    "name": "LongMemEval-V2",
+    "benchmarkRepositoryRevision": "2cc8c540bdb87fe6761629b585e727e1c4704520",
+    "tier": "small",
+    "manifestSha256": "70a2be47e7117ef8f2ee77aa499c6126358b5f9ffa28a848b5c565a4ec8fc99a",
+    "questionsSha256": "0a3ae5ebea938c24d7800e1e0b0828e08ae1646f939a53853b2b8cdc08e292b7",
+    "haystackSha256": "9b5301defb23a088a5f06e45ff8d5f35e569d78305a66d492046a9fff9b46593",
+    "trajectoriesSha256": "363cec9a8e87aa8d9101ce4e600aadbf7031d674056ebe4f969e8424abc5f3c6",
+    "questions": 451,
+    "trajectoryRows": 1870,
+    "selectedTrajectories": 200,
+    "selectedTrajectoryOutcomes": {
+      "enterprise": { "success": 50, "failure": 50 },
+      "web": { "success": 50, "failure": 50 }
+    }
+  },
+  "population": {
+    "questionTypes": ["procedure", "procedure-abs"],
+    "modality": "text-only",
+    "questions": 106,
+    "directProxyQuestions": 39,
+    "directProxyEvaluatorFamilies": ["norm_phrase_set_match", "norm_phrase_set_match_ordered"],
+    "answerLevelOnlyQuestions": 67,
+    "answerLevelOnlyEvaluatorFamilies": ["mc_choice_match", "llm_abstention_checker"]
+  },
+  "split": {
+    "protocolVersion": "lifecycle-longmemeval-v2-procedure-question-split-v1.0",
+    "fileSha256": "b01ae3b326026e637bd43e1f1bcf420bdf26c8885713584b5de868c78ea00ac8",
+    "canonicalSha256": "80b61a909c9788f38d443169ee9cb7c7a60777ca7024c993c1dcf4417ce24417",
+    "developmentQuestions": 51,
+    "validationQuestions": 25,
+    "testQuestions": 30,
+    "developmentDirectProxyQuestions": 18,
+    "validationDirectProxyQuestions": 9,
+    "testDirectProxyQuestions": 12,
+    "testReadRule": "No D9 test baseline or candidate may be materialized before one development-selected policy passes the frozen validation gate and a committed admission artifact exists."
+  },
+  "baseline": {
+    "engine": "MemoryCore SQLite L0 FTS5 through executeConversationSearch",
+    "embedding": "disabled",
+    "memoryForm": "bounded raw accessibility-tree character windows",
+    "rawChunkMaxCharacters": 3200,
+    "rawChunkOverlapCharacters": 320,
+    "maxRawChunksPerState": 128,
+    "candidateLimit": 40,
+    "resultLimit": 6,
+    "injectionTokenBudget": 3072,
+    "tokenizer": "cl100k_base",
+    "queryTransform": "Remove final-answer formatting instructions only; retain the substantive question and options."
+  },
+  "procedureMemory": {
+    "index": "A separate bounded MemoryCore SQLite L0 FTS5 index over all 200 selected trajectories; no FTS5 or embedding implementation is changed.",
+    "indexPayload": "Source goal plus the deterministic abstract action skeleton, used only for candidate retrieval.",
+    "deliveryPayload": "Source goal, URLs, node ids, screenshots, thoughts, and concrete action values are excluded. Preserve ordered action names and safe accessibility labels, mark values for runtime rebinding, include the total source action count, and add applicability and verification guards.",
+    "maxProcedureUnits": 200,
+    "maxActionsPerProcedure": 64,
+    "maxDeliveryCharacters": 4000,
+    "candidateLimits": [10, 20],
+    "tokenFractions": [0.25, 0.5],
+    "maxProcedureItems": [1, 2],
+    "policies": 8,
+    "trajectoryCoherence": "A procedure candidate is eligible only when at least one raw candidate in the fixed baseline top-40 comes from the same source trajectory.",
+    "packing": "Place eligible procedure payloads first, then preserve the unchanged raw candidate order under the shared six-item and 3072-token limits.",
+    "costCertificate": "Accept a changed context only when its injected tokens are no greater than the exact per-question baseline; otherwise return exact baseline.",
+    "nullAction": "If no candidate is eligible or packable, return exact baseline."
+  },
+  "feedbackSidecar": {
+    "event": "One bounded ProcedureOutcomeEvent per completed trajectory: procedure id, success or failure, confidence, provenance, and observed timestamp.",
+    "publicSignal": "Use the official trajectory outcome as confidence-1 feedback. Neither question labels nor retrieval scores update the table.",
+    "capacity": 200,
+    "updateRule": "Latest valid event for a procedure id replaces its prior event. Success admits the procedure; failure declines it. Unknown ids, invalid confidence, overflow, corruption, or timeout make the sidecar unavailable and force exact baseline.",
+    "outcomeAgnosticAblation": "Use the same index, candidates, policy, abstraction, packing, and cost certificate but ignore the success/failure gate.",
+    "evolutionBoundary": "Only procedure admission and the eight bounded retrieval-budget policies evolve. FTS5, embeddings, raw-state indexing, labels, and answer generation remain unchanged."
+  },
+  "forbiddenRuntimeInputs": [
+    "reference answer",
+    "evaluator family",
+    "question id rules or allowlists",
+    "development, validation, or test phase labels",
+    "question outcome",
+    "gold trajectory or state attribution"
+  ],
+  "selfOptimization": {
+    "developmentObjectiveOrder": [
+      "maximize outcome-gated mean answer-atom support recall",
+      "maximize outcome-gated ordered-sequence-supported rate",
+      "maximize outcome-gated all-answer-atoms-supported rate",
+      "maximize outcome-gated direct-proxy improvement count over the outcome-agnostic ablation",
+      "minimize outcome-gated mean injected tokens",
+      "minimize p95 sidecar selection latency",
+      "lexicographically smallest policy id"
+    ],
+    "selectionRule": "Select exactly one policy on development. Validation can accept or reject it but cannot choose another policy. Test can be read once only after validation admission.",
+    "failureRule": "A failed validation gate rejects D9. Retuning after validation requires a new direction and cannot reuse the D9 test as confirmation."
+  },
+  "directMetric": {
+    "primary": "answerAtomSupportRecall",
+    "definition": "Split official phrase-set answers with their declared separators and apply lower-case, hyphen, punctuation, and whitespace normalization. An atom is supported only when it occurs in a delivered memory unit. English action counts must occur in the explicit procedure action-count field; numbered list markers are forbidden.",
+    "orderedSecondary": "For ordered phrase questions, all normalized atoms must occur in order within one delivered memory unit.",
+    "scopeWarning": "This is representation-level answer-support evidence, not task accuracy or gold trajectory recall. Occurrence can be coincidental, absence can still permit inference, and the public data has no question-to-source attribution."
+  },
+  "aggregation": {
+    "primaryUnit": "question",
+    "sharedHaystackSensitivity": "Report enterprise and web separately because each domain shares one haystack.",
+    "bootstrap": "paired stratified question bootstrap by domain",
+    "bootstrapSamples": 20000,
+    "bootstrapSeed": 20260909
+  },
+  "validationGate": {
+    "minAnswerAtomSupportRecallDeltaVsBaseline": 0.02,
+    "minAnswerAtomSupportRecallBootstrapLowerVsBaseline": 0.0,
+    "minImprovedDirectProxyCasesVsBaseline": 1,
+    "maxHarmedDirectProxyCasesVsBaseline": 0,
+    "minOrderedSequenceSupportedRateDeltaVsBaseline": 0.0,
+    "minChangedContextsVsOutcomeAgnostic": 1,
+    "minImprovedDirectProxyCasesVsOutcomeAgnostic": 1,
+    "maxHarmedDirectProxyCasesVsOutcomeAgnostic": 0,
+    "minAnswerAtomSupportRecallDeltaVsOutcomeAgnostic": 0.0,
+    "maxMeanInjectedTokenIncreaseFraction": 0.0,
+    "maxPerQueryTokenViolations": 0,
+    "maxOrdinaryFallbacks": 0,
+    "maxP95SelectionLatencyMs": 5,
+    "requireExactForcedFallbacks": true,
+    "requireIndependentValidation": true
+  },
+  "testGate": {
+    "requireCommittedValidationAdmissionBeforeRead": true,
+    "minAnswerAtomSupportRecallDeltaVsBaseline": 0.0,
+    "minAnswerAtomSupportRecallBootstrapLowerVsBaseline": 0.0,
+    "minImprovedDirectProxyCasesVsBaseline": 1,
+    "maxHarmedDirectProxyCasesVsBaseline": 0,
+    "minOrderedSequenceSupportedRateDeltaVsBaseline": 0.0,
+    "minChangedContextsVsOutcomeAgnostic": 1,
+    "minImprovedDirectProxyCasesVsOutcomeAgnostic": 1,
+    "maxHarmedDirectProxyCasesVsOutcomeAgnostic": 0,
+    "minAnswerAtomSupportRecallDeltaVsOutcomeAgnostic": 0.0,
+    "maxMeanInjectedTokenIncreaseFraction": 0.0,
+    "maxPerQueryTokenViolations": 0,
+    "maxOrdinaryFallbacks": 0,
+    "maxP95SelectionLatencyMs": 5,
+    "requireExactForcedFallbacks": true
+  },
+  "answerLevelGate": {
+    "runOnlyAfterDirectTestGatePasses": true,
+    "deterministicEvaluators": ["norm_phrase_set_match", "norm_phrase_set_match_ordered", "mc_choice_match"],
+    "abstentionReaders": ["MiniMax M3", "DeepSeek V4Flash"],
+    "noOpenRouter": true,
+    "claimBoundary": "Direct support only admits an answer experiment; it does not establish task accuracy. Both requested providers must complete before any dual-reader conclusion is reported."
+  },
+  "fallback": {
+    "disabled": "exact baseline context",
+    "missingProcedureIndex": "exact baseline context",
+    "missingFeedbackTable": "exact baseline context",
+    "feedbackTableOverflow": "exact baseline context",
+    "timeout": "exact baseline context",
+    "corruptProcedureOrFeedback": "exact baseline context",
+    "budgetOverflow": "exact baseline context",
+    "costCertificateFailure": "exact baseline context"
+  }
+}
