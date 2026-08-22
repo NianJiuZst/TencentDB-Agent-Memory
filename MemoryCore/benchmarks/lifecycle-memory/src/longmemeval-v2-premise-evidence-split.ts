@@ -110,7 +110,9 @@ export function buildLongMemEvalV2PremiseEvidenceSplit(params: {
   if (questionById.size !== params.questions.length) {
     throw new Error("LongMemEval-V2 premise-evidence input contains duplicate question ids");
   }
-  const smokeIds = new Set(LONGMEMEVAL_V2_PREMISE_EVIDENCE_SMOKE.map((item) => item.id));
+  const smokeIds = new Set<string>(
+    LONGMEMEVAL_V2_PREMISE_EVIDENCE_SMOKE.map((item) => item.id),
+  );
   for (const smoke of LONGMEMEVAL_V2_PREMISE_EVIDENCE_SMOKE) {
     const question = questionById.get(smoke.id);
     if (!question || question.memoryAbility !== smoke.memoryAbility || question.domain !== smoke.domain
