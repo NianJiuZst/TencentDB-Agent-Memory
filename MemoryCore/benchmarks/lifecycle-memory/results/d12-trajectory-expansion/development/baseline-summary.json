@@ -1,0 +1,65 @@
+{
+  "protocolVersion": "lifecycle-longmemeval-v2-trajectory-expansion-v1.0",
+  "mode": "base",
+  "phase": "development",
+  "status": "completed",
+  "preScoreCommit": "4a74191",
+  "authorizationSha256": null,
+  "dataset": {
+    "name": "LongMemEval-V2",
+    "revision": "2cc8c540bdb87fe6761629b585e727e1c4704520",
+    "tier": "small",
+    "manifestSha256": "70a2be47e7117ef8f2ee77aa499c6126358b5f9ffa28a848b5c565a4ec8fc99a"
+  },
+  "splitCanonicalSha256": "00e6807d69871f6f4bed5ba58ecdd95fb07bfcdd0c484e2cc43c1af4e7af1b8b",
+  "cases": 66,
+  "directProxyCases": 60,
+  "answerOnlyCases": 6,
+  "orderedProxyCases": 2,
+  "metrics": {
+    "answerAtomSupportRecall": 0.29583333333333334,
+    "anyAnswerAtomSupportedRate": 0.31666666666666665,
+    "allAnswerAtomsSupportedRate": 0.26666666666666666,
+    "orderedSequenceSupportedRate": 0,
+    "meanInjectedTokens": 2828.621212121212,
+    "meanInjectedItems": 3.0757575757575757,
+    "queryLatencyP50Ms": 31.41529100004118,
+    "queryLatencyP95Ms": 59.337582999956794,
+    "tokenViolations": 0,
+    "fallbacks": 0
+  },
+  "byDomain": {
+    "enterprise": {
+      "cases": 37,
+      "directProxyCases": 37,
+      "answerAtomSupportRecall": 0.3716216216216216,
+      "orderedSequenceSupportedRate": 0,
+      "meanInjectedTokens": 2810
+    },
+    "web": {
+      "cases": 29,
+      "directProxyCases": 23,
+      "answerAtomSupportRecall": 0.17391304347826086,
+      "orderedSequenceSupportedRate": 0,
+      "meanInjectedTokens": 2852.3793103448274
+    }
+  },
+  "index": {
+    "enterprise": {
+      "trajectories": 100,
+      "states": 3358,
+      "units": 28903,
+      "truncatedStates": 0,
+      "buildLatencyMs": 311562.28766699997
+    },
+    "web": {
+      "trajectories": 100,
+      "states": 1737,
+      "units": 23532,
+      "truncatedStates": 0,
+      "buildLatencyMs": 157963.807708
+    }
+  },
+  "casesSha256": "5f78dc67bf8e331f17076358400aada51eea6eb9983d37c5f3343450e707ca28",
+  "laterPhaseState": "unread"
+}
