@@ -1,0 +1,65 @@
+{
+  "protocolVersion": "lifecycle-longmemeval-v2-residual-feedback-patch-v1.0",
+  "mode": "base",
+  "phase": "development",
+  "status": "completed",
+  "preScoreCommit": "00a02b905da9e2c879d629b7c23e3282b1fb2a67",
+  "authorizationSha256": null,
+  "dataset": {
+    "name": "LongMemEval-V2",
+    "revision": "2cc8c540bdb87fe6761629b585e727e1c4704520",
+    "tier": "small",
+    "manifestSha256": "70a2be47e7117ef8f2ee77aa499c6126358b5f9ffa28a848b5c565a4ec8fc99a"
+  },
+  "splitCanonicalSha256": "cf7818a0c83dc1cd6ed94bb31a9f403f73f9d3762f9f36ba7c1f1a5db60bbec6",
+  "cases": 25,
+  "directProxyCases": 23,
+  "answerOnlyCases": 2,
+  "orderedProxyCases": 1,
+  "metrics": {
+    "answerAtomSupportRecall": 0.2536231884057971,
+    "anyAnswerAtomSupportedRate": 0.391304347826087,
+    "allAnswerAtomsSupportedRate": 0.17391304347826086,
+    "orderedSequenceSupportedRate": 0,
+    "meanInjectedTokens": 2740.6,
+    "meanInjectedItems": 2.88,
+    "queryLatencyP50Ms": 26.92008299997542,
+    "queryLatencyP95Ms": 47.2134579999838,
+    "tokenViolations": 0,
+    "fallbacks": 0
+  },
+  "byDomain": {
+    "enterprise": {
+      "cases": 14,
+      "directProxyCases": 14,
+      "answerAtomSupportRecall": 0.26785714285714285,
+      "orderedSequenceSupportedRate": 0,
+      "meanInjectedTokens": 2724.1428571428573
+    },
+    "web": {
+      "cases": 11,
+      "directProxyCases": 9,
+      "answerAtomSupportRecall": 0.23148148148148145,
+      "orderedSequenceSupportedRate": 0,
+      "meanInjectedTokens": 2761.5454545454545
+    }
+  },
+  "index": {
+    "enterprise": {
+      "trajectories": 100,
+      "states": 3358,
+      "units": 28903,
+      "truncatedStates": 0,
+      "buildLatencyMs": 321961.380709
+    },
+    "web": {
+      "trajectories": 100,
+      "states": 1737,
+      "units": 23532,
+      "truncatedStates": 0,
+      "buildLatencyMs": 158601.468542
+    }
+  },
+  "casesSha256": "2a10d1e6ccdeb7609763d8ff0c3e9ddf478bc954f3c33ce90a59623d933e0d61",
+  "laterPhaseState": "unread"
+}
