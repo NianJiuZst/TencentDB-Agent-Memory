@@ -1,0 +1,47 @@
+{
+  "validationVersion": "lifecycle-longmemeval-v2-residual-feedback-patch-independent-validation-v1.0",
+  "sourceProtocolVersion": "lifecycle-longmemeval-v2-residual-feedback-patch-v1.0",
+  "phase": "development",
+  "sourceStatus": "development_failed",
+  "sourceGatePassed": false,
+  "artifactSha256": {
+    "baselineCases": "2a10d1e6ccdeb7609763d8ff0c3e9ddf478bc954f3c33ce90a59623d933e0d61",
+    "baselineSummary": "bc739aeace2fd402f4765ca231e658180738483a4b1338487330ee8ef76d4a34",
+    "cases": "f4f628eb5e4b1774bcbe600927484de01a8e3d55e7b4bfd0f499c27dcc93f85d",
+    "summary": "eb97f313b16df3fa068ed547a7e6714dc3be54d0c1810a4f1cc1c348bdb2f493"
+  },
+  "counts": {
+    "baselineRows": 25,
+    "candidateRows": 50,
+    "questions": 25,
+    "directProxyQuestions": 23
+  },
+  "mismatches": {
+    "artifactIdentity": 0,
+    "coverage": 0,
+    "rowProtocol": 0,
+    "baselineReplay": 0,
+    "baselineSummaryRecomputation": 0,
+    "arithmetic": 0,
+    "selectionStructure": 0,
+    "certificate": 0,
+    "forcedFallback": 0,
+    "summaryRecomputation": 0,
+    "gateRecomputation": 0
+  },
+  "checks": {
+    "allArtifactIdentitiesMatch": true,
+    "exactQuestionAndArmCoverage": true,
+    "allRowsUseFrozenProtocol": true,
+    "allBaselineFieldsReplay": true,
+    "baselineSummaryRecomputedExactly": true,
+    "allArithmeticMatches": true,
+    "allSelectionStructuresMatch": true,
+    "zeroCertificateViolations": true,
+    "exactForcedFallbacks": true,
+    "summaryRecomputedExactly": true,
+    "gateRecomputedExactly": true
+  },
+  "validationPassed": true,
+  "admissionEligible": false
+}

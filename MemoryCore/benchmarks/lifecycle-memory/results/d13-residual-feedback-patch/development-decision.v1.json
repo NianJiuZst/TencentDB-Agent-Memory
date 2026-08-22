@@ -1,0 +1,54 @@
+{
+  "decisionVersion": "lifecycle-longmemeval-v2-residual-feedback-patch-development-decision-v1.0",
+  "protocolVersion": "lifecycle-longmemeval-v2-residual-feedback-patch-v1.0",
+  "phase": "development",
+  "status": "rejected_at_development",
+  "decision": "do_not_read_validation_or_test_and_do_not_run_answer_level_panel",
+  "candidatePolicyId": "residual-patch-local-maxnovel-pt48-ps4-pc20-rc40",
+  "preScoreCommit": "00a02b905da9e2c879d629b7c23e3282b1fb2a67",
+  "artifactSha256": {
+    "baselineCases": "2a10d1e6ccdeb7609763d8ff0c3e9ddf478bc954f3c33ce90a59623d933e0d61",
+    "baselineSummary": "bc739aeace2fd402f4765ca231e658180738483a4b1338487330ee8ef76d4a34",
+    "candidateCases": "f4f628eb5e4b1774bcbe600927484de01a8e3d55e7b4bfd0f499c27dcc93f85d",
+    "candidateSummary": "eb97f313b16df3fa068ed547a7e6714dc3be54d0c1810a4f1cc1c348bdb2f493",
+    "independentValidation": "c5cbba1c5f5d0806dbe2702e173c2d8c280d667460a53394a9a51dd2e32d019a"
+  },
+  "developmentEvidence": {
+    "questions": 25,
+    "directProxyQuestions": 23,
+    "baseAnswerAtomSupportRecall": 0.2536231884057971,
+    "candidateAnswerAtomSupportRecall": 0.2536231884057971,
+    "answerAtomSupportRecallDelta": 0,
+    "directOutcomesVsBase": { "improved": 0, "equal": 23, "harmed": 0 },
+    "pairedStratifiedBootstrap": { "lower": 0, "mean": 0, "upper": 0 },
+    "patchUseRate": 0.6,
+    "meanPatchTokensWhenUsed": 45,
+    "meanInjectedTokenIncreaseFractionVsBase": 0.00985185725753479,
+    "selectionLatencyP95Ms": 9.122875000000931,
+    "certificateViolations": 0,
+    "ordinaryFallbacks": 0,
+    "forcedFallbackMismatches": 0,
+    "feedbackAblation": {
+      "changedContexts": 2,
+      "answerAtomSupportRecallDelta": 0,
+      "outcomes": { "improved": 0, "equal": 23, "harmed": 0 },
+      "meanInjectedTokenDelta": -0.24
+    }
+  },
+  "failedGateChecks": ["improvedDirectProxyCasesVsBase"],
+  "independentValidation": {
+    "validationPassed": true,
+    "allMismatchCountsZero": true,
+    "sourceGatePassed": false,
+    "admissionEligible": false
+  },
+  "interpretation": "The sidecar is bounded, auditable, inexpensive, and failure-safe, but on fresh development questions it appended evidence without making any reference answer atom newly reachable. The Base-prefix construction prevented proxy harm, yet monotonic safety alone did not create utility. D13 therefore provides no answer-quality evidence and cannot advance.",
+  "nextDiagnostic": "On this now-consumed development split, decompose headroom into Base Top-40 candidate-pool recall, same-trajectory routing recall, span-extraction recall, patch-budget recall, and deterministic ranking regret. Choose a new direction only from that bottleneck analysis; use a new protocol and rerun Base before any confirmation.",
+  "unreadState": {
+    "validation": "unread",
+    "test": "unread",
+    "answerLevelPanel": "not_admitted",
+    "modelCalls": 0
+  },
+  "claimBoundary": "This is a reproducible negative development result on a public long-dialogue proxy. It neither validates nor falsifies effectiveness on internal multi-turn programming sessions."
+}
