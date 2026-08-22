@@ -1,0 +1,81 @@
+{
+  "decisionVersion": "lifecycle-longmemeval-v2-trajectory-expansion-development-decision-v1.0",
+  "status": "rejected_on_development",
+  "direction": "D12 trajectory-coherent external evidence expansion",
+  "protocolVersion": "lifecycle-longmemeval-v2-trajectory-expansion-v1.0",
+  "preScoreCommit": "4a74191",
+  "evidenceBoundary": {
+    "phaseRead": "development",
+    "questions": 66,
+    "directProxyQuestions": 60,
+    "validationState": "unread",
+    "testState": "unread",
+    "modelJudgeCalls": 0
+  },
+  "immutableArtifacts": {
+    "baselineCasesSha256": "5f78dc67bf8e331f17076358400aada51eea6eb9983d37c5f3343450e707ca28",
+    "baselineSummarySha256": "f4189c57ffa7cb1c0924fe1a60f8feafd83e9fbb81f3adcbc8898baac17df044",
+    "candidateCasesSha256": "992825f5c895647330c7255fd81be05a88955114512958dd65866bb9d0fb72f6",
+    "candidateSummarySha256": "a1a6638265c7a01163938dc45989d3a115c99c42760d039142d1f0906f90d2a5"
+  },
+  "locallyVerifiedArm": {
+    "answerAtomSupportRecall": 0.2625,
+    "deltaVsBase": -0.03333333333333333,
+    "outcomesVsBase": {
+      "improved": 2,
+      "equal": 53,
+      "harmed": 5
+    },
+    "bootstrap95VsBase": {
+      "lower": -0.10833333333333334,
+      "upper": 0.041666666666666664
+    },
+    "deltaVsD11": 0.03333333333333333,
+    "outcomesVsD11": {
+      "improved": 2,
+      "equal": 58,
+      "harmed": 0
+    },
+    "bootstrap95VsD11": {
+      "lower": 0,
+      "upper": 0.08333333333333333
+    },
+    "meanInjectedTokenFractionVsBase": -0.2720728055750472,
+    "selectionLatencyP95Ms": 3.345541000016965,
+    "certificateViolations": 0,
+    "forcedFallbackMismatches": 0
+  },
+  "causalAblation": {
+    "changedContexts": 52,
+    "answerAtomSupportRecallDeltaVsStepAgnostic": -0.025,
+    "outcomesVsStepAgnostic": {
+      "improved": 0,
+      "equal": 58,
+      "harmed": 2
+    },
+    "meanInjectedTokenDeltaVsStepAgnostic": -28.666666666666668
+  },
+  "domainDiagnostic": {
+    "enterpriseDeltaVsBase": -0.08108108108108109,
+    "webDeltaVsBase": 0.043478260869565216,
+    "interpretation": "The aggregate failure is heterogeneous, but these development labels are diagnostic evidence only and cannot authorize a post-score domain gate under this protocol."
+  },
+  "gate": {
+    "passed": false,
+    "failedChecks": [
+      "answerAtomSupportRecallDeltaVsBase",
+      "harmedDirectProxyCasesVsBase",
+      "bootstrapLowerVsBase",
+      "answerAtomSupportRecallDeltaVsAgnostic",
+      "harmedDirectProxyCasesVsAgnostic"
+    ]
+  },
+  "independentValidation": {
+    "version": "lifecycle-longmemeval-v2-trajectory-expansion-independent-validation-v1.1",
+    "validationPassed": true,
+    "admissionEligible": false,
+    "mismatches": 0,
+    "erratum": "Validator v1.0 incorrectly classified negative but arithmetically consistent outcomes as corruption and compared unordered maps by insertion order. Validator v1.1 changes only evidence checking; it leaves cases, scores, policy, protocol, and gate byte-identical."
+  },
+  "decision": "Stop D12 after development. Do not read validation or test. Preserve the negative result and investigate a new direction under a newly frozen protocol."
+}

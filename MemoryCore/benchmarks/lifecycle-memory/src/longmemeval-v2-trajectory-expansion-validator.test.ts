@@ -240,4 +240,41 @@ describe("D12 independent artifact validator", () => {
     expect(validation.validationPassed).toBe(false);
     expect(validation.mismatches.selectionStructure).toBeGreaterThan(0);
   });
+
+  it("treats a correctly calculated negative outcome as evidence, not arithmetic corruption", () => {
+    const value = fixture();
+    const rows = value.casesText.split("\n").filter(Boolean).map((line) => JSON.parse(line));
+    const row = rows.find((candidate) => candidate.directProxy
+      && candidate.baseAnswerAtomSupportRecall === 1);
+    row.supportedAtomCount = 0;
+    row.answerAtomSupportRecall = 0;
+    row.anyAnswerAtomSupported = 0;
+    row.allAnswerAtomsSupported = 0;
+    row.orderedSequenceSupported = 0;
+    row.answerAtomSupportRecallDeltaVsBase = -1;
+    row.answerAtomSupportRecallDeltaVsD11 = -1;
+    const validation = validateLongMemEvalV2TrajectoryExpansionArtifacts({
+      phase: "development",
+      ...value,
+      casesText: jsonLines(rows),
+    });
+    expect(validation.mismatches.arithmetic).toBe(0);
+  });
+
+  it("compares unordered summary maps by content", () => {
+    const value = fixture();
+    const summary = JSON.parse(value.summaryText);
+    for (const arm of summary.armSummaries) {
+      arm.decisionReasons = Object.fromEntries(
+        Object.entries(arm.decisionReasons).reverse(),
+      );
+    }
+    const validation = validateLongMemEvalV2TrajectoryExpansionArtifacts({
+      phase: "development",
+      ...value,
+      summaryText: `${JSON.stringify(summary, null, 2)}\n`,
+    });
+    expect(validation.validationPassed).toBe(true);
+    expect(validation.mismatches.summaryRecomputation).toBe(0);
+  });
 });

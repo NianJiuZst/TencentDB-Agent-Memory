@@ -33,7 +33,7 @@ interface BootstrapResult {
 }
 
 export interface TrajectoryExpansionIndependentValidation {
-  validationVersion: "lifecycle-longmemeval-v2-trajectory-expansion-independent-validation-v1.0";
+  validationVersion: "lifecycle-longmemeval-v2-trajectory-expansion-independent-validation-v1.1";
   sourceProtocolVersion: string;
   phase: LongMemEvalV2TrajectoryExpansionPhase;
   sourceStatus: string;
@@ -84,6 +84,18 @@ function sha256(text: string): string {
 
 function exactIds(left: readonly string[], right: readonly string[]): boolean {
   return left.length === right.length && left.every((value, index) => value === right[index]);
+}
+
+function canonicalize(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(canonicalize);
+  if (value === null || typeof value !== "object") return value;
+  return Object.fromEntries(Object.entries(value as Record<string, unknown>)
+    .sort(([left], [right]) => left.localeCompare(right))
+    .map(([key, child]) => [key, canonicalize(child)]));
+}
+
+function semanticallyExact(left: unknown, right: unknown): boolean {
+  return JSON.stringify(canonicalize(left)) === JSON.stringify(canonicalize(right));
 }
 
 function mean(values: readonly number[]): number {
@@ -387,9 +399,7 @@ function arithmeticMismatch(row: LongMemEvalV2TrajectoryExpansionCase): boolean 
     || Math.abs(row.answerAtomSupportRecallDeltaVsBase!
       - (row.answerAtomSupportRecall! - row.baseAnswerAtomSupportRecall!)) > EPSILON
     || Math.abs(row.answerAtomSupportRecallDeltaVsD11!
-      - (row.answerAtomSupportRecall! - row.d11AnswerAtomSupportRecall!)) > EPSILON
-    || row.answerAtomSupportRecall! + EPSILON < row.baseAnswerAtomSupportRecall!
-    || row.answerAtomSupportRecall! + EPSILON < row.d11AnswerAtomSupportRecall!;
+      - (row.answerAtomSupportRecall! - row.d11AnswerAtomSupportRecall!)) > EPSILON;
 }
 
 function selectionStructureMismatch(row: LongMemEvalV2TrajectoryExpansionCase): boolean {
@@ -510,9 +520,9 @@ export function validateLongMemEvalV2TrajectoryExpansionArtifacts(params: {
     verified: recomputedArms.find((value) => value.arm === "locally_verified")!,
     comparison: recomputedComparison,
   });
-  const summaryRecomputation = JSON.stringify(recomputedArms) === JSON.stringify(summary.armSummaries)
-    && JSON.stringify(recomputedComparison) === JSON.stringify(summary.localFeedbackComparison) ? 0 : 1;
-  const gateRecomputation = JSON.stringify(recomputedGate) === JSON.stringify(summary.gate) ? 0 : 1;
+  const summaryRecomputation = semanticallyExact(recomputedArms, summary.armSummaries)
+    && semanticallyExact(recomputedComparison, summary.localFeedbackComparison) ? 0 : 1;
+  const gateRecomputation = semanticallyExact(recomputedGate, summary.gate) ? 0 : 1;
   const mismatches = {
     artifactIdentity,
     coverage,
@@ -539,7 +549,7 @@ export function validateLongMemEvalV2TrajectoryExpansionArtifacts(params: {
   };
   const validationPassed = Object.values(checks).every(Boolean);
   return {
-    validationVersion: "lifecycle-longmemeval-v2-trajectory-expansion-independent-validation-v1.0",
+    validationVersion: "lifecycle-longmemeval-v2-trajectory-expansion-independent-validation-v1.1",
     sourceProtocolVersion: protocol.protocolVersion,
     phase: params.phase,
     sourceStatus: summary.status,
