@@ -1,0 +1,59 @@
+{
+  "decisionVersion": "lifecycle-longmemeval-v2-trajectory-expansion-design-decision-v1.0",
+  "status": "candidate_selected_before_static_scores",
+  "direction": "D12 trajectory-coherent external evidence expansion",
+  "evidenceBoundary": "Every design score below comes from the 106 LongMemEval-V2 procedure questions already consumed by D9-D11. No static-environment development, validation, or test score was read before this decision.",
+  "iterations": [
+    {
+      "artifact": "design-diagnostic.v1.json",
+      "sha256": "35c7764b2ba3272db87094882c80c608b978d7f0fdf4c445625751d3467d25e9",
+      "policy": "first same-trajectory external candidate; exact Base on ineligibility",
+      "finding": "No first external candidate added an answer atom; reject."
+    },
+    {
+      "artifact": "design-diagnostic.v2.json",
+      "sha256": "13ee73b7dd23444b0e755d445387ffd15e9ed2bba42049a183bf26a83c95221d",
+      "policy": "skip evidence-equivalent candidates; exact Base on ineligibility",
+      "finding": "Higher use did not isolate an external-evidence gain and could discard D11 gains; reject composition."
+    },
+    {
+      "artifact": "design-diagnostic.v3.json",
+      "sha256": "db3c0f3cb04f35f0622b4f726526fd6ca731ae8358d22caf5a27e4bb4d079bbc",
+      "policy": "first novel candidate; inherit D11 on ordinary ineligibility",
+      "finding": "Zero direct change versus D11; retain only as the selection ablation."
+    },
+    {
+      "artifact": "design-diagnostic.v4.json",
+      "sha256": "6f9f302e1e8d465b80aeeaf4438f68fbd957ef174bbd8402056de106f53492c7",
+      "policy": "first novel candidate with per-candidate diagnostics",
+      "finding": "Only one of 39 direct cases had unused answer headroom versus D11; the useful candidate had substantially more novel semantic spans than the first novel candidate."
+    },
+    {
+      "artifact": "design-diagnostic.v5.json",
+      "sha256": "f6e44a8c8bbe695dfa80df15498df950b3362982c9110b43789ccbea84904a66",
+      "policy": "select one bounded same-trajectory candidate with maximum novel semantic-span count; then fewer novel characters and earlier retrieval rank",
+      "finding": "Selected candidate: +0.6410 percentage points versus D11, one improved and zero harmed direct cases; +5.3419 points versus Base, four improved and zero harmed; mean tokens -18.9427% versus Base and +4.3704% versus D11. This is only a design signal, not confirmation."
+    }
+  ],
+  "selectedPolicy": {
+    "id": "trajectory-expansion-local-maxnovel-pc20-rc40-x1-es128-sc1024-ec6000",
+    "selectionRule": "Reproduce D11, inspect at most the existing Base Top-40 raw candidates from the selected trajectory, exclude exact Base items and semantic duplicates, then choose one bounded candidate by descending novel semantic-span count, ascending novel characters, ascending FTS rank, and stable id.",
+    "ordinaryNoop": "If D11 is ineligible, return Base. If external evidence is absent, redundant, over bounds, or cannot fit the remaining Base budget, retain the exact D11 context.",
+    "hardFallback": "Disabled, timeout, missing index or candidate pool, corrupt structure, or impossible certificate failure returns exact Base.",
+    "forbiddenInputs": [
+      "reference answer",
+      "evaluator family",
+      "question id or phase",
+      "question outcome",
+      "gold trajectory or state"
+    ]
+  },
+  "freshEvaluationState": {
+    "splitProtocol": "lifecycle-longmemeval-v2-static-question-split-v1.0",
+    "splitFileSha256": "3eac91b4a378d59c8604d171a58612cea46a146a417d128dc03d2f2258f57c6b",
+    "developmentQuestions": 66,
+    "validationQuestions": 32,
+    "testQuestions": 36,
+    "scoresReadAtDecision": 0
+  }
+}

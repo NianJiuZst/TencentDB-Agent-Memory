@@ -1,0 +1,174 @@
+{
+  "protocolVersion": "lifecycle-longmemeval-v2-trajectory-expansion-v1.0",
+  "direction": "D12 trajectory-coherent external evidence expansion",
+  "preScoreCommitRequired": true,
+  "evidenceRole": "A fresh, precommitted development-validation-test experiment on the previously unused text-only LongMemEval-V2 static-environment population. The public benchmark is a method-validation proxy, not a final programming-agent claim.",
+  "researchBasis": {
+    "queryConditionedRetrieval": {
+      "paper": "https://arxiv.org/abs/2608.12847",
+      "borrowedPrinciple": "Treat post-retrieval memory reuse as a separate optimization surface while holding retrieval candidates, target state, model, and decoding fixed.",
+      "scopeDifference": "D12 is a deterministic bounded sidecar over MemoryCore Top-40 candidates and uses no trained rewriter."
+    },
+    "trajectoryWiki": {
+      "paper": "https://arxiv.org/abs/2608.00967",
+      "borrowedPrinciple": "Route evidence through trajectory ownership and preserve source snapshots instead of flattening all history into unrelated snippets.",
+      "scopeDifference": "D12 injects at most one provenance-bearing candidate and does not build an unbounded wiki."
+    },
+    "lratBoundary": {
+      "paper": "https://arxiv.org/abs/2604.04949",
+      "repository": "https://github.com/Yuqi-Zhou/LRAT",
+      "notBorrowed": "LRAT mines trajectories to train a retriever. Base-retriever retraining is outside the challenge scope, so D12 keeps MemoryCore FTS5 unchanged."
+    },
+    "d11NegativeResult": {
+      "resultCard": "results/longmemeval-v2-source-evidence-result-card.v1.json",
+      "finding": "D11 preserved bounded Base evidence and reduced test tokens by 20.84%, but changed no direct-support outcome on the untouched test split.",
+      "designResponse": "D12 changes evidence accessibility by using one Base Top-40 item that Base did not inject, while retaining every D11 certificate."
+    },
+    "consumedDesignDecision": {
+      "artifact": "results/d12-trajectory-expansion/design-decision.v1.json",
+      "selectedDiagnostic": "results/d12-trajectory-expansion/design-diagnostic.v5.json",
+      "selectedDiagnosticSha256": "f6e44a8c8bbe695dfa80df15498df950b3362982c9110b43789ccbea84904a66",
+      "boundary": "The selected policy used only previously consumed procedure questions. Its one-case gain is a design signal and cannot confirm D12."
+    }
+  },
+  "dataset": {
+    "name": "LongMemEval-V2",
+    "benchmarkRepositoryRevision": "2cc8c540bdb87fe6761629b585e727e1c4704520",
+    "tier": "small",
+    "manifestSha256": "70a2be47e7117ef8f2ee77aa499c6126358b5f9ffa28a848b5c565a4ec8fc99a",
+    "questionsSha256": "0a3ae5ebea938c24d7800e1e0b0828e08ae1646f939a53853b2b8cdc08e292b7",
+    "haystackSha256": "9b5301defb23a088a5f06e45ff8d5f35e569d78305a66d492046a9fff9b46593",
+    "trajectoriesSha256": "363cec9a8e87aa8d9101ce4e600aadbf7031d674056ebe4f969e8424abc5f3c6",
+    "questions": 451,
+    "trajectoryRows": 1870,
+    "selectedTrajectories": 200
+  },
+  "population": {
+    "questionType": "static-environment",
+    "modality": "text-only",
+    "questions": 134,
+    "directProxyQuestions": 121,
+    "answerOnlyQuestions": 13,
+    "previouslyUsedByD7ThroughD11": 0
+  },
+  "split": {
+    "sourceProtocolVersion": "lifecycle-longmemeval-v2-static-question-split-v1.0",
+    "fileSha256": "3eac91b4a378d59c8604d171a58612cea46a146a417d128dc03d2f2258f57c6b",
+    "canonicalSha256": "00e6807d69871f6f4bed5ba58ecdd95fb07bfcdd0c484e2cc43c1af4e7af1b8b",
+    "development": { "questions": 66, "directProxyQuestions": 60, "answerOnlyQuestions": 6 },
+    "validation": { "questions": 32, "directProxyQuestions": 29, "answerOnlyQuestions": 3 },
+    "test": { "questions": 36, "directProxyQuestions": 32, "answerOnlyQuestions": 4 },
+    "readOrder": "Freeze candidate and harness; run development Base then candidate; run validation only after a committed development admission; run test only after committed development and validation admissions."
+  },
+  "baseline": {
+    "engine": "MemoryCore SQLite L0 FTS5 through executeConversationSearch",
+    "embedding": "disabled",
+    "memoryForm": "bounded raw accessibility-tree character windows",
+    "rawChunkMaxCharacters": 3200,
+    "rawChunkOverlapCharacters": 320,
+    "maxRawChunksPerState": 128,
+    "candidateLimit": 40,
+    "resultLimit": 6,
+    "injectionTokenBudget": 3072,
+    "tokenizer": "cl100k_base",
+    "queryTransform": "Remove final-answer formatting instructions only; retain the substantive question and options."
+  },
+  "candidate": {
+    "policyId": "trajectory-expansion-local-maxnovel-pc20-rc40-x1-es128-sc1024-ec6000",
+    "sourceD11PolicyId": "evidence-local-pc20-ms1-ma64-a128-es256-sc1024-ec12000",
+    "procedureCandidateLimit": 20,
+    "rawCandidateLimit": 40,
+    "maxProcedureUnits": 200,
+    "maxActionsPerProcedure": 64,
+    "maxSafeAnchors": 128,
+    "maxBaseEvidenceSpans": 256,
+    "maxBaseEvidenceSpanCharacters": 1024,
+    "maxBaseEvidenceCharacters": 12000,
+    "maxD11CapsuleCharacters": 12000,
+    "maxExternalCandidatesInspected": 40,
+    "maxExternalCandidatesInjected": 1,
+    "maxExternalEvidenceSpans": 128,
+    "maxExternalEvidenceSpanCharacters": 1024,
+    "maxExternalEvidenceCharacters": 6000,
+    "maxExpansionCapsuleCharacters": 18000,
+    "selectionRule": "Reproduce D11. Among existing Top-40 raw candidates owned by the selected D11 trajectory and absent from exact Base, exclude semantic duplicates and candidates outside fixed evidence bounds. Select one by descending novel semantic-span count, ascending novel characters, ascending FTS rank, then stable id.",
+    "baseCertificate": "The complete D11 capsule is a byte-identical prefix of the expansion capsule; every Base semantic value, source marker, anchor, action, and unrelated Base item remains covered.",
+    "externalCertificate": "Every selected novel external semantic value is verbatim, in source order, and accompanied by its raw-memory id.",
+    "costCertificate": "Total items and tokens cannot exceed exact Base. External evidence may consume D11 savings but cannot enlarge Base injection.",
+    "ordinaryNoop": "D11 ineligibility returns Base. No external candidate, no novelty, bounded extraction overflow, capsule overflow, or insufficient remaining budget returns the exact D11 context.",
+    "hardFallback": "Disabled, missing procedure index, missing feedback table, missing raw candidate pool, feedback overflow, timeout, corruption, or impossible certificate failure returns exact Base."
+  },
+  "localFeedback": {
+    "source": "The frozen D11 bounded local-progress table derived from normalized pre/action/post transitions.",
+    "maxEvents": 5200,
+    "verifiedArm": "Wilson-rank coherent procedure trajectories and retain only locally verified actions before external evidence selection.",
+    "agnosticAblation": "Use FTS-ranked coherent trajectories and all bounded actions; all external selection, evidence, budget, and fallback rules remain identical.",
+    "claimGate": "Local feedback may be credited only if contexts change, quality is noninferior with zero direct harms versus the agnostic arm, and mean injected tokens do not increase versus that arm.",
+    "evolutionBoundary": "Only the bounded transition-feedback table, coherent trajectory choice, verified action subset, and one-candidate novel-evidence organization evolve. FTS5, embeddings, raw indexing, extraction model, questions, answers, and Base are unchanged."
+  },
+  "forbiddenRuntimeInputs": [
+    "reference answer",
+    "evaluator family",
+    "question id rules or allowlists",
+    "development, validation, or test phase labels",
+    "question outcome",
+    "gold trajectory or state attribution"
+  ],
+  "directMetric": {
+    "primary": "answerAtomSupportRecall",
+    "definition": "Lower-case, normalize hyphens, punctuation, and whitespace, split phrase-set reference answers by the frozen evaluator separators, and measure exact whole-atom occurrence in injected memory. English action counts match only the explicit Observed source action count field.",
+    "orderedSecondary": "For ordered phrase questions, all normalized atoms must occur in reference order within one delivered memory unit.",
+    "scopeWarning": "This is representation-level support evidence, not answer accuracy, gold evidence recall, or a real programming-task conclusion."
+  },
+  "aggregation": {
+    "primaryUnit": "question",
+    "reportDomainsSeparately": true,
+    "bootstrap": "paired stratified question bootstrap by domain",
+    "bootstrapSamples": 20000,
+    "bootstrapSeed": 20261212
+  },
+  "phaseGate": {
+    "minAnswerAtomSupportRecallDeltaVsBase": 0.0,
+    "minImprovedDirectProxyCasesVsBase": 1,
+    "maxHarmedDirectProxyCasesVsBase": 0,
+    "minAnswerAtomSupportRecallDeltaVsD11": 0.0,
+    "minImprovedDirectProxyCasesVsD11": 1,
+    "maxHarmedDirectProxyCasesVsD11": 0,
+    "minBootstrapLowerVsBase": 0.0,
+    "minBootstrapLowerVsD11": 0.0,
+    "minChangedContextsVsAgnostic": 1,
+    "minAnswerAtomSupportRecallDeltaVsAgnostic": 0.0,
+    "maxHarmedDirectProxyCasesVsAgnostic": 0,
+    "maxMeanInjectedTokenDeltaVsAgnostic": 0.0,
+    "maxMeanInjectedTokenIncreaseFractionVsBase": 0.0,
+    "maxPerQueryTokenViolations": 0,
+    "maxCertificateViolations": 0,
+    "maxOrdinaryFallbacks": 0,
+    "maxP95SelectionLatencyMs": 12,
+    "requireExactForcedFallbacks": true,
+    "requireIndependentValidation": true
+  },
+  "phaseAdmission": {
+    "development": "Every phase gate check must pass before validation baseline is read.",
+    "validation": "Every phase gate check must pass before test baseline is read.",
+    "test": "Every phase gate check must pass before any answer-level experiment is admitted.",
+    "failure": "A failed phase rejects D12 confirmation on this frozen protocol. Any follow-up must use a new version and cannot reuse unread phases as development data."
+  },
+  "answerLevelGate": {
+    "runOnlyAfterDirectTestGatePasses": true,
+    "deterministicEvaluators": ["norm_phrase_set_match", "norm_phrase_set_match_ordered", "mc_choice_match", "mc_choice_set_match"],
+    "requestedReadersIfNeeded": ["MiniMax M3", "DeepSeek V4Flash"],
+    "noOpenRouter": true
+  },
+  "portability": {
+    "datasetAdapter": "LongTaskDatasetAdapter supplies questions, trajectories, and public provenance. An internal programming adapter supplies the same neutral interfaces.",
+    "evidenceAdapter": "SourceEvidenceAdapter exposes bounded semantic values. A programming adapter may expose exact diagnostics, test failures, diff hunks, file or symbol names, configuration values, and constraints.",
+    "unchangedLogic": "Candidate ownership, novelty ranking, one-item capacity, certificates, switches, decision logs, phase gates, and hard fallback are schema-independent."
+  },
+  "selfOptimization": {
+    "parameterSearch": "consumed_design_only_then_frozen",
+    "selectedBeforeFreshScores": true,
+    "postFreezeChangesAllowed": "bug fixes that preserve exact candidate decisions on frozen design artifacts; any decision-changing change requires a protocol version bump and fresh baselines",
+    "claimBoundary": "A development pass is not confirmation; validation and untouched test must independently pass the same frozen gates."
+  }
+}
