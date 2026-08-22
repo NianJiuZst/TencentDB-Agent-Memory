@@ -613,6 +613,67 @@
       ],
       "promotionAllowed": false,
       "interpretation": "Same-trajectory substitution preserved every unrelated Base item, reduced mean tokens by 33.55%, and showed a +3.09-point consumed support estimate, but the interval crossed zero and one direct case was harmed. The decisive word appeared in body StaticText omitted by the safe-interactive-anchor capsule. Local progress feedback changed 57 contexts but added no support benefit over the agnostic arm. D10 is rejected before test; D11 will test bounded query-relevant body-evidence preservation rather than retuning D10."
+    },
+    {
+      "id": "D11-v1.0",
+      "direction": "semantic-leaf evidence-preserving procedure substitution",
+      "protocolVersion": "lifecycle-longmemeval-v2-source-evidence-substitution-v1.0",
+      "preScoreCommit": "f055acd80b7a16a919ec09a583803a7b3a37345f",
+      "testHarnessFreezeCommit": "ae9d0b583638b28043eac16a828f247961857bc6",
+      "evidenceRole": "consumed D10 representation audit followed by one committed-admission read of the untouched D9 procedure test",
+      "status": "rejected_at_untouched_test_no_effect",
+      "candidate": {
+        "policyId": "evidence-local-pc20-ms1-ma64-a128-es256-sc1024-ec12000",
+        "maxEvidenceSpans": 256,
+        "maxEvidenceSpanCharacters": 1024,
+        "maxEvidenceCharacters": 12000,
+        "maxCapsuleCharacters": 12000,
+        "feedbackEntries": 4895,
+        "locallyVerifiedEvents": 3719,
+        "stepAgnosticAblation": true,
+        "evidenceRule": "preserve every bounded semantic value from only the exact Base items being replaced, verbatim and in source order",
+        "certificateRule": "all evidence, provenance, D10 anchors and actions, unrelated Base items, tokens, and item count must pass or the result is exact Base",
+        "nullAction": "exact Base"
+      },
+      "results": {
+        "resultCard": "longmemeval-v2-source-evidence-result-card.v1.json",
+        "consumedAudit": {
+          "questions": 76,
+          "directProxyQuestions": 27,
+          "answerAtomSupportRecallDelta": 0.06790123456790123,
+          "answerAtomSupportRecallBootstrap95": [0, 0.16049382716049382],
+          "answerAtomSupportRecallDeltaVsD10": 0.037037037037037035,
+          "meanInjectedTokenIncreaseFraction": -0.22930053848410575,
+          "improved": 3,
+          "equal": 24,
+          "harmed": 0,
+          "independentAuditMismatches": 0,
+          "testAdmission": "passed"
+        },
+        "test": {
+          "questions": 30,
+          "directProxyQuestions": 12,
+          "answerAtomSupportRecallDelta": 0,
+          "answerAtomSupportRecallBootstrap95": [0, 0],
+          "answerAtomSupportRecallDeltaVsD10": 0,
+          "meanInjectedTokenIncreaseFraction": -0.20842868039664378,
+          "improved": 0,
+          "equal": 12,
+          "harmed": 0,
+          "changedContextsVsStepAgnostic": 20,
+          "feedbackQualityDeltaVsStepAgnostic": 0,
+          "feedbackMeanTokenDeltaVsStepAgnostic": -46.43333333333333,
+          "independentAuditMismatches": 0,
+          "independentD10ComparatorIntegrity": "passed",
+          "answerLevelState": "not_admitted"
+        }
+      },
+      "failedChecks": [
+        "test.improvedDirectProxyCasesVsBaseline",
+        "test.improvedDirectProxyCasesVsD10"
+      ],
+      "promotionAllowed": false,
+      "interpretation": "D11 repaired D10's evidence-loss mechanism and passed its consumed audit, but the improvement did not transfer. On the untouched test it safely reduced mean tokens by 20.84% while every direct question was quality-equal to Base and D10. Because D11 extracts evidence only from already injected Base items, it can preserve evidence but cannot recover missing evidence unless the inherited D10 action skeleton contributes a new supported atom; that mechanism had zero test effect. D11 is rejected before answer calls, and the next direction must change evidence accessibility rather than retune compression."
     }
   ]
 }

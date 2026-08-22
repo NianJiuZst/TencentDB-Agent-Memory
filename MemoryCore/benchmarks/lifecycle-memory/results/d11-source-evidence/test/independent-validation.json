@@ -1,0 +1,88 @@
+{
+  "validatorVersion": "lifecycle-longmemeval-v2-source-evidence-validator-v1.1",
+  "sourceProtocolVersion": "lifecycle-longmemeval-v2-source-evidence-substitution-v1.0",
+  "phase": "test",
+  "status": "failed",
+  "validatorCommit": "ae9d0b583638b28043eac16a828f247961857bc6",
+  "sourceSha256": {
+    "cases": "d1b6f6546ae7050920ed39df8fb5b2bbfdb308430e5846d0a08adb5011bc1cce",
+    "summary": "137163fddfe25c6d3319c9c7f1114c117871975d83d29f88948f65de42ade346",
+    "baselineCases": [
+      "38c788f0ae8499b7798a2c8fe4e2c86f2649adf03b43e1697266967c0c763704"
+    ],
+    "baselineSummaries": [
+      "39eb8ae436c2a16ef14f29493833c647806af27692dababf946cc64cbfeb1c70"
+    ],
+    "d10Cases": "65c56b945454caf6bdd3041eb97d4142f8e15068dfa034d38e933c23ac6151ad",
+    "d10Summary": "d367db7bc17e00150ecb95840c940345ee50b46e1f0737e8e82b56d0b3e30a40"
+  },
+  "checks": {
+    "identity": true,
+    "exactCoverage": true,
+    "baselineAndD10Comparator": true,
+    "d10ComparatorIntegrity": true,
+    "independentEvidenceSelection": true,
+    "independentSupport": true,
+    "costAndCertificates": true,
+    "aggregateMetrics": true,
+    "gateReproduction": true,
+    "sourceGatePassed": false
+  },
+  "mismatchCounts": {
+    "identity": 0,
+    "coverage": 0,
+    "baselineOrD10Comparator": 0,
+    "evidenceSelection": 0,
+    "support": 0,
+    "costOrCertificates": 0,
+    "d10ComparatorIntegrity": 0,
+    "aggregate": 0,
+    "gate": 0
+  },
+  "recomputedGate": {
+    "passed": false,
+    "checks": {
+      "answerAtomSupportRecallDeltaVsBaseline": true,
+      "answerAtomSupportRecallBootstrapLowerVsBaseline": true,
+      "improvedDirectProxyCasesVsBaseline": false,
+      "harmedDirectProxyCasesVsBaseline": true,
+      "orderedSequenceSupportedRateDeltaVsBaseline": true,
+      "answerAtomSupportRecallDeltaVsD10": true,
+      "improvedDirectProxyCasesVsD10": false,
+      "harmedDirectProxyCasesVsD10": true,
+      "changedContextsVsAgnostic": true,
+      "answerAtomSupportRecallDeltaVsAgnostic": true,
+      "harmedDirectProxyCasesVsAgnostic": true,
+      "meanInjectedTokenDeltaVsAgnostic": true,
+      "meanInjectedTokenIncreaseFraction": true,
+      "perQueryTokenViolations": true,
+      "anchorCoverageViolations": true,
+      "evidenceCoverageViolations": true,
+      "evidenceOrderViolations": true,
+      "provenanceCoverageViolations": true,
+      "actionCoverageViolations": true,
+      "unrelatedBasePreservationViolations": true,
+      "ordinaryFallbacks": true,
+      "selectionLatencyP95Ms": true,
+      "exactForcedFallbacks": true
+    }
+  },
+  "cases": 60,
+  "directProxyCases": 12,
+  "candidatePolicyId": "evidence-local-pc20-ms1-ma64-a128-es256-sc1024-ec12000",
+  "testState": "read",
+  "d10ComparatorValidation": {
+    "integrityPassed": true,
+    "sourceGatePassed": false,
+    "mismatchCounts": {
+      "identity": 0,
+      "coverage": 0,
+      "baseline": 0,
+      "selection": 0,
+      "support": 0,
+      "costOrCertificates": 0,
+      "aggregate": 0,
+      "gate": 0
+    }
+  }
+}
