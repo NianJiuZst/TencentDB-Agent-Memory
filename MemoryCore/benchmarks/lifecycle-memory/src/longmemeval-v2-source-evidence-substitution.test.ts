@@ -5,6 +5,8 @@ import {
   buildLocalProcedureIndex,
 } from "./longmemeval-v2-local-substitution.js";
 import { selectSourceEvidenceSubstitutionContext } from "./longmemeval-v2-source-evidence-substitution.js";
+import { assertSourceEvidenceTestReadAuthorized } from "./longmemeval-v2-source-evidence-test-lock.js";
+import { LONGMEMEVAL_V2_SOURCE_EVIDENCE_PROTOCOL } from "./longmemeval-v2-source-evidence-protocol.js";
 import type { LongTaskTrajectory } from "./long-task-adapter.js";
 import type { RetrievedUnit } from "./types.js";
 
@@ -90,6 +92,20 @@ function fixture() {
 }
 
 describe("source-evidence procedure substitution", () => {
+  it("keeps the blind-test read behind the committed D11 admission schema", () => {
+    expect(() => assertSourceEvidenceTestReadAuthorized(undefined)).toThrow(/committed consumed-audit-passed/u);
+    expect(() => assertSourceEvidenceTestReadAuthorized({
+      admissionVersion: "lifecycle-longmemeval-v2-source-evidence-admission-v1.0",
+      sourceProtocolVersion: LONGMEMEVAL_V2_SOURCE_EVIDENCE_PROTOCOL.protocolVersion,
+      status: "consumed_audit_passed",
+      decision: "authorize_locked_test_read",
+      candidatePolicyId: LONGMEMEVAL_V2_SOURCE_EVIDENCE_PROTOCOL.candidate.policyId,
+      validatorCommit: "f055acd80b7a16a919ec09a583803a7b3a37345f",
+      independentValidationSha256: "7f88fba744f1eda1b57ad8f1a33137e5c19c187fc3aa480117ec24229013ea31",
+      testStateAtAdmission: "unread",
+    })).not.toThrow();
+  });
+
   it("preserves semantic values, actions, provenance, cost, and unrelated Base", () => {
     const value = fixture();
     const result = selectSourceEvidenceSubstitutionContext({

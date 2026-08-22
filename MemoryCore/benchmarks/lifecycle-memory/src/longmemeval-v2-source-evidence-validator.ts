@@ -5,6 +5,8 @@ import type { LongTaskQuestion, LongTaskTrajectory } from "./long-task-adapter.j
 import { buildRawStateUnits, normalizeLongTaskSupportText } from "./longmemeval-v2-baseline.js";
 import { LongMemEvalV2Adapter } from "./longmemeval-v2-adapter.js";
 import type { LongMemEvalV2LocalSubstitutionCase } from "./longmemeval-v2-local-substitution-runner.js";
+import { LONGMEMEVAL_V2_LOCAL_SUBSTITUTION_PROTOCOL } from "./longmemeval-v2-local-substitution-protocol.js";
+import { validateLongMemEvalV2LocalSubstitution } from "./longmemeval-v2-local-substitution-validator.js";
 import {
   buildLocalProcedureIndex,
   type LocalProcedureRecord,
@@ -112,7 +114,7 @@ interface RecomputedComparison {
 }
 
 export interface LongMemEvalV2SourceEvidenceIndependentValidation {
-  validatorVersion: "lifecycle-longmemeval-v2-source-evidence-validator-v1.0";
+  validatorVersion: "lifecycle-longmemeval-v2-source-evidence-validator-v1.1";
   sourceProtocolVersion: string;
   phase: "consumed_audit" | "test";
   status: "passed" | "failed";
@@ -132,6 +134,11 @@ export interface LongMemEvalV2SourceEvidenceIndependentValidation {
   directProxyCases: number;
   candidatePolicyId: string;
   testState: "unread" | "read";
+  d10ComparatorValidation: {
+    integrityPassed: boolean;
+    sourceGatePassed: boolean;
+    mismatchCounts: Record<string, number>;
+  } | null;
 }
 
 function sha256(text: string): string {
@@ -563,8 +570,8 @@ export async function validateLongMemEvalV2SourceEvidence(params: {
   if (params.baselineCasesPaths.length !== params.baselineSummaryPaths.length) {
     throw new Error("D11 validator baseline artifact count mismatch");
   }
-  if (params.phase === "consumed_audit" && (!params.d10CasesPath || !params.d10SummaryPath)) {
-    throw new Error("D11 consumed validator requires D10 artifacts");
+  if (!params.d10CasesPath || !params.d10SummaryPath) {
+    throw new Error("D11 validator requires its phase-matched D10 comparator artifacts");
   }
   const [casesText, summaryText, baselineCasesTexts, baselineSummaryTexts, d10CasesText, d10SummaryText] = await Promise.all([
     readFile(params.casesPath, "utf8"),
@@ -582,6 +589,19 @@ export async function validateLongMemEvalV2SourceEvidence(params: {
   const d10Rows = d10CasesText ? d10CasesText.trim().split("\n").filter(Boolean)
     .map((line) => JSON.parse(line) as LongMemEvalV2LocalSubstitutionCase) : [];
   const d10ByKey = new Map(d10Rows.map((row) => [`${row.arm}:${row.questionId}`, row]));
+  const d10ComparatorValidation = params.phase === "test" ? await validateLongMemEvalV2LocalSubstitution({
+    dataRoot: params.dataRoot,
+    phase: "test",
+    baselineCasesPaths: params.baselineCasesPaths,
+    baselineSummaryPaths: params.baselineSummaryPaths,
+    casesPath: params.d10CasesPath,
+    summaryPath: params.d10SummaryPath,
+    validatorCommit: params.validatorCommit,
+  }) : null;
+  const d10ComparatorIntegrityPassed = d10ComparatorValidation === null
+    || (Object.entries(d10ComparatorValidation.checks)
+      .filter(([name]) => name !== "sourceGatePassed").every(([, passed]) => passed)
+      && Object.values(d10ComparatorValidation.mismatchCounts).every((count) => count === 0));
   const mismatchCounts: Record<string, number> = {
     identity: 0,
     coverage: 0,
@@ -589,17 +609,37 @@ export async function validateLongMemEvalV2SourceEvidence(params: {
     evidenceSelection: 0,
     support: 0,
     costOrCertificates: 0,
+    d10ComparatorIntegrity: d10ComparatorIntegrityPassed ? 0 : 1,
     aggregate: 0,
     gate: 0,
   };
   const protocol = LONGMEMEVAL_V2_SOURCE_EVIDENCE_PROTOCOL;
+  const d10CasesSha256 = d10CasesText ? sha256(d10CasesText) : null;
+  const d10SummarySha256 = d10SummaryText ? sha256(d10SummaryText) : null;
+  const d10Summary = d10SummaryText ? JSON.parse(d10SummaryText) as {
+    protocolVersion: string;
+    phase: string;
+    authorizationSha256: string | null;
+    casesSha256: string;
+  } : null;
+  const expectedD10Artifacts = params.phase === "consumed_audit"
+    ? {
+      casesSha256: protocol.lockedD10Comparator.casesSha256,
+      summarySha256: protocol.lockedD10Comparator.summarySha256,
+    }
+    : summary.d10ComparatorArtifacts;
   if (summary.protocolVersion !== protocol.protocolVersion
     || summary.phase !== params.phase
     || summary.casesSha256 !== sha256(casesText)
     || !exact(summary.baselineArtifacts.map((artifact) => artifact.casesSha256), baselineCasesTexts.map(sha256))
     || !exact(summary.baselineArtifacts.map((artifact) => artifact.summarySha256), baselineSummaryTexts.map(sha256))
-    || (d10CasesText && sha256(d10CasesText) !== protocol.lockedD10Comparator.casesSha256)
-    || (d10SummaryText && sha256(d10SummaryText) !== protocol.lockedD10Comparator.summarySha256)) {
+    || !expectedD10Artifacts
+    || d10CasesSha256 !== expectedD10Artifacts.casesSha256
+    || d10SummarySha256 !== expectedD10Artifacts.summarySha256
+    || d10Summary?.protocolVersion !== LONGMEMEVAL_V2_LOCAL_SUBSTITUTION_PROTOCOL.protocolVersion
+    || d10Summary?.phase !== (params.phase === "test" ? "test" : "consumed_audit")
+    || d10Summary?.casesSha256 !== d10CasesSha256
+    || (params.phase === "test" && d10Summary?.authorizationSha256 !== summary.authorizationSha256)) {
     mismatchCounts.identity += 1;
   }
   const expectedIds = sourceEvidenceQuestionIdsForPhase(params.phase);
@@ -742,6 +782,7 @@ export async function validateLongMemEvalV2SourceEvidence(params: {
     identity: mismatchCounts.identity === 0,
     exactCoverage: mismatchCounts.coverage === 0,
     baselineAndD10Comparator: mismatchCounts.baselineOrD10Comparator === 0,
+    d10ComparatorIntegrity: mismatchCounts.d10ComparatorIntegrity === 0,
     independentEvidenceSelection: mismatchCounts.evidenceSelection === 0,
     independentSupport: mismatchCounts.support === 0,
     costAndCertificates: mismatchCounts.costOrCertificates === 0,
@@ -750,7 +791,7 @@ export async function validateLongMemEvalV2SourceEvidence(params: {
     sourceGatePassed: recomputedGate.passed,
   };
   return {
-    validatorVersion: "lifecycle-longmemeval-v2-source-evidence-validator-v1.0",
+    validatorVersion: "lifecycle-longmemeval-v2-source-evidence-validator-v1.1",
     sourceProtocolVersion: protocol.protocolVersion,
     phase: params.phase,
     status: Object.values(checks).every(Boolean) ? "passed" : "failed",
@@ -770,6 +811,11 @@ export async function validateLongMemEvalV2SourceEvidence(params: {
     directProxyCases: verifiedRows.filter((row) => row.directProxy).length,
     candidatePolicyId: protocol.candidate.policyId,
     testState: params.phase === "consumed_audit" ? "unread" : "read",
+    d10ComparatorValidation: d10ComparatorValidation ? {
+      integrityPassed: d10ComparatorIntegrityPassed,
+      sourceGatePassed: d10ComparatorValidation.checks.sourceGatePassed,
+      mismatchCounts: d10ComparatorValidation.mismatchCounts,
+    } : null,
   };
 }
 

@@ -16,6 +16,8 @@ const { values } = parseArgs({
     "d10-summary": { type: "string" },
     "pre-score-commit": { type: "string" },
     authorization: { type: "string" },
+    "d10-comparator-cases-out": { type: "string" },
+    "d10-comparator-summary-out": { type: "string" },
     "cases-out": { type: "string" },
     "summary-out": { type: "string" },
   },
@@ -35,6 +37,9 @@ let authorization: SourceEvidenceTestReadAuthorization | undefined;
 let authorizationSha256: string | undefined;
 if (phase === "test") {
   if (!values.authorization) throw new Error("D11 test requires --authorization");
+  if (!values["d10-comparator-cases-out"] || !values["d10-comparator-summary-out"]) {
+    throw new Error("D11 test requires locked D10 comparator output paths");
+  }
   const text = await readFile(resolve(values.authorization), "utf8");
   authorization = JSON.parse(text) as SourceEvidenceTestReadAuthorization;
   authorizationSha256 = createHash("sha256").update(text).digest("hex");
@@ -53,8 +58,22 @@ const result = await runLongMemEvalV2SourceEvidence({
 const casesPath = resolve(values["cases-out"]!);
 const summaryPath = resolve(values["summary-out"]!);
 await Promise.all([mkdir(dirname(casesPath), { recursive: true }), mkdir(dirname(summaryPath), { recursive: true })]);
-await Promise.all([
+const writes = [
   writeFile(casesPath, result.cases.map((item) => `${JSON.stringify(item)}\n`).join(""), "utf8"),
   writeFile(summaryPath, `${JSON.stringify(result.summary, null, 2)}\n`, "utf8"),
-]);
+];
+if (phase === "test") {
+  if (!result.d10Comparator) throw new Error("D11 test did not materialize its locked D10 comparator");
+  const d10CasesPath = resolve(values["d10-comparator-cases-out"]!);
+  const d10SummaryPath = resolve(values["d10-comparator-summary-out"]!);
+  await Promise.all([
+    mkdir(dirname(d10CasesPath), { recursive: true }),
+    mkdir(dirname(d10SummaryPath), { recursive: true }),
+  ]);
+  writes.push(
+    writeFile(d10CasesPath, result.d10Comparator.cases.map((item) => `${JSON.stringify(item)}\n`).join(""), "utf8"),
+    writeFile(d10SummaryPath, `${JSON.stringify(result.d10Comparator.summary, null, 2)}\n`, "utf8"),
+  );
+}
+await Promise.all(writes);
 process.stdout.write(`${JSON.stringify(result.summary, null, 2)}\n`);

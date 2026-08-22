@@ -10,7 +10,12 @@ import {
   type PackedLongTaskContext,
 } from "./longmemeval-v2-baseline.js";
 import { LongMemEvalV2Adapter } from "./longmemeval-v2-adapter.js";
-import type { LongMemEvalV2LocalSubstitutionCase } from "./longmemeval-v2-local-substitution-runner.js";
+import {
+  summarizeLongMemEvalV2LocalSubstitutionResult,
+  type LongMemEvalV2LocalSubstitutionCase,
+  type LongMemEvalV2LocalSubstitutionSummary,
+} from "./longmemeval-v2-local-substitution-runner.js";
+import { LONGMEMEVAL_V2_LOCAL_SUBSTITUTION_PROTOCOL } from "./longmemeval-v2-local-substitution-protocol.js";
 import {
   buildLocalProcedureIndex,
   buildLocalProgressEvents,
@@ -743,6 +748,10 @@ export async function runLongMemEvalV2SourceEvidence(params: {
 }): Promise<{
   cases: LongMemEvalV2SourceEvidenceCase[];
   summary: LongMemEvalV2SourceEvidenceSummary;
+  d10Comparator: {
+    cases: LongMemEvalV2LocalSubstitutionCase[];
+    summary: LongMemEvalV2LocalSubstitutionSummary;
+  } | null;
 }> {
   if (!/^[0-9a-f]{7,40}$/iu.test(params.preScoreCommit)) throw new Error("D11 pre-score commit must be a git SHA");
   if (params.phase === "test") {
@@ -843,6 +852,7 @@ export async function runLongMemEvalV2SourceEvidence(params: {
       throw new Error(`D11 public feedback table unavailable: ${feedbackTable.failureReason}`);
     }
     const cases: LongMemEvalV2SourceEvidenceCase[] = [];
+    const d10ComparatorCases: LongMemEvalV2LocalSubstitutionCase[] = [];
     for (const question of selectedQuestions) {
       const rawBackend = rawBackends.get(question.domain);
       const procedureBackend = procedureBackends.get(question.domain);
@@ -867,7 +877,18 @@ export async function runLongMemEvalV2SourceEvidence(params: {
         config: activeConfig,
         feedbackEvents: events,
       });
+      const d10Forced = params.phase === "test" ? Object.fromEntries([
+        "disabled",
+        "missingProcedureIndex",
+        "missingFeedbackTable",
+        "feedbackTableOverflow",
+        "timeout",
+        "corrupt",
+        "budgetOverflow",
+        "anchorCertificate",
+      ].map((key) => [key, forced[key] ?? 1])) : null;
       for (const arm of ["step_agnostic", "locally_verified"] as const) {
+        const d10SelectionStartedAt = performance.now();
         const d10Selected = selectLocalSubstitutionContext({
           baseline: baseContext,
           procedureCandidates: procedureSearch.candidates,
@@ -876,6 +897,7 @@ export async function runLongMemEvalV2SourceEvidence(params: {
           config: activeConfig,
           arm,
         });
+        const d10SelectionLatencyMs = performance.now() - d10SelectionStartedAt;
         const d10Support = scoreProcedureDirectSupport({ question, injected: d10Selected.items });
         assertD10Recomputed({
           locked: d10Locked.byKey.get(`${arm}:${question.id}`),
@@ -889,6 +911,62 @@ export async function runLongMemEvalV2SourceEvidence(params: {
           selected: d10Selected,
           support: d10Support,
         });
+        if (params.phase === "test") {
+          const d10Fallbacks = arm === "locally_verified" ? d10Forced!
+            : Object.fromEntries(Object.keys(d10Forced!).map((key) => [key, 0]));
+          d10ComparatorCases.push({
+            protocolVersion: LONGMEMEVAL_V2_LOCAL_SUBSTITUTION_PROTOCOL.protocolVersion,
+            mode: "local_substitution",
+            phase: "test",
+            policyId: LONGMEMEVAL_V2_LOCAL_SUBSTITUTION_PROTOCOL.candidate.policyId,
+            arm,
+            questionId: question.id,
+            domain: question.domain,
+            environment: question.environment,
+            evaluatorFamily: longMemEvalV2ProcedureEvaluatorFamily(question),
+            directProxy: d10Support !== null,
+            orderedQuestion: d10Support?.orderedQuestion ?? false,
+            query,
+            baseCandidateIds: rawSearch.candidates.map((item) => item.id),
+            baseInjectedIds: baseContext.items.map((item) => item.id),
+            baseInjectedTokens: baseContext.injectedTokens,
+            baseAnswerAtomSupportRecall: baseSupport?.answerAtomSupportRecall ?? null,
+            baseAllAnswerAtomsSupported: baseSupport?.allAnswerAtomsSupported ?? null,
+            baseOrderedSequenceSupported: baseSupport?.orderedSequenceSupported ?? null,
+            procedureCandidateIds: procedureSearch.candidates.map((item) => item.id),
+            injectedIds: d10Selected.items.map((item) => item.id),
+            contextSha256: d10Selected.contextSha256,
+            procedureId: d10Selected.procedureId,
+            replacedRawIds: d10Selected.replacedRawIds,
+            rawIds: d10Selected.rawIds,
+            safeAnchors: d10Selected.safeAnchors,
+            injectedTokens: d10Selected.injectedTokens,
+            tokenViolation: d10Selected.tokenViolation,
+            rawQueryLatencyMs: rawSearch.latencyMs,
+            procedureQueryLatencyMs: procedureSearch.latencyMs,
+            selectionLatencyMs: d10SelectionLatencyMs,
+            queryLatencyMs: rawSearch.latencyMs + procedureSearch.latencyMs + d10SelectionLatencyMs,
+            usedSubstitution: d10Selected.usedSubstitution,
+            selectionMode: d10Selected.mode,
+            decisionReason: d10Selected.decisionReason,
+            fallback: d10Selected.fallback,
+            fallbackReason: d10Selected.fallbackReason,
+            verifiedActions: d10Selected.verifiedActions,
+            totalActions: d10Selected.totalActions,
+            feedbackWilsonLower: d10Selected.feedbackWilsonLower,
+            anchorCoverageViolations: d10Selected.anchorCoverageViolations,
+            unrelatedBasePreservationViolations: d10Selected.unrelatedBasePreservationViolations,
+            answerAtomCount: d10Support?.answerAtoms.length ?? null,
+            supportedAtomCount: d10Support?.supportedAtomCount ?? null,
+            answerAtomSupportRecall: d10Support?.answerAtomSupportRecall ?? null,
+            anyAnswerAtomSupported: d10Support?.anyAnswerAtomSupported ?? null,
+            allAnswerAtomsSupported: d10Support?.allAnswerAtomsSupported ?? null,
+            orderedSequenceSupported: d10Support?.orderedSequenceSupported ?? null,
+            answerAtomSupportRecallDelta: d10Support && baseSupport
+              ? d10Support.answerAtomSupportRecall - baseSupport.answerAtomSupportRecall : null,
+            forcedFallbackMismatches: d10Fallbacks,
+          });
+        }
         const selectionStartedAt = performance.now();
         const selected = selectSourceEvidenceSubstitutionContext({
           baseline: baseContext,
@@ -991,8 +1069,36 @@ export async function runLongMemEvalV2SourceEvidence(params: {
     const verifiedSummary = armSummaries.find((value) => value.arm === "locally_verified")!;
     const gate = evaluateGate({ phase: params.phase, verified: verifiedSummary, comparison: localFeedbackComparison });
     const casesText = cases.map(canonicalJsonLine).join("");
+    d10ComparatorCases.sort((left, right) => left.arm.localeCompare(right.arm)
+      || left.questionId.localeCompare(right.questionId));
+    const feedback = {
+      events: events.length,
+      entries: feedbackTable.entries.size,
+      capacity: feedbackTable.capacity,
+      available: feedbackTable.available,
+      failureReason: feedbackTable.failureReason,
+      locallyVerifiedEvents: events.filter((event) => event.status === "verified_progress").length,
+    };
+    const d10Comparator = params.phase === "test" ? {
+      cases: d10ComparatorCases,
+      summary: summarizeLongMemEvalV2LocalSubstitutionResult({
+        cases: d10ComparatorCases,
+        phase: "test",
+        preScoreCommit: params.preScoreCommit,
+        authorizationSha256: params.authorizationSha256 ?? null,
+        baselineMetrics: baseline.metrics,
+        baselineArtifacts: baseline.artifacts,
+        index,
+        feedback,
+      }),
+    } : null;
+    const d10ComparatorArtifacts = d10Comparator ? {
+      casesSha256: sha256(d10Comparator.cases.map(canonicalJsonLine).join("")),
+      summarySha256: sha256(`${JSON.stringify(d10Comparator.summary, null, 2)}\n`),
+    } : d10Locked.artifacts;
     return {
       cases,
+      d10Comparator,
       summary: {
         protocolVersion: protocol.protocolVersion,
         mode: "source_evidence_substitution",
@@ -1003,16 +1109,9 @@ export async function runLongMemEvalV2SourceEvidence(params: {
         preScoreCommit: params.preScoreCommit,
         authorizationSha256: params.authorizationSha256 ?? null,
         baselineArtifacts: baseline.artifacts,
-        d10ComparatorArtifacts: d10Locked.artifacts,
+        d10ComparatorArtifacts,
         index,
-        feedback: {
-          events: events.length,
-          entries: feedbackTable.entries.size,
-          capacity: feedbackTable.capacity,
-          available: feedbackTable.available,
-          failureReason: feedbackTable.failureReason,
-          locallyVerifiedEvents: events.filter((event) => event.status === "verified_progress").length,
-        },
+        feedback,
         armSummaries,
         localFeedbackComparison,
         casesSha256: sha256(casesText),

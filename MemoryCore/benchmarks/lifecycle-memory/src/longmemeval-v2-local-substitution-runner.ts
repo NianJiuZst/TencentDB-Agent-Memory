@@ -461,7 +461,7 @@ function outcomes(cases: LongMemEvalV2LocalSubstitutionCase[]): DirectOutcomes {
 function summarizeArm(params: {
   arm: LocalSubstitutionArm;
   cases: LongMemEvalV2LocalSubstitutionCase[];
-  baseline: LockedBaseline;
+  baseline: Pick<LockedBaseline, "metrics">;
   seed: number;
 }): LocalSubstitutionArmSummary {
   const base = aggregateProcedureCases(params.cases);
@@ -581,6 +581,50 @@ function evaluateGate(params: {
       || Object.values(params.verified.forcedFallbackMismatches).every((value) => value === 0),
   };
   return { passed: Object.values(checks).every(Boolean), checks };
+}
+
+export function summarizeLongMemEvalV2LocalSubstitutionResult(params: {
+  cases: LongMemEvalV2LocalSubstitutionCase[];
+  phase: LongMemEvalV2LocalSubstitutionPhase;
+  preScoreCommit: string;
+  authorizationSha256: string | null;
+  baselineMetrics: ProcedureAggregateMetrics;
+  baselineArtifacts: Array<{ casesSha256: string; summarySha256: string }>;
+  index: LongMemEvalV2LocalSubstitutionSummary["index"];
+  feedback: LongMemEvalV2LocalSubstitutionSummary["feedback"];
+}): LongMemEvalV2LocalSubstitutionSummary {
+  const casesText = params.cases.map(canonicalJsonLine).join("");
+  const armSummaries = (["step_agnostic", "locally_verified"] as const).map((arm, index) => summarizeArm({
+    arm,
+    cases: params.cases.filter((row) => row.arm === arm),
+    baseline: { metrics: params.baselineMetrics },
+    seed: LONGMEMEVAL_V2_LOCAL_SUBSTITUTION_PROTOCOL.aggregation.bootstrapSeed + index,
+  }));
+  const verified = armSummaries.find((item) => item.arm === "locally_verified")!;
+  const comparison = compareArms(
+    params.cases.filter((row) => row.arm === "locally_verified"),
+    params.cases.filter((row) => row.arm === "step_agnostic"),
+  );
+  const gate = evaluateGate({ phase: params.phase, verified, comparison });
+  const status = params.phase === "consumed_audit"
+    ? (gate.passed ? "consumed_audit_passed" : "consumed_audit_failed")
+    : (gate.passed ? "test_passed" : "test_failed");
+  return {
+    protocolVersion: LONGMEMEVAL_V2_LOCAL_SUBSTITUTION_PROTOCOL.protocolVersion,
+    mode: "local_substitution",
+    phase: params.phase,
+    status,
+    preScoreCommit: params.preScoreCommit,
+    authorizationSha256: params.authorizationSha256,
+    baselineArtifacts: params.baselineArtifacts,
+    index: params.index,
+    feedback: params.feedback,
+    armSummaries,
+    localFeedbackComparison: comparison,
+    casesSha256: sha256(casesText),
+    gate,
+    testState: params.phase === "test" ? "read" : "unread",
+  };
 }
 
 export async function runLongMemEvalV2LocalSubstitution(params: {
@@ -785,32 +829,15 @@ export async function runLongMemEvalV2LocalSubstitution(params: {
     }
     cases.sort((left, right) => left.arm.localeCompare(right.arm)
       || left.questionId.localeCompare(right.questionId));
-    const casesText = cases.map(canonicalJsonLine).join("");
-    const armSummaries = (["step_agnostic", "locally_verified"] as const).map((arm, index) => summarizeArm({
-      arm,
-      cases: cases.filter((row) => row.arm === arm),
-      baseline,
-      seed: protocol.aggregation.bootstrapSeed + index,
-    }));
-    const verified = armSummaries.find((item) => item.arm === "locally_verified")!;
-    const comparison = compareArms(
-      cases.filter((row) => row.arm === "locally_verified"),
-      cases.filter((row) => row.arm === "step_agnostic"),
-    );
-    const gate = evaluateGate({ phase: params.phase, verified, comparison });
-    const status = params.phase === "consumed_audit"
-      ? (gate.passed ? "consumed_audit_passed" : "consumed_audit_failed")
-      : (gate.passed ? "test_passed" : "test_failed");
     return {
       cases,
-      summary: {
-        protocolVersion: protocol.protocolVersion,
-        mode: "local_substitution",
+      summary: summarizeLongMemEvalV2LocalSubstitutionResult({
+        cases,
         phase: params.phase,
-        status,
         preScoreCommit: params.preScoreCommit,
         authorizationSha256: params.authorizationSha256 ?? null,
         baselineArtifacts: baseline.artifacts,
+        baselineMetrics: baseline.metrics,
         index,
         feedback: {
           events: events.length,
@@ -820,12 +847,7 @@ export async function runLongMemEvalV2LocalSubstitution(params: {
           failureReason: feedbackTable.failureReason,
           locallyVerifiedEvents: events.filter((event) => event.status === "verified_progress").length,
         },
-        armSummaries,
-        localFeedbackComparison: comparison,
-        casesSha256: sha256(casesText),
-        gate,
-        testState: params.phase === "test" ? "read" : "unread",
-      },
+      }),
     };
   } finally {
     for (const backend of rawBackends.values()) backend.close();

@@ -30,9 +30,11 @@ for (const required of ["data-root", "phase", "baseline-cases", "baseline-summar
 if (values.phase !== "consumed_audit" && values.phase !== "test") {
   throw new Error("D11 independent validator phase must be consumed_audit or test");
 }
-if (values.phase === "consumed_audit"
-  && (!values["admission-out"] || !values["d10-cases"] || !values["d10-summary"])) {
-  throw new Error("D11 consumed audit requires D10 artifacts and --admission-out");
+if (!values["d10-cases"] || !values["d10-summary"]) {
+  throw new Error("D11 independent validation requires phase-matched D10 comparator artifacts");
+}
+if (values.phase === "consumed_audit" && !values["admission-out"]) {
+  throw new Error("D11 consumed audit requires --admission-out");
 }
 const validation = await validateLongMemEvalV2SourceEvidence({
   dataRoot: resolve(values["data-root"]!),

@@ -98,8 +98,34 @@ function canonicalJsonLine(value: unknown): string {
   return `${JSON.stringify(value)}\n`;
 }
 
-function assertFrozenSplit(questions: LongTaskQuestion[]): void {
-  const protocol = LONGMEMEVAL_V2_LOCAL_SUBSTITUTION_PROTOCOL;
+export interface LongMemEvalV2AuthorizedTestBaselineProtocol {
+  protocolVersion: string;
+  dataset: {
+    benchmarkRepositoryRevision: string;
+    tier: string;
+    questionsSha256: string;
+    haystackSha256: string;
+    trajectoriesSha256: string;
+    manifestSha256: string;
+    questions: number;
+    trajectoryRows: number;
+    selectedTrajectories: number;
+  };
+  baseline: {
+    rawChunkMaxCharacters: number;
+    rawChunkOverlapCharacters: number;
+    maxRawChunksPerState: number;
+    candidateLimit: number;
+    injectionTokenBudget: number;
+    resultLimit: number;
+  };
+}
+
+function assertFrozenSplit(
+  questions: LongTaskQuestion[],
+  protocol: LongMemEvalV2AuthorizedTestBaselineProtocol,
+  directionLabel: string,
+): void {
   const generated = buildLongMemEvalV2ProcedureQuestionSplit({
     questions,
     revision: protocol.dataset.benchmarkRepositoryRevision,
@@ -107,7 +133,7 @@ function assertFrozenSplit(questions: LongTaskQuestion[]): void {
     seed: LONGMEMEVAL_V2_LOCAL_SUBSTITUTION_SPLIT.seed,
   });
   if (JSON.stringify(generated) !== JSON.stringify(LONGMEMEVAL_V2_LOCAL_SUBSTITUTION_SPLIT)) {
-    throw new Error("D10 generated procedure split differs from the frozen split");
+    throw new Error(`${directionLabel} generated procedure split differs from the frozen split`);
   }
 }
 
@@ -140,7 +166,29 @@ export async function runLongMemEvalV2LocalSubstitutionTestBaseline(params: {
   if (!/^[0-9a-f]{64}$/iu.test(params.authorizationSha256)) {
     throw new Error("invalid D10 authorization SHA-256");
   }
-  const protocol = LONGMEMEVAL_V2_LOCAL_SUBSTITUTION_PROTOCOL;
+  return materializeAuthorizedLongMemEvalV2TestBaseline({
+    dataRoot: params.dataRoot,
+    authorizationSha256: params.authorizationSha256,
+    protocol: LONGMEMEVAL_V2_LOCAL_SUBSTITUTION_PROTOCOL,
+    questionIds: localSubstitutionQuestionIdsForPhase("test"),
+    directionLabel: "D10",
+  });
+}
+
+export async function materializeAuthorizedLongMemEvalV2TestBaseline(params: {
+  dataRoot: string;
+  authorizationSha256: string;
+  protocol: LongMemEvalV2AuthorizedTestBaselineProtocol;
+  questionIds: readonly string[];
+  directionLabel: string;
+}): Promise<{
+  cases: LongMemEvalV2LocalSubstitutionBaselineCase[];
+  summary: LongMemEvalV2LocalSubstitutionBaselineSummary;
+}> {
+  if (!/^[0-9a-f]{64}$/iu.test(params.authorizationSha256)) {
+    throw new Error(`invalid ${params.directionLabel} authorization SHA-256`);
+  }
+  const protocol = params.protocol;
   const adapter = new LongMemEvalV2Adapter({
     dataRoot: params.dataRoot,
     revision: protocol.dataset.benchmarkRepositoryRevision,
@@ -156,11 +204,11 @@ export async function runLongMemEvalV2LocalSubstitutionTestBaseline(params: {
     },
   });
   const questions = await adapter.loadQuestions();
-  assertFrozenSplit(questions);
+  assertFrozenSplit(questions, protocol, params.directionLabel);
   const questionById = new Map(questions.map((question) => [question.id, question]));
-  const selectedQuestions = localSubstitutionQuestionIdsForPhase("test").map((id) => {
+  const selectedQuestions = params.questionIds.map((id) => {
     const question = questionById.get(id);
-    if (!question) throw new Error(`missing D10 test question ${id}`);
+    if (!question) throw new Error(`missing ${params.directionLabel} test question ${id}`);
     return question;
   });
   const trajectoryIds = [...new Set(selectedQuestions.flatMap((question) => question.trajectoryIds))];
@@ -196,7 +244,7 @@ export async function runLongMemEvalV2LocalSubstitutionTestBaseline(params: {
     const cases: LongMemEvalV2LocalSubstitutionBaselineCase[] = [];
     for (const question of selectedQuestions) {
       const backend = backends.get(question.domain);
-      if (!backend) throw new Error(`no D10 test baseline backend for ${question.domain}`);
+      if (!backend) throw new Error(`no ${params.directionLabel} test baseline backend for ${question.domain}`);
       const query = sanitizeLongTaskQuery(question.prompt);
       const search = await backend.search(query, protocol.baseline.candidateLimit);
       const packed = packLongTaskContext({

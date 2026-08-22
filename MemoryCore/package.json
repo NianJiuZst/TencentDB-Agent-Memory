@@ -65,6 +65,7 @@
     "eval:lifecycle-longmemeval-v2-local-substitution": "tsx benchmarks/lifecycle-memory/src/longmemeval-v2-local-substitution-cli.ts",
     "validate:lifecycle-longmemeval-v2-local-substitution": "tsx benchmarks/lifecycle-memory/src/longmemeval-v2-local-substitution-validator-cli.ts",
     "eval:lifecycle-longmemeval-v2-source-evidence": "tsx benchmarks/lifecycle-memory/src/longmemeval-v2-source-evidence-cli.ts",
+    "eval:lifecycle-longmemeval-v2-source-evidence-baseline": "tsx benchmarks/lifecycle-memory/src/longmemeval-v2-source-evidence-baseline-cli.ts",
     "validate:lifecycle-longmemeval-v2-source-evidence": "tsx benchmarks/lifecycle-memory/src/longmemeval-v2-source-evidence-validator-cli.ts",
     "eval:lifecycle-longmemeval-v2-baseline": "tsx benchmarks/lifecycle-memory/src/longmemeval-v2-baseline-cli.ts",
     "validate:lifecycle-longmemeval-v2-baseline": "tsx benchmarks/lifecycle-memory/src/longmemeval-v2-baseline-validator-cli.ts",
