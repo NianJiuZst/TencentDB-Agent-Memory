@@ -18,7 +18,7 @@ export interface SourceEvidenceBounds {
 
 export interface SourceEvidenceExtraction {
   available: boolean;
-  failureReason: "span_overflow" | "span_character_overflow" | "evidence_character_overflow" | null;
+  failureReason: "span_overflow" | "span_character_overflow" | "evidence_character_overflow" | "corrupt_evidence_span" | null;
   spans: SourceEvidenceSpan[];
   evidenceCharacters: number;
 }
@@ -125,6 +125,16 @@ export function collectSourceEvidence(params: {
   for (let sourceOrdinal = 0; sourceOrdinal < params.removed.length; sourceOrdinal += 1) {
     const memory = params.removed[sourceOrdinal];
     for (const value of adapter.extract(memory, sourceOrdinal)) {
+      if (!Number.isInteger(value.sourceLine) || value.sourceLine < 0
+        || typeof value.kind !== "string" || !value.kind.trim() || value.kind.length > 64
+        || typeof value.text !== "string") {
+        return {
+          available: false,
+          failureReason: "corrupt_evidence_span",
+          spans: [],
+          evidenceCharacters: 0,
+        };
+      }
       if (value.text.length > params.bounds.maxSpanCharacters) {
         return {
           available: false,

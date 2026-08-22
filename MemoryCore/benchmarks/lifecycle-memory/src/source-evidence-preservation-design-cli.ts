@@ -31,7 +31,7 @@ interface D10Case {
   safeAnchors: string[];
 }
 
-function parseArgs(argv: string[]): { dataRoot: string; casesPath: string } {
+function parseArgs(argv: string[]): { dataRoot: string; casesPath: string; arm: "locally_verified" | "step_agnostic" } {
   const values = new Map<string, string>();
   for (let index = 0; index < argv.length; index += 2) {
     const key = argv[index];
@@ -41,8 +41,10 @@ function parseArgs(argv: string[]): { dataRoot: string; casesPath: string } {
   }
   const dataRoot = values.get("--data-root");
   const casesPath = values.get("--cases-path");
+  const arm = values.get("--arm") ?? "locally_verified";
   if (!dataRoot || !casesPath) throw new Error("expected --data-root and --cases-path");
-  return { dataRoot, casesPath };
+  if (arm !== "locally_verified" && arm !== "step_agnostic") throw new Error("invalid --arm");
+  return { dataRoot, casesPath, arm };
 }
 
 async function readCases(path: string): Promise<D10Case[]> {
@@ -59,18 +61,18 @@ function renderCapsule(params: {
   anchors: string[];
   actionLines: string[];
   evidenceLines: string[];
+  arm: "locally_verified" | "step_agnostic";
 }): string {
   return [
-    `[evidence-preserving substitution source=${params.trajectoryId} observed-actions=${integerToEnglish(params.totalActions)}]`,
+    `[evidence-preserving substitution source=${params.trajectoryId}]`,
+    `Observed source action count: ${integerToEnglish(params.totalActions)}`,
     "Anchors:",
     ...(params.anchors.length > 0 ? params.anchors.map((anchor) => `- ${anchor}`) : ["- <none>"]),
     "Evidence (verbatim from selected Base memory):",
     ...(params.evidenceLines.length > 0 ? params.evidenceLines : ["- <none>"]),
-    "Verified workflow:",
+    params.arm === "locally_verified" ? "Verified workflow:" : "Observed workflow:",
     ...params.actionLines.map((line) => `- ${line}`),
-    "Binding guard: obtain identifiers, names, values, and routes from the current request and interface.",
-    "Applicability guard: decline unless the current environment and visible controls match.",
-    "Final guard: verify the intended state before reporting completion.",
+    "Guards: bind identifiers, names, values, and routes from the current request and interface; require matching environment and visible controls; verify the intended state before reporting completion.",
   ].join("\n");
 }
 
@@ -82,7 +84,7 @@ async function main(): Promise<void> {
   const args = parseArgs(process.argv.slice(2));
   const protocol = LONGMEMEVAL_V2_LOCAL_SUBSTITUTION_PROTOCOL;
   const allCases = await readCases(args.casesPath);
-  const cases = allCases.filter((row) => row.arm === "locally_verified");
+  const cases = allCases.filter((row) => row.arm === args.arm);
   const substituted = cases.filter((row) => row.usedSubstitution && row.procedureId);
   const trajectoryIds = [...new Set(cases.flatMap((row) =>
     row.baseInjectedIds.map((id) => id.split(":")[2])))].sort();
@@ -167,7 +169,8 @@ async function main(): Promise<void> {
     }
     const deliverable = new Set(record.deliveryActionIndexes);
     const actionLines = record.actions.filter((action) =>
-      action.locallyVerifiedAtSource && deliverable.has(action.index)).map((action) => action.text);
+      deliverable.has(action.index)
+      && (args.arm === "step_agnostic" || action.locallyVerifiedAtSource)).map((action) => action.text);
     const evidenceLines = renderSourceEvidence(evidence.spans);
     const capsule = renderCapsule({
       trajectoryId: record.trajectoryId,
@@ -175,6 +178,7 @@ async function main(): Promise<void> {
       anchors: row.safeAnchors,
       actionLines,
       evidenceLines,
+      arm: args.arm,
     });
     const capsuleTokens = encoding.encode(capsule).length;
     const evidenceTokens = encoding.encode(["Evidence (verbatim from selected Base memory):", ...evidenceLines].join("\n")).length;
@@ -225,6 +229,7 @@ async function main(): Promise<void> {
   const deltas = direct.map((row) => row.answerAtomSupportRecallDelta!);
   process.stdout.write(`${JSON.stringify({
     status: "consumed_design_diagnostic_only",
+    arm: args.arm,
     evidenceBoundary: "D10-consumed questions; this output may choose D11 construction but cannot support a confirmation claim.",
     bounds,
     cases: rows.length,

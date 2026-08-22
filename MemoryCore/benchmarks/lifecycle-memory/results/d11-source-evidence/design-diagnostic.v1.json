@@ -54,9 +54,9 @@
       "costOrCharacterDeclines": 3,
       "meanEvidenceSpansWhenAccepted": 28.9811320754717,
       "meanEvidenceTokensWhenAccepted": 400,
-      "meanInjectedTokens": 2148.5131578947367,
+      "meanInjectedTokens": 2143.092105263158,
       "meanBaseInjectedTokens": 2780.7105263157896,
-      "meanInjectedTokenIncreaseFraction": -0.22735101782013317,
+      "meanInjectedTokenIncreaseFraction": -0.22930053848410575,
       "directProxyCases": 27,
       "answerAtomSupportRecallDelta": 0.06790123456790123,
       "improved": 3,
@@ -66,11 +66,22 @@
         "questionId": "767e4106",
         "decision": "accepted",
         "removedTokens": 1005,
-        "capsuleTokens": 985,
+        "capsuleTokens": 978,
         "answerAtomSupportRecallDelta": 0
       }
     }
   ],
+  "agnosticAblationDiagnostic": {
+    "acceptedSubstitutions": 56,
+    "meanInjectedTokens": 2153.8815789473683,
+    "meanInjectedTokenIncreaseFraction": -0.22542042454124758,
+    "answerAtomSupportRecallDelta": 0.06790123456790123,
+    "improved": 3,
+    "equal": 24,
+    "harmed": 0,
+    "localFeedbackMeanTokenDelta": -10.789473684210407,
+    "interpretation": "On consumed design data, local feedback changed composition and used fewer mean tokens at equal direct support, but did not add direct quality over the agnostic arm. This requires frozen recomputation and untouched-test confirmation."
+  },
   "chosenConstruction": "compact-provenance-v1",
   "choiceReason": "It is semantically equivalent to the initial construction, accepts two more substitutions, uses fewer tokens, preserves the three exploratory improvements, and removes the D10 harm without inspecting the untouched test.",
   "lockedTestState": "unread",
