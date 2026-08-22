@@ -41,14 +41,14 @@ const DOMAIN_SYSTEM_PROMPTS = {
   enterprise: "You are an experienced colleague working in a customized ServiceNow environment. Answer based on your memory of the environment. If you do not know the answer, output exactly \\boxed{UNKNOWN}. Do not guess. Never attempt to guess an answer if you are not sure. If you believe the question's construction/premise is wrong, provide an explanation in \\boxed{} explaining why the question is flawed.",
 } as const;
 
-interface BinaryJudgment {
+export interface LongMemEvalBinaryJudgment {
   response: DirectJudgeResponse;
   label: 0 | 1;
   reason: string;
   attempts: number;
 }
 
-interface AnswerEvaluation {
+export interface LongMemEvalAnswerEvaluation {
   protocolVersion: string;
   questionId: string;
   readerId: string;
@@ -60,7 +60,7 @@ interface AnswerEvaluation {
   isUnknown: boolean;
   reader: DirectJudgeResponse;
   readerAttempts: number;
-  judges: Record<string, BinaryJudgment>;
+  judges: Record<string, LongMemEvalBinaryJudgment>;
 }
 
 interface SelectedAnswerCase {
@@ -157,7 +157,7 @@ export function parseLongMemEvalBinaryJudgment(text: string): { label: 0 | 1; re
   return { label: Number(match[1]) as 0 | 1, reason: cleaned };
 }
 
-function readerMessages(question: LongTaskQuestion, context: RetrievedUnit[]) {
+export function longMemEvalReaderMessages(question: LongTaskQuestion, context: RetrievedUnit[]) {
   if (question.domain !== "web" && question.domain !== "enterprise") {
     throw new Error(`unsupported LongMemEval-V2 answer domain ${question.domain}`);
   }
@@ -171,7 +171,11 @@ function readerMessages(question: LongTaskQuestion, context: RetrievedUnit[]) {
   ];
 }
 
-function judgeMessages(question: LongTaskQuestion, fullResponse: string, finalAnswer: string) {
+export function longMemEvalAbstentionJudgeMessages(
+  question: LongTaskQuestion,
+  fullResponse: string,
+  finalAnswer: string,
+) {
   const user = [
     "Evaluate whether the model correctly handled a flawed-premise question.",
     "",
@@ -222,12 +226,12 @@ async function evaluateTask(params: {
   task: AnswerTask;
   apiKeys: ReadonlyMap<string, string>;
   judges: DirectJudgeSpec[];
-}): Promise<AnswerEvaluation> {
+}): Promise<LongMemEvalAnswerEvaluation> {
   const context = params.task.selected.arms[params.task.arm];
   const reader = await withRetries(() => callDirectJudge({
     spec: params.task.reader,
     apiKey: params.apiKeys.get(params.task.reader.id)!,
-    messages: readerMessages(params.task.selected.question, context),
+    messages: longMemEvalReaderMessages(params.task.selected.question, context),
     responseFormat: "text",
   }));
   const parsedFinalAnswer = extractLongMemEvalBoxedAnswer(reader.value.content);
@@ -236,7 +240,7 @@ async function evaluateTask(params: {
       const response = await callDirectJudge({
         spec,
         apiKey: params.apiKeys.get(spec.id)!,
-        messages: judgeMessages(
+        messages: longMemEvalAbstentionJudgeMessages(
           params.task.selected.question,
           reader.value.content,
           parsedFinalAnswer,
@@ -270,14 +274,14 @@ async function evaluateTask(params: {
   };
 }
 
-function evaluationKey(item: Pick<AnswerEvaluation, "questionId" | "readerId" | "arm">): string {
+function evaluationKey(item: Pick<LongMemEvalAnswerEvaluation, "questionId" | "readerId" | "arm">): string {
   return `${item.questionId}\0${item.readerId}\0${item.arm}`;
 }
 
-async function loadCompleted(file: string, allowed: ReadonlySet<string>): Promise<AnswerEvaluation[]> {
+async function loadCompleted(file: string, allowed: ReadonlySet<string>): Promise<LongMemEvalAnswerEvaluation[]> {
   try {
     const rows = (await readFile(file, "utf8")).split("\n").filter(Boolean)
-      .map((line) => JSON.parse(line) as AnswerEvaluation);
+      .map((line) => JSON.parse(line) as LongMemEvalAnswerEvaluation);
     if (rows.some((item) => item.protocolVersion
       !== LONGMEMEVAL_V2_PREMISE_EVIDENCE_PROTOCOL.protocolVersion
       || !allowed.has(evaluationKey(item)))
@@ -427,7 +431,7 @@ export async function runLongMemEvalV2PremiseEvidenceAnswerPanel(
   for (let offset = 0; offset < remaining.length; offset += concurrency) {
     const batch = remaining.slice(offset, offset + concurrency);
     const settled = await Promise.allSettled(batch.map((task) => evaluateTask({ task, apiKeys, judges })));
-    const successes = settled.filter((item): item is PromiseFulfilledResult<AnswerEvaluation> =>
+    const successes = settled.filter((item): item is PromiseFulfilledResult<LongMemEvalAnswerEvaluation> =>
       item.status === "fulfilled").map((item) => item.value);
     if (successes.length) {
       await appendFile(actualPath, `${successes.map((item) => JSON.stringify(item)).join("\n")}\n`, "utf8");

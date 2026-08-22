@@ -1,0 +1,120 @@
+{
+  "protocolVersion": "lifecycle-longmemeval-v2-typed-refutation-v1.0",
+  "direction": "D15 typed refutation and evidence-sufficiency contract",
+  "evidenceRole": "A development-only renderer-selection experiment following the sealed D14 answer-level failure. It may select a renderer for fresh validation, but its development score is not confirmation evidence.",
+  "designBoundary": {
+    "consumedData": "D14 development questions, Base contexts, structural decisions, reader answers, and judgments",
+    "unreadData": "D14 validation and test premise questions and controls",
+    "d14DecisionSha256": "0393d4e18d5db44c1a7fa88310496d2519abdf52acb6c1489e645a2b965ba4a4",
+    "d14AnswerEvaluationsSha256": "acef3c1aabd097d9cf5f59ff01f224fe9a1854d69f9e1aee9bbab5c6e02b5af4",
+    "d14AnswerSummarySha256": "9cb125982579d49b9dd1bf8b8ac3226a3b33c06f487e203a707861e72d3c2511",
+    "d14CandidateCasesSha256": "723869b37b296268292aa6f7004a1ca3a6e1d96c4794f2aa2aa150cc6cd8b85d",
+    "d14CandidateSummarySha256": "517546050cee54c25a6cce93e3efa54535166b10392ad48ea9b174c552516952"
+  },
+  "researchBasis": {
+    "sureRag": {
+      "paper": "https://arxiv.org/abs/2605.03534",
+      "borrowedPrinciple": "Represent evidence as support, refutation, or insufficiency before deciding whether to answer or abstain.",
+      "scopeDifference": "D15's refutation and sufficiency states are deterministic structural certificates; it does not train or claim SURE-RAG's verifier."
+    },
+    "s2gRag": {
+      "paper": "https://arxiv.org/abs/2604.23783",
+      "borrowedPrinciple": "Expose a structured sufficiency state and a compact evidence context to the answer reasoner, decoupled from retrieval control.",
+      "scopeDifference": "D15 is single-turn, uses no trained controller, and changes only the trusted capsule renderer."
+    },
+    "sufficientContext": {
+      "paper": "https://arxiv.org/abs/2411.06037",
+      "borrowedPrinciple": "Separate failures caused by insufficient evidence from failures to use sufficient evidence.",
+      "scopeDifference": "D14 showed the latter on two cases; D15 is a bounded response-conversion probe, not a general sufficiency classifier."
+    }
+  },
+  "dataset": {
+    "name": "LongMemEval-V2",
+    "revision": "2cc8c540bdb87fe6761629b585e727e1c4704520",
+    "tier": "small",
+    "manifestSha256": "70a2be47e7117ef8f2ee77aa499c6126358b5f9ffa28a848b5c565a4ec8fc99a",
+    "questionsSha256": "0a3ae5ebea938c24d7800e1e0b0828e08ae1646f939a53853b2b8cdc08e292b7"
+  },
+  "invariants": {
+    "triggerPolicy": "Exactly D14 premise-evidence-ktalico-mi8-co2-ds1-cc1200",
+    "structuralIndex": "Exactly the D14 LongMemEval-V2 scope adapter, latest-version rule, and bounded tabs/list/columns index",
+    "base": "Every MemoryCore Base item remains a byte-identical prefix",
+    "readerPrompt": "Exactly the D14 LongMemEval-V2 domain prompt and question construction",
+    "modelsAndJudges": "Exactly the D14 MiniMax-M3 and deepseek-v4-flash crossed two-by-two panel",
+    "singleCausalChange": "Replace only the D14 prose capsule renderer with one typed renderer from the frozen escalation ladder"
+  },
+  "candidate": {
+    "maxCapsuleTokens": 192,
+    "maxCandidateItems": 7,
+    "maxCandidateTokens": 3264,
+    "maxSelectionLatencyMs": 25,
+    "requiredStates": {
+      "questionRelation": "REFUTES_PREMISE",
+      "evidenceSufficiency": "SUFFICIENT_FOR_CORRECTION"
+    },
+    "sourceCertificate": "The capsule retains trajectory-state provenance, source lines, observation SHA-256 prefix, the ordered structural observation, and the mechanically derived corrected conclusion.",
+    "hardFallback": "Disabled, D14 selection failure, missing or corrupt source, renderer failure, timeout, item or token overflow, or certificate failure returns exact Base."
+  },
+  "rendererEscalation": [
+    {
+      "policyId": "typed-relation-v1",
+      "controlStrength": 1,
+      "fields": ["question_relation", "evidence_sufficiency", "observed_structure", "corrected_conclusion"],
+      "additionalDirective": "none"
+    },
+    {
+      "policyId": "typed-answer-mode-v1",
+      "controlStrength": 2,
+      "fields": ["question_relation", "evidence_sufficiency", "observed_structure", "corrected_conclusion", "answer_mode"],
+      "additionalDirective": "answer_mode=CORRECT_FALSE_PREMISE"
+    },
+    {
+      "policyId": "typed-action-contract-v1",
+      "controlStrength": 3,
+      "fields": ["question_relation", "evidence_sufficiency", "observed_structure", "corrected_conclusion", "answer_mode", "generation_contract"],
+      "additionalDirective": "Use the corrected conclusion as the final boxed answer; a sufficient refutation must not be reduced to UNKNOWN."
+    }
+  ],
+  "selectionRule": {
+    "execution": "Evaluate policies in the frozen order and stop after the first eligible policy. Unexecuted stronger policies remain unobserved.",
+    "eligible": {
+      "minPrimaryImprovedReaderPairs": 2,
+      "maxPrimaryHarmedReaderPairs": 0,
+      "minUnanimousImprovedReaderPairs": 2,
+      "maxAnyJudgeHarmedReaderPairs": 0,
+      "minReadersWithAtLeastOnePrimaryImprovement": 2,
+      "maxReaderWithNegativeMeanDelta": 0,
+      "requireZeroModelMismatches": true,
+      "requireZeroRetries": false,
+      "requireAllCapsuleAndFallbackCertificates": true
+    },
+    "tieBreak": "The first eligible policy is selected, which minimizes control strength by construction."
+  },
+  "answerPanel": {
+    "baselineReuse": "Reuse the sealed D14 Base reader answers and judgments for the two changed development questions; their contexts, prompts, models, and rubric are unchanged.",
+    "candidateCallsPerPolicy": { "reader": 4, "judge": 8 },
+    "noOpenRouter": true,
+    "transport": "Direct MiniMax and DeepSeek endpoints",
+    "readers": [
+      { "id": "minimax-m3", "provider": "minimax", "model": "MiniMax-M3", "baseUrl": "https://api.minimaxi.com/v1", "apiKeyEnv": "MINIMAX_API_KEY", "temperature": 0.1, "topP": 0.95, "maxTokens": 700, "thinking": "disabled" },
+      { "id": "deepseek-v4-flash", "provider": "deepseek", "model": "deepseek-v4-flash", "baseUrl": "https://api.deepseek.com", "apiKeyEnv": "DEEPSEEK_API_KEY", "temperature": 0, "maxTokens": 700, "thinking": "disabled" }
+    ],
+    "judges": [
+      { "id": "minimax-m3", "provider": "minimax", "model": "MiniMax-M3", "baseUrl": "https://api.minimaxi.com/v1", "apiKeyEnv": "MINIMAX_API_KEY", "temperature": 0.1, "topP": 0.95, "maxTokens": 8192, "thinking": "disabled" },
+      { "id": "deepseek-v4-flash", "provider": "deepseek", "model": "deepseek-v4-flash", "baseUrl": "https://api.deepseek.com", "apiKeyEnv": "DEEPSEEK_API_KEY", "temperature": 0, "maxTokens": 8192, "thinking": "disabled" }
+    ],
+    "retries": 3,
+    "maxConcurrency": 2
+  },
+  "promotion": {
+    "development": "An eligible renderer becomes a frozen D15 candidate; development gains are design evidence only.",
+    "validation": "Read the previously unread D14 validation split only after the renderer, protocol, runner, direct validator, and admission artifact are committed.",
+    "test": "Read test only after validation direct and answer gates pass under the frozen renderer.",
+    "failure": "If all three renderers fail, reject D15 and keep validation/test unread."
+  },
+  "portability": {
+    "typedStates": "An internal programming adapter can emit REFUTES_PREMISE for contradicted configuration assumptions and SUFFICIENT_FOR_CORRECTION only when source-certified current state is complete.",
+    "safety": "Retrieved user or repository text cannot set typed control fields; only the bounded trusted sidecar renderer may emit them.",
+    "unchangedLogic": "Scope, versioning, source certificates, Base prefix, budgets, logging, gates, switch, and fallback remain dataset-independent."
+  }
+}
