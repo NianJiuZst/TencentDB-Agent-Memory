@@ -20,7 +20,7 @@ This file is the persistent direction registry for iterative work above the fixe
 | D8 | Feedback-learned transition utility gate | Exact transition utility, coherence, cost certificate, and a Base null action | D7 development/validation feedback plus one untouched test | Rejected at untouched test | Safe compression transferred, but direct support did not improve |
 | D9 | Outcome-gated binding-safe procedure memory | Whole-trajectory success admission over deterministic action skeletons | Fresh LongMemEval-V2 procedure development and validation questions | Rejected at validation gate | Development representation signal reversed; trajectory-level feedback was too coarse |
 | D10 | Verified local procedure substitution | Step-level progress feedback plus same-trajectory Base replacement | D9 development/validation as consumed diagnostics; D9 test remains unread | Rejected at consumed audit | Cost and unrelated-item safety passed, but one body-text answer was discarded and local feedback added no support lift |
-| D11 | Semantic-leaf evidence-preserving substitution | Preserve every bounded semantic value inside a same-trajectory capsule | D10 consumed design diagnostics; D9 test remains unread | Design selected; protocol not yet scored | Prevent evidence loss without restoring monolithic raw context or weakening exact fallback |
+| D11 | Semantic-leaf evidence-preserving substitution | Preserve every bounded semantic value inside a same-trajectory capsule | D10 consumed design diagnostics; D9 test remains unread | Protocol and candidate frozen; audit pending | Prevent evidence loss without restoring monolithic raw context or weakening exact fallback |
 
 ## Why D1 is first
 
