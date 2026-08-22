@@ -1,0 +1,59 @@
+{
+  "validationVersion": "lifecycle-longmemeval-v2-premise-evidence-independent-validation-v1.0",
+  "sourceProtocolVersion": "lifecycle-longmemeval-v2-premise-evidence-v1.0",
+  "phase": "development",
+  "status": "passed",
+  "validatorCommit": "c2da3c2",
+  "inputSha256": {
+    "baselineCases": "8a5dbbe7ddb1d63fc7d642e9c0b535893e012dec02a5de113eb1b6a9eb5e0278",
+    "baselineSummary": "64477ca66454542cdbfadb7c322369a27096966ea353d01f93adc9d408810c5f",
+    "candidateCases": "723869b37b296268292aa6f7004a1ca3a6e1d96c4794f2aa2aa150cc6cd8b85d",
+    "candidateSummary": "517546050cee54c25a6cce93e3efa54535166b10392ad48ea9b174c552516952"
+  },
+  "replayIndex": {
+    "buildLatencyMs": 9000.742167,
+    "inventories": 24844,
+    "available": true,
+    "failureReason": null
+  },
+  "cases": 58,
+  "changedContexts": 2,
+  "independentlyCertifiedWitnesses": 2,
+  "mismatches": {
+    "baselineIdentity": 0,
+    "candidateIdentity": 0,
+    "questionIdentity": 0,
+    "decisionReplay": 0,
+    "contextReplay": 0,
+    "basePrefix": 0,
+    "exactNoop": 0,
+    "tokenAccounting": 0,
+    "sourceObservation": 0,
+    "sourceWitness": 0,
+    "referenceBoundary": 0,
+    "summaryMetrics": 0,
+    "forcedFallback": 0,
+    "gateReplay": 0
+  },
+  "checks": {
+    "baselineIdentity": true,
+    "candidateIdentity": true,
+    "questionIdentity": true,
+    "decisionReplay": true,
+    "contextReplay": true,
+    "basePrefix": true,
+    "exactNoop": true,
+    "tokenAccounting": true,
+    "sourceObservation": true,
+    "sourceWitness": true,
+    "referenceBoundary": true,
+    "summaryMetrics": true,
+    "forcedFallback": true,
+    "gateReplay": true,
+    "protocolStatus": true,
+    "indexAvailable": true,
+    "witnessCoverage": true
+  },
+  "failedChecks": [],
+  "nextPhaseState": "unread"
+}
