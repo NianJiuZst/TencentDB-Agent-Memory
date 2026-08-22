@@ -1,0 +1,78 @@
+{
+  "diagnosticVersion": "lifecycle-d11-source-evidence-design-v1.0",
+  "status": "consumed_design_diagnostic_only",
+  "sourceDirection": "D10 locally verified incumbent-preserving procedure substitution",
+  "sourceCasesSha256": "ac188849cc346ba4c7b817682586b6ea82496c4d8a9ee7c4cea60f86437c1076",
+  "sourceSummarySha256": "f818000b94e4911f6d81b50683ec603f06401c1baa3b737be1b23c35aaca551f",
+  "evidenceBoundary": "All 76 questions were already consumed by D9 and D10. This diagnostic can choose D11 construction and bounds but cannot support confirmation, promotion, or a test claim.",
+  "hypothesis": "A capsule may replace exact same-trajectory Base items only when it retains every bounded semantic UI value from those items verbatim, every D10 safe anchor, and the full bounded locally verified action skeleton inside the exact removed-item token budget. Otherwise it returns exact Base.",
+  "researchBasis": {
+    "exit": {
+      "paper": "https://arxiv.org/abs/2412.12559",
+      "repository": "https://github.com/ThisIsHwang/EXIT",
+      "revisionInspected": "4c0141a7f19c192f1be24a2c83e672078d6ba29b",
+      "borrowedPrinciple": "Use extractive evidence, retain source order, and decline rather than generate an unsupported compression."
+    },
+    "recomp": {
+      "paper": "https://arxiv.org/abs/2310.04408",
+      "repository": "https://github.com/carriex/recomp",
+      "revisionInspected": "51d4432151efb3275257a9407dc71d1e5ec6634d",
+      "borrowedPrinciple": "Separate compression from retrieval and permit a null augmentation action."
+    },
+    "informationPreservation": {
+      "paper": "https://arxiv.org/abs/2503.19114",
+      "borrowedPrinciple": "Evaluate retained details and grounding in addition to compression and downstream utility; fine-grained entities and values are common compression failures."
+    }
+  },
+  "bounds": {
+    "maxSpans": 256,
+    "maxSpanCharacters": 1024,
+    "maxEvidenceCharacters": 12000,
+    "overflowRule": "exact Base; never truncate semantic evidence"
+  },
+  "designIterations": [
+    {
+      "id": "verbose-provenance-v0",
+      "role": "initial feasibility check",
+      "acceptedSubstitutions": 51,
+      "meanInjectedTokenIncreaseFraction": -0.22124220428326727,
+      "answerAtomSupportRecallDelta": 0.06790123456790123,
+      "improved": 3,
+      "equal": 24,
+      "harmed": 0,
+      "d10HarmDecision": "exact Base because the complete capsule exceeded the removed-item budget by 5 tokens"
+    },
+    {
+      "id": "compact-provenance-v1",
+      "role": "chosen D11 construction",
+      "changeFromPrior": "shorten labels and guards without removing anchors, evidence, action lines, provenance, or guard semantics",
+      "cases": 76,
+      "d10Substitutions": 57,
+      "acceptedSubstitutions": 53,
+      "acceptedSubstitutionRate": 0.6973684210526315,
+      "extractionDeclines": 1,
+      "costOrCharacterDeclines": 3,
+      "meanEvidenceSpansWhenAccepted": 28.9811320754717,
+      "meanEvidenceTokensWhenAccepted": 400,
+      "meanInjectedTokens": 2148.5131578947367,
+      "meanBaseInjectedTokens": 2780.7105263157896,
+      "meanInjectedTokenIncreaseFraction": -0.22735101782013317,
+      "directProxyCases": 27,
+      "answerAtomSupportRecallDelta": 0.06790123456790123,
+      "improved": 3,
+      "equal": 24,
+      "harmed": 0,
+      "d10Harm": {
+        "questionId": "767e4106",
+        "decision": "accepted",
+        "removedTokens": 1005,
+        "capsuleTokens": 985,
+        "answerAtomSupportRecallDelta": 0
+      }
+    }
+  ],
+  "chosenConstruction": "compact-provenance-v1",
+  "choiceReason": "It is semantically equivalent to the initial construction, accepts two more substitutions, uses fewer tokens, preserves the three exploratory improvements, and removes the D10 harm without inspecting the untouched test.",
+  "lockedTestState": "unread",
+  "answerModelCalls": 0
+}
