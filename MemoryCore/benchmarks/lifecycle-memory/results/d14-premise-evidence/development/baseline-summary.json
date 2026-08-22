@@ -1,0 +1,59 @@
+{
+  "protocolVersion": "lifecycle-longmemeval-v2-premise-evidence-v1.0",
+  "mode": "base",
+  "phase": "development",
+  "status": "completed",
+  "preScoreCommit": "77c3114",
+  "authorizationSha256": null,
+  "dataset": {
+    "name": "LongMemEval-V2",
+    "revision": "2cc8c540bdb87fe6761629b585e727e1c4704520",
+    "tier": "small",
+    "manifestSha256": "70a2be47e7117ef8f2ee77aa499c6126358b5f9ffa28a848b5c565a4ec8fc99a"
+  },
+  "splitCanonicalSha256": "325105dfbffb4d564229400f5cadd424bbad0a34c4663afadd4c13897f0bbdb0",
+  "cases": 58,
+  "premiseQuestions": 33,
+  "controlQuestions": 25,
+  "metrics": {
+    "meanInjectedTokens": 2798.051724137931,
+    "meanInjectedItems": 3.0517241379310347,
+    "queryLatencyP50Ms": 28.197249999968335,
+    "queryLatencyP95Ms": 54.883624999958556,
+    "tokenViolations": 0
+  },
+  "byDomain": {
+    "enterprise": {
+      "cases": 30,
+      "premiseQuestions": 16,
+      "controlQuestions": 14,
+      "meanInjectedTokens": 2796.5333333333333,
+      "queryLatencyP95Ms": 59.00791699998081
+    },
+    "web": {
+      "cases": 28,
+      "premiseQuestions": 17,
+      "controlQuestions": 11,
+      "meanInjectedTokens": 2799.6785714285716,
+      "queryLatencyP95Ms": 34.04795799998101
+    }
+  },
+  "index": {
+    "enterprise": {
+      "trajectories": 100,
+      "states": 3358,
+      "units": 28903,
+      "truncatedStates": 0,
+      "buildLatencyMs": 315498.38454199996
+    },
+    "web": {
+      "trajectories": 100,
+      "states": 1737,
+      "units": 23532,
+      "truncatedStates": 0,
+      "buildLatencyMs": 156460.187041
+    }
+  },
+  "casesSha256": "8a5dbbe7ddb1d63fc7d642e9c0b535893e012dec02a5de113eb1b6a9eb5e0278",
+  "laterPhaseState": "unread"
+}
