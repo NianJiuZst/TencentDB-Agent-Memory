@@ -504,6 +504,67 @@
       ],
       "promotionAllowed": false,
       "interpretation": "D8 safely reduced mean test injection by 2.92% with zero direct-proxy harms, but exact-id utility produced no quality gain and no improved direct-support case on the untouched test. The 2.13-point consumed full-feedback gain was self-credit and did not transfer. D8 is retained only as a safe-compression negative result; V1 remains incumbent."
+    },
+    {
+      "id": "D9-v1.0",
+      "direction": "outcome-gated binding-safe procedure memory",
+      "protocolVersion": "lifecycle-longmemeval-v2-procedure-v1.0",
+      "preScoreCommit": "85656d1deacae439bdd970c188d4597b223f02eb",
+      "evidenceRole": "fresh LongMemEval-V2 procedure development and validation with an unread test lock",
+      "status": "rejected_at_validation_quality_reversal",
+      "candidate": {
+        "selectedPolicy": "pc20-tf50-mi2",
+        "procedureCandidateLimit": 20,
+        "procedureTokenFraction": 0.5,
+        "maxProcedureItems": 2,
+        "procedureUnits": 200,
+        "feedbackEntries": 200,
+        "feedbackRule": "whole-trajectory success admits; failure declines",
+        "outcomeAgnosticAblation": true,
+        "costRule": "no per-query token increase",
+        "nullAction": "exact Base"
+      },
+      "results": {
+        "resultCard": "longmemeval-v2-procedure-result-card.v1.json",
+        "development": {
+          "questions": 51,
+          "directProxyQuestions": 18,
+          "outcomeGatedAnswerAtomSupportRecallDelta": 0.08333333333333331,
+          "outcomeGatedMeanInjectedTokenIncreaseFraction": -0.02536977039019576,
+          "outcomeGatedImproved": 2,
+          "outcomeGatedHarmed": 0,
+          "outcomeAgnosticAnswerAtomSupportRecallDelta": 0.16666666666666669,
+          "outcomeAgnosticBootstrap95": [0.027777777777777776, 0.3333333333333333],
+          "feedbackDeltaVsOutcomeAgnostic": -0.08333333333333333,
+          "feedbackImprovedVsOutcomeAgnostic": 0,
+          "feedbackHarmedVsOutcomeAgnostic": 2
+        },
+        "validation": {
+          "questions": 25,
+          "directProxyQuestions": 9,
+          "answerAtomSupportRecallDelta": -0.1111111111111111,
+          "answerAtomSupportRecallBootstrap95": [-0.2222222222222222, 0],
+          "meanInjectedTokenIncreaseFraction": -0.017129509473137808,
+          "improved": 0,
+          "equal": 8,
+          "harmed": 1,
+          "changedContextsVsOutcomeAgnostic": 8,
+          "feedbackDeltaVsOutcomeAgnostic": 0,
+          "independentAuditMismatches": 0,
+          "independentGateReproduction": "passed"
+        },
+        "test": "not_read",
+        "answerLevelState": "not_admitted"
+      },
+      "failedChecks": [
+        "validation.answerAtomSupportRecallDelta",
+        "validation.bootstrapLower",
+        "validation.improvedDirectProxyCases",
+        "validation.harmedDirectProxyCases",
+        "validation.feedbackImprovedVsOutcomeAgnostic"
+      ],
+      "promotionAllowed": false,
+      "interpretation": "The binding-safe procedure representation produced a development signal, but both procedure arms reversed on validation. Whole-trajectory success gating was worse than ignoring outcomes on development and added no validation benefit. Final trajectory outcome is too coarse because failed runs can contain locally correct reusable steps; procedure-first packing can also evict unrelated Base evidence. D9 is rejected before test or answer evaluation, and D10 will test step-level progress credit with incumbent-preserving same-trajectory substitution."
     }
   ]
 }

@@ -1,0 +1,148 @@
+{
+  "resultCardVersion": "lifecycle-longmemeval-v2-procedure-result-v1.0",
+  "protocolVersion": "lifecycle-longmemeval-v2-procedure-v1.0",
+  "direction": "D9 outcome-gated binding-safe procedure memory",
+  "status": "rejected_at_validation_quality_reversal",
+  "decision": "retain_lifecycle_adaptive_v1",
+  "dataset": {
+    "name": "LongMemEval-V2",
+    "revision": "2cc8c540bdb87fe6761629b585e727e1c4704520",
+    "tier": "small",
+    "manifestSha256": "70a2be47e7117ef8f2ee77aa499c6126358b5f9ffa28a848b5c565a4ec8fc99a",
+    "population": "106 text-only procedure and procedure-abs questions",
+    "splitCanonicalSha256": "80b61a909c9788f38d443169ee9cb7c7a60777ca7024c993c1dcf4417ce24417",
+    "developmentQuestions": 51,
+    "validationQuestions": 25,
+    "untouchedTestQuestions": 30
+  },
+  "candidate": {
+    "candidatePreScoreCommit": "85656d1deacae439bdd970c188d4597b223f02eb",
+    "selectedPolicy": "pc20-tf50-mi2",
+    "procedureCandidateLimit": 20,
+    "procedureTokenFraction": 0.5,
+    "maxProcedureItems": 2,
+    "procedureUnits": 200,
+    "feedbackEvents": 200,
+    "feedbackCapacity": 200,
+    "outcomes": {
+      "success": 100,
+      "failure": 100
+    },
+    "memoryForm": "deterministic binding-safe ordered action skeleton above unchanged MemoryCore FTS5",
+    "feedbackRule": "admit a whole procedure only when its source trajectory outcome is success",
+    "ablation": "same index, candidates, representation, policy, packing, and cost certificate while ignoring trajectory outcome",
+    "costCertificate": "candidate tokens cannot exceed the exact per-question baseline",
+    "nullAction": "exact baseline"
+  },
+  "development": {
+    "claimRole": "policy selection only",
+    "baselineCasesSha256": "2d2908babe05e878adf2a870b003e77ce8bde71a9409b684f06d27f33f731a60",
+    "baselineSummarySha256": "a64a941f54b8aa65483f35847f3a14edc33337f20427ccf629af9710c1f204e8",
+    "candidateCasesSha256": "b7f54e45d3cecc2b73486d7a6210c2c919964ca5459d71c26cd988b3ee3e6208",
+    "candidateSummarySha256": "deb184d0aedfa1ff8c58a42252ab3ef79a3bc816045c2eefc33565abf9d61a1a",
+    "selectionSha256": "1085a9ced89fffa3ec53036d4dd1dc504344e4ab1e748302104cb0c49b675104",
+    "directProxyQuestions": 18,
+    "baselineAnswerAtomSupportRecall": 0.1388888888888889,
+    "outcomeGated": {
+      "answerAtomSupportRecall": 0.2222222222222222,
+      "answerAtomSupportRecallDelta": 0.08333333333333331,
+      "answerAtomSupportRecallDeltaBootstrap95": [0, 0.2222222222222222],
+      "orderedSequenceSupportedRateDelta": 0.14285714285714285,
+      "meanInjectedTokenIncreaseFraction": -0.02536977039019576,
+      "improved": 2,
+      "equal": 16,
+      "harmed": 0
+    },
+    "outcomeAgnostic": {
+      "answerAtomSupportRecall": 0.3055555555555556,
+      "answerAtomSupportRecallDelta": 0.16666666666666669,
+      "answerAtomSupportRecallDeltaBootstrap95": [0.027777777777777776, 0.3333333333333333],
+      "orderedSequenceSupportedRateDelta": 0.2857142857142857,
+      "meanInjectedTokenIncreaseFraction": -0.02848992815889568,
+      "improved": 4,
+      "equal": 14,
+      "harmed": 0
+    },
+    "feedbackComparison": {
+      "changedContexts": 14,
+      "answerAtomSupportRecallDelta": -0.08333333333333333,
+      "improved": 0,
+      "equal": 16,
+      "harmed": 2
+    }
+  },
+  "validation": {
+    "status": "failed",
+    "baselineCasesSha256": "2e55aedd4c8b526b18012dc899c816cd354b7e2f892d1ecd18e8e19c6aedddb8",
+    "baselineSummarySha256": "bc52409ef1243f2f52dc26f3513b707458398ae90a84ed10088a54cb9a18165c",
+    "candidateCasesSha256": "08f924b7cc400ab5aab820b67207288b22ec4d1531e2a264e953d68916d25615",
+    "candidateSummarySha256": "c04ef5ce5a4987059b5ed76df2bf68c0070784f1152bac8a40727acc7e99c87e",
+    "independentValidationSha256": "fb594743132b98e76c145d6d36a3c871824ff76fe705f1df299b6e64e1b43821",
+    "directProxyQuestions": 9,
+    "baselineAnswerAtomSupportRecall": 0.16666666666666666,
+    "outcomeGated": {
+      "answerAtomSupportRecall": 0.05555555555555555,
+      "answerAtomSupportRecallDelta": -0.1111111111111111,
+      "answerAtomSupportRecallDeltaBootstrap95": [-0.2222222222222222, 0],
+      "orderedSequenceSupportedRateDelta": 0,
+      "meanInjectedTokenIncreaseFraction": -0.017129509473137808,
+      "improved": 0,
+      "equal": 8,
+      "harmed": 1,
+      "selectionLatencyP95Ms": 0.08245900017209351
+    },
+    "outcomeAgnostic": {
+      "answerAtomSupportRecall": 0.05555555555555555,
+      "answerAtomSupportRecallDelta": -0.1111111111111111,
+      "answerAtomSupportRecallDeltaBootstrap95": [-0.2222222222222222, 0],
+      "meanInjectedTokenIncreaseFraction": -0.0565071949707298,
+      "improved": 0,
+      "equal": 8,
+      "harmed": 1
+    },
+    "feedbackComparison": {
+      "changedContexts": 8,
+      "answerAtomSupportRecallDelta": 0,
+      "improved": 0,
+      "equal": 9,
+      "harmed": 0
+    },
+    "failedChecks": [
+      "answerAtomSupportRecallDeltaVsBaseline",
+      "answerAtomSupportRecallBootstrapLowerVsBaseline",
+      "improvedDirectProxyCasesVsBaseline",
+      "harmedDirectProxyCasesVsBaseline",
+      "improvedDirectProxyCasesVsOutcomeAgnostic"
+    ],
+    "operationalIntegrity": {
+      "tokenViolations": 0,
+      "ordinaryFallbacks": 0,
+      "forcedFallbackMismatches": 0,
+      "independentIdentityMismatches": 0,
+      "independentCoverageMismatches": 0,
+      "independentBaselineMismatches": 0,
+      "independentSelectionMismatches": 0,
+      "independentSupportMismatches": 0,
+      "independentAggregateMismatches": 0,
+      "independentGateMismatches": 0
+    }
+  },
+  "test": {
+    "state": "unread",
+    "questions": 30,
+    "directProxyQuestions": 12,
+    "admissionGenerated": false,
+    "answerLevelState": "not_admitted"
+  },
+  "failureAnalysis": {
+    "observedBoundary": "The procedure representation showed a development signal, but both the outcome-gated and outcome-agnostic arms reversed on validation. Whole-trajectory success gating also underperformed the agnostic ablation on development and added no validation benefit.",
+    "mechanismInterpretation": "A failed long trajectory can contain locally correct and reusable subprocedures, while a successful trajectory can contain irrelevant detours. Whole-trajectory outcome is therefore too coarse for write admission. Packing procedure items before raw items can also evict unrelated Base evidence.",
+    "nextHypothesis": "Use transition- or segment-level verified progress feedback and incumbent-preserving trajectory-local substitution: replace only Base items from the same trajectory, retain all unrelated Base items byte-for-byte, and decline when a bounded hybrid capsule cannot fit inside the replaced token budget."
+  },
+  "evidenceBoundary": [
+    "Direct answer support is a representation proxy, not task accuracy or gold source recall.",
+    "Validation failed before the locked test was read and before any MiniMax-M3 or DeepSeek-V4Flash answer calls.",
+    "The positive development result is policy-selection evidence and cannot be promoted after the validation reversal.",
+    "LongMemEval-V2 is public long-horizon agent evidence, not internal multi-turn programming-session evidence."
+  ]
+}

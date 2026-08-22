@@ -1,0 +1,60 @@
+{
+  "validatorVersion": "lifecycle-longmemeval-v2-procedure-validator-v1.0",
+  "sourceProtocolVersion": "lifecycle-longmemeval-v2-procedure-v1.0",
+  "phase": "validation",
+  "status": "failed",
+  "validatorCommit": "85656d1deacae439bdd970c188d4597b223f02eb",
+  "sourceSha256": {
+    "cases": "08f924b7cc400ab5aab820b67207288b22ec4d1531e2a264e953d68916d25615",
+    "summary": "c04ef5ce5a4987059b5ed76df2bf68c0070784f1152bac8a40727acc7e99c87e",
+    "baselineCases": "2e55aedd4c8b526b18012dc899c816cd354b7e2f892d1ecd18e8e19c6aedddb8",
+    "baselineSummary": "bc52409ef1243f2f52dc26f3513b707458398ae90a84ed10088a54cb9a18165c",
+    "selection": "1085a9ced89fffa3ec53036d4dd1dc504344e4ab1e748302104cb0c49b675104"
+  },
+  "checks": {
+    "identity": true,
+    "exactCoverage": true,
+    "baselineReconstruction": true,
+    "independentSelection": true,
+    "independentSupport": true,
+    "costAndBudget": true,
+    "outcomeGate": true,
+    "aggregateMetrics": true,
+    "gateReproduction": true,
+    "sourceGatePassed": false
+  },
+  "mismatchCounts": {
+    "identity": 0,
+    "coverage": 0,
+    "baseline": 0,
+    "selection": 0,
+    "support": 0,
+    "costOrBudget": 0,
+    "feedbackOutcome": 0,
+    "aggregate": 0,
+    "gate": 0
+  },
+  "recomputedGate": {
+    "passed": false,
+    "checks": {
+      "minAnswerAtomSupportRecallDeltaVsBaseline": false,
+      "minAnswerAtomSupportRecallBootstrapLowerVsBaseline": false,
+      "minImprovedDirectProxyCasesVsBaseline": false,
+      "maxHarmedDirectProxyCasesVsBaseline": false,
+      "minOrderedSequenceSupportedRateDeltaVsBaseline": true,
+      "minChangedContextsVsOutcomeAgnostic": true,
+      "minImprovedDirectProxyCasesVsOutcomeAgnostic": false,
+      "maxHarmedDirectProxyCasesVsOutcomeAgnostic": true,
+      "minAnswerAtomSupportRecallDeltaVsOutcomeAgnostic": true,
+      "maxMeanInjectedTokenIncreaseFraction": true,
+      "maxPerQueryTokenViolations": true,
+      "maxOrdinaryFallbacks": true,
+      "maxP95SelectionLatencyMs": true,
+      "requireExactForcedFallbacks": true
+    }
+  },
+  "cases": 50,
+  "directProxyCases": 9,
+  "selectedPolicyId": "pc20-tf50-mi2",
+  "testState": "unread"
+}
