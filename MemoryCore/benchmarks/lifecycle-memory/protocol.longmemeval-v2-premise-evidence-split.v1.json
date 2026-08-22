@@ -1,0 +1,323 @@
+{
+  "protocolVersion": "lifecycle-longmemeval-v2-premise-evidence-split-v1.0",
+  "dataset": {
+    "name": "LongMemEval-V2",
+    "revision": "2cc8c540bdb87fe6761629b585e727e1c4704520",
+    "questionsSha256": "0a3ae5ebea938c24d7800e1e0b0828e08ae1646f939a53853b2b8cdc08e292b7"
+  },
+  "seed": "d14-premise-evidence-20260823-v1",
+  "unit": "question",
+  "premisePopulation": "text-only static-environment-abs and dynamic-environment-abs",
+  "premiseStrata": "memory-ability x environment",
+  "premiseAllocation": {
+    "target": {
+      "development": 0.4,
+      "validation": 0.3,
+      "test": 0.3
+    },
+    "rule": "floor development and validation within each stratum; remainder stays in test"
+  },
+  "excludedSmoke": [
+    {
+      "id": "a8959d04-abs",
+      "memoryAbility": "static-environment-abs",
+      "domain": "enterprise"
+    },
+    {
+      "id": "57817b87",
+      "memoryAbility": "static-environment-abs",
+      "domain": "web"
+    },
+    {
+      "id": "43d9c5d0",
+      "memoryAbility": "dynamic-environment-abs",
+      "domain": "enterprise"
+    },
+    {
+      "id": "25dc1d7d",
+      "memoryAbility": "dynamic-environment-abs",
+      "domain": "web"
+    }
+  ],
+  "controlSource": {
+    "protocolVersion": "lifecycle-longmemeval-v2-residual-patch-split-v1.0",
+    "canonicalSha256": "cf7818a0c83dc1cd6ed94bb31a9f403f73f9d3762f9f36ba7c1f1a5db60bbec6",
+    "population": "D13 residual-patch static-environment controls",
+    "phaseMapping": "reuse source development, validation, and test without reassignment"
+  },
+  "readStateAtFreeze": {
+    "premiseSmoke": "read_and_excluded",
+    "premiseDevelopment": "unread",
+    "premiseValidation": "unread",
+    "premiseTest": "unread",
+    "controlDevelopment": "previously_read_in_D13",
+    "controlValidation": "unread",
+    "controlTest": "unread"
+  },
+  "premise": {
+    "development": [
+      "01f6e679",
+      "0401f0c8",
+      "0ace674b",
+      "0af83ccc",
+      "0cd6dc43",
+      "109b334c",
+      "11cc7ac2",
+      "19935d2d",
+      "1a89c3ac",
+      "21df0107",
+      "3a7a7880",
+      "3a836b31",
+      "3daef058",
+      "4121647c",
+      "549c0657",
+      "57cd3560",
+      "5ca112bf",
+      "6fc8c511",
+      "71026f57",
+      "7ebb0b95",
+      "86f00073",
+      "93d0613b",
+      "a2673690",
+      "a58c5548",
+      "a667402d",
+      "bf4f8b37",
+      "c4c0e117",
+      "cdb47c5d",
+      "dbe1a814",
+      "e532c01e",
+      "ee5252a3",
+      "eff00409",
+      "f90f2255"
+    ],
+    "validation": [
+      "0a13e290",
+      "12286151",
+      "123b74fb",
+      "196a68fb",
+      "2408b115",
+      "25853d7f",
+      "358c13ce",
+      "45d1e7f1",
+      "571b841c",
+      "5849c18b",
+      "6e0759a2",
+      "6fdda2fc",
+      "7195f494",
+      "7376c10d",
+      "8d0400e5",
+      "922a0c56",
+      "97e1d977",
+      "9ff0ffff",
+      "cdc46516",
+      "ce1cdb2d",
+      "eaba5c44",
+      "ebad58ed",
+      "fc0dbc35"
+    ],
+    "test": [
+      "191184f3",
+      "21f3228c",
+      "247bf724",
+      "2ad054b5",
+      "2fab8b79",
+      "329742b1",
+      "4b0c5275",
+      "50bfa714",
+      "577ab4ee",
+      "579557d8",
+      "6517165d",
+      "66ed4c72",
+      "6a7f0d24",
+      "6c285a23",
+      "6feb33d4",
+      "733699a5",
+      "823d133a",
+      "83a77f9d",
+      "89a20f48",
+      "8a8f6aac",
+      "8da5c407",
+      "98e6d369",
+      "aa8d21f5",
+      "b05cf470",
+      "b15314c0",
+      "bdfef1b9",
+      "cbcd74ae",
+      "d0e556eb",
+      "d47ca5c8",
+      "d7c94023",
+      "de0abc47",
+      "eb8cf28b",
+      "ee75b921",
+      "eec85674",
+      "f43926d9",
+      "fd006924"
+    ]
+  },
+  "controls": {
+    "development": [
+      "057a2d4d",
+      "0cf979c4",
+      "0f970f01",
+      "10003186",
+      "10466872",
+      "15e5efa6",
+      "17a03f9b",
+      "4252cc1c",
+      "42a55762",
+      "5f100f22",
+      "6a2e74de",
+      "6a7808c5",
+      "6d975a08",
+      "762d34b8",
+      "77db204d",
+      "8b09f378",
+      "8c55d6bc",
+      "8f752563",
+      "a3a7b079",
+      "a45edf3e",
+      "c9c6a06a",
+      "d1d8cf9f",
+      "e4d36b58",
+      "f0882f6e",
+      "f4b2b1fb"
+    ],
+    "validation": [
+      "106c321b",
+      "19367bc7",
+      "26a038ce",
+      "2b96f402",
+      "2e90de97",
+      "41bb40df",
+      "436c58d5",
+      "4755f316",
+      "48ab5c3d",
+      "499488a6",
+      "60f2b293",
+      "70e79657",
+      "89439d62",
+      "8f70bc0e",
+      "9c32bca6",
+      "a7edfb7a",
+      "adddeaa5",
+      "bf98bb38",
+      "c56e69ca",
+      "e823a94a"
+    ],
+    "test": [
+      "0738c1ac",
+      "0f8c85a6",
+      "2975030d",
+      "3b375e30",
+      "40758d8b",
+      "4ca9f7d7",
+      "4ed01379",
+      "521b124f",
+      "597ca614",
+      "634973c3",
+      "8b2a9dd3",
+      "927c65a2",
+      "9680f077",
+      "98b62f3d",
+      "abadf765",
+      "ad903be2",
+      "ba047686",
+      "be541aa6",
+      "c1c000eb",
+      "ca8e070b",
+      "d5b9fda4",
+      "f1d8a168",
+      "f61a096f"
+    ]
+  },
+  "counts": {
+    "development": {
+      "premiseQuestions": 33,
+      "controlQuestions": 25,
+      "totalQuestions": 58,
+      "premiseByAbility": {
+        "dynamic-environment-abs": 13,
+        "static-environment-abs": 20
+      },
+      "premiseByDomain": {
+        "enterprise": 16,
+        "web": 17
+      },
+      "premiseByEnvironment": {
+        "webarena-cms": 5,
+        "webarena-onestopshop": 5,
+        "webarena-reddit": 7,
+        "workarena": 16
+      },
+      "controlsByDomain": {
+        "enterprise": 14,
+        "web": 11
+      },
+      "controlsByEnvironment": {
+        "webarena-cms": 5,
+        "webarena-onestopshop": 3,
+        "webarena-reddit": 3,
+        "workarena": 14
+      }
+    },
+    "validation": {
+      "premiseQuestions": 23,
+      "controlQuestions": 20,
+      "totalQuestions": 43,
+      "premiseByAbility": {
+        "dynamic-environment-abs": 10,
+        "static-environment-abs": 13
+      },
+      "premiseByDomain": {
+        "enterprise": 11,
+        "web": 12
+      },
+      "premiseByEnvironment": {
+        "webarena-cms": 4,
+        "webarena-onestopshop": 3,
+        "webarena-reddit": 5,
+        "workarena": 11
+      },
+      "controlsByDomain": {
+        "enterprise": 11,
+        "web": 9
+      },
+      "controlsByEnvironment": {
+        "webarena-cms": 3,
+        "webarena-onestopshop": 2,
+        "webarena-reddit": 4,
+        "workarena": 11
+      }
+    },
+    "test": {
+      "premiseQuestions": 36,
+      "controlQuestions": 23,
+      "totalQuestions": 59,
+      "premiseByAbility": {
+        "dynamic-environment-abs": 16,
+        "static-environment-abs": 20
+      },
+      "premiseByDomain": {
+        "enterprise": 15,
+        "web": 21
+      },
+      "premiseByEnvironment": {
+        "webarena-cms": 6,
+        "webarena-onestopshop": 7,
+        "webarena-reddit": 8,
+        "workarena": 15
+      },
+      "controlsByDomain": {
+        "enterprise": 12,
+        "web": 11
+      },
+      "controlsByEnvironment": {
+        "webarena-cms": 5,
+        "webarena-onestopshop": 2,
+        "webarena-reddit": 4,
+        "workarena": 12
+      }
+    }
+  },
+  "canonicalSha256": "325105dfbffb4d564229400f5cadd424bbad0a34c4663afadd4c13897f0bbdb0"
+}
