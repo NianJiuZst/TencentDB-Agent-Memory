@@ -454,6 +454,56 @@
         "validation.meanInjectedTokens"
       ],
       "interpretation": "The transition representation produced a sizable development proxy gain but did not transfer. On validation it displaced one useful raw-state answer and added 3.50% mean tokens, with no improved direct-support case. D7 is rejected before test or answer evaluation; the still-untouched test split may only be used by a separately frozen follow-up protocol."
+    },
+    {
+      "id": "D8-v1.0",
+      "direction": "feedback-learned transition utility gate with a null action",
+      "protocolVersion": "lifecycle-longmemeval-v2-utility-gate-v1.0",
+      "preScoreCommit": "ab95ddec8e5fcd8c7ab6c09c38b2704b156487b5",
+      "evidenceRole": "consumed-feedback mechanism audit followed by one frozen untouched LongMemEval-V2 test",
+      "status": "rejected_at_untouched_test_no_effect",
+      "candidate": {
+        "behaviorPolicy": "tc20-tf75-mi4",
+        "memoryForm": "exact transition-memory utility sidecar above unchanged MemoryCore FTS5",
+        "utilityEntries": 70,
+        "eligibleUtilityEntries": 8,
+        "maxUtilityItems": 1,
+        "selectionTimeoutMs": 5,
+        "costRule": "no per-query token increase",
+        "nullAction": "exact Base"
+      },
+      "results": {
+        "resultCard": "longmemeval-v2-utility-gate-result-card.v1.json",
+        "consumedAudit": {
+          "questions": 62,
+          "leaveOneQuestionOutAnswerAtomSupportRecallDelta": 0,
+          "leaveOneQuestionOutMeanInjectedTokenIncreaseFraction": -0.01467200335094121,
+          "deploymentFullFeedbackAnswerAtomSupportRecallDelta": 0.02127659574468085,
+          "deploymentFullFeedbackMeanInjectedTokenIncreaseFraction": -0.01743536639285137,
+          "independentValidation": "passed",
+          "claimRole": "non-confirmatory"
+        },
+        "test": {
+          "questions": 24,
+          "directProxyQuestions": 18,
+          "answerAtomSupportRecallDelta": 0,
+          "answerAtomSupportRecallBootstrap95": [0, 0],
+          "allAnswerAtomsSupportedRateDelta": 0,
+          "meanInjectedTokenIncreaseFraction": -0.029194415235424653,
+          "acceptedChangedContexts": 11,
+          "improved": 0,
+          "equal": 18,
+          "harmed": 0,
+          "independentValidation": "passed",
+          "answerLevelState": "not_admitted"
+        }
+      },
+      "failedChecks": [
+        "test.answerAtomSupportRecallDelta",
+        "test.improvedDirectProxyCases"
+      ],
+      "promotionAllowed": false,
+      "interpretation": "D8 safely reduced mean test injection by 2.92% with zero direct-proxy harms, but exact-id utility produced no quality gain and no improved direct-support case on the untouched test. The 2.13-point consumed full-feedback gain was self-credit and did not transfer. D8 is retained only as a safe-compression negative result; V1 remains incumbent."
     }
   ]
 }

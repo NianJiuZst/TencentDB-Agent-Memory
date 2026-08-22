@@ -1,0 +1,22 @@
+{
+  "validationVersion": "lifecycle-longmemeval-v2-utility-test-validation-v1.0",
+  "sourceProtocolVersion": "lifecycle-longmemeval-v2-utility-gate-v1.0",
+  "status": "passed",
+  "evaluationStatus": "test_failed",
+  "rows": 24,
+  "directProxyRows": 18,
+  "mismatches": {},
+  "sourceSha256": {
+    "cases": "d6233b375ce7ee437185bdd5d61338334b6dd72d83003f5a68c86687589e29ef",
+    "summary": "85a2a87f5bbf81a045e2fc1850df3db1081dd991555c040b290b163158a691e1",
+    "baselineCases": "5b6c8f0aa65a732f3f9611ccdfdce8de4d8a94d59083b8395e84cef7bd087c25",
+    "baselineSummary": "0c227ebd9aae5ca946459d3b9b0286400d14570085192e4265a55b74222f5af2",
+    "utility": "1b3f8ccbc38ecd53111775379805b506bd94ebd066ce625092f77c8efc6c88cd"
+  },
+  "answerLevelState": "not_admitted",
+  "limitations": [
+    "The validator independently rebuilds public units and recomputes utility selection, cost certificates, direct support, aggregates, bootstrap, and the frozen test gate.",
+    "It does not rerun MemoryCore FTS5; candidate ordering remains covered by the locked baseline identity check and production test run.",
+    "The direct metric is answer-atom occurrence rather than task success or answer accuracy."
+  ]
+}

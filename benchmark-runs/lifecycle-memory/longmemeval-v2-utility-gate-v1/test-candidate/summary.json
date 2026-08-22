@@ -1,0 +1,124 @@
+{
+  "protocolVersion": "lifecycle-longmemeval-v2-utility-gate-v1.0",
+  "mode": "utility_gate",
+  "phase": "test",
+  "status": "test_failed",
+  "candidatePreScoreCommit": "ab95ddec8e5fcd8c7ab6c09c38b2704b156487b5",
+  "sourceSha256": {
+    "baselineCases": "5b6c8f0aa65a732f3f9611ccdfdce8de4d8a94d59083b8395e84cef7bd087c25",
+    "baselineSummary": "0c227ebd9aae5ca946459d3b9b0286400d14570085192e4265a55b74222f5af2",
+    "utilityArtifact": "1b3f8ccbc38ecd53111775379805b506bd94ebd066ce625092f77c8efc6c88cd"
+  },
+  "cases": 24,
+  "directProxyCases": 18,
+  "utility": {
+    "entries": 70,
+    "eligibleEntries": 8,
+    "sourceQuestions": 47,
+    "feedbackEvents": 139
+  },
+  "metrics": {
+    "baseAnswerAtomSupportRecall": 0.1435185185185185,
+    "answerAtomSupportRecall": 0.1435185185185185,
+    "answerAtomSupportRecallDelta": 0,
+    "anyAnswerAtomSupportedRateDelta": 0,
+    "allAnswerAtomsSupportedRateDelta": 0,
+    "meanBaseInjectedTokens": 2853,
+    "meanInjectedTokens": 2769.7083333333335,
+    "meanInjectedTokenFraction": -0.029194415235424653,
+    "acceptedChangedContexts": 11,
+    "auxiliaryUseRate": 0.4583333333333333,
+    "improved": 0,
+    "equal": 18,
+    "harmed": 0,
+    "tokenViolations": 0,
+    "ordinaryFallbacks": 0,
+    "selectionLatencyP50Ms": 0.02925000002142042,
+    "selectionLatencyP95Ms": 0.05324999999720603,
+    "totalQueryLatencyP50Ms": 41.18650000006892,
+    "totalQueryLatencyP95Ms": 97.37316599988844
+  },
+  "answerAtomSupportRecallDeltaBootstrap": {
+    "mean": 0,
+    "lower": 0,
+    "upper": 0,
+    "questions": 18,
+    "strata": 2,
+    "samples": 20000,
+    "seed": 20260908
+  },
+  "nullReasons": {
+    "no_positive_utility": 11,
+    "no_trajectory_coherence": 2
+  },
+  "forcedFallbackMismatches": {
+    "disabled": 0,
+    "missingTable": 0,
+    "overflow": 0,
+    "timeout": 0,
+    "corrupt": 0
+  },
+  "byDomain": {
+    "enterprise": {
+      "cases": 10,
+      "directProxyCases": 7,
+      "baseAnswerAtomSupportRecall": 0.14285714285714285,
+      "answerAtomSupportRecall": 0.14285714285714285,
+      "answerAtomSupportRecallDelta": 0,
+      "meanInjectedTokenFraction": 0,
+      "acceptedChangedContexts": 0,
+      "improved": 0,
+      "harmed": 0
+    },
+    "web": {
+      "cases": 14,
+      "directProxyCases": 11,
+      "baseAnswerAtomSupportRecall": 0.14393939393939392,
+      "answerAtomSupportRecall": 0.14393939393939392,
+      "answerAtomSupportRecallDelta": 0,
+      "meanInjectedTokenFraction": -0.05202477618155321,
+      "acceptedChangedContexts": 11,
+      "improved": 0,
+      "harmed": 0
+    }
+  },
+  "index": {
+    "enterprise": {
+      "trajectories": 100,
+      "states": 3358,
+      "rawUnits": 28903,
+      "transitionUnits": 11124,
+      "rawBuildLatencyMs": 320172.571667,
+      "transitionBuildLatencyMs": 38847.240499999956
+    },
+    "web": {
+      "trajectories": 100,
+      "states": 1737,
+      "rawUnits": 23532,
+      "transitionUnits": 6426,
+      "rawBuildLatencyMs": 166416.85166699998,
+      "transitionBuildLatencyMs": 12902.719208999886
+    }
+  },
+  "casesSha256": "d6233b375ce7ee437185bdd5d61338334b6dd72d83003f5a68c86687589e29ef",
+  "gate": {
+    "passed": false,
+    "checks": {
+      "answerAtomSupportRecallDelta": false,
+      "answerAtomSupportRecallBootstrapLower": true,
+      "allAnswerAtomsSupportedRateDelta": true,
+      "improvedDirectProxyCases": false,
+      "harmedDirectProxyCases": true,
+      "meanInjectedTokens": true,
+      "tokenViolations": true,
+      "ordinaryFallbacks": true,
+      "selectionLatency": true,
+      "disabledFallback": true,
+      "missingTableFallback": true,
+      "overflowFallback": true,
+      "timeoutFallback": true,
+      "corruptFallback": true
+    }
+  },
+  "answerLevelState": "not_admitted"
+}

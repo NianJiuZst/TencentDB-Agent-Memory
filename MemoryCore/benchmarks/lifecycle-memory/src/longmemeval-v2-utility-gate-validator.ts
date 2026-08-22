@@ -26,7 +26,7 @@ import type { MemoryUnit } from "./types.js";
 
 type AuditMode = LongMemEvalV2UtilityGateCase["auditMode"];
 
-interface IndependentUnit extends MemoryUnit {
+export interface IndependentUtilityUnit extends MemoryUnit {
   tokenCount: number;
 }
 
@@ -125,7 +125,7 @@ function normalize(value: string): string {
     .trim();
 }
 
-function independentSupport(
+export function independentlyScoreLongMemEvalV2Support(
   question: LongTaskQuestion,
   contents: string[],
 ): IndependentSupport | null {
@@ -150,7 +150,9 @@ function independentSupport(
   };
 }
 
-function independentUtility(feedback: TransitionFeedback[]): TransitionUtilityTable {
+export function independentlyLearnLongMemEvalV2Utility(
+  feedback: TransitionFeedback[],
+): TransitionUtilityTable {
   const rewards = new Map<string, number[]>();
   for (const row of feedback) {
     for (const id of [...new Set(row.transitionIds)]) {
@@ -192,7 +194,7 @@ function trajectoryId(id: string, kind: "raw" | "transition"): string | null {
 
 function pack(
   ids: string[],
-  units: Map<string, IndependentUnit>,
+  units: Map<string, IndependentUtilityUnit>,
   tokenBudget: number,
   resultLimit: number,
 ): { ids: string[]; tokens: number } {
@@ -209,11 +211,12 @@ function pack(
   return { ids: selected, tokens };
 }
 
-function independentSelect(params: {
-  row: LongMemEvalV2UtilityGateCase;
+export function independentlySelectLongMemEvalV2UtilityContext(params: {
+  row: Pick<LongMemEvalV2UtilityGateCase,
+    "transitionCandidateIds" | "baseInjectedIds" | "baseInjectedTokens" | "baseCandidateIds">;
   table: TransitionUtilityTable;
-  rawUnits: Map<string, IndependentUnit>;
-  transitionUnits: Map<string, IndependentUnit>;
+  rawUnits: Map<string, IndependentUtilityUnit>;
+  transitionUnits: Map<string, IndependentUtilityUnit>;
 }): IndependentSelection {
   const utilityById = new Map(params.table.entries.map((entry) => [entry.memoryId, entry]));
   const ranks = new Map(params.row.transitionCandidateIds.map((id, index) => [id, index]));
@@ -457,7 +460,7 @@ export async function validateLongMemEvalV2UtilityGate(params: {
   const behaviorRows = [...parseBehavior(developmentText), ...parseBehavior(validationText)];
   const behaviorByQuestion = new Map(behaviorRows.map((row) => [row.questionId, row]));
   const feedback = feedbackFrom(behaviorRows);
-  const fullTable = independentUtility(feedback);
+  const fullTable = independentlyLearnLongMemEvalV2Utility(feedback);
   const mismatches: Record<string, number> = {};
   const developmentDigest = sha256(developmentText);
   const validationDigest = sha256(validationText);
@@ -509,9 +512,9 @@ export async function validateLongMemEvalV2UtilityGate(params: {
     values.push(trajectory);
     byDomain.set(trajectory.domain, values);
   }
-  const rawUnits = new Map<string, IndependentUnit>();
-  const transitionUnits = new Map<string, IndependentUnit>();
-  const addUnits = (target: Map<string, IndependentUnit>, units: MemoryUnit[]) => {
+  const rawUnits = new Map<string, IndependentUtilityUnit>();
+  const transitionUnits = new Map<string, IndependentUtilityUnit>();
+  const addUnits = (target: Map<string, IndependentUtilityUnit>, units: MemoryUnit[]) => {
     for (const unit of units) target.set(unit.id, { ...unit, tokenCount: encoding.encode(unit.content).length });
   };
   for (const domainTrajectories of byDomain.values()) {
@@ -562,8 +565,15 @@ export async function validateLongMemEvalV2UtilityGate(params: {
     }
     const table = row.auditMode === "deployment_full_feedback"
       ? fullTable
-      : independentUtility(feedback.filter((item) => item.questionId !== row.questionId));
-    const expected = independentSelect({ row, table, rawUnits, transitionUnits });
+      : independentlyLearnLongMemEvalV2Utility(
+        feedback.filter((item) => item.questionId !== row.questionId),
+      );
+    const expected = independentlySelectLongMemEvalV2UtilityContext({
+      row,
+      table,
+      rawUnits,
+      transitionUnits,
+    });
     if (row.utilityEntries !== table.entries.length
       || row.eligibleUtilityEntries !== table.entries.filter((entry) => entry.eligible).length
       || !sameIds(row.injectedIds, expected.injectedIds)
@@ -588,9 +598,15 @@ export async function validateLongMemEvalV2UtilityGate(params: {
       increment(mismatches, "unknown_injected_unit");
       continue;
     }
-    const support = independentSupport(question, selectedUnits.map((unit) => unit!.content));
+    const support = independentlyScoreLongMemEvalV2Support(
+      question,
+      selectedUnits.map((unit) => unit!.content),
+    );
     const baseUnits = row.baseInjectedIds.map((id) => rawUnits.get(id));
-    const baseSupport = independentSupport(question, baseUnits.map((unit) => unit!.content));
+    const baseSupport = independentlyScoreLongMemEvalV2Support(
+      question,
+      baseUnits.map((unit) => unit!.content),
+    );
     if ((support !== null) !== row.directProxy) increment(mismatches, "direct_proxy_flag");
     if (!support || !baseSupport) {
       if ([row.answerAtomCount, row.supportedAtomCount, row.answerAtomSupportRecall,

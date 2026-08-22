@@ -17,6 +17,7 @@ This file is the persistent direction registry for iterative work above the fixe
 | D5 | Target-keyed state projection on MemOps | Value-substring invalidation versus explicit operation target state | Public gold operation traces shared by every arm | Rejected at untouched test uncertainty gate | Positive stale-removal signal; no answer-level promotion |
 | D6 | Incumbent-preserving state composition | Select V1 or target-state projection under a structural dominance certificate | Graph-known current/stale units; no evaluation labels at runtime | Post-hoc safety viability passed | Requires a new confirmation boundary; V1 remains incumbent |
 | D7 | Bounded transition-diff auxiliary organization | Raw accessibility-tree windows versus pre/action/post change units | Fresh LongMemEval-V2 development and validation questions | Rejected at validation gate | Test stayed unread; unconditional auxiliary injection did not transfer |
+| D8 | Feedback-learned transition utility gate | Exact transition utility, coherence, cost certificate, and a Base null action | D7 development/validation feedback plus one untouched test | Rejected at untouched test | Safe compression transferred, but direct support did not improve |
 
 ## Why D1 is first
 
@@ -95,6 +96,16 @@ The population contains 86 text-only dynamic-environment questions split once, s
 That signal did not transfer. On the 15 direct validation questions, answer-atom support and all-atom support both fell by 6.67 points, no case improved, one was harmed, and mean tokens increased by 3.50%. The effect, all-support, and token checks failed; latency, capacity, ordinary operation, and exact disabled/missing/timeout/corrupt fallbacks passed. An independent validator rebuilt both representations and reproduced all 20 validation rows, aggregates, bootstrap values, and gates with zero mismatch. D7 is rejected, and the 24 test questions remain unread.
 
 The negative result narrows the next direction: transition diffs are sometimes useful evidence, but treating them as an always-on replacement budget is unsafe. A follow-up may treat Base versus transition augmentation as a bounded action with a per-query cost constraint and label-free runtime features. Because that hypothesis was formed after D7 validation, it requires a new frozen protocol and can use the untouched 24-question split only once.
+
+## Why D8 adds feedback and a null action
+
+D8 tests the narrower lesson from MemRL and AdaMEM: semantic retrieval and learned utility should be separated, and the system should be allowed to decline auxiliary memory. It does not reproduce either training system. A deterministic sidecar assigns each exact transition-memory id the mean answer-support delta observed under D7, admits only memories with positive mean and no negative reward, and returns exact Base unless trajectory coherence and a per-query no-token-increase certificate both pass. Runtime selection cannot read answers, evaluator type, question ids, split labels, or current outcomes.
+
+All 62 D7 development and validation questions are explicitly consumed feedback. Leave-one-question-out auditing changed 18 contexts, reduced tokens by 1.47%, and produced zero direct-support gains or harms. The full-feedback deployment table showed a 2.13-point support gain on the same consumed population, but that is self-credit and was never treated as confirmation. An independent validator rebuilt utility credit, selection, packing, metrics, and admission with zero mismatch before the locked 24-question test was read.
+
+The untouched test rejects D8. Eleven of 24 contexts changed and mean injected tokens fell by 2.92%, with no per-query budget violations, fallback mismatches, or direct-support harms. However, support recall changed by exactly zero (20,000-draw stratified bootstrap interval [0, 0]), and no direct case improved. Enterprise selected the null action for every question; all 11 accepted web changes were quality-neutral. The direct gate therefore failed before any MiniMax-M3 or DeepSeek-V4Flash answer calls.
+
+This is evidence for safe compression, not self-improving memory quality. Exact memory ids do not transfer utility to unseen trajectories, and the consumed full-feedback lift was not predictive of fresh benefit. D9 must change the representation rather than retune D8 on its consumed test: a portable action-outcome or procedure memory learned from successful trajectories will be investigated on a newly split procedure-question population with a procedure-specific direct metric.
 
 ## Iteration rule
 
