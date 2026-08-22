@@ -1,0 +1,197 @@
+{
+  "protocolVersion": "lifecycle-longmemeval-v2-premise-evidence-v1.0",
+  "direction": "D14 bounded closed-world premise evidence over an exact MemoryCore Base prefix",
+  "preScoreCommitRequired": true,
+  "evidenceRole": "A public LongMemEval-V2 method-validation experiment for correction-aware memory injection. It is not a final claim about programming-agent sessions.",
+  "researchBasis": {
+    "longMemEvalV2": {
+      "paper": "https://arxiv.org/abs/2605.12493",
+      "repository": "https://github.com/xiaowu0162/LongMemEval-V2",
+      "revision": "2cc8c540bdb87fe6761629b585e727e1c4704520",
+      "borrowedPrinciple": "Flawed-premise answers must identify and correct the premise; a generic UNKNOWN is not sufficient.",
+      "officialEvaluatorSha256": "f8ba659e237c4282a07a92538090ea500ce8483820b390b1d19af187c01417ac"
+    },
+    "sufficientContext": {
+      "paper": "https://arxiv.org/abs/2411.06037",
+      "borrowedPrinciple": "Separate evidence sufficiency from answer generation and use selective behavior when support is absent.",
+      "scopeDifference": "D14 uses deterministic structural certificates rather than an LLM sufficiency classifier."
+    },
+    "correctiveRag": {
+      "paper": "https://arxiv.org/abs/2401.15884",
+      "borrowedPrinciple": "Route only high-confidence retrieval outcomes into a bounded corrective path and retain a safe base path.",
+      "scopeDifference": "D14 does not train a retrieval evaluator or perform web search."
+    },
+    "overSearching": {
+      "paper": "https://aclanthology.org/2026.eacl-long.361/",
+      "borrowedPrinciple": "Relevant negative evidence can improve abstention, while bulk synthetic negative-document augmentation is diluted by retrieval ranking.",
+      "scopeDifference": "D14 materializes one source-proven, query-scoped structural contradiction instead of adding synthetic negative documents."
+    },
+    "crepe": {
+      "paper": "https://arxiv.org/abs/2211.17257",
+      "borrowedPrinciple": "False-premise detection is bottlenecked by retrieving the evidence needed to refute the premise.",
+      "scopeDifference": "D14 covers only ordered UI inventories with mechanically checkable adjacency or boundary relations."
+    }
+  },
+  "dataset": {
+    "name": "LongMemEval-V2",
+    "benchmarkRepositoryRevision": "2cc8c540bdb87fe6761629b585e727e1c4704520",
+    "tier": "small",
+    "manifestSha256": "70a2be47e7117ef8f2ee77aa499c6126358b5f9ffa28a848b5c565a4ec8fc99a",
+    "questionsSha256": "0a3ae5ebea938c24d7800e1e0b0828e08ae1646f939a53853b2b8cdc08e292b7",
+    "haystackSha256": "9b5301defb23a088a5f06e45ff8d5f35e569d78305a66d492046a9fff9b46593",
+    "trajectoriesSha256": "363cec9a8e87aa8d9101ce4e600aadbf7031d674056ebe4f969e8424abc5f3c6",
+    "questions": 451,
+    "trajectoryRows": 1870,
+    "selectedTrajectories": 200
+  },
+  "population": {
+    "premise": "Text-only static-environment-abs and dynamic-environment-abs questions after four permanently excluded smoke cases.",
+    "controls": "The frozen D13 text-only static-environment questions, preserving their existing development/validation/test assignment.",
+    "development": { "premise": 33, "controls": 25, "total": 58 },
+    "validation": { "premise": 23, "controls": 20, "total": 43 },
+    "test": { "premise": 36, "controls": 23, "total": 59 }
+  },
+  "split": {
+    "protocolVersion": "lifecycle-longmemeval-v2-premise-evidence-split-v1.0",
+    "fileSha256": "afd0ee4782269d7242142e1ae5dc4b217543882d1bbbfabb8ba98c8394e5acef",
+    "canonicalSha256": "325105dfbffb4d564229400f5cadd424bbad0a34c4663afadd4c13897f0bbdb0",
+    "readOrder": "Freeze protocol and implementation, run development Base, run development candidate, run the development answer panel only if the direct gate passes, and read validation only after committed independent validation and answer admission."
+  },
+  "design": {
+    "developmentOnly": true,
+    "searchedConfigurations": 480,
+    "summarySha256": "06bf54325a182a5a217ebbd2200f3d181a6e8272a0f492041a047005a520b7bc",
+    "casesSha256": "6d93d77b1cc4db81255e256158e4f0a766dfbfdee7abbf0167876bb387265d4b",
+    "selectedPolicyId": "premise-evidence-ktalico-mi8-co2-ds1-cc1200",
+    "selectedBeforeAnswerCalls": true,
+    "observedTriggerCount": 2,
+    "observedValidTriggerCount": 2,
+    "observedInvalidTriggerCount": 0,
+    "observedControlTriggerCount": 0
+  },
+  "baseline": {
+    "engine": "MemoryCore SQLite L0 FTS5 through executeConversationSearch",
+    "embedding": "disabled",
+    "memoryForm": "bounded raw accessibility-tree character windows",
+    "rawChunkMaxCharacters": 3200,
+    "rawChunkOverlapCharacters": 320,
+    "maxRawChunksPerState": 128,
+    "candidateLimit": 40,
+    "resultLimit": 6,
+    "injectionTokenBudget": 3072,
+    "tokenizer": "cl100k_base",
+    "queryTransform": "Remove final-answer formatting instructions only; retain the substantive question and options."
+  },
+  "candidate": {
+    "policyId": "premise-evidence-ktalico-mi8-co2-ds1-cc1200",
+    "scopeAdapterId": "longmemeval-v2-url-scope-v1",
+    "maxTrajectories": 200,
+    "maxStates": 6000,
+    "maxInventories": 200000,
+    "maxItemsPerInventory": 8,
+    "maxIndexKeys": 1000000,
+    "maxSupportsPerKey": 64,
+    "maxCapsuleCharacters": 1200,
+    "minContextOverlap": 2,
+    "minDistinctTrajectories": 1,
+    "allowedInventoryKinds": ["tabs", "list", "columns"],
+    "maxCapsuleTokens": 128,
+    "maxCandidateItems": 7,
+    "maxCandidateTokens": 3200,
+    "maxSelectionLatencyMs": 25,
+    "selectionRule": "Parse only quoted adjacency or boundary relations, require an exact same-domain and same-environment structural witness plus two non-anchor context-token overlaps, and choose deterministically by overlap, inventory size, recency, and stable id.",
+    "versionRule": "Within each trajectory and page-container scope, retain only the latest observed inventory and count superseded versions.",
+    "capsuleRule": "Append at most one compact source-proven ordered-inventory capsule after every byte-identical Base item. The capsule states only the mechanically certified adjacency or boundary conclusion.",
+    "baseCertificate": "Every Base item id, content, token count, and order is a byte-identical prefix of the candidate context.",
+    "evidenceCertificate": "The selected anchors must be adjacent or terminal in the source inventory; the capsule must name the anchors and trajectory-state provenance; its source observation SHA-256 is logged.",
+    "ordinaryNoop": "Unsupported operators, absent witnesses, insufficient context overlap, or insufficient independent support return exact Base and are not operational failures.",
+    "hardFallback": "Disabled, index failure, parse or selection exception, timeout, corrupt source, token or item overflow, or certificate failure returns exact Base."
+  },
+  "forbiddenRuntimeInputs": [
+    "reference answer",
+    "evaluator name or question type",
+    "question id or allowlist",
+    "development, validation, or test phase label",
+    "question outcome",
+    "gold trajectory or state attribution"
+  ],
+  "directMetric": {
+    "primary": "challenge precision",
+    "definitions": {
+      "challengePrecision": "Reference-aligned premise challenges divided by all premise challenges.",
+      "premiseRecall": "Reference-aligned premise challenges divided by all premise questions; this is trigger coverage, not end-to-end accuracy.",
+      "controlSpecificity": "One minus control challenges divided by control questions.",
+      "exactBaseNoopRate": "Ordinary no-op cases whose candidate context hash equals Base.",
+      "tokenCost": "Candidate minus Base cl100k tokens, reported over all cases and triggered cases.",
+      "latency": "Per-query sidecar selection latency, reported p50/p95; one-time index build is separate."
+    },
+    "referenceUseBoundary": "Reference answers are used only after selection to label whether a challenge conclusion agrees; they are never available to the runtime policy."
+  },
+  "directPhaseGate": {
+    "minValidPremiseChallenges": 1,
+    "maxInvalidPremiseChallenges": 0,
+    "maxControlChallenges": 0,
+    "maxFallbacks": 0,
+    "maxCertificateViolations": 0,
+    "maxBasePrefixViolations": 0,
+    "maxTokenViolations": 0,
+    "maxMeanInjectedTokenIncreaseFraction": 0.005,
+    "maxP95SelectionLatencyMs": 12,
+    "maxIndexBuildLatencyMs": 20000,
+    "requireExactOrdinaryNoops": true,
+    "requireExactForcedFallbacks": true,
+    "requireIndependentValidation": true
+  },
+  "answerLevelPanel": {
+    "runAfterDevelopmentDirectPassOnly": true,
+    "scope": "Only the two development questions whose memory context changed. Every unchanged premise and control contributes an exact paired delta of zero without a model call.",
+    "officialPromptCompatibility": "Use the LongMemEval-V2 domain system prompt, boxed-answer extraction, and strict llm_abstention_checker rubric from the frozen repository revision.",
+    "leaderboardBoundary": "The two requested judges replace the official default judge, so results are method-validation scores and not official leaderboard scores.",
+    "noOpenRouter": true,
+    "transport": "Call MiniMax and DeepSeek endpoints directly.",
+    "arms": ["base", "premise_evidence"],
+    "readers": [
+      { "id": "minimax-m3", "provider": "minimax", "model": "MiniMax-M3", "baseUrl": "https://api.minimaxi.com/v1", "apiKeyEnv": "MINIMAX_API_KEY", "temperature": 0.1, "topP": 0.95, "maxTokens": 700, "thinking": "disabled" },
+      { "id": "deepseek-v4-flash", "provider": "deepseek", "model": "deepseek-v4-flash", "baseUrl": "https://api.deepseek.com", "apiKeyEnv": "DEEPSEEK_API_KEY", "temperature": 0, "maxTokens": 700, "thinking": "disabled" }
+    ],
+    "judges": [
+      { "id": "minimax-m3", "provider": "minimax", "model": "MiniMax-M3", "baseUrl": "https://api.minimaxi.com/v1", "apiKeyEnv": "MINIMAX_API_KEY", "temperature": 0.1, "topP": 0.95, "maxTokens": 8192, "thinking": "disabled" },
+      { "id": "deepseek-v4-flash", "provider": "deepseek", "model": "deepseek-v4-flash", "baseUrl": "https://api.deepseek.com", "apiKeyEnv": "DEEPSEEK_API_KEY", "temperature": 0, "maxTokens": 8192, "thinking": "disabled" }
+    ],
+    "primaryAggregation": "DeepSeek judges MiniMax reader answers and MiniMax judges DeepSeek reader answers; full two-by-two judging is a sensitivity analysis.",
+    "expectedChangedQuestions": 2,
+    "expectedReaderCalls": 8,
+    "expectedJudgeCalls": 16,
+    "retries": 3,
+    "maxConcurrency": 2,
+    "gate": {
+      "minPrimaryImprovedReaderPairs": 1,
+      "maxPrimaryHarmedReaderPairs": 0,
+      "minUnanimousImprovedReaderPairs": 1,
+      "maxAnyJudgeHarmedReaderPairs": 0,
+      "minPerReaderPopulationWeightedDelta": 0,
+      "minFullFactorialPopulationWeightedDelta": 0,
+      "requireZeroModelMismatches": true,
+      "requireCompleteExecution": true
+    }
+  },
+  "phaseAdmission": {
+    "development": "Direct gate, independent validation, and answer-level gate must all pass before validation is read.",
+    "validation": "The same frozen policy and gate must pass before test is read.",
+    "test": "A pass is confirmation only; internal programming-session validation is still required.",
+    "failure": "A failed phase rejects D14 under this protocol. A follow-up must use a new version and cannot recycle unread later phases as design data."
+  },
+  "portability": {
+    "datasetAdapter": "LongTaskDatasetAdapter supplies neutral questions, trajectories, states, environment scope, and provenance.",
+    "scopeAdapter": "PremiseEvidenceScopeAdapter maps dataset-native state metadata to an application scope. An internal programming adapter can map repository, branch, workspace, service, environment, or symbol scope.",
+    "evidenceAdapter": "The current adapter extracts ordered UI tabs, lists, and columns. A programming adapter may expose ordered configuration keys, CLI flags, pipeline stages, API fields, or test-suite steps without changing routing, certificates, gates, or fallback.",
+    "unchangedLogic": "Version retention, structural witnesses, bounded routing, Base-prefix protection, cost accounting, decision logs, and hard fallback remain schema-independent."
+  },
+  "selfOptimization": {
+    "parameterSearch": "480 frozen policies on development structural labels only",
+    "selectionRule": "Maximize valid challenges subject to zero invalid premise and control challenges, then minimize actual capsule size and prefer stricter bounded policies.",
+    "selectedBeforeAnswerScores": true,
+    "postFreezeChangesAllowed": "Only bug fixes that preserve every frozen design decision. Decision-changing changes require a protocol version bump and fresh baselines.",
+    "claimBoundary": "Development is selection and causal smoke evidence, validation is replication evidence, and test is confirmation evidence."
+  }
+}

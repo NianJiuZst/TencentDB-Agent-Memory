@@ -62,6 +62,8 @@
     "split:lifecycle-longmemeval-v2-residual-patch": "tsx benchmarks/lifecycle-memory/src/longmemeval-v2-residual-patch-split-cli.ts",
     "split:lifecycle-longmemeval-v2-premise-evidence": "tsx benchmarks/lifecycle-memory/src/longmemeval-v2-premise-evidence-split-cli.ts",
     "design:lifecycle-longmemeval-v2-premise-evidence": "tsx benchmarks/lifecycle-memory/src/longmemeval-v2-premise-evidence-design-cli.ts",
+    "eval:lifecycle-longmemeval-v2-premise-evidence-baseline": "tsx benchmarks/lifecycle-memory/src/longmemeval-v2-premise-evidence-baseline-cli.ts",
+    "eval:lifecycle-longmemeval-v2-premise-evidence": "tsx benchmarks/lifecycle-memory/src/longmemeval-v2-premise-evidence-cli.ts",
     "eval:lifecycle-longmemeval-v2-residual-feedback-patch-baseline": "tsx benchmarks/lifecycle-memory/src/longmemeval-v2-residual-feedback-patch-baseline-cli.ts",
     "eval:lifecycle-longmemeval-v2-residual-feedback-patch": "tsx benchmarks/lifecycle-memory/src/longmemeval-v2-residual-feedback-patch-cli.ts",
     "eval:lifecycle-longmemeval-v2-trajectory-expansion-baseline": "tsx benchmarks/lifecycle-memory/src/longmemeval-v2-trajectory-expansion-baseline-cli.ts",

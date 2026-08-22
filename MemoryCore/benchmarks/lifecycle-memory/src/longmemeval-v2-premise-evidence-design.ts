@@ -171,7 +171,7 @@ function candidatePolicies(base: PremiseEvidenceConfig): PremiseEvidenceDesignPo
   return result.sort((left, right) => left.policyId.localeCompare(right.policyId));
 }
 
-function referenceConclusionAgreement(question: LongTaskQuestion,
+export function premiseEvidenceReferenceConclusionAgreement(question: LongTaskQuestion,
   decision: PremiseEvidenceDecision): boolean | null {
   if (!decision.usedPremiseEvidence) return null;
   if (!PHRASE_NEGATION.test(question.referenceAnswer)) return false;
@@ -194,7 +194,7 @@ function scorePolicy(params: {
     const label = params.premiseIds.has(question.id) ? "premise" : "control";
     const decision = selectPremiseEvidence({ question, index: policyIndex });
     const agreement = label === "premise"
-      ? referenceConclusionAgreement(question, decision) : null;
+      ? premiseEvidenceReferenceConclusionAgreement(question, decision) : null;
     return {
       protocolVersion: PROTOCOL_VERSION,
       phase: "development",
