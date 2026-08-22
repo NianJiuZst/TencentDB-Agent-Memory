@@ -1,0 +1,192 @@
+{
+  "protocolVersion": "lifecycle-longmemeval-v2-procedure-question-split-v1.0",
+  "dataset": {
+    "name": "LongMemEval-V2",
+    "revision": "2cc8c540bdb87fe6761629b585e727e1c4704520",
+    "questionsSha256": "0a3ae5ebea938c24d7800e1e0b0828e08ae1646f939a53853b2b8cdc08e292b7"
+  },
+  "seed": "d9-procedure-20260822-v1",
+  "unit": "question",
+  "population": "text-only procedure and procedure-abs",
+  "strata": "domain x question-type x evaluator-family",
+  "allocation": {
+    "target": {
+      "development": 0.5,
+      "validation": 0.25,
+      "test": 0.25
+    },
+    "smallStratumRule": "at least one question per phase; remainder stays in test"
+  },
+  "development": [
+    "0382ed92",
+    "07ab3723",
+    "07fff330",
+    "0b50ca0d",
+    "18f9d965",
+    "19c641bd",
+    "238c3621",
+    "23aecb38",
+    "25b00876",
+    "289aea4a",
+    "2b1a8fc6",
+    "2ca2d443",
+    "3269a3c5",
+    "32909aa1",
+    "3b8210a1",
+    "4f92aa38",
+    "51764e11",
+    "58c34839",
+    "5d6ecdeb",
+    "674a6972",
+    "7351cbcc",
+    "73cbefdc",
+    "756a7434",
+    "75816b26",
+    "99b6e22f",
+    "99bc5d0d",
+    "9b34f55b",
+    "9e05978c",
+    "9ed5a14d",
+    "a92dff92",
+    "aca57021",
+    "b4dcf650",
+    "b7cc4da2",
+    "bb7ebd5c",
+    "bfb3bcc4",
+    "c5dfa558",
+    "c6124506",
+    "cdd0e687",
+    "d16a18fe",
+    "d1f82e80",
+    "d72fb64d",
+    "d886b018",
+    "e334d5c6",
+    "ecca89b2",
+    "ecdb7d5e",
+    "edc22f24",
+    "eef545a0",
+    "f02bec54",
+    "f078f429",
+    "f13eb38d",
+    "f9c65fe6"
+  ],
+  "validation": [
+    "059974dd",
+    "07ffeedf",
+    "100ff132",
+    "1cf04706",
+    "1e011eb5",
+    "1fec75e5",
+    "3c0c1b19",
+    "4cb090a9",
+    "4d7dda89",
+    "507a0fe8",
+    "52dd33bb",
+    "60c7ca22",
+    "616c238d",
+    "73297783",
+    "767e4106",
+    "7df9e2ff",
+    "866a0f2e",
+    "8957a127",
+    "8bc6d989",
+    "95ae824f",
+    "97d5309a",
+    "9cae869c",
+    "a363341d",
+    "a59d50f7",
+    "c216174c"
+  ],
+  "test": [
+    "025db8ef",
+    "07b49858",
+    "0fe2c676",
+    "12f8cfd2",
+    "1b43f7df",
+    "30fab98c",
+    "31f146ba",
+    "3a2e9368",
+    "401566e6",
+    "4a4aad22",
+    "4df5e6b4",
+    "597645be",
+    "7e32e4a2",
+    "84238c8f",
+    "86fa86eb",
+    "92642fe7",
+    "99ae54d1",
+    "99fa7c96",
+    "a2a71197",
+    "b82d0dd6",
+    "c60f4681",
+    "c9568c9b",
+    "ccf29914",
+    "d63e8a7f",
+    "dc41b134",
+    "eb3cfd03",
+    "ecd9dda3",
+    "f23807ed",
+    "fc7d35d5",
+    "fec652a9"
+  ],
+  "counts": {
+    "development": {
+      "questions": 51,
+      "procedureQuestions": 35,
+      "abstentionQuestions": 16,
+      "byDomain": {
+        "enterprise": 21,
+        "web": 30
+      },
+      "byQuestionType": {
+        "procedure": 35,
+        "procedure-abs": 16
+      },
+      "byEvaluatorFamily": {
+        "abstention": 16,
+        "multiple_choice": 17,
+        "ordered_phrase": 7,
+        "phrase": 11
+      }
+    },
+    "validation": {
+      "questions": 25,
+      "procedureQuestions": 17,
+      "abstentionQuestions": 8,
+      "byDomain": {
+        "enterprise": 11,
+        "web": 14
+      },
+      "byQuestionType": {
+        "procedure": 17,
+        "procedure-abs": 8
+      },
+      "byEvaluatorFamily": {
+        "abstention": 8,
+        "multiple_choice": 8,
+        "ordered_phrase": 4,
+        "phrase": 5
+      }
+    },
+    "test": {
+      "questions": 30,
+      "procedureQuestions": 22,
+      "abstentionQuestions": 8,
+      "byDomain": {
+        "enterprise": 12,
+        "web": 18
+      },
+      "byQuestionType": {
+        "procedure": 22,
+        "procedure-abs": 8
+      },
+      "byEvaluatorFamily": {
+        "abstention": 8,
+        "multiple_choice": 10,
+        "ordered_phrase": 4,
+        "phrase": 8
+      }
+    }
+  },
+  "canonicalSha256": "80b61a909c9788f38d443169ee9cb7c7a60777ca7024c993c1dcf4417ce24417"
+}
