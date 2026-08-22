@@ -1,0 +1,71 @@
+{
+  "decisionVersion": "lifecycle-longmemeval-v2-premise-evidence-development-decision-v1.0",
+  "sourceProtocolVersion": "lifecycle-longmemeval-v2-premise-evidence-v1.0",
+  "phase": "development",
+  "status": "rejected_no_answer_level_gain",
+  "decision": "keep_validation_and_test_unread_and_pivot_to_D15",
+  "implementationCommit": "77c3114",
+  "validatorCommit": "c2da3c2",
+  "answerPanelCommit": "28635fc",
+  "artifacts": {
+    "baselineCasesSha256": "8a5dbbe7ddb1d63fc7d642e9c0b535893e012dec02a5de113eb1b6a9eb5e0278",
+    "baselineSummarySha256": "64477ca66454542cdbfadb7c322369a27096966ea353d01f93adc9d408810c5f",
+    "candidateCasesSha256": "723869b37b296268292aa6f7004a1ca3a6e1d96c4794f2aa2aa150cc6cd8b85d",
+    "candidateSummarySha256": "517546050cee54c25a6cce93e3efa54535166b10392ad48ea9b174c552516952",
+    "independentValidationSha256": "b2b067eb0da884cbbf504e07fa37d099be371633aa2400588f0b733d2d8daa9a",
+    "answerSummarySha256": "9cb125982579d49b9dd1bf8b8ac3226a3b33c06f487e203a707861e72d3c2511"
+  },
+  "directEvidence": {
+    "premiseQuestions": 33,
+    "controlQuestions": 25,
+    "changedContexts": 2,
+    "validPremiseChallenges": 2,
+    "invalidPremiseChallenges": 0,
+    "controlChallenges": 0,
+    "challengePrecision": 1,
+    "premiseRecall": 0.06060606060606061,
+    "exactBaseNoopRate": 1,
+    "meanInjectedTokenIncreaseFraction": 0.0011029842193151303,
+    "selectionLatencyP95Ms": 0.13870800000040617,
+    "forcedFallbackMismatches": 0,
+    "independentValidationMismatches": 0
+  },
+  "answerEvidence": {
+    "changedQuestions": 2,
+    "changedReaderPairs": 4,
+    "primaryImprovedReaderPairs": 0,
+    "primaryEqualReaderPairs": 4,
+    "primaryHarmedReaderPairs": 0,
+    "unanimousImprovedReaderPairs": 0,
+    "anyJudgeHarmedReaderPairs": 0,
+    "primaryPopulationWeightedDelta": 0,
+    "fullFactorialPopulationWeightedDelta": 0.004310344827586207,
+    "judgeAgreementRate": 0.875,
+    "readerCalls": 8,
+    "judgeCalls": 16,
+    "readerRetries": 0,
+    "judgeRetries": 0,
+    "modelMismatches": 0,
+    "parsedUnknownAnswers": 8,
+    "correctiveFullResponsesWithUnknownFinal": 1
+  },
+  "failedFrozenChecks": [
+    "primaryImprovement",
+    "unanimousImprovement"
+  ],
+  "diagnosis": {
+    "supported": "The structural sidecar found two source-certified refutations with no false trigger, no Base mutation, and negligible average token cost.",
+    "unsupported": "The evidence capsule did not reliably change the readers' final answer mode. Every extracted final answer was UNKNOWN; one MiniMax full response described the correction but still finalized UNKNOWN.",
+    "causalBoundary": "D14 establishes evidence reachability and safety, but does not establish answer-quality gain. The single favorable self-judgment is excluded by the frozen crossed and unanimous gates.",
+    "likelyMechanism": "The capsule expressed the contradiction as prose but did not carry an explicit, typed sufficiency/refutation state that distinguishes answerable correction from evidence-insufficient abstention."
+  },
+  "nextDirection": {
+    "id": "D15",
+    "name": "typed refutation and sufficiency contract",
+    "designData": "D14 development questions, contexts, answers, and judgments only",
+    "freshDataState": "D14 validation and test remain unread",
+    "singleCausalChange": "Keep the D14 trigger, source witness, Base prefix, token bounds, reader prompt, models, and judges fixed; change only the trusted auxiliary capsule renderer to expose REFUTES_PREMISE plus SUFFICIENT_FOR_CORRECTION and a bounded corrected conclusion.",
+    "researchBoundary": "The typed state is a deterministic consequence of the structural certificate, not an LLM label and not a gold-derived answer.",
+    "promotionRule": "Use development only for renderer design. Freeze one renderer before reading validation; require answer-level replication on validation before any test read."
+  }
+}

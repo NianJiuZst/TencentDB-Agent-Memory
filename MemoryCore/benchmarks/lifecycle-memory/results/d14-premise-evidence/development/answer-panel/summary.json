@@ -1,0 +1,122 @@
+{
+  "protocolVersion": "lifecycle-longmemeval-v2-premise-evidence-v1.0",
+  "phase": "development",
+  "status": "development_answer_failed",
+  "nextAction": "reject_D14_and_keep_validation_unread",
+  "generatedAt": "2026-08-22T17:43:42.278Z",
+  "inputSha256": {
+    "baselineCases": "8a5dbbe7ddb1d63fc7d642e9c0b535893e012dec02a5de113eb1b6a9eb5e0278",
+    "baselineSummary": "64477ca66454542cdbfadb7c322369a27096966ea353d01f93adc9d408810c5f",
+    "candidateCases": "723869b37b296268292aa6f7004a1ca3a6e1d96c4794f2aa2aa150cc6cd8b85d",
+    "candidateSummary": "517546050cee54c25a6cce93e3efa54535166b10392ad48ea9b174c552516952",
+    "independentValidation": "b2b067eb0da884cbbf504e07fa37d099be371633aa2400588f0b733d2d8daa9a"
+  },
+  "population": {
+    "totalQuestions": 58,
+    "changedQuestions": 2,
+    "unchangedQuestionsAssignedZeroDeltaWithoutCalls": 56,
+    "readers": 2,
+    "judges": 2
+  },
+  "primaryCrossed": {
+    "improvedReaderPairs": 0,
+    "equalReaderPairs": 4,
+    "harmedReaderPairs": 0,
+    "changedReaderPairs": 4,
+    "changedPairMeanDelta": 0,
+    "populationWeightedDelta": 0,
+    "perReaderPopulationWeightedDelta": {
+      "minimax-m3": 0,
+      "deepseek-v4-flash": 0
+    }
+  },
+  "fullFactorialSensitivity": {
+    "unanimousImprovedReaderPairs": 0,
+    "anyJudgeHarmedReaderPairs": 0,
+    "populationWeightedDelta": 0.004310344827586207,
+    "judgeAgreementRate": 0.875
+  },
+  "changedRows": [
+    {
+      "questionId": "0ace674b",
+      "readerId": "minimax-m3",
+      "crossJudgeId": "deepseek-v4-flash",
+      "basePrimary": 0,
+      "candidatePrimary": 0,
+      "primaryDelta": 0,
+      "judgeDeltas": {
+        "minimax-m3": 1,
+        "deepseek-v4-flash": 0
+      }
+    },
+    {
+      "questionId": "0ace674b",
+      "readerId": "deepseek-v4-flash",
+      "crossJudgeId": "minimax-m3",
+      "basePrimary": 0,
+      "candidatePrimary": 0,
+      "primaryDelta": 0,
+      "judgeDeltas": {
+        "minimax-m3": 0,
+        "deepseek-v4-flash": 0
+      }
+    },
+    {
+      "questionId": "7ebb0b95",
+      "readerId": "minimax-m3",
+      "crossJudgeId": "deepseek-v4-flash",
+      "basePrimary": 0,
+      "candidatePrimary": 0,
+      "primaryDelta": 0,
+      "judgeDeltas": {
+        "minimax-m3": 0,
+        "deepseek-v4-flash": 0
+      }
+    },
+    {
+      "questionId": "7ebb0b95",
+      "readerId": "deepseek-v4-flash",
+      "crossJudgeId": "minimax-m3",
+      "basePrimary": 0,
+      "candidatePrimary": 0,
+      "primaryDelta": 0,
+      "judgeDeltas": {
+        "minimax-m3": 0,
+        "deepseek-v4-flash": 0
+      }
+    }
+  ],
+  "operationalIntegrity": {
+    "readerCalls": 8,
+    "judgeCalls": 16,
+    "readerRetries": 0,
+    "judgeRetries": 0,
+    "modelMismatches": 0,
+    "expectedReaderCalls": 8,
+    "expectedJudgeCalls": 16
+  },
+  "answerGate": {
+    "passed": false,
+    "checks": {
+      "completeExecution": true,
+      "primaryImprovement": false,
+      "noPrimaryHarm": true,
+      "unanimousImprovement": false,
+      "noAnyJudgeHarm": true,
+      "perReaderNonInferiority": true,
+      "fullFactorialNonInferiority": true,
+      "returnedModels": true
+    },
+    "failedChecks": [
+      "primaryImprovement",
+      "unanimousImprovement"
+    ]
+  },
+  "caveats": [
+    "Only two development questions changed, so this is a causal smoke test with high precision but very low coverage and no narrow confidence interval.",
+    "Unchanged contexts contribute an exact paired delta of zero; no reader output is generated for those cells.",
+    "The primary crossed panel reduces self-judging but uses only the two user-specified model families.",
+    "The official LongMemEval-V2 prompt and grading rubric are retained, but the requested judges replace the official default judge, so this is not a leaderboard score.",
+    "A development pass permits validation; it does not establish programming-agent effectiveness."
+  ]
+}
