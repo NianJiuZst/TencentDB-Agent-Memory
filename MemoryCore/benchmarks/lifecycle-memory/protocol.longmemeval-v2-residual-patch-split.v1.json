@@ -1,0 +1,157 @@
+{
+  "protocolVersion": "lifecycle-longmemeval-v2-residual-patch-split-v1.0",
+  "sourceProtocolVersion": "lifecycle-longmemeval-v2-static-question-split-v1.0",
+  "sourceCanonicalSha256": "00e6807d69871f6f4bed5ba58ecdd95fb07bfcdd0c484e2cc43c1af4e7af1b8b",
+  "dataset": {
+    "name": "LongMemEval-V2",
+    "revision": "2cc8c540bdb87fe6761629b585e727e1c4704520",
+    "questionsSha256": "0a3ae5ebea938c24d7800e1e0b0828e08ae1646f939a53853b2b8cdc08e292b7"
+  },
+  "seed": "d13-residual-patch-20260822",
+  "unit": "question",
+  "population": "D12-unread text-only static-environment",
+  "excluded": "D12 development",
+  "strata": "domain x evaluator-family",
+  "allocation": {
+    "target": {
+      "development": 0.4,
+      "validation": 0.3,
+      "test": 0.3
+    },
+    "rule": "floor development and validation within each stratum; remainder stays in test"
+  },
+  "development": [
+    "057a2d4d",
+    "0cf979c4",
+    "0f970f01",
+    "10003186",
+    "10466872",
+    "15e5efa6",
+    "17a03f9b",
+    "4252cc1c",
+    "42a55762",
+    "5f100f22",
+    "6a2e74de",
+    "6a7808c5",
+    "6d975a08",
+    "762d34b8",
+    "77db204d",
+    "8b09f378",
+    "8c55d6bc",
+    "8f752563",
+    "a3a7b079",
+    "a45edf3e",
+    "c9c6a06a",
+    "d1d8cf9f",
+    "e4d36b58",
+    "f0882f6e",
+    "f4b2b1fb"
+  ],
+  "validation": [
+    "106c321b",
+    "19367bc7",
+    "26a038ce",
+    "2b96f402",
+    "2e90de97",
+    "41bb40df",
+    "436c58d5",
+    "4755f316",
+    "48ab5c3d",
+    "499488a6",
+    "60f2b293",
+    "70e79657",
+    "89439d62",
+    "8f70bc0e",
+    "9c32bca6",
+    "a7edfb7a",
+    "adddeaa5",
+    "bf98bb38",
+    "c56e69ca",
+    "e823a94a"
+  ],
+  "test": [
+    "0738c1ac",
+    "0f8c85a6",
+    "2975030d",
+    "3b375e30",
+    "40758d8b",
+    "4ca9f7d7",
+    "4ed01379",
+    "521b124f",
+    "597ca614",
+    "634973c3",
+    "8b2a9dd3",
+    "927c65a2",
+    "9680f077",
+    "98b62f3d",
+    "abadf765",
+    "ad903be2",
+    "ba047686",
+    "be541aa6",
+    "c1c000eb",
+    "ca8e070b",
+    "d5b9fda4",
+    "f1d8a168",
+    "f61a096f"
+  ],
+  "counts": {
+    "development": {
+      "questions": 25,
+      "directProxyQuestions": 23,
+      "answerOnlyQuestions": 2,
+      "byDomain": {
+        "enterprise": 14,
+        "web": 11
+      },
+      "byEnvironment": {
+        "webarena-cms": 5,
+        "webarena-onestopshop": 3,
+        "webarena-reddit": 3,
+        "workarena": 14
+      },
+      "byEvaluatorFamily": {
+        "direct_phrase": 23,
+        "multiple_choice": 2
+      }
+    },
+    "validation": {
+      "questions": 20,
+      "directProxyQuestions": 18,
+      "answerOnlyQuestions": 2,
+      "byDomain": {
+        "enterprise": 11,
+        "web": 9
+      },
+      "byEnvironment": {
+        "webarena-cms": 3,
+        "webarena-onestopshop": 2,
+        "webarena-reddit": 4,
+        "workarena": 11
+      },
+      "byEvaluatorFamily": {
+        "direct_phrase": 18,
+        "multiple_choice": 2
+      }
+    },
+    "test": {
+      "questions": 23,
+      "directProxyQuestions": 20,
+      "answerOnlyQuestions": 3,
+      "byDomain": {
+        "enterprise": 12,
+        "web": 11
+      },
+      "byEnvironment": {
+        "webarena-cms": 5,
+        "webarena-onestopshop": 2,
+        "webarena-reddit": 4,
+        "workarena": 12
+      },
+      "byEvaluatorFamily": {
+        "direct_phrase": 20,
+        "multiple_choice": 3
+      }
+    }
+  },
+  "canonicalSha256": "cf7818a0c83dc1cd6ed94bb31a9f403f73f9d3762f9f36ba7c1f1a5db60bbec6"
+}

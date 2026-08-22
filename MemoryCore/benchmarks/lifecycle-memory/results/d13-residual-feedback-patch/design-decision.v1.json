@@ -1,0 +1,41 @@
+{
+  "decisionVersion": "lifecycle-longmemeval-v2-residual-feedback-patch-design-decision-v1.0",
+  "status": "candidate_selected_before_fresh_scores",
+  "direction": "D13 bounded residual feedback patch over an exact Base prefix",
+  "problemResponse": "D12 improved two cases over D11 but harmed five cases versus Base because it inherited a lossy substitution. D13 never replaces Base items: one bounded provenance-bearing patch may be appended after the byte-identical Base context.",
+  "researchBasis": {
+    "feedbackAdaptation": {
+      "paper": "https://arxiv.org/abs/2604.06647",
+      "borrowedPrinciple": "Store and retrieve bounded corrective evidence at inference time so feedback can affect semantically related future queries without retraining.",
+      "scopeDifference": "D13 reuses the existing bounded local-progress table and one same-trajectory raw candidate; it does not use synthetic feedback as evaluation truth and does not claim PatchRAG's QA results."
+    },
+    "conformalPolicyControl": {
+      "paper": "https://arxiv.org/abs/2603.02196",
+      "borrowedPrinciple": "Treat the established Base path as the reference policy and explicitly limit candidate deviation.",
+      "scopeDifference": "Byte-identical Base-prefix and token certificates are engineering constraints, not CPC likelihood-ratio calibration; D13 makes no formal CPC risk guarantee."
+    },
+    "conformalContextEngineering": {
+      "paper": "https://arxiv.org/abs/2511.17908",
+      "repository": "https://github.com/hltcoe/conformal-context-engineering",
+      "borrowedPrinciple": "Choose the smallest context budget on a held-out design boundary and report coverage-quality-cost trade-offs.",
+      "scopeDifference": "D13 has too few exchangeable correction examples for a formal conformal coverage claim, so it reports empirical phase gates and bootstrap intervals only."
+    }
+  },
+  "selectedPolicy": {
+    "id": "residual-patch-local-maxnovel-pt48-ps4-pc20-rc40",
+    "maxPatchTokens": 48,
+    "maxPatchSpans": 4,
+    "candidateRule": "Route with the frozen bounded procedure and feedback sidecar. Among existing Base Top-40 candidates from that trajectory but absent from Base, choose one by maximum novel semantic-span count, then query coverage, lower patch tokens, earlier FTS rank, and stable id.",
+    "patchRule": "Greedily retain at most four verbatim semantic spans within 48 cl100k tokens, prioritize observable query overlap, render selected spans in source order, and append exactly one provenance-bearing patch after every byte-identical Base item.",
+    "ordinaryNoop": "No eligible route, external candidate, novel span, or patch that fits the bound returns exact Base without counting as operational fallback.",
+    "hardFallback": "Disabled, missing or corrupt feedback/index/candidate state, timeout, overflow, or certificate failure returns exact Base."
+  },
+  "selfOptimization": {
+    "feedbackUpdatedStructure": "The bounded local-progress table changes which coherent trajectory and verified actions may authorize a patch.",
+    "learnedParameter": "A deterministic 84-configuration search on the already-consumed D12 development split selected the smallest budget on a quality plateau.",
+    "designArtifact": "design-diagnostic-summary.v1.json",
+    "freshScoreReadsAtDecision": 0,
+    "postFreezeRule": "Any change to routing, ranking, patch construction, budget, gates, or split requires a new protocol version and rerun Base."
+  },
+  "claimBoundary": "The design proxy is monotone when Base is a byte-identical prefix, so zero direct harms alone are insufficient. Untouched phase gates must be followed by deterministic answer scoring and the requested MiniMax M3 and DeepSeek V4Flash readers before making an answer-level claim."
+}

@@ -1,0 +1,93 @@
+{
+  "summaryVersion": "lifecycle-longmemeval-v2-residual-feedback-patch-design-summary-v1.0",
+  "evidenceBoundary": "Only the already-consumed D12 development split was scored. D12 validation and test remained unread, and no fresh D13 phase was scored.",
+  "sourceArtifacts": {
+    "baselineCasesSha256": "5f78dc67bf8e331f17076358400aada51eea6eb9983d37c5f3343450e707ca28",
+    "baselineSummarySha256": "f4189c57ffa7cb1c0924fe1a60f8feafd83e9fbb81f3adcbc8898baac17df044",
+    "fullGeneratedGridSha256": "f182f3247c781d2ca1fc2e8350e4bf137f01f5ae80182f7f159f7d6a056ff65e",
+    "questions": 66,
+    "directProxyQuestions": 60
+  },
+  "searchSpace": {
+    "configurations": 84,
+    "eligibleConfigurations": 12,
+    "patchTokenBudgets": [48, 64, 80, 96, 128, 160, 192],
+    "patchSpanBudgets": [2, 4, 8],
+    "candidatePolicies": ["max_query_coverage", "max_novel_spans"],
+    "queryOverlapModes": ["required", "optional"]
+  },
+  "selected": {
+    "configId": "novel-all-t48-s4",
+    "maxPatchTokens": 48,
+    "maxPatchSpans": 4,
+    "externalCandidatePolicy": "max_novel_spans",
+    "requireQueryOverlap": false,
+    "locallyVerified": {
+      "answerAtomSupportRecall": 0.32083333333333336,
+      "baseAnswerAtomSupportRecall": 0.29583333333333334,
+      "deltaVsBase": 0.025,
+      "outcomesVsBase": {
+        "improved": 2,
+        "equal": 58,
+        "harmed": 0
+      },
+      "meanInjectedTokenFractionVsBase": 0.010032728227158616,
+      "patchUseRate": 0.6515151515151515,
+      "selectionLatencyP95Ms": 9.50399999995716,
+      "fallbacks": 0,
+      "certificateViolations": 0
+    },
+    "stepAgnostic": {
+      "answerAtomSupportRecall": 0.32083333333333336,
+      "deltaVsBase": 0.025,
+      "outcomesVsBase": {
+        "improved": 2,
+        "equal": 58,
+        "harmed": 0
+      },
+      "meanInjectedTokenFractionVsBase": 0.010080936745068048
+    },
+    "feedbackComparison": {
+      "changedContexts": 3,
+      "answerAtomSupportRecallDelta": 0,
+      "outcomes": {
+        "improved": 0,
+        "equal": 60,
+        "harmed": 0
+      },
+      "meanInjectedTokenDelta": -0.13636363636363635
+    }
+  },
+  "budgetStability": [
+    {"maxPatchTokens": 48, "bestDeltaVsBase": 0.025, "improved": 2, "harmed": 0, "meanTokenFractionVsBase": 0.010032728227158616},
+    {"maxPatchTokens": 64, "bestDeltaVsBase": 0.025, "improved": 2, "harmed": 0, "meanTokenFractionVsBase": 0.011961068943537212},
+    {"maxPatchTokens": 80, "bestDeltaVsBase": 0.025, "improved": 2, "harmed": 0, "meanTokenFractionVsBase": 0.012614562186309852},
+    {"maxPatchTokens": 96, "bestDeltaVsBase": 0.025, "improved": 2, "harmed": 0, "meanTokenFractionVsBase": 0.014676815452437042},
+    {"maxPatchTokens": 128, "bestDeltaVsBase": 0.025, "improved": 2, "harmed": 0, "meanTokenFractionVsBase": 0.016792633738463403},
+    {"maxPatchTokens": 160, "bestDeltaVsBase": 0.025, "improved": 2, "harmed": 0, "meanTokenFractionVsBase": 0.019497667243383532},
+    {"maxPatchTokens": 192, "bestDeltaVsBase": 0.025, "improved": 2, "harmed": 0, "meanTokenFractionVsBase": 0.021136756852305316}
+  ],
+  "improvedCases": [
+    {
+      "questionId": "5db4899c",
+      "domain": "web",
+      "baseSupport": 0,
+      "selectedSupport": 0.5,
+      "patchTokens": 41,
+      "patchSpans": 4,
+      "trajectoryId": "3331c568",
+      "externalCandidateRank": 21
+    },
+    {
+      "questionId": "9c074855",
+      "domain": "enterprise",
+      "baseSupport": 0,
+      "selectedSupport": 1,
+      "patchTokens": 47,
+      "patchSpans": 2,
+      "trajectoryId": "013696c4",
+      "externalCandidateRank": 5
+    }
+  ],
+  "interpretation": "The quality plateau from 48 through 192 tokens makes 48 the Pareto-minimal budget. Base-prefix preservation removes the D12 substitution loss in the direct support proxy, but downstream answer non-harm is not implied and must be gated separately on untouched data."
+}
