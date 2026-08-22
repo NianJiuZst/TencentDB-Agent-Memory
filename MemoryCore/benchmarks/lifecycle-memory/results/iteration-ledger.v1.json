@@ -565,6 +565,54 @@
       ],
       "promotionAllowed": false,
       "interpretation": "The binding-safe procedure representation produced a development signal, but both procedure arms reversed on validation. Whole-trajectory success gating was worse than ignoring outcomes on development and added no validation benefit. Final trajectory outcome is too coarse because failed runs can contain locally correct reusable steps; procedure-first packing can also evict unrelated Base evidence. D9 is rejected before test or answer evaluation, and D10 will test step-level progress credit with incumbent-preserving same-trajectory substitution."
+    },
+    {
+      "id": "D10-v1.0",
+      "direction": "locally verified incumbent-preserving procedure substitution",
+      "protocolVersion": "lifecycle-longmemeval-v2-local-substitution-v1.0",
+      "preScoreCommit": "d4b1111d9b474b5f44cc25f7b4c351e5be8bfd27",
+      "evidenceRole": "consumed D9 development-plus-validation mechanism audit with an unread D9 test lock",
+      "status": "rejected_at_consumed_audit_safety_gate",
+      "candidate": {
+        "policyId": "local-pc20-ms1-ma64-a128",
+        "procedureCandidateLimit": 20,
+        "maxSubstitutions": 1,
+        "maxActionsPerProcedure": 64,
+        "maxSafeAnchors": 128,
+        "feedbackEntries": 4895,
+        "locallyVerifiedEvents": 3719,
+        "feedbackRule": "local deterministic progress without a newly introduced explicit error",
+        "stepAgnosticAblation": true,
+        "replacementRule": "replace only exact Base items from one owning trajectory while preserving every unrelated Base item",
+        "costRule": "no per-query token or item increase",
+        "nullAction": "exact Base"
+      },
+      "results": {
+        "resultCard": "longmemeval-v2-local-substitution-result-card.v1.json",
+        "consumedAudit": {
+          "questions": 76,
+          "directProxyQuestions": 27,
+          "answerAtomSupportRecallDelta": 0.030864197530864196,
+          "answerAtomSupportRecallBootstrap95": [-0.07407407407407407, 0.1419753086419753],
+          "orderedSequenceSupportedRateDelta": 0.09090909090909091,
+          "meanInjectedTokenIncreaseFraction": -0.33554468282434446,
+          "improved": 3,
+          "equal": 23,
+          "harmed": 1,
+          "changedContextsVsStepAgnostic": 57,
+          "feedbackDeltaVsStepAgnostic": 0,
+          "independentAuditMismatches": 0,
+          "independentGateReproduction": "passed"
+        },
+        "test": "not_read",
+        "answerLevelState": "not_admitted"
+      },
+      "failedChecks": [
+        "consumedAudit.bootstrapLower",
+        "consumedAudit.harmedDirectProxyCases"
+      ],
+      "promotionAllowed": false,
+      "interpretation": "Same-trajectory substitution preserved every unrelated Base item, reduced mean tokens by 33.55%, and showed a +3.09-point consumed support estimate, but the interval crossed zero and one direct case was harmed. The decisive word appeared in body StaticText omitted by the safe-interactive-anchor capsule. Local progress feedback changed 57 contexts but added no support benefit over the agnostic arm. D10 is rejected before test; D11 will test bounded query-relevant body-evidence preservation rather than retuning D10."
     }
   ]
 }

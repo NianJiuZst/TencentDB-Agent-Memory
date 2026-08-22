@@ -1,0 +1,233 @@
+{
+  "protocolVersion": "lifecycle-longmemeval-v2-local-substitution-v1.0",
+  "mode": "local_substitution",
+  "phase": "consumed_audit",
+  "status": "consumed_audit_failed",
+  "preScoreCommit": "d4b1111d9b474b5f44cc25f7b4c351e5be8bfd27",
+  "authorizationSha256": null,
+  "baselineArtifacts": [
+    {
+      "casesSha256": "2d2908babe05e878adf2a870b003e77ce8bde71a9409b684f06d27f33f731a60",
+      "summarySha256": "a64a941f54b8aa65483f35847f3a14edc33337f20427ccf629af9710c1f204e8"
+    },
+    {
+      "casesSha256": "2e55aedd4c8b526b18012dc899c816cd354b7e2f892d1ecd18e8e19c6aedddb8",
+      "summarySha256": "bc52409ef1243f2f52dc26f3513b707458398ae90a84ed10088a54cb9a18165c"
+    }
+  ],
+  "index": {
+    "enterprise": {
+      "trajectories": 100,
+      "states": 3358,
+      "rawUnits": 28903,
+      "rawTruncatedStates": 0,
+      "procedureUnits": 100,
+      "actions": 3258,
+      "locallyVerifiedActions": 2314,
+      "maskedTargets": 566,
+      "truncatedProcedures": 12,
+      "rawBuildLatencyMs": 46.47975000000042,
+      "procedureBuildLatencyMs": 3910.873750000028
+    },
+    "web": {
+      "trajectories": 100,
+      "states": 1737,
+      "rawUnits": 23532,
+      "rawTruncatedStates": 0,
+      "procedureUnits": 100,
+      "actions": 1637,
+      "locallyVerifiedActions": 1405,
+      "maskedTargets": 562,
+      "truncatedProcedures": 0,
+      "rawBuildLatencyMs": 81.7079580000136,
+      "procedureBuildLatencyMs": 3839.90945799998
+    }
+  },
+  "feedback": {
+    "events": 4895,
+    "entries": 4895,
+    "capacity": 5200,
+    "available": true,
+    "failureReason": null,
+    "locallyVerifiedEvents": 3719
+  },
+  "armSummaries": [
+    {
+      "policyId": "local-pc20-ms1-ma64-a128",
+      "arm": "step_agnostic",
+      "cases": 76,
+      "directProxyCases": 27,
+      "orderedProxyCases": 11,
+      "metrics": {
+        "answerAtomSupportRecall": 0.17901234567901234,
+        "anyAnswerAtomSupportedRate": 0.2222222222222222,
+        "allAnswerAtomsSupportedRate": 0.14814814814814814,
+        "orderedSequenceSupportedRate": 0.09090909090909091,
+        "meanInjectedTokens": 1877.657894736842,
+        "meanInjectedItems": 2.460526315789474,
+        "queryLatencyP50Ms": 84.51612599985674,
+        "queryLatencyP95Ms": 213.00308500020765,
+        "tokenViolations": 0,
+        "fallbacks": 0,
+        "substitutionUseRate": 0.75,
+        "selectionLatencyP50Ms": 0.5014999997802079,
+        "selectionLatencyP95Ms": 2.0382919998373836,
+        "meanSafeAnchors": 7.355263157894737,
+        "meanVerifiedActions": 21.38157894736842
+      },
+      "deltasVsBaseline": {
+        "answerAtomSupportRecall": 0.030864197530864196,
+        "anyAnswerAtomSupportedRate": 0,
+        "allAnswerAtomsSupportedRate": 0.037037037037037035,
+        "orderedSequenceSupportedRate": 0.09090909090909091,
+        "meanInjectedTokens": -903.0526315789475,
+        "meanInjectedTokenFraction": -0.32475607332468986
+      },
+      "directProxyOutcomesVsBaseline": {
+        "improved": 3,
+        "equal": 23,
+        "harmed": 1
+      },
+      "byDomain": {
+        "enterprise": {
+          "directProxyCases": 5,
+          "baseAnswerAtomSupportRecall": 0.7,
+          "answerAtomSupportRecall": 0.6,
+          "answerAtomSupportRecallDelta": -0.09999999999999998,
+          "meanInjectedTokens": 1445.5
+        },
+        "web": {
+          "directProxyCases": 22,
+          "baseAnswerAtomSupportRecall": 0.022727272727272728,
+          "answerAtomSupportRecall": 0.08333333333333333,
+          "answerAtomSupportRecallDelta": 0.0606060606060606,
+          "meanInjectedTokens": 2191.9545454545455
+        }
+      },
+      "answerAtomSupportRecallDeltaBootstrap": {
+        "mean": 0.030864197530864196,
+        "lower": -0.07407407407407407,
+        "upper": 0.1419753086419753,
+        "questions": 27,
+        "strata": 2
+      },
+      "certificateViolations": {
+        "anchorCoverage": 0,
+        "unrelatedBasePreservation": 0
+      },
+      "forcedFallbackMismatches": {
+        "disabled": 0,
+        "missingProcedureIndex": 0,
+        "missingFeedbackTable": 0,
+        "feedbackTableOverflow": 0,
+        "timeout": 0,
+        "corrupt": 0,
+        "budgetOverflow": 0,
+        "anchorCertificate": 0
+      }
+    },
+    {
+      "policyId": "local-pc20-ms1-ma64-a128",
+      "arm": "locally_verified",
+      "cases": 76,
+      "directProxyCases": 27,
+      "orderedProxyCases": 11,
+      "metrics": {
+        "answerAtomSupportRecall": 0.17901234567901234,
+        "anyAnswerAtomSupportedRate": 0.2222222222222222,
+        "allAnswerAtomsSupportedRate": 0.14814814814814814,
+        "orderedSequenceSupportedRate": 0.09090909090909091,
+        "meanInjectedTokens": 1847.657894736842,
+        "meanInjectedItems": 2.460526315789474,
+        "queryLatencyP50Ms": 84.05629199976102,
+        "queryLatencyP95Ms": 212.47783500002697,
+        "tokenViolations": 0,
+        "fallbacks": 0,
+        "substitutionUseRate": 0.75,
+        "selectionLatencyP50Ms": 0.42500000004656613,
+        "selectionLatencyP95Ms": 1.7749589998275042,
+        "meanSafeAnchors": 7.0131578947368425,
+        "meanVerifiedActions": 20.973684210526315
+      },
+      "deltasVsBaseline": {
+        "answerAtomSupportRecall": 0.030864197530864196,
+        "anyAnswerAtomSupportedRate": 0,
+        "allAnswerAtomsSupportedRate": 0.037037037037037035,
+        "orderedSequenceSupportedRate": 0.09090909090909091,
+        "meanInjectedTokens": -933.0526315789475,
+        "meanInjectedTokenFraction": -0.33554468282434446
+      },
+      "directProxyOutcomesVsBaseline": {
+        "improved": 3,
+        "equal": 23,
+        "harmed": 1
+      },
+      "byDomain": {
+        "enterprise": {
+          "directProxyCases": 5,
+          "baseAnswerAtomSupportRecall": 0.7,
+          "answerAtomSupportRecall": 0.6,
+          "answerAtomSupportRecallDelta": -0.09999999999999998,
+          "meanInjectedTokens": 1425.875
+        },
+        "web": {
+          "directProxyCases": 22,
+          "baseAnswerAtomSupportRecall": 0.022727272727272728,
+          "answerAtomSupportRecall": 0.08333333333333333,
+          "answerAtomSupportRecallDelta": 0.0606060606060606,
+          "meanInjectedTokens": 2154.409090909091
+        }
+      },
+      "answerAtomSupportRecallDeltaBootstrap": {
+        "mean": 0.030864197530864196,
+        "lower": -0.07407407407407407,
+        "upper": 0.1419753086419753,
+        "questions": 27,
+        "strata": 2
+      },
+      "certificateViolations": {
+        "anchorCoverage": 0,
+        "unrelatedBasePreservation": 0
+      },
+      "forcedFallbackMismatches": {
+        "disabled": 0,
+        "missingProcedureIndex": 0,
+        "missingFeedbackTable": 0,
+        "feedbackTableOverflow": 0,
+        "timeout": 0,
+        "corrupt": 0,
+        "budgetOverflow": 0,
+        "anchorCertificate": 0
+      }
+    }
+  ],
+  "localFeedbackComparison": {
+    "changedContexts": 57,
+    "answerAtomSupportRecallDelta": 0,
+    "improvedDirectProxyCases": 0,
+    "equalDirectProxyCases": 27,
+    "harmedDirectProxyCases": 0
+  },
+  "casesSha256": "ac188849cc346ba4c7b817682586b6ea82496c4d8a9ee7c4cea60f86437c1076",
+  "gate": {
+    "passed": false,
+    "checks": {
+      "answerAtomSupportRecallDeltaVsBaseline": true,
+      "answerAtomSupportRecallBootstrapLowerVsBaseline": false,
+      "improvedDirectProxyCasesVsBaseline": true,
+      "harmedDirectProxyCasesVsBaseline": false,
+      "orderedSequenceSupportedRateDeltaVsBaseline": true,
+      "changedContextsVsAgnostic": true,
+      "answerAtomSupportRecallDeltaVsAgnostic": true,
+      "harmedDirectProxyCasesVsAgnostic": true,
+      "meanInjectedTokenIncreaseFraction": true,
+      "perQueryTokenViolations": true,
+      "anchorCoverageViolations": true,
+      "unrelatedBasePreservationViolations": true,
+      "ordinaryFallbacks": true,
+      "selectionLatencyP95Ms": true,
+      "exactForcedFallbacks": true
+    }
+  },
+  "testState": "unread"
+}

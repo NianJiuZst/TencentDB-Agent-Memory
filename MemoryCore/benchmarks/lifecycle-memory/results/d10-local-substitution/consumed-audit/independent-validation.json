@@ -1,0 +1,64 @@
+{
+  "validatorVersion": "lifecycle-longmemeval-v2-local-substitution-validator-v1.0",
+  "sourceProtocolVersion": "lifecycle-longmemeval-v2-local-substitution-v1.0",
+  "phase": "consumed_audit",
+  "status": "failed",
+  "validatorCommit": "d4b1111d9b474b5f44cc25f7b4c351e5be8bfd27",
+  "sourceSha256": {
+    "cases": "ac188849cc346ba4c7b817682586b6ea82496c4d8a9ee7c4cea60f86437c1076",
+    "summary": "f818000b94e4911f6d81b50683ec603f06401c1baa3b737be1b23c35aaca551f",
+    "baselineCases": [
+      "2d2908babe05e878adf2a870b003e77ce8bde71a9409b684f06d27f33f731a60",
+      "2e55aedd4c8b526b18012dc899c816cd354b7e2f892d1ecd18e8e19c6aedddb8"
+    ],
+    "baselineSummaries": [
+      "a64a941f54b8aa65483f35847f3a14edc33337f20427ccf629af9710c1f204e8",
+      "bc52409ef1243f2f52dc26f3513b707458398ae90a84ed10088a54cb9a18165c"
+    ]
+  },
+  "checks": {
+    "identity": true,
+    "exactCoverage": true,
+    "baselineReconstruction": true,
+    "independentSelection": true,
+    "independentSupport": true,
+    "costAndCertificates": true,
+    "aggregateMetrics": true,
+    "gateReproduction": true,
+    "sourceGatePassed": false
+  },
+  "mismatchCounts": {
+    "identity": 0,
+    "coverage": 0,
+    "baseline": 0,
+    "selection": 0,
+    "support": 0,
+    "costOrCertificates": 0,
+    "aggregate": 0,
+    "gate": 0
+  },
+  "recomputedGate": {
+    "passed": false,
+    "checks": {
+      "answerAtomSupportRecallDeltaVsBaseline": true,
+      "answerAtomSupportRecallBootstrapLowerVsBaseline": false,
+      "improvedDirectProxyCasesVsBaseline": true,
+      "harmedDirectProxyCasesVsBaseline": false,
+      "orderedSequenceSupportedRateDeltaVsBaseline": true,
+      "changedContextsVsAgnostic": true,
+      "answerAtomSupportRecallDeltaVsAgnostic": true,
+      "harmedDirectProxyCasesVsAgnostic": true,
+      "meanInjectedTokenIncreaseFraction": true,
+      "perQueryTokenViolations": true,
+      "anchorCoverageViolations": true,
+      "unrelatedBasePreservationViolations": true,
+      "ordinaryFallbacks": true,
+      "selectionLatencyP95Ms": true,
+      "exactForcedFallbacks": true
+    }
+  },
+  "cases": 152,
+  "directProxyCases": 27,
+  "candidatePolicyId": "local-pc20-ms1-ma64-a128",
+  "testState": "unread"
+}

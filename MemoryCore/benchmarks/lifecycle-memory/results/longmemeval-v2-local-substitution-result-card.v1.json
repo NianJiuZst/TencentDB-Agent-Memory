@@ -1,0 +1,117 @@
+{
+  "resultCardVersion": "lifecycle-longmemeval-v2-local-substitution-result-v1.0",
+  "protocolVersion": "lifecycle-longmemeval-v2-local-substitution-v1.0",
+  "direction": "D10 locally verified incumbent-preserving procedure substitution",
+  "status": "rejected_at_consumed_audit_safety_gate",
+  "decision": "retain_lifecycle_adaptive_v1",
+  "dataset": {
+    "name": "LongMemEval-V2",
+    "revision": "2cc8c540bdb87fe6761629b585e727e1c4704520",
+    "tier": "small",
+    "manifestSha256": "70a2be47e7117ef8f2ee77aa499c6126358b5f9ffa28a848b5c565a4ec8fc99a",
+    "questionsSha256": "0a3ae5ebea938c24d7800e1e0b0828e08ae1646f939a53853b2b8cdc08e292b7",
+    "haystackSha256": "9b5301defb23a088a5f06e45ff8d5f35e569d78305a66d492046a9fff9b46593",
+    "trajectoriesSha256": "363cec9a8e87aa8d9101ce4e600aadbf7031d674056ebe4f969e8424abc5f3c6",
+    "population": "106 text-only procedure and procedure-abs questions",
+    "consumedAuditQuestions": 76,
+    "consumedAuditDirectProxyQuestions": 27,
+    "untouchedTestQuestions": 30
+  },
+  "candidate": {
+    "candidatePreScoreCommit": "d4b1111d9b474b5f44cc25f7b4c351e5be8bfd27",
+    "policyId": "local-pc20-ms1-ma64-a128",
+    "procedureCandidateLimit": 20,
+    "maxSubstitutions": 1,
+    "maxActionsPerProcedure": 64,
+    "maxSafeAnchors": 128,
+    "feedbackEvents": 4895,
+    "feedbackEntries": 4895,
+    "feedbackCapacity": 5200,
+    "locallyVerifiedEvents": 3719,
+    "memoryForm": "one deterministic locally verified action capsule replacing only exact Base items from the same source trajectory",
+    "feedbackRule": "admit a step only after deterministic local progress without a newly introduced explicit error",
+    "ablation": "identical same-trajectory replacement and certificates while retaining all bounded actions and ignoring local feedback",
+    "preservationCertificate": "all unrelated Base items remain byte-for-byte and in order, and every bounded safe interactive anchor from removed items remains in the capsule",
+    "costCertificate": "capsule tokens cannot exceed removed Base-item tokens and total items and tokens cannot exceed exact Base",
+    "nullAction": "exact Base"
+  },
+  "consumedAudit": {
+    "status": "failed",
+    "claimRole": "mechanism audit on already consumed D9 development and validation questions",
+    "casesSha256": "ac188849cc346ba4c7b817682586b6ea82496c4d8a9ee7c4cea60f86437c1076",
+    "summarySha256": "f818000b94e4911f6d81b50683ec603f06401c1baa3b737be1b23c35aaca551f",
+    "independentValidationSha256": "1c762591e24c33cdc5495ccc021f30a8f3edacbd3427c1b71dee751512de2fc7",
+    "baselineAnswerAtomSupportRecall": 0.14814814814814814,
+    "locallyVerified": {
+      "answerAtomSupportRecall": 0.17901234567901234,
+      "answerAtomSupportRecallDelta": 0.030864197530864196,
+      "answerAtomSupportRecallDeltaBootstrap95": [-0.07407407407407407, 0.1419753086419753],
+      "allAnswerAtomsSupportedRateDelta": 0.037037037037037035,
+      "orderedSequenceSupportedRateDelta": 0.09090909090909091,
+      "meanInjectedTokens": 1847.657894736842,
+      "meanInjectedTokenIncreaseFraction": -0.33554468282434446,
+      "substitutionUseRate": 0.75,
+      "improved": 3,
+      "equal": 23,
+      "harmed": 1,
+      "selectionLatencyP95Ms": 1.7749589998275042
+    },
+    "stepAgnostic": {
+      "answerAtomSupportRecall": 0.17901234567901234,
+      "answerAtomSupportRecallDelta": 0.030864197530864196,
+      "answerAtomSupportRecallDeltaBootstrap95": [-0.07407407407407407, 0.1419753086419753],
+      "meanInjectedTokens": 1877.657894736842,
+      "meanInjectedTokenIncreaseFraction": -0.32475607332468986,
+      "substitutionUseRate": 0.75,
+      "improved": 3,
+      "equal": 23,
+      "harmed": 1
+    },
+    "feedbackComparison": {
+      "changedContexts": 57,
+      "answerAtomSupportRecallDelta": 0,
+      "improved": 0,
+      "equal": 27,
+      "harmed": 0
+    },
+    "failedChecks": [
+      "answerAtomSupportRecallBootstrapLowerVsBaseline",
+      "harmedDirectProxyCasesVsBaseline"
+    ],
+    "operationalIntegrity": {
+      "perQueryTokenViolations": 0,
+      "anchorCoverageViolations": 0,
+      "unrelatedBasePreservationViolations": 0,
+      "ordinaryFallbacks": 0,
+      "forcedFallbackMismatches": 0,
+      "independentIdentityMismatches": 0,
+      "independentCoverageMismatches": 0,
+      "independentBaselineMismatches": 0,
+      "independentSelectionMismatches": 0,
+      "independentSupportMismatches": 0,
+      "independentCostOrCertificateMismatches": 0,
+      "independentAggregateMismatches": 0,
+      "independentGateMismatches": 0
+    }
+  },
+  "test": {
+    "state": "unread",
+    "questions": 30,
+    "directProxyQuestions": 12,
+    "admissionGenerated": false,
+    "answerLevelState": "not_admitted"
+  },
+  "failureAnalysis": {
+    "harmQuestionId": "767e4106",
+    "harm": "Base support was 1 and both substitution arms fell to 0 for the answer atom priority.",
+    "rootCause": "The replaced Base raw item contained the decisive knowledge-base sentence as StaticText. The capsule certificate preserved interactive anchors but excluded body text, so it certified structure while discarding answer-bearing evidence.",
+    "feedbackFinding": "Local verification changed 57 contexts and saved 30 additional mean tokens relative to the agnostic arm, but produced no direct-support improvement or harm relative to that arm. Step credit was operationally active but did not explain the observed quality lift.",
+    "nextHypothesis": "Preserve bounded query-relevant body spans from only the exact Base items being replaced, with provenance and an evidence-loss certificate, while retaining same-trajectory substitution, unrelated-item preservation, exact cost bounds, and Base fallback."
+  },
+  "evidenceBoundary": [
+    "The 3.09-point support lift is consumed mechanism evidence with a confidence interval crossing zero, not confirmation.",
+    "Direct answer support is a representation proxy, not task accuracy or gold source recall.",
+    "D10 failed before the locked test was read and before any MiniMax-M3 or DeepSeek-V4Flash answer calls.",
+    "LongMemEval-V2 is public long-horizon agent evidence, not internal multi-turn programming-session evidence."
+  ]
+}
