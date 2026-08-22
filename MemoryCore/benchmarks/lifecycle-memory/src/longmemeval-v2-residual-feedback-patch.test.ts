@@ -166,12 +166,25 @@ describe("residual feedback patch", () => {
     expect(result.queryTermsCovered).toBeGreaterThan(1);
   });
 
-  it("returns exact Base for disabled, missing state, and patch-certificate failures", () => {
+  it("returns exact Base for every frozen operational failure class", () => {
     const value = fixture();
     for (const variant of [
       { enabled: false },
       { procedureIndexAvailable: false },
+      { feedbackTable: undefined },
+      {
+        feedbackTable: {
+          available: false,
+          failureReason: "feedback_table_overflow" as const,
+          capacity: 1,
+          entries: new Map(),
+        },
+      },
       { rawCandidatePoolAvailable: false },
+      { timedOut: true },
+      { forceCorrupt: true },
+      { forceBudgetOverflow: true },
+      { forceExternalCorrupt: true },
       { forcePatchCertificateFailure: true },
     ]) {
       const result = selectResidualFeedbackPatchContext({
