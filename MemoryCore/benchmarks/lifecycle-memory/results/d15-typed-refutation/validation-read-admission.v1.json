@@ -1,0 +1,16 @@
+{
+  "admissionVersion": "lifecycle-longmemeval-v2-typed-refutation-read-admission-v1.0",
+  "sourceProtocolVersion": "lifecycle-longmemeval-v2-typed-refutation-validation-v1.0",
+  "completedPhase": "development",
+  "status": "renderer_selected",
+  "decision": "authorize_validation_read",
+  "candidatePolicyId": "typed-action-contract-v1",
+  "validatorCommit": "8fb6b1b4d66e7793d9f23e5f017c52550c9242d2",
+  "selectionSummarySha256": "90d8554a5a3a184528f74669cbed62915f765189afcf230c803e90d95ec635d2",
+  "selectionContextsSha256": "fa62a4e2676c192c5c35767a6b4a9a7dcf2b59fae614ccfc944633de5a50c809",
+  "selectionEvaluationsSha256": "5742351e4165aeae096be19b3160af8233c96be38ce3a58144a8487ee0e80ecb",
+  "readinessAuditSha256": "5e65eb04946137309bc4d0caea47ca77c8601b04281ae8ca0ce0604562c9e2ec",
+  "splitCanonicalSha256": "325105dfbffb4d564229400f5cadd424bbad0a34c4663afadd4c13897f0bbdb0",
+  "validationStateAtAdmission": "unread",
+  "testStateAtAdmission": "unread"
+}
