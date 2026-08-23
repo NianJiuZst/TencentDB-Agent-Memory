@@ -1,0 +1,126 @@
+{
+  "protocolVersion": "lifecycle-text-correction-detection-v1.0",
+  "researchDirection": "D18",
+  "frozenAt": "2026-08-24T00:00:00+08:00",
+  "researchQuestion": "Can a bounded, text-only high-confidence detector recover enough invalidation events and predecessor links to remove Memora operation metadata from the runtime path?",
+  "dataset": {
+    "name": "Memora",
+    "revision": "a6493188efc836d6511ed5e4163fe3ba87da30ff",
+    "manifestSha256": "dfc82711dd6647bcb0ba590f43a336f0dac02420e981ce957dd1fd13ae331bfc",
+    "period": "quarterly",
+    "unit": "session",
+    "deduplication": "Use the ten quarterly persona histories only; do not count their weekly or monthly prefixes again."
+  },
+  "personaSplits": {
+    "development": [
+      "financial_analyst",
+      "software_engineer",
+      "marketing_manager",
+      "sales_manager"
+    ],
+    "validation": [
+      "management_consultant",
+      "academic_researcher",
+      "content_writer"
+    ],
+    "test": [
+      "creative_designer",
+      "startup_founder",
+      "business_executive"
+    ],
+    "rule": "The detector and thresholds are fixed before aggregate scores are computed. Development examples may inform the rules; validation and test personas may not change them."
+  },
+  "runtimeInputs": {
+    "allowed": [
+      "session_id",
+      "persona",
+      "conversation speaker",
+      "conversation message",
+      "conversation share_memory",
+      "prior shared-memory text from the same persona"
+    ],
+    "forbidden": [
+      "session_type",
+      "operation",
+      "operation_details",
+      "evaluation questions",
+      "memory evidence",
+      "forgetting evidence"
+    ]
+  },
+  "detector": {
+    "deleteCueFamilies": [
+      "explicit remove/delete/drop",
+      "no-longer/don't-need/not-anymore",
+      "finished/completed/done-with",
+      "bounded completion verbs after just/already/actually/managed-to"
+    ],
+    "updateCueFamilies": [
+      "used-to followed by but/now",
+      "update/change/switch/shift from X to Y",
+      "taste or preference changed/shifted",
+      "explicit instead replacement"
+    ],
+    "precedence": "delete cues outrank update cues when both occur",
+    "historyWindowUnits": 512,
+    "maxPredecessorLinks": 3,
+    "minimumWeightedOverlap": 0.22,
+    "minimumSharedContentTokens": 2,
+    "exceptions": "An exact quoted phrase or exact numeric token shared with a prior unit may satisfy the link threshold with one shared content token.",
+    "complexityBound": "At most 512 prior units are scored for one cue-bearing session and at most three predecessor links are emitted."
+  },
+  "goldUse": {
+    "runtime": false,
+    "scoringOnly": "Released operation metadata is read only after prediction to derive gold invalidating sessions, event kind, obsolete values, and predecessor unit ids.",
+    "goldEventDefinition": "A session is positive only when the existing structured Memora adapter emits at least one update/delete event containing at least one obsolete value.",
+    "goldLinkDefinition": "A prior shared-memory unit is a gold predecessor when it predates the event and contains a normalized released obsolete value."
+  },
+  "baselines": [
+    {
+      "id": "remove_delete_only",
+      "description": "Predict deletion only for literal remove/delete/drop cues; no completion or update rules."
+    },
+    {
+      "id": "cue_only",
+      "description": "Apply the same cue classifier without requiring a predecessor link."
+    },
+    {
+      "id": "linked_high_confidence",
+      "description": "Emit an event only when a cue and a bounded predecessor link both exist."
+    }
+  ],
+  "metrics": {
+    "event": [
+      "precision",
+      "recall",
+      "F1",
+      "kind accuracy among true-positive sessions"
+    ],
+    "link": [
+      "micro predecessor-link precision",
+      "micro predecessor-link recall",
+      "session-level any-correct-link rate"
+    ],
+    "coverage": [
+      "predicted event rate",
+      "gold invalidating session count",
+      "predicted linked session count"
+    ],
+    "cost": [
+      "latency p50/p95",
+      "maximum history candidates scored"
+    ]
+  },
+  "testGate": {
+    "minimumEventPrecision": 0.9,
+    "minimumEventRecall": 0.2,
+    "minimumLinkPrecision": 0.85,
+    "minimumLinkRecall": 0.1,
+    "minimumAnyCorrectLinkRate": 0.7,
+    "minimumKindAccuracy": 0.9,
+    "maximumP95LatencyMs": 10,
+    "requireZeroForbiddenRuntimeReads": true
+  },
+  "decisionRule": "D18 passes only when every linked_high_confidence test gate passes. Validation is descriptive and cannot relax the frozen test thresholds. A failure leaves V1 classified as oracle-management evidence and blocks any end-to-end correction-detection claim.",
+  "claimBoundary": "This deterministic English detector targets explicit corrections and completions. Even a pass would not establish implicit code-state invalidation, repository scope, or human-level semantic linking. No answer-model calls are authorized by this protocol."
+}
