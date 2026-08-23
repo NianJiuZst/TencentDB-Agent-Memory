@@ -45,6 +45,7 @@
     "validate:lifecycle-contextual-e2e": "tsx benchmarks/lifecycle-memory/src/contextual-e2e-validator-cli.ts",
     "build:lifecycle-broad-ablation-context": "tsx benchmarks/lifecycle-memory/src/broad-ablation-context-cli.ts",
     "eval:lifecycle-broad-ablation-e2e": "tsx benchmarks/lifecycle-memory/src/broad-ablation-e2e-cli.ts",
+    "analyze:lifecycle-stance-proxy": "tsx benchmarks/lifecycle-memory/src/stance-proxy-cli.ts",
     "analyze:lifecycle-contextual-e2e": "tsx benchmarks/lifecycle-memory/src/contextual-e2e-failure-analysis-cli.ts",
     "eval:lifecycle-evidence-shield": "tsx benchmarks/lifecycle-memory/src/evidence-shield-cli.ts",
     "eval:lifecycle-evidence-shield-e2e": "tsx benchmarks/lifecycle-memory/src/evidence-shield-e2e-cli.ts",
