@@ -1,24 +1,22 @@
 \documentclass[10pt]{article}
-\usepackage[margin=1in]{geometry}
+\usepackage[margin=0.82in]{geometry}
 \usepackage{amsmath}
 \usepackage{booktabs}
 \usepackage{graphicx}
 \usepackage{float}
 \usepackage{microtype}
-\usepackage{tikz}
 \usepackage{xurl}
 \usepackage{hyperref}
 \usepackage{xcolor}
 \usepackage{xspace}
+\usepackage{array}
 \hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
-\definecolor{proxyblue}{HTML}{2F6B9A}
-\definecolor{answerorange}{HTML}{C26B32}
 
-\title{Downstream-Gated Correction-Linked Memory for Evolving Long-Horizon Dialogues}
+\title{When Better Retrieval Makes Worse Answers:\\
+Downstream-Gated Lifecycle Memory Across Eighteen Research Directions}
 \author{Anonymous Author(s)}
 \date{}
 
-\newcommand{\method}{CLLM\xspace}
 \newcommand{\base}{\textsc{Base}\xspace}
 \newcommand{\vone}{\textsc{V1}\xspace}
 \newcommand{\vtwo}{\textsc{V2}\xspace}
@@ -27,111 +25,178 @@
 \maketitle
 
 \begin{abstract}
-Long-running programming agents must preserve decisions while avoiding constraints that were later corrected, renamed, reverted, or deleted. Static retrieval can surface obsolete statements, whereas deletion alone may discard the correction needed to recover current state. We introduce Correction-Linked Lifecycle Memory (CLLM), a bounded sidecar for an existing memory retriever. Write-time correction events create predecessor--successor links, query-time traversal redirects stale hits, and controlled feedback proposes retrieval policies without retraining the extractor or replacing the base index. We separate proxy optimization from policy promotion: a challenger replaces the incumbent only after predeclared downstream quality, forgetting, cost, and fallback checks pass.
+Long-running programming agents must preserve decisions while avoiding constraints that were renamed, corrected, reverted, deleted, or made invalid by a new branch or environment. Static retrieval can surface obsolete statements; deleting them discards provenance. We study a narrower question above an existing memory engine: how can a bounded lifecycle sidecar propose policy updates from feedback while preventing a retrieval proxy from promoting a worse answer policy?
 
-We evaluate the method in MemoryCore on the public Memora long-dialogue benchmark as a methodological proxy for long programming sessions. The fixed-budget \vone policy improves answer-level FAMA from 0.319 to 0.400 on 50 frozen Base-stale-exposed questions, a gain of 8.09 points (95\% persona-cluster CI: 5.17--12.59). MiniMax-M3 and DeepSeek-V4-Flash serve as both readers and judges; the primary crossed estimator excludes self-judgment. A larger \vtwo policy, selected from 36 candidates using direct feedback, improves the direct quarterly proxy over \vone but fails to improve answer FAMA ($-0.43$ points; 95\% CI: $-2.06$--1.09), reduces FAA by 4.08 points (95\% CI: $-7.62$--$-0.64$), and uses 37.5\% more context. The gate therefore retains \vone. A post-hoc audit finds more exact obsolete-value exposure in \vtwo contexts and answers, but does not identify which jointly changed policy dimension caused the regression. Separately, an evidence-preserving compression follow-up on a checksum-frozen 30-question LongMemEval-V2 procedure split holds direct answer-atom support exactly equal to Base on all 12 scored questions while reducing mean injected tokens from 2,796.8 to 2,213.9 ($-20.84\%$). It fails its predeclared \emph{quality-gain} gate because no question improves, but forms a Pareto efficiency result on the measured support--cost plane; no answer-level claim is made. These results show why memory self-optimization should be downstream-gated and why quality and efficiency promotion require distinct objectives. All switch-off and forced-failure tests return the original Base path exactly. The evidence supports a bounded correction-linked mechanism, a safe compression result, and a conservative optimization protocol, not effectiveness on private programming-agent traffic.
+We implement correction-linked predecessor--successor redirection, fixed-cost fallback, protocol-versioned policy search, simple temporal baselines, single-factor ablations, proxy-alignment diagnostics, and text-only correction detection in MemoryCore. The public experiments use Memora, MemOps, and LongMemEval-V2 as method-validation substrates rather than evidence about private programming traffic. On a frozen 50-question panel conditioned on obsolete \base exposure, fixed-budget \vone raises answer FAMA by 8.09 points (95\% persona-cluster CI: 5.17--12.59). A new 200-question census that is not conditioned on \base failure finds a smaller full-population gain of 1.42 points (CI: $-0.005$--3.08 points), but a confirmed 2.96-point gain on 92 forgetting-bearing questions and a remembering-MPA harm signal. Thus \vone is a conditional incumbent, not a universal default.
+
+A proxy-selected \vtwo policy improves direct retrieval but loses 4.08 FAA points and uses 37.5\% more context than \vone on the conditioned panel. On the broad panel, none of four simple baselines, six isolated \vtwo factors, or combined \vtwo passes the frozen promotion gate. A stance-aware proxy raises Kendall's $\tau_b$ with answer FAMA only from 0.529 to 0.538. A text-only detector identifies invalidating sessions at 97.89\% precision and 79.64\% recall on persona-disjoint test histories, yet predecessor-link precision is only 20.05\%; this blocks an end-to-end correction-construction claim. Separately, evidence-preserving compression reduces injected tokens by 20.84\% on a checksum-frozen LongMemEval-V2 test while direct answer-atom support is unchanged, but no answer-level noninferiority is established.
+
+Across eighteen directions, the durable result is a separation of proposal, promotion, and evidence scope: cheap feedback may propose a policy, downstream answers and cost must promote it, and uncertain correction links must abstain. Exact operational fallback is necessary but not semantic safety. The resulting code and adapters are portable to programming sessions, while repository-, branch-, commit-, and environment-scoped validity remains future work.
 \end{abstract}
 
 \section{Introduction}
-Interactive programming tasks evolve. A user may replace REST with GraphQL, rename an interface, invalidate a test expectation, revert an implementation plan, or switch environments. A memory system that retrieves both the old and new statements can confidently reintroduce a rejected constraint. Permanently deleting the old record, however, loses provenance and may prevent the system from finding the correction that explains current state.
 
-Long-term agent memory research studies hierarchical context management~\cite{packer2023memgpt}, dynamic organization~\cite{xu2025amem}, scalable extraction and consolidation~\cite{chhikara2025mem0}, and temporal knowledge graphs~\cite{rasmussen2025zep}. Benchmarks such as LoCoMo~\cite{maharana2024locomo} and LongMemEval~\cite{wu2024longmemeval} reveal failures in temporal reasoning and knowledge updates. Memora makes forgetting explicit through invalidated-memory annotations and Forgetting-Aware Memory Accuracy (FAMA)~\cite{uddin2026memora}. A central deployment gap remains: a policy can improve retrieval-side evidence coverage while degrading the answer that consumes that evidence.
+Interactive software tasks evolve. A user can replace REST with GraphQL, rename an interface, invalidate a test expectation, revert a design, switch branches, or change the toolchain. A memory system that retrieves both an old and a current constraint can confidently reintroduce a rejected decision. Lexical and embedding relevance do not imply current validity. Permanently deleting history is also undesirable: provenance is lost, historical questions become harder, and the correction that explains current state may itself be inaccessible.
 
-We ask four questions. \textbf{RQ1:} can bounded correction links improve stale-exposed answers without increasing the injection budget? \textbf{RQ2:} does a richer policy selected by direct memory feedback also dominate after answer generation? \textbf{RQ3:} can a predeclared promotion rule detect and reject a proxy-selected regression? \textbf{RQ4:} can an evidence-preserving challenger reduce injection cost without lowering measured support? These questions separate mechanism efficacy, quality optimization, efficiency optimization, and deployment safety.
+Long-term memory systems address hierarchy, extraction, consolidation, graph structure, and context management~\cite{packer2023memgpt,xu2025amem,chhikara2025mem0,rasmussen2025zep}. Benchmarks reveal failures in temporal reasoning, updating, and selective forgetting~\cite{maharana2024locomo,wu2024longmemeval,hu2026memoryagentbench}. Memora explicitly separates required memory from invalidated memory through Memory Presence Accuracy (MPA), Forgetting Absence Accuracy (FAA), and Forgetting-Aware Memory Accuracy (FAMA)~\cite{uddin2026memora}. MEMPROBE further argues that task completion and the recoverable state retained by memory are distinct capabilities~\cite{ma2026memprobe}.
 
-We study these questions in MemoryCore, an open-source layered memory service with L0 conversation retrieval and higher-level memories~\cite{memorycore2026}. Our contributions are:
+This paper studies lifecycle control above MemoryCore, an open-source hierarchical memory service with conversation retrieval, atomic memories, scenes, profiles, HTTP access, SQLite FTS5, and vector retrieval~\cite{memorycore2026}. We do not retrain the extractor or replace the base index. Instead, a bounded sidecar records correction relations, transforms a fixed candidate list, and returns the exact base call on disablement or failure.
+
+The central engineering risk is optimization by an incomplete proxy. A direct audit may show more current evidence and less obsolete evidence, while the generated answer becomes worse because context wording, entity anchors, extra slots, or decoder behavior changes. We therefore separate a \emph{candidate proposer} from a \emph{promotion gate}. The proposer may use cheap feedback; promotion requires frozen downstream quality, forgetting, cost, uncertainty, and integrity checks.
+
+Our contributions are:
 \begin{itemize}
-  \item a replaceable write-event interface and bounded lifecycle ledger above the existing FTS/vector retriever;
-  \item fixed-budget correction-linked redirection that preserves the latest correction rather than deleting provenance;
-  \item a bounded contextual policy search over confidence, traversal, query intent, and injection budget;
-  \item proposal--promotion separation that retains the incumbent when a proxy-selected challenger fails downstream quality, forgetting, or cost checks;
-  \item a checksum-frozen evidence-preserving compression study that reports a 20.84\% token reduction separately from answer-quality claims;
-  \item a protocol-versioned public evaluation with direct evidence, a two-reader/two-judge crossed panel, exact fallback checks, an independently recomputed result, and an explicit negative finding.
+  \item a correction-linked, fixed-budget lifecycle sidecar with bounded traversal, capacity, latency, switch-off, and whole-call \base fallback;
+  \item a proposal--promotion protocol that rejects a direct-proxy winner after answer generation, and distinguishes quality promotion from efficiency promotion;
+  \item a broad 200-question, 13-arm answer experiment with strong simple baselines and single-factor ablations, using MiniMax-M3 and DeepSeek-V4-Flash in a crossed no-self-judgment design;
+  \item an eighteen-direction research ledger that retains negative results in shielding, routing, state projection, transition memory, procedure memory, evidence expansion, structured refutation, proxy design, and automatic linking;
+  \item a text-only, persona-disjoint correction-construction audit showing that event detection transfers but predecessor linking does not;
+  \item a separate evidence-preserving compression result and an explicit portability boundary for repository-, branch-, commit-, worktree-, and environment-scoped programming memory.
 \end{itemize}
 
-\section{Related Work}
-MemGPT treats context as a hierarchy managed like virtual memory~\cite{packer2023memgpt}. Mem0 dynamically extracts, consolidates, and retrieves user information, and A-MEM organizes notes into an evolving linked network~\cite{chhikara2025mem0,xu2025amem}. Zep/Graphiti represents changing facts in a temporally aware graph~\cite{rasmussen2025zep}. Our scope is narrower: we do not replace the store or build a general knowledge graph. We add bounded invalidation and successor edges immediately above an existing candidate list.
+The main conclusion is deliberately bounded. Correction-linked management is useful when obsolete memory is present and the relation is known. The evidence does not justify enabling \vone on all traffic, does not validate private programming tasks, and does not solve end-to-end correction linking.
 
-LoCoMo evaluates very long multi-session dialogue~\cite{maharana2024locomo}; LongMemEval isolates extraction, multi-session reasoning, temporal reasoning, updates, and abstention~\cite{wu2024longmemeval}. Memora is particularly suitable here because its public protocol separates memory-presence from forgetting-absence criteria~\cite{uddin2026memora}. We use it for method validation, not as evidence about private programming interactions.
+\section{Related Work and Research Position}
 
-Feedback-driven agents such as Reflexion update behavior from verbal or scalar feedback without weight training~\cite{shinn2023reflexion}. Memory-R1 learns structured add, update, delete, and no-op operations together with answer-time memory use~\cite{yan2025memoryr1}; SelfMem lets an agent refine its memory strategy from environmental feedback~\cite{yang2026selfmem}; and DeferMem trains query-time evidence selection and rewriting with gated rewards~\cite{yin2026defermem}. These systems establish that memory behavior can be learned rather than fixed. Our scope is complementary and deliberately narrower: we evolve a bounded sidecar policy for an existing retriever, preserve a hard Base fallback, and study whether the proxy used to propose a policy agrees with downstream forgetting-aware answers. The observed rank reversal motivates explicit promotion safety rather than a single optimization score.
+\paragraph{Long-term agent memory.}
+MemGPT treats context management like a virtual-memory hierarchy~\cite{packer2023memgpt}. Mem0 extracts and consolidates persistent information, while A-MEM builds an evolving linked note network~\cite{chhikara2025mem0,xu2025amem}. Zep and its open-source Graphiti engine attach validity windows and provenance to evolving facts~\cite{rasmussen2025zep,graphiti2026}. Our mechanism is narrower: it augments, rather than replaces, an existing retriever and constrains every query-time action.
 
-\section{Method}
-\subsection{Correction-linked retrieval}
-Let the base retriever return a ranked candidate pool $B(q)=(m_1,\ldots,m_K)$. A write-time adapter emits correction events
+\paragraph{Evaluation beyond recall.}
+LoCoMo and LongMemEval expose long-session temporal and update failures~\cite{maharana2024locomo,wu2024longmemeval}. MemoryAgentBench identifies accurate retrieval, test-time learning, long-range understanding, and selective forgetting as separate competencies~\cite{hu2026memoryagentbench}. Memora evaluates remembering, reasoning, and recommending over weeks to months and penalizes invalid-memory reuse~\cite{uddin2026memora}. MEMPROBE directly audits the retained memory artifact and reports that assistance can saturate while state recovery remains moderate~\cite{ma2026memprobe}. These works motivate our separation of direct memory evidence from answer-level use.
+
+\paragraph{Feedback and self-optimization.}
+Reflexion updates agent behavior with verbal feedback~\cite{shinn2023reflexion}. Memory-R1 learns add/update/delete/no-op memory operations, SelfMem refines memory strategy from environmental feedback, and DeferMem learns query-time evidence selection~\cite{yan2025memoryr1,yang2026selfmem,yin2026defermem}. We do not reproduce their training procedures. Our focus is a reviewable, bounded policy space and an incumbent-preserving promotion protocol for an existing store.
+
+\paragraph{Memory for coding agents.}
+SWE-MeM lets an agent decide when and how to compress long software-engineering trajectories and jointly optimizes memory with issue resolution~\cite{gao2026swemem}. Structurally aligned subtask memory reports that monolithic instance memory suffers from a granularity mismatch~\cite{shen2026subtaskmemory}. ToM-SWE maintains persistent user goals and constraints across stateful software-engineering interactions~\cite{zhou2026tomswe}. These studies demonstrate the relevance of memory to coding agents, but they do not remove our public-data limitation: Memora has no repository, branch, commit, worktree, or toolchain labels. We therefore present programming transfer as a scoped adapter design, not an empirical result.
+
+\section{Problem Formulation}
+
+Let the unchanged base retriever return a ranked pool
 \[
-e=(t_e,c_e,V_e^{-},S_e,s_e),
+B(q)=(m_1,\ldots,m_K),
 \]
-where $t_e$ is a monotonic sequence, $c_e\in[0,1]$ is confidence, $V_e^{-}$ contains invalidated values, $S_e$ contains successor memory identifiers, and $s_e$ records provenance. A predecessor $m$ receives an edge to $S_e$ when it predates $e$ and contains a value in $V_e^{-}$.
-
-At query time, the method examines candidates in base rank order. If no eligible edge meets confidence threshold $\tau$, the candidate is unchanged. Otherwise, only the latest eligible correction event is followed. Traversal stops at a leaf, tombstone, hop budget $H$, expansion budget $E$, result budget $k$, or wall-time budget $T$. Duplicate leaves are removed and later base candidates refill the list. Cycles, missing successors, timeouts, malformed state, and capacity violations return $B(q)_{1:k}$ for the entire call.
-
-The research incumbent \vone is $\theta_1=(\tau=.85,H=1,E=64,k=5,T=10\text{ ms})$. It was selected by the original weekly/monthly optimization protocol before quarterly evaluation. The ledger links predecessors directly to the latest eligible correction, so one query-time hop can represent a longer update history.
-
-\subsection{Contextual challenger}
-Error analysis motivated two extensions. First, historical aggregates such as totals or week comparisons should not blindly rewrite old evidence into its latest value. A query-text intent adapter can therefore bypass lifecycle traversal for protected aggregate queries. Second, a correction may introduce useful successor evidence outside the original Top-5. We define a dynamic target
+and let its injected prefix be $B_k(q)$. A lifecycle event is
 \[
-k'(q)=5+\min(s,r(q)),
+e=(t_e,\kappa_e,c_e,V_e^{-},S_e,s_e),
 \]
-where $r(q)$ is the number of redirects and $s\in\{0,1,2\}$ is the extra-slot cap.
+where $t_e$ is sequence, $\kappa_e\in\{\text{update},\text{delete}\}$ is kind, $c_e$ is confidence, $V_e^{-}$ contains invalidated values, $S_e$ contains successor memory identifiers, and $s_e$ records provenance. A predecessor memory receives an edge to $S_e$ when it predates the event and contains an invalidated value.
 
-The \vtwo candidate grid contains 36 policies:
-\[
-\tau\in\{.85,.91,.96\},\quad H\in\{1,2\},\quad
-s\in\{0,1,2\},\quad p\in\{0,1\},
-\]
-with $E=64$, $T=10$ ms, and $p$ controlling aggregate protection. On 300 weekly/monthly questions, utility is
-\[
-U(\theta)=Q_f(\theta)-H_n(\theta)-0.05C(\theta)-F(\theta),
-\]
-where $Q_f$ is mean direct FAMA proxy on 188 forgetting-bearing questions, $H_n$ is mean positive loss on 112 non-forgetting questions, $C$ is positive extra injected kilotokens, and $F$ is fallback rate. Capacity is fixed at 64 candidate policies. Ties prefer lower harm, cost, hop count, and then higher confidence.
+A policy $\pi_\theta$ maps $B(q)$ and the bounded lifecycle ledger to an injected list. The policy must satisfy capacity, latency, result-count, and integrity bounds. If the sidecar is disabled, malformed, cyclic, over capacity, or timed out, the entire call returns $B_k(q)$ rather than a partial transformation.
 
-The optimizer selects $\tau=.96$, $H=2$, $s=2$, and aggregate protection. This is a proposal, not an automatic deployment decision.
+We distinguish three objectives:
+\begin{enumerate}
+  \item \textbf{quality}: improve downstream answers without violating forgetting safety or cost;
+  \item \textbf{efficiency}: preserve a frozen quality invariant while reducing context cost;
+  \item \textbf{construction}: infer lifecycle events and predecessor links without oracle operation metadata.
+\end{enumerate}
+Changing the objective after scoring is forbidden. In particular, a candidate frozen as a quality improvement cannot be retroactively promoted because it saved tokens.
+
+\section{Lifecycle Policies and Promotion}
+
+\subsection{Base and fixed-budget V1}
+
+\base is the unmodified MemoryCore L0 retrieval and injection path. The research incumbent \vone follows the latest eligible correction edge for an obsolete base candidate, removes duplicate leaves, and refills from the same base pool. Its fixed parameters are
+\[
+\tau=0.85,\qquad H=1,\qquad E=64,\qquad k=5,\qquad T=10\text{ ms},
+\]
+for confidence, hop count, expansion capacity, output count, and sidecar wall time. The ledger may link a predecessor directly to the latest eligible correction, so one query-time hop can represent a longer update history.
+
+The Memora implementation constructs V1 edges from released write-time operation fields. These fields do not contain evaluation answers, but they do make the management experiment quasi-oracle with respect to event type and invalidated value. Section~\ref{sec:d18} separately evaluates a text-only constructor.
+
+\subsection{Contextual V2}
+
+The \vtwo candidate space varies confidence $\tau\in\{.85,.91,.96\}$, hops $H\in\{1,2\}$, redirect-conditioned extra slots $s\in\{0,1,2\}$, and historical-aggregate protection $p\in\{0,1\}$. The 36-policy proposer optimizes a direct forgetting-aware proxy on weekly/monthly feedback and selects $\tau=.96$, $H=2$, $s=2$, and $p=1$. Capacity remains 64 and time remains 10 ms. \vtwo is a proposal, not an automatic deployment choice.
 
 \subsection{Tiered promotion}
-We separate policy fitting from promotion. Stage one admits a proposal only if direct quality, protected-slice harm, cost, disabled-equivalence, and forced-failure checks pass. Stage two evaluates the surviving challenger after answer generation. Given incumbent $\theta_I$, challenger $\theta_C$, and predeclared downstream checks $g_1,\ldots,g_J$, the deployed research policy is
+
+For incumbent $\theta_I$, challenger $\theta_C$, and frozen checks $g_1,\ldots,g_J$, the research policy is
 \[
-\theta^{*}=\begin{cases}
-\theta_C,&\text{if }\bigwedge_{j=1}^{J}g_j=1,\\
+\theta^*=\begin{cases}
+\theta_C,&\bigwedge_{j=1}^{J}g_j=1,\\
 \theta_I,&\text{otherwise.}
 \end{cases}
 \]
-The downstream checks cover answer FAMA magnitude and confidence, FAA, relative improvement over the incumbent, and injection cost; stage-one equivalence and fallback checks remain prerequisites. The decision log records every observed value, threshold, and failed check. Thus optimization may learn from feedback without allowing a retrieval-only proxy to silently replace a safer incumbent.
+Cheap feasibility checks cover direct evidence, protected-slice harm, context cost, latency, capacity, disabled equivalence, and forced failure. Only admitted candidates receive answer generation. Answer promotion covers FAMA magnitude and uncertainty, FAA, MPA, reader-specific direction, and cost. Every failed check is logged.
 
-Promotion objectives must also be typed. A \emph{quality} challenger must demonstrate positive downstream utility, whereas an \emph{efficiency} challenger may preserve a predeclared quality invariant while reducing cost by a required margin. These labels cannot be changed after scoring. The D11 follow-up below was frozen with a quality-gain gate and therefore remains rejected for quality promotion; we report its token reduction as a secondary efficiency finding rather than retroactively changing its decision.
+This mechanism is \emph{self-optimization} within a bounded policy space: controlled feedback changes candidate parameters or auxiliary rules, while frozen downstream feedback decides whether the system state changes. It is not unconstrained self-modification.
+
+\subsection{Operational versus semantic fallback}
+
+Exact \base fallback is operational safety: a broken sidecar does not break the base service. It is not semantic safety. \base may still retrieve obsolete information. We test exact fallback extensively but never interpret it as correctness.
 
 \section{Experimental Protocol}
-\paragraph{System and data.}
-We use MemoryCore L0 SQLite FTS5 retrieval with a candidate pool of 30 and a Base injection limit of five. Memora revision \texttt{a6493188efc836d6511ed5e4163fe3ba87da30ff} contains 600 questions, 27,614 sessions, 10 personas, and weekly, monthly, and quarterly horizons. The aggregate data-manifest SHA-256 is \texttt{dfc82711...331bfc}. Only turns marked \texttt{share\_memory} are indexed.
 
-\paragraph{Data-use boundary.}
-The ledger uses released write-time fields (session type, operation, operation details, and shared turns), never evaluation evidence. \vone originally optimized on weekly/monthly and held out quarterly. Because quarterly results were observed during \vone development, the \vtwo protocol correctly treats quarterly as confirmation rather than a pristine new holdout. The 50 answer-level cases are frozen before \vtwo answers are generated, but they too were used in the earlier \vone study. No external-generalization claim is made.
+\subsection{Public datasets and adapters}
 
-Memora has no repository, branch, environment, or component scope labels. It can validate correction chains and forgetting, but not programming-specific coexistence. The query-intent classifier uses query text only and matches the benchmark's repeated templates with zero false positives and zero false negatives over 600 questions; this is template validation, not general-language accuracy.
+Memora revision \texttt{a6493188efc836d6511ed5e4163fe3ba87da30ff} contains 600 questions, 27,614 session files, 10 personas, and weekly, monthly, and quarterly horizons. The data-manifest SHA-256 is \texttt{dfc82711...331bfc}. Only shared-memory turns enter the L0-shaped index. Memora supports answer-level current/obsolete criteria but lacks programming scope.
 
-\paragraph{Protocol chronology.}
-Protocol v2.0 fixed the candidate grid, objective, split, uncertainty method, and gates before direct scores were computed. A pre-score intent check then found 30 false negatives in two repeated reasoning templates (weekly goal-status and monthly week-comparison questions). Protocol v2.1 changed only those query-text patterns and reran all 600 cases in a fresh output directory; no score, threshold, or candidate dimension was changed. The answer-panel protocol and hashes were recorded before model calls. These are versioned repository artifacts, not a third-party timestamped preregistration, so we use \emph{predeclared} rather than \emph{preregistered}.
+MemOps provides 403 paired instances, 2,558 operations, and 2,006 longitudinal probes with explicit targets. It is used for oracle state-management diagnostics. LongMemEval-V2 revision \texttt{2cc8c540} contributes 200 selected small-tier questions and 1,870 text trajectories for state-transition, procedure, and compression experiments. Dataset readers implement replaceable task, event, provenance, and metric interfaces; the main policy code does not depend on one public schema.
 
-\paragraph{Metrics.}
-Memory Presence Accuracy (MPA) measures required current facts; Forgetting Absence Accuracy (FAA) measures avoidance of invalid facts. Following Memora,
+\subsection{Metrics and aggregation}
+
+For one judged answer, MPA scores required valid facts and FAA scores avoidance of invalid facts. Following Memora, we compute
 \[
-\mathrm{FAMA}=\max(0,\mathrm{MPA}-\lambda(1-\mathrm{FAA})),
+\mathrm{FAMA}_a=\max\left(0,\mathrm{MPA}_a-\lambda_a(1-\mathrm{FAA}_a)\right),
 \qquad
-\lambda=\frac{N_f}{N_p+N_f}.
+\lambda_a=\frac{N_{f,a}}{N_{p,a}+N_{f,a}}.
 \]
-The direct proxy counts a current atom only when its annotated source session and normalized value are both retrieved; it counts an obsolete atom only when the value occurs in a candidate predating its invalidation sequence. It applies the same FAMA form to these two rates before answer generation. This provenance-sensitive exact matching is cheap and deterministic, but it cannot score paraphrases, answer wording, or downstream use of a correction statement that repeats an obsolete value. Batched answer-level criteria are not directly comparable to Memora Table~3. All primary confidence intervals use 5,000-sample paired persona-cluster bootstrap.
+The aggregation order is explicit: compute MPA, FAA, and FAMA for each judged answer; average the MiniMax-reader/DeepSeek-judge and DeepSeek-reader/MiniMax-judge cells for each case--arm; then take the arithmetic mean over the frozen case population. We do not apply the nonlinear FAMA formula after separately averaging population MPA and FAA.
 
-\paragraph{Frozen answer panel.}
-Among 192 quarterly forgetting-bearing questions, 61 have at least one obsolete Base Top-5 hit. Hash stratification selects five cases per persona, producing 50 cases (43 recommending and seven remembering); the selection SHA-256 is \texttt{1e3ab7b2...dadaf1}. The \vtwo context-manifest SHA-256 is \texttt{a272a6c5...85b19}. Candidate lists differ from \vone on all 50 cases, so every Base, \vone, and \vtwo answer is generated afresh.
+The direct evidence proxy requires current-session provenance plus normalized value occurrence and penalizes obsolete exposure. It is deterministic and cheap, but cannot determine whether an answer affirms, negates, or merely narrates an old value. All primary intervals are paired persona-cluster bootstrap intervals with frozen seeds.
 
-MiniMax-M3 and DeepSeek-V4-Flash~\cite{minimax2026m3,deepseek2026v4} each act as reader and judge with thinking disabled. There are $50\times3\times2=300$ reader-arm evaluations and 600 judge calls. The primary crossed estimator uses DeepSeek judgments for MiniMax answers and MiniMax judgments for DeepSeek answers, averaging the two non-self cells per case. A full-factorial sensitivity analysis averages all four cells. Protocols fix exact model IDs, official endpoints, sampling, hashes, gates, and aggregation before calls; no OpenRouter call is used in this final experiment.
+\subsection{Model evaluation}
 
-\paragraph{D11 efficiency follow-up.}
-We additionally evaluate semantic-leaf evidence-preserving substitution on LongMemEval-V2 revision \texttt{2cc8c540}. The population contains 106 text-only procedure and procedure-absence questions: 76 are consumed by representation development and audit, and 30 form a checksum-frozen test split, of which 12 have directly computable answer-atom support labels. The all-or-nothing challenger replaces only selected same-trajectory Base items with a bounded capsule containing their semantic values, source provenance, source order, and locally verified actions. Coverage, order, provenance, unrelated-Base preservation, item count, and token certificates must all pass; otherwise the call returns exact Base. Token cost is measured on all 30 questions, while support comparisons use only the 12 labeled questions. The quality gate, artifacts, and admission decision were committed before the test was read. Because that gate requires at least one improved direct-support case, answer generation is not admitted when support is merely equal.
+MiniMax-M3 and DeepSeek-V4-Flash~\cite{minimax2026m3,deepseek2026v4} are the current readers and judges. The conditioned panel generates each answer once and records both judges; the primary estimate excludes self-judgment. D16 uses a stricter assignment: every MiniMax answer is judged only by DeepSeek, and every DeepSeek answer only by MiniMax. Thinking is disabled and exact model IDs, official endpoints, sampling, retry semantics, and unclear-verdict handling are frozen. Agreement between model judges is not human correctness.
 
-\section{Results}
-\subsection{Direct evidence favors the larger challenger}
-Table~\ref{tab:direct} shows the quarterly direct result. \vtwo exceeds both Base and \vone, including on the 61 Base-stale-exposed questions. Its direct gate passes all quality, harm, cost, intent-equivalence, disabled-equivalence, and forced-fallback checks. On all 300 quarterly questions, mean injected tokens rise from 133.68 for Base to 156.76 for \vtwo (+17.27\%).
+\subsection{Chronology and data use}
+
+The original 50-case panel is conditioned on a visible \base failure: among 192 quarterly forgetting-bearing questions, 61 expose an obsolete \base Top-5 value, and five cases per persona are selected by seeded hash. It contains 43 recommending and seven remembering questions. It estimates mechanism efficacy under stale exposure, not population impact.
+
+D16 takes all remaining 200 quarterly questions unused by either earlier 50-case answer panel. It is a census of those remaining cases and does not condition on arm outcomes or \base stale exposure. Nevertheless, quarterly Memora had been observed during earlier proxy development, so D16 is not a pristine external-dataset holdout. Its purpose is broad robustness and causal policy-factor comparison.
+
+\subsection{Work and call volume}
+
+The lifecycle benchmark contains 54 versioned protocol JSON files, 251 TypeScript source/test files (50 test files), and machine-readable raw, summary, decision, admission, and independent-validation artifacts. Excluding a legacy GPT-4o-mini secondary run and avoiding double-counting byte-identical reused cells, the current MiniMax/DeepSeek studies make 2,456 reader calls and 3,018 judge calls (5,474 total). D16 alone consumes 2,805,144 API tokens.
+
+\section{Research Trajectory Before the Broad Experiment}
+
+Table~\ref{tab:directions} summarizes D1--D15. These are retained negative and near-miss results, not a sequence in which every later number is better.
+
+\begin{table}[H]
+\centering
+\scriptsize
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{p{0.55cm}p{3.0cm}p{7.2cm}p{2.6cm}}
+\toprule
+ID & Hypothesis & Main result & Decision \\
+\midrule
+D1 & Obsolete-value shielding & Context exposure falls 74\% to 8\%, but answer MPA falls 2.02 points with a negative CI. & Reject answer safety \\
+D2 & Query risk routing & Cross-fitted routing gains 2.83 FAA points but loses 1.15 MPA points; one reader's FAMA direction is negative. & Reject \\
+D3 & Delete vacancy refill & Direct proxy gains 1.40 points, below the frozen 2-point gate; tokens rise 2.89\%. & Reject proxy/cost \\
+D4 & Valid-state packing & Fresh 50-case FAMA $+1.16$ points and tokens $-3.27\%$; CI is $[-0.14,+2.90]$ points. & Near miss, reject uncertainty \\
+D5 & Target-keyed state & Untouched-test state-FAMA $+6.46$ points, CI $[-2.40,+15.10]$; four Update cases harmed. & Reject test \\
+D6 & Incumbent guard & Post-hoc consumed audit: state-FAMA $+6.11$ points, 28 improved, zero harmed. & Viability only \\
+D7 & Transition diffs & Development support $+8.13$ points; validation reverses to $-6.67$ and tokens $+3.50\%$. & Reject validation \\
+D8 & Learned utility/null action & Untouched-test tokens $-2.92\%$ but support changes exactly zero with no improved case. & Reject quality \\
+D9 & Outcome-gated procedures & Outcome-agnostic ablation is better on development; validation support is $-11.11$ points. & Reject \\
+D10 & Locally verified substitution & Tokens $-33.55\%$, but one decisive body-text answer is removed; local feedback gives no quality lift. & Reject safety \\
+D11 & Evidence-preserving substitution & Untouched-test tokens $-20.84\%$; 12 direct-support questions all equal to \base. & Quality reject; retain efficiency result \\
+D12 & External evidence expansion & Development direct support $-3.33$ points versus \base with five harms. & Reject development \\
+D13 & Residual patch & All 23 direct questions equal \base while tokens rise 0.99\%. & Reject no effect \\
+D14 & Premise refutation & Two triggers among 33 premise cases, zero control false triggers; four changed reader pairs all equal \base. & Reject answer no effect \\
+D15 & Typed refutation contract & Three of four consumed design pairs improve, but fresh validation has zero triggers over 23 premise cases. & Reject zero coverage \\
+\bottomrule
+\end{tabular}}
+\caption{Research directions D1--D15. Development results are never relabeled as confirmation.}
+\label{tab:directions}
+\end{table}
+
+The trajectory identifies recurring mechanisms. Surface shielding removes both harmful old values and useful entity anchors. Fixed item count is not a token guarantee. Explicit target state is stronger than value-substring matching but can discard an incumbent successor. Whole-trajectory success is a noisy credit signal: failed trajectories contain useful prefixes and successful trajectories contain detours. Procedure skeletons can compress actions while losing body text, code, or diagnostics. Finally, a high-quality typed renderer cannot compensate for a trigger with zero validation coverage.
+
+\section{Conditioned V1/V2 Answer Experiment}
+
+Table~\ref{tab:conditioned} reports the original 50-case panel. \vone improves every primary quality metric over \base. \vtwo raises MPA slightly above \vone but lowers FAA by 4.08 points and uses 37.53\% more injected tokens. Its FAMA difference from \vone is negative with a CI crossing zero. The gate therefore retains \vone.
 
 \begin{table}[H]
 \centering
@@ -139,137 +204,190 @@ Table~\ref{tab:direct} shows the quarterly direct result. \vtwo exceeds both Bas
 \resizebox{\linewidth}{!}{%
 \begin{tabular}{lrrrrrr}
 \toprule
-Slice & $n$ & Base & \vone & \vtwo & \vtwo$-$Base [95\% CI] & \vtwo$-$\vone [95\% CI] \\
+Metric & \base & \vone & \vtwo & \vone$-$\base [95\% CI] & \vtwo$-$\base [95\% CI] & \vtwo$-$\vone [95\% CI] \\
 \midrule
-All quarterly & 300 & 0.423 & 0.439 & 0.445 & +0.022 [0.011, 0.033] & +0.005 [0.002, 0.009] \\
-Forgetting-bearing & 192 & 0.450 & 0.477 & 0.481 & +0.031 [0.015, 0.049] & +0.004 [0.001, 0.009] \\
-Base-stale-exposed & 61 & 0.091 & 0.184 & 0.194 & +0.103 [0.062, 0.144] & +0.010 [0.003, 0.019] \\
+MPA & 0.3855 & 0.4342 & 0.4461 & +0.0487 [0.0196, 0.0928] & +0.0606 [0.0216, 0.1090] & +0.0119 [$-0.0039$, 0.0276] \\
+FAA & 0.8531 & \textbf{0.9369} & 0.8961 & +0.0838 [0.0599, 0.1067] & +0.0431 [0.0029, 0.0848] & \textbf{$-0.0408$ [$-0.0762$,$-0.0064$]} \\
+FAMA & 0.3195 & \textbf{0.4004} & 0.3961 & \textbf{+0.0809 [0.0517, 0.1259]} & +0.0766 [0.0441, 0.1141] & $-0.0043$ [$-0.0206$,0.0109] \\
+Criterion acc. & 0.7040 & \textbf{0.7606} & 0.7382 & +0.0566 [0.0385, 0.0758] & +0.0342 [0.0118, 0.0604] & $-0.0224$ [$-0.0424$,$-0.0042$] \\
+Mean tokens & 144.52 & 146.76 & 201.84 & +1.55\% & +39.66\% & +37.53\% \\
 \bottomrule
 \end{tabular}}
-\caption{Direct evidence FAMA proxy on quarterly Memora. Quarterly is a confirmation split for \vtwo, not a pristine external holdout.}
-\label{tab:direct}
+\caption{Conditioned panel: 50 Base-stale-exposed questions, 43 recommending and seven remembering.}
+\label{tab:conditioned}
 \end{table}
 
-For the 100 quarterly reasoning questions, aggregate protection makes \vtwo exactly equal to Base (FAMA proxy 0.38285), repairing \vone's small loss (0.38252). Direct evidence alone would therefore promote the challenger.
+The conditioned result establishes that correction-linked redirection can help when obsolete evidence is present. It cannot estimate an unconditional deployment effect because selection requires a \base failure.
 
-\subsection{Answer-level evidence retains the incumbent}
-The answer-level result reverses the direct ranking (Table~\ref{tab:answer}). Both lifecycle policies improve substantially over Base. \vone, however, has the highest FAMA and FAA. Relative to \vone, \vtwo gains 1.19 MPA points but loses 4.08 FAA points; its FAMA difference is $-0.43$ points with an interval spanning zero. \vtwo uses 201.84 injected tokens per case versus 146.76 for \vone (+37.53\%).
+\section{D16: Broad Baselines and Single-Factor Ablation}
+
+\subsection{Design and integrity}
+
+D16 freezes 200 cases across ten personas: 100 reasoning, 62 remembering, and 38 recommending questions; 92 contain forgetting criteria and only six are Base-stale-exposed. Thirteen arms include \base, \vone, four simple baselines, six isolated \vtwo factors, and combined \vtwo:
+\begin{itemize}
+  \item tombstone refill and latest-write-wins;
+  \item pure recency Top-5 and explicit superseded/history rendering;
+  \item \vone with two hops, one extra slot, two extra slots, threshold .91, threshold .96, or aggregate protection;
+  \item combined \vtwo.
+\end{itemize}
+
+The design contains 2,600 case--arm contexts. Reader message arrays that are byte-identical within one case are generated and judged once, then reused. This yields 947 unique prompts per reader and 1,894 reader plus 1,894 crossed-judge calls instead of 5,200 reader calls. There are zero retries, reader/judge model mismatches, or self-judgments. Two unclear verdicts are counted incorrect. An independent parser rescored all 1,894 raw evaluations, reconstructed 13 arm aggregates and 12 comparisons against \vone, and found zero mismatch.
+
+\subsection{Full-population results}
+
+Table~\ref{tab:d16} shows the broad result. No challenger passes every frozen effect-size, uncertainty, FAA/MPA, cost, and integrity check.
+
+\begin{table}[H]
+\centering
+\scriptsize
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lrrrrrrl}
+\toprule
+Arm & MPA & FAA & FAMA & FAMA$-$\vone [95\% CI] & Tokens & Token $\Delta$ & Decision \\
+\midrule
+\base & 0.1500 & 0.9780 & 0.1428 & $-0.0142$ [$-0.0308$,0.00005] & 134.19 & +0.77\% & baseline \\
+\textbf{V1} & 0.1620 & \textbf{0.9881} & 0.1570 & -- & 133.16 & -- & incumbent \\
+Tombstone refill & 0.1601 & 0.9838 & 0.1533 & $-0.0037$ [$-0.0149$,0.0070] & 133.39 & +0.17\% & reject \\
+Latest-write-wins & 0.1598 & 0.9880 & 0.1543 & $-0.0027$ [$-0.0094$,0.0039] & 135.03 & +1.40\% & reject \\
+Recency Top-5 & 0.1453 & 0.9821 & 0.1393 & $-0.0176$ [$-0.0403$,0.0057] & 118.97 & $-10.66\%$ & reject quality \\
+Superseded rendering & 0.1559 & 0.9849 & 0.1497 & $-0.0073$ [$-0.0230$,0.0080] & 146.99 & +10.39\% & reject \\
+\vone + H2 & 0.1588 & 0.9879 & 0.1536 & $-0.0034$ [$-0.0086$,0] & 134.42 & +0.95\% & reject \\
+\vone + slot 1 & 0.1670 & 0.9862 & 0.1609 & +0.0039 [$-0.0068$,0.0144] & 148.66 & +11.64\% & reject cost/CI \\
+\vone + slot 2 & \textbf{0.1740} & 0.9831 & \textbf{0.1663} & +0.0093 [$-0.0027$,0.0227] & 160.04 & +20.19\% & reject cost/CI \\
+\vone $\tau=.91$ & 0.1616 & 0.9889 & 0.1565 & $-0.0004$ [$-0.0013$,0] & 133.23 & +0.06\% & reject \\
+\vone $\tau=.96$ & 0.1656 & 0.9881 & 0.1600 & +0.0030 [$-0.0010$,0.0083] & 133.56 & +0.30\% & near miss \\
+\vone + aggregate guard & 0.1595 & 0.9881 & 0.1545 & $-0.0025$ [$-0.0100$,0.0050] & 134.14 & +0.74\% & reject \\
+\vtwo & 0.1680 & 0.9831 & 0.1591 & +0.0021 [$-0.0073$,0.0108] & 147.99 & +11.14\% & reject \\
+\bottomrule
+\end{tabular}}
+\caption{D16 full-population crossed answer results. Token deltas are relative to \vone.}
+\label{tab:d16}
+\end{table}
+
+The extra-slot factors reveal the central trade-off. More context increases MPA and point-estimate FAMA but reduces FAA, costs 11.6--20.2\% more tokens, and does not beat \vone with confidence. Threshold .96 is the lowest-cost positive near miss; its $+0.30$ FAMA-point interval against \vone crosses zero. Two hops and aggregate protection are slightly harmful on this population. The simple baselines do not dominate the lifecycle incumbent.
+
+\subsection{Heterogeneous V1 effect}
+
+The full-population \vone--\base FAMA difference is $+0.01416$ with CI $[-0.000046,+0.03082]$. FAA improves $+0.01007$ with a positive interval, but the primary FAMA uncertainty rule is not met. Table~\ref{tab:subgroups} explains why the conditioned panel and broad panel differ.
 
 \begin{table}[H]
 \centering
 \footnotesize
-\resizebox{\linewidth}{!}{%
-\begin{tabular}{lrrrrrr}
+\begin{tabular}{lrrrl}
 \toprule
-Metric & Base & \vone & \vtwo & \vone$-$Base [95\% CI] & \vtwo$-$Base [95\% CI] & \vtwo$-$\vone [95\% CI] \\
+Slice & $n$ & FAMA $\Delta$ [95\% CI] & MPA $\Delta$ [95\% CI] & Interpretation \\
 \midrule
-MPA & 0.386 & 0.434 & 0.446 & +0.049 [0.020, 0.093] & +0.061 [0.022, 0.109] & +0.012 [$-0.004$, 0.028] \\
-FAA & 0.853 & 0.937 & 0.896 & +0.084 [0.060, 0.107] & +0.043 [0.003, 0.085] & $-0.041$ [$-0.076$, $-0.006$] \\
-FAMA & 0.319 & \textbf{0.400} & 0.396 & \textbf{+0.081 [0.052, 0.126]} & +0.077 [0.044, 0.114] & $-0.004$ [$-0.021$, 0.011] \\
-Criterion acc. & 0.704 & \textbf{0.761} & 0.738 & +0.057 [0.039, 0.076] & +0.034 [0.012, 0.060] & $-0.022$ [$-0.042$, $-0.004$] \\
+Full population & 200 & +0.0142 [$-0.00005$,0.0308] & +0.0120 [$-0.0031$,0.0285] & positive, uncertain \\
+Forgetting-bearing & 92 & \textbf{+0.0296 [0.0074,0.0549]} & \textbf{+0.0262 [0.0044,0.0517]} & confirmed positive slice \\
+Base stale exposed & 6 & +0.3919 [0.2897,0.4694] & +0.3111 [0.1400,0.4286] & large, only five clusters \\
+Recommending & 38 & \textbf{+0.0768 [0.0203,0.1395]} & +0.0751 & strong positive task slice \\
+Remembering & 62 & $-0.0095$ [$-0.0247$,0.0029] & \textbf{$-0.0153$ [$-0.0319$,$-0.0029$]} & MPA harm signal \\
+Reasoning & 100 & +0.0050 [$-0.0100$,0.0200] & -- & no confirmed effect \\
 \bottomrule
-\end{tabular}}
-\caption{Primary crossed answer-level results on 50 frozen Base-stale-exposed cases.}
-\label{tab:answer}
+\end{tabular}
+\caption{D16 V1 versus Base by frozen descriptive slice. Subgroups do not override the primary gate.}
+\label{tab:subgroups}
 \end{table}
 
-The full-factorial sensitivity ordering is the same: \vone versus Base is +8.26 FAMA points, \vtwo versus Base is +7.66, and \vtwo versus \vone is $-0.60$. \vone improves FAMA in all 10 persona clusters; the median cluster effect is +5.91 points, and leave-one-persona-out means range from +6.07 to +8.63 points. \vtwo improves over Base in nine clusters but exceeds \vone in only three.
+The original 50-case panel oversamples exactly the setting where lifecycle correction should matter. D16 does not invalidate that mechanism result; it limits its deployment interpretation. A future selective router must use runtime-observable risk features and fresh confirmation. Benchmark task labels cannot be copied into production routing.
 
-Figure~\ref{fig:reversal} places the within-stage \vtwo-minus-\vone effects on one percentage-point axis. The direct proxy has a positive interval, while answer FAMA does not improve and answer FAA is significantly negative. Absolute proxy and answer scores are not compared; the figure displays only paired policy differences within each measurement stage.
+\section{D17: Does Stance Repair the Proxy?}
 
-\begin{figure}[H]
-\centering
-\begin{tikzpicture}[x=0.58cm,y=0.72cm,font=\footnotesize]
-  \draw[gray!25,line width=0.7pt] (0,0.65) -- (0,4.55);
-  \foreach \x in {-8,-6,-4,-2,0,2} {
-    \draw[gray!45] (\x,0.55) -- (\x,0.40);
-    \node[below,text=gray!75!black] at (\x,0.40) {\x};
-  }
-  \draw[->,gray!70!black] (-8.35,0.55) -- (3.25,0.55);
-  \node[below] at (-2.5,-0.02) {\vtwo$-$\vone effect (percentage points)};
+The released direct proxy penalizes normalized obsolete-value occurrence without distinguishing affirmation, negation, or historical narration. D17 freezes an English marker-based stance proxy: affirmed, negated, and historical mentions receive exposure weights 1.0, 0.25, and 0.1. It ranks all 13 D16 policies without reading answer outcomes for the weights.
 
-  \node[anchor=east] at (-8.55,4.0) {Direct proxy FAMA};
-  \node[anchor=east] at (-8.55,3.0) {Answer MPA};
-  \node[anchor=east] at (-8.55,2.0) {Answer FAMA};
-  \node[anchor=east] at (-8.55,1.0) {Answer FAA};
+Kendall's $\tau_b$ with answer FAMA rises from 0.5290 to 0.5385, an improvement of 0.0094 against a frozen 0.10 requirement. Correlation with MPA rises from 0.4774 to 0.4872 and with FAA from 0 to 0.0129. Pairwise direction agreement against \vone remains 8/12. Both proxies correctly predict the observed \vtwo--\vone FAMA direction, but the overall gate fails.
 
-  \draw[proxyblue,line width=1.2pt] (0.155,4.0) -- (0.947,4.0);
-  \fill[proxyblue] (0.519,4.0) circle (2.2pt);
-  \draw[answerorange,line width=1.2pt] (-0.385,3.0) -- (2.761,3.0);
-  \node[draw=answerorange,fill=white,rectangle,minimum size=4.2pt,inner sep=0pt]
-    at (1.188,3.0) {};
-  \draw[answerorange,line width=1.2pt] (-2.062,2.0) -- (1.088,2.0);
-  \node[draw=answerorange,fill=white,rectangle,minimum size=4.2pt,inner sep=0pt]
-    at (-0.431,2.0) {};
-  \draw[answerorange,line width=1.2pt] (-7.616,1.0) -- (-0.644,1.0);
-  \node[draw=answerorange,fill=answerorange,rectangle,minimum size=4.2pt,inner sep=0pt]
-    at (-4.076,1.0) {};
+This negative result rules out a tempting shortcut. Simple stance markers improve a few descriptions but do not substitute for semantic or answer-level evaluation. A learned proxy would require human calibration and still needs a downstream promotion boundary.
 
-  \node[anchor=west,text=proxyblue] at (3.55,4.0) {+0.52};
-  \node[anchor=west,text=answerorange] at (3.55,3.0) {+1.19};
-  \node[anchor=west,text=answerorange] at (3.55,2.0) {$-0.43$};
-  \node[anchor=west,text=answerorange] at (3.55,1.0) {$-4.08$};
-\end{tikzpicture}
-\caption{Proxy-to-answer rank reversal. Points are mean \vtwo-minus-\vone effects and lines are 95\% persona-cluster bootstrap intervals. Blue denotes the direct proxy; orange denotes answer metrics.}
-\label{fig:reversal}
-\end{figure}
+\section{D18: Text-Only Correction Construction}
+\label{sec:d18}
 
-The judges agree on 8,258 of 8,532 paired criterion votes (96.79\%, Cohen's $\kappa=0.899$). The run contains 300 unique reader-arm records, 300 reader calls, and 600 judge calls with no retry and no returned-model mismatch. Three DeepSeek verdicts are \texttt{unclear} and counted as incorrect. An independent implementation recomputes all criterion scores and summary means with zero mismatches. A separate 20,000-sample bootstrap with another seed preserves every key inference.
+\subsection{Protocol}
 
-\subsection{Promotion outcome and failure analysis}
-The \vtwo promotion gate passes Base-relative FAMA magnitude, positive FAMA confidence bound, and token budget. It fails the required +10-point Base-relative FAA magnitude (observed +4.31) and positive \vtwo-versus-\vone FAMA direction (observed $-0.43$). The machine-readable decision is therefore \texttt{retain\_incumbent}.
+D18 directly addresses the quasi-oracle edge construction in V1. Runtime inputs are restricted to session id, persona, shared conversation text, and at most 512 earlier shared units from the same persona. Session type, operation, operation details, evaluation questions, and evidence labels are forbidden. A frozen deterministic detector recognizes explicit removal, no-longer, completion, used-to/now, from/to, preference shift, and replacement cues. A weighted lexical linker emits at most three predecessor ids and abstains when no prior unit passes its threshold.
 
-The result exposes a proxy-to-generation gap. We therefore run a post-hoc, descriptive exact-value audit over the 100 paired reader answers. At least one normalized obsolete value occurs in 86 \vtwo contexts versus 74 \vone contexts, and in 81 \vtwo answers versus 66 \vone answers. \vtwo also produces longer answers (126.7 versus 112.0 mean completion tokens). Across 1,866 paired forgetting-criterion comparisons, 96 move from correct under \vone to wrong under \vtwo, while 41 move in the opposite direction (net $-55$). Case inspection includes correction statements and removed to-do items repeated in negated or historical form.
+Quarterly histories are deduplicated from weekly/monthly prefixes and split by persona: four development, three validation, and three test personas. Released operations are attached only after prediction to define invalidating sessions, kinds, obsolete values, and predecessor units. No answer-model calls are authorized.
 
-This audit is consistent with increased exposure, but it is not a causal explanation. Exact substring matching misses paraphrases and does not distinguish negation from affirmation; criteria within an answer are correlated; and \vtwo jointly changes confidence, hops, intent protection, and extra slots. The supported conclusion is therefore policy-level: the selected challenger overfits the direct proxy. Isolating the responsible component requires one-factor answer-level ablations.
+\subsection{Results}
 
-An explicitly post-hoc Safe-Hybrid diagnostic uses Base for historical aggregates and \vone for other queries while keeping $k=5$. It is byte-identical to \vone on the frozen answer sample and passes all routing and fallback equivalence checks. Across all 600 direct cases, however, its FAMA proxy is 0.419076 versus 0.419123 for \vone, and its token count is 0.36\% higher. It fails a strict no-regression/no-extra-cost diagnostic and is not promoted.
-
-The earlier fixed GPT-4o-mini-reader panel estimated a \vone FAMA gain of 5.77 points (95\% CI: 1.23--11.71). It remains secondary provenance evidence; the crossed experiment is primary because answers are regenerated with the selected current models and require no OpenRouter service.
-
-\pagebreak[3]
-\subsection{Evidence-preserving compression reduces injection cost}
-Table~\ref{tab:d11-efficiency} reports the untouched D11 test. The candidate substitutes on 19 of 30 questions (63.3\%). Mean injected tokens fall by 582.9, or 20.84\%, while every directly scored question retains exactly the same answer-atom support as Base. The paired bootstrap interval is $[0,0]$ because all 12 per-question support differences are zero. Ordered-sequence support is also unchanged. Selection adds 3.08 ms at p95; end-to-end query p95 is 231.1 ms versus 227.5 ms for Base.
+The test split contains 5,954 sessions and 1,223 gold invalidating sessions. Table~\ref{tab:d18} compares a literal remove/delete baseline, cue-only classification, and high-confidence linked prediction.
 
 \begin{table}[H]
 \centering
 \footnotesize
 \begin{tabular}{lrrr}
 \toprule
-Metric & Base & D11 & D11$-$Base \\
+Metric & Remove/delete only & Cue only & Linked high confidence \\
 \midrule
-Answer-atom support recall ($n=12$) & 0.208 & 0.208 & 0.000 [$0,0$] \\
-Ordered-sequence support ($n=4$) & 0.250 & 0.250 & 0.000 \\
-Mean injected tokens ($n=30$) & 2,796.8 & 2,213.9 & $-582.9$ ($-20.84\%$) \\
-Mean injected items ($n=30$) & 3.03 & 2.53 & $-0.50$ \\
-Query latency p95 (ms) & 227.5 & 231.1 & +3.6 \\
+Event precision & 1.0000 & 0.9781 & 0.9789 \\
+Event recall & 0.1562 & 0.8029 & 0.7964 \\
+Event F1 & 0.2702 & 0.8819 & 0.8783 \\
+Kind accuracy & 1.0000 & 0.8228 & 0.8234 \\
+Predicted predecessor links & 0 & 0 & 2,823 \\
+Link precision & -- & -- & 0.2005 \\
+Link recall & -- & -- & 0.1618 \\
+Any-correct-link rate & -- & -- & 0.4538 \\
+Detector p95 & -- & -- & 5.51 ms \\
 \bottomrule
 \end{tabular}
-\caption{D11 evidence-preserving compression on the untouched LongMemEval-V2 procedure test. Support is a direct representation proxy, not generated-answer accuracy.}
-\label{tab:d11-efficiency}
+\caption{D18 persona-disjoint test result. Any-correct-link rate is over true-positive linked sessions.}
+\label{tab:d18}
 \end{table}
 
-There are zero improved and zero harmed direct-support cases, zero per-query token violations, zero certificate violations, and zero forced-fallback mismatches; an independent implementation reproduces the result with no mismatch. Under the original quality objective, D11 correctly fails because it creates no newly reachable answer atom, and consequently no reader or judge call is made. Under an efficiency interpretation, however, the observed point is Pareto-improving on the measured support--token plane. We treat this as a useful cost result, not as proof that generated answers are non-inferior: the quality sample contains only 12 direct-proxy questions, and no answer-level equivalence margin was tested.
+Event precision, recall, link recall, latency, and forbidden-read checks pass. Link precision, any-correct-link rate, and kind accuracy fail. The result is stable in direction on validation, where link precision is 19.80\% and any-correct-link rate 45.74\%.
 
-\subsection{Safety behavior}
-Across all 600 questions, disabling \method produces zero candidate-ID mismatches against Base. Forced damaged-state and timeout checks also produce zero mismatches, as do protected-intent equivalence checks where applicable. Each group is bounded to 10,000 units, 5,000 events, and 50,000 edges, with query-time hop, expansion, result-count, and wall-time budgets.
+The core error is entity and state ambiguity. A cue-bearing message and many prior units can share words such as ``budget'', ``project'', or ``music'' without referring to the same field or state. Detecting that a correction occurred is substantially easier than deciding exactly what it invalidates. We therefore classify all V1 answer results as oracle-management evidence and reject an end-to-end construction claim.
 
-\section{What the Negative Result Changes}
-The D11 result refines what counts as optimization. Future protocols should predeclare separate promotion classes. A quality challenger must improve downstream effectiveness without violating forgetting or cost guards. An efficiency challenger may instead require a non-inferior quality lower bound, a minimum token reduction, a negative upper confidence bound for token delta, bounded latency overhead, and exact fallback. This permits a genuinely cheaper policy to advance without pretending that zero quality change is a quality gain. Because D11 used the former gate, confirming it as an efficiency policy still requires a fresh split with the latter gate frozen in advance.
+\section{D11: Separate Efficiency Evidence}
 
-The next confirmatory candidate should not be another joint expansion. We retain \vone, keep $k=5$, and vary one dimension at a time: confidence calibration, a second traversal hop, or one additional slot. A two-fidelity optimizer can use the deterministic proxy only to discard clearly weak candidates, then use a development answer panel to estimate forgetting harm before any promotion decision. The current 50 cases must not be reused to fit that answer-level objective; they are now analysis data.
+D11 replaces selected same-trajectory \base items with one bounded capsule only if it preserves every extracted semantic leaf, source order, provenance, unrelated \base item, item count, and token certificate. Otherwise it returns exact \base. The checksum-frozen LongMemEval-V2 test contains 30 questions, of which 12 have directly computable answer-atom support.
 
-For each one-factor candidate, the decisive estimand is paired answer FAMA relative to \vone with FAA as a non-inferiority safety outcome and injected tokens as cost. An additional slot should be admitted only if its own ablation clears those checks. External confirmation should then use an untouched public update/abstention split or internal programming sessions with repository, branch, environment, and task scope. This sequence directly tests the failure identified here instead of optimizing the same surrogate more aggressively.
+Across all 30 questions, D11 accepts 19 substitutions and reduces mean injected tokens from 2,796.8 to 2,213.9, a 20.84\% reduction. On the 12 direct questions, \base and D11 both score 0.2083; zero improve, twelve are equal, and zero are harmed. Query p95 moves from 227.5 to 231.1 ms; selection p95 is 3.08 ms. Token, coverage, provenance, capacity, and forced-fallback violations are zero.
 
-Three questions remain open: whether a cheap high-precision surrogate can predict answer-level forgetting harm, whether promotion decisions are stable under a broader reader/judge panel, and how version chains should represent facts that remain concurrently valid in different branches or environments. Each requires new data or a new frozen split; none can be answered by further tuning on the current 50 cases.
+The frozen objective required a quality improvement, so D11 is correctly rejected for quality promotion and no answer generation is admitted. Equal direct support is not answer-level noninferiority. We retain the result only as a measured support--cost Pareto point and propose a new efficiency-specific protocol with an answer noninferiority margin.
 
-\section{Limitations and Transfer}
-First, Memora is personalized dialogue, not a programming-agent benchmark. Internal sessions may contain branch-local truths, implicit corrections, code moves, and tool-grounded changes that do not quote the invalidated value. Second, the answer sample is conditional on Base stale exposure and has 43 recommendation versus seven remembering questions; it is not a population estimate over all 600 questions. Third, quarterly and the frozen sample were observed during earlier \vone development, so the \vtwo results are confirmation and ablation evidence rather than pristine external validation. Fourth, the two-model crossed panel reduces self-judging bias but is not a random sample of readers or judges. Fifth, the post-hoc exposure audit diagnoses association after seeing the outcome and cannot identify a causal policy component. Sixth, the protocol artifacts are versioned but not externally timestamped preregistrations. Seventh, neither policy clears every strict production-style magnitude gate; \vone is the best-tested research incumbent, not an unconditional default. Eighth, D11's support result covers only 12 direct-proxy questions and no generated answers, so its 20.84\% token reduction demonstrates measured compression efficiency rather than answer-level non-inferiority.
+\section{Discussion}
 
-For programming transfer, the core ledger, policy bounds, decision log, promotion rule, and fallback remain unchanged. Internal adapters must supply stable unit IDs, monotonic events, correction provenance, calibrated confidence, and query scope such as repository, branch, environment, component, and task. Explicit user corrections, rename/refactor events, reverted plans, changed tests, and tool-confirmed deletion are high-value signals. Concurrently valid branch-specific alternatives should coexist rather than invalidate one another. Those assumptions require an internal adapter and a new task-level protocol; Memora cannot validate them.
+\subsection{What actually works}
+
+Correction-linked redirection can improve downstream answers when the base context contains invalidated memory. It is fixed-budget, bounded, auditable, switchable, and compatible with an existing retriever. The stronger general result is the promotion architecture: V2, D1, D4, and D17 each show how a plausible or positive direct signal can fail an answer, uncertainty, or cost boundary.
+
+The broad data suggest a risk--coverage policy rather than unconditional lifecycle rewriting. Forgetting-bearing and recommending slices benefit, while remembering MPA can be harmed. This does not yet define a deployable router: subgroup labels are diagnostic and the routing hypothesis was formed after D16 outcomes. Fresh data are required.
+
+\subsection{What did not work}
+
+More slots trade recall against obsolete exposure and cost. More hops are not automatically helpful. Recency saves tokens but loses quality. Explicitly rendering superseded facts costs more and does not dominate. Whole-trajectory outcome labels are too coarse for procedural memory. Preserving action structure without semantic leaves is unsafe. Typed refutation cannot transfer when its trigger has zero coverage. English stance markers do not align the proxy enough. Finally, lexical event-to-predecessor linking is unsafe despite strong event classification.
+
+\subsection{Transfer to programming sessions}
+
+The portable interfaces are event, scope, candidate, provenance, feedback, metric, and report adapters. An internal programming adapter should represent validity over a composite key such as
+\[
+(\text{repo},\text{branch},\text{base commit},\text{worktree},\text{environment},
+\text{task phase},\text{file/symbol},\text{claim type}).
+\]
+Each claim should be active, superseded, or unknown. Unknown scope must abstain rather than invalidate.
+
+Promising unvalidated extensions include executable witnesses (test command, exit code, commit, file hash, environment), implicit candidates from Git diff/rename/revert and test-state changes, memory rebase after branch or commit transitions, and contamination-differential evaluation that checks whether injected memory changes plans, edits, tests, or patches. A public or internal ``RepoDriftBench'' adapter could expose these fields without changing the lifecycle controller. These are designs, not results in this paper.
+
+\subsection{Cost and confidence}
+
+D16 demonstrates a practical two-fidelity workflow. Exact context metrics and prompt reuse cheaply eliminate many candidates; answer calls are reserved for frozen arms and unique prompts. This saved 63.6\% of otherwise required reader calls in D16. Yet two model judges may share biases. The next evidence priority is a human-calibrated subset, not another larger proxy search.
+
+\section{Limitations}
+
+First, Memora is personalized dialogue rather than software engineering. It lacks repository, branch, commit, worktree, environment, component, and test scope. Second, all quarterly questions were visible to earlier proxy analysis; D16 cases are answer-unconsumed but not a pristine dataset holdout. Third, the original 50-case panel is deliberately conditioned on stale exposure and cannot estimate total-traffic impact. Fourth, model-judge agreement does not establish human correctness. Fifth, D11 has only 12 direct-support questions and no generated-answer noninferiority test. Sixth, D18 uses deterministic English cues and operation-derived scoring; it does not cover implicit code-state invalidation. Seventh, exact \base fallback protects availability, not semantic correctness. Finally, D1--D18 involve repeated scientific exploration. We preserve protocol chronology and negative results, but only a fresh external or internal dataset can support deployment claims.
+
+\section{Reproducibility and Artifacts}
+
+Every main experiment records dataset revision or manifest, protocol version, selection or census rule, seed, model configuration, raw JSONL, summary, decision, cost, fallback checks, and claim boundary. D16 provides a raw-evaluation SHA-256, independent reconstruction, and zero mismatch report. D18 provides frozen persona splits, forbidden runtime fields, per-session predictions, and artifact hashes. The structured direction registry distinguishes passed, rejected, near-miss, post-hoc, and efficiency-only outcomes.
+
+The implementation remains a sidecar. Disabling it, corrupting its structure, forcing timeout, exceeding capacity, or encountering a cycle returns the original base call. Dataset adapters can be replaced without rewriting policy and reporting logic.
 
 \section{Conclusion}
-Static retrieval can convert historical truth into current error. Correction-linked redirection is a useful bounded mechanism: the fixed-budget \vone policy substantially improves crossed answer-level FAMA at nearly constant context cost and with exact fallback behavior. A more aggressive proxy-optimized \vtwo policy looks better before answer generation but loses forgetting safety and fails to beat \vone downstream. D11 adds a complementary result: evidence-preserving substitution reduces mean injection by 20.84\% with identical measured support, although its small direct-proxy sample and lack of answer calls prevent an answer-quality claim. The central lesson is therefore procedural as well as algorithmic: memory self-optimization should type its objective, propose bounded challengers, test them against frozen quality or efficiency gates, and retain the incumbent on failure. This warrants an internal programming-session pilot, not a broad deployment claim.
+
+We studied memory self-optimization as controlled lifecycle policy evolution rather than unconstrained rewriting of a memory engine. Fixed-budget correction-linked management produces large gains when obsolete \base evidence is present and confirmed gains on forgetting-bearing broad cases, but it is not supported as an unconditional default. A richer proxy-selected policy, simple temporal baselines, isolated factors, and a stance-aware proxy all fail frozen promotion. Text-only correction detection is accurate, but automatic predecessor linking is not. Evidence-preserving compression reduces measured context cost but still needs answer-level noninferiority.
+
+The final strategy is conservative: retain \base, activate lifecycle management only under high-confidence scoped evidence and a freshly validated risk gate, promote quality and efficiency on separate tracks, abstain on ambiguous links, and preserve exact operational fallback. The next substantive research problem is scoped, witness-backed invalidation for repository state---not a larger Top-k.
 
 \bibliographystyle{plain}
 \small

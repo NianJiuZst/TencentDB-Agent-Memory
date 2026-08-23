@@ -4,7 +4,7 @@ This file is the persistent direction registry for iterative work above the fixe
 
 ## Current incumbent
 
-`lifecycle-adaptive-v1.0`: correction-linked successor redirection with `minConfidence=0.85`, one hop, `k=5`, bounded expansion, and whole-call Base fallback. It remains the research incumbent because the broader contextual V2 improved the direct proxy but lost answer-level forgetting safety.
+`lifecycle-adaptive-v1.0`: correction-linked successor redirection with `minConfidence=0.85`, one hop, `k=5`, bounded expansion, and whole-call Base fallback. D16 retains it as the **conditional research incumbent**, not an unconditional traffic default: its broad effect is positive on forgetting-bearing and recommending questions, uncertain over the full 200-case population, and negative for remembering MPA.
 
 ## Direction registry
 
@@ -21,6 +21,13 @@ This file is the persistent direction registry for iterative work above the fixe
 | D9 | Outcome-gated binding-safe procedure memory | Whole-trajectory success admission over deterministic action skeletons | Fresh LongMemEval-V2 procedure development and validation questions | Rejected at validation gate | Development representation signal reversed; trajectory-level feedback was too coarse |
 | D10 | Verified local procedure substitution | Step-level progress feedback plus same-trajectory Base replacement | D9 development/validation as consumed diagnostics; D9 test remains unread | Rejected at consumed audit | Cost and unrelated-item safety passed, but one body-text answer was discarded and local feedback added no support lift |
 | D11 | Semantic-leaf evidence-preserving substitution | Preserve every bounded semantic value inside a same-trajectory capsule | D10 consumed audit plus one admitted D9 test read | Rejected at untouched test | Safe compression transferred, but direct support did not improve over Base or D10 |
+| D12 | Trajectory-consistent external evidence expansion | Add bounded same-trajectory evidence outside the Base prefix | D11 consumed test used as development only | Rejected at development gate | Support fell versus Base and the causal control did not justify the rule |
+| D13 | Residual feedback patch | Admit an expansion only for a learned residual failure signature | D12 development feedback | Rejected at development gate | Used the patch on 60% of cases but added no answer atom and increased tokens |
+| D14 | Premise-refutation evidence | Retrieve typed evidence that disproves an invalid prerequisite | Fresh LongMemEval-V2 premise/control development | Rejected at answer gate | High precision but only two triggers; changed reader pairs were all equal to Base |
+| D15 | Typed refutation and sufficiency contract | Render premise, refutation, witness, and scope as a typed capsule | D14 consumed design plus fresh validation | Rejected at validation coverage gate | Three of four design pairs improved, but validation produced zero triggers |
+| D16 | Broad baselines and single-factor answer ablation | Compare V1 with four simple baselines and six isolated V2 factors | All 200 Memora answer cases unused by prior panels | Completed; no challenger promoted | V1 is useful on high-risk slices but not established as a universal default |
+| D17 | Stance-aware proxy alignment | Discount negated/historical obsolete mentions before policy ranking | Frozen D16 contexts and answers | Rejected at alignment gate | FAMA rank correlation improved only 0.0094, below the frozen 0.10 threshold |
+| D18 | Text-only correction detection and linking | Detect explicit correction cues and link them to bounded prior units without operation metadata | Persona-disjoint quarterly Memora histories | Rejected at linking gate | Event detection transferred; predecessor linking precision was only 20.05% |
 
 ## Why D1 is first
 
@@ -137,6 +144,30 @@ The frozen recomputation passed that consumed-audit gate. The locally verified a
 The untouched test rejects D11. On 12 direct-proxy questions, Base, D10, and D11 all scored 0.2083; every paired delta was zero and the 20,000-draw interval was exactly [0, 0]. Five direct questions accepted D11 substitution, but none gained or lost an answer atom. Across all 30 questions, the locally verified arm accepted 19 substitutions and reduced mean injected tokens from 2796.8 to 2213.9 (20.84%) with no certificate, token, ordinary-fallback, or forced-fallback violation. Local feedback changed 20 contexts and saved 46.43 mean tokens relative to the agnostic arm, but changed direct quality on zero questions. Independent D10 and D11 reconstruction reported zero mismatches; answer readers and judges were therefore not called.
 
 This result narrows the mechanism boundary. D11 extracts evidence only from Base items already admitted to the context. It can prevent an unsafe compression loss, but it cannot introduce a missing answer atom unless the inherited procedure action skeleton contributes one. D10 contributed none on the untouched test, so D11 transferred only as safe compression. A next direction must change evidence accessibility: retrieve bounded, query-relevant semantic spans from an existing same-trajectory candidate outside the Base-injected prefix, and admit the expansion only under provenance, dominance, cost, capacity, and exact-Base-fallback certificates. That is a new direction, not a D11 retune, and the consumed D11 test cannot become its confirmation set.
+
+## D12--D15: why the LongMemEval-V2 expansion branch stopped
+
+D12 followed the proposed accessibility mechanism and retrieved same-trajectory semantic leaves outside the injected Base prefix. On 60 development questions, including 23 direct cases, its support was 3.33 points below Base, with five harms. Its improvement over D11 did not establish improvement over the actual incumbent and the causal ablation was worse. D13 then tested a narrower residual-feedback patch; it fired on 60% of 25 development questions but left all 23 direct cases exactly equal to Base while increasing tokens by 0.99%. Both directions stopped before validation or answer calls.
+
+D14 changed the target from generic answer evidence to evidence that refutes a false prerequisite. It found only two valid triggers among 33 premise questions and none among 25 controls. Those two changed contexts created four reader pairs and eight reader plus sixteen judge calls, but every answer outcome equaled Base. D15 preserved the mechanism and rendered a typed premise--refutation--witness--scope contract. Three of four already consumed design pairs improved; the frozen 23-premise/20-control validation, however, produced zero triggers and 43 exact Base no-ops. D15 was rejected before answer generation. The branch demonstrates that a high-quality renderer cannot compensate for zero structural coverage.
+
+## D16: broad robustness, simple baselines, and single factors
+
+D16 is the main response to the original answer panel's selection bias. It takes all 200 quarterly Memora questions not used by the two earlier 50-case panels: 100 reasoning, 62 remembering, and 38 recommending questions across all ten personas. Only six are Base-stale-exposed, so the population is not conditioned on the treatment being needed. Thirteen arms compare Base and V1 with tombstone refill, latest-write-wins, recency Top-5, explicit superseded rendering, each isolated V2 factor (two hops, one/two extra slots, confidence 0.91/0.96, aggregate protection), and combined V2.
+
+The frozen panel contains 2,600 case--arm contexts. Exact byte reuse reduces each reader's unique prompts to 947. MiniMax-M3 and DeepSeek-V4-Flash therefore make 1,894 reader calls and 1,894 crossed-judge calls, with zero retries, model mismatches, or self-judgments. Independent raw-verdict recomputation reports zero aggregate mismatch.
+
+Across all 200 cases, V1 improves FAMA over Base by 1.42 points, but the persona-bootstrap interval is $[-0.005,+3.08]$ points after rounding, so it is not a confirmed universal effect. The 92 forgetting-bearing cases improve by 2.96 points with a positive interval; the 38 recommending cases improve by 7.68 points. Remembering MPA instead falls by 1.53 points with a negative interval. No simple baseline or V2 factor passes every full-population quality, uncertainty, and cost gate. Extra slots trade more MPA for lower FAA and 11.6--20.2% more tokens; confidence 0.96 is a low-cost near-miss but does not beat V1 with confidence. V1 remains a conditional incumbent for high-risk traffic.
+
+## D17: a proxy innovation that did not clear its gate
+
+D17 asks whether the direct proxy ranks policies badly because it counts an obsolete value even when a context marks it as historical or negated. A frozen marker-based proxy weights affirmed, negated, and historical mentions by 1.0, 0.25, and 0.1, then compares the rankings of all 13 D16 policies against answer metrics with Kendall's tau-b. Correlation with answer FAMA rises only from 0.5290 to 0.5385, a 0.0094 gain against the required 0.10. Pairwise agreement against V1 remains 8/12. D17 is rejected; semantic stance requires a learned or human-calibrated method rather than a short marker list.
+
+## D18: event detection transfers, automatic predecessor linking does not
+
+V1 had so far tested management with released Memora operation metadata. D18 removes that metadata from the runtime phase and uses only current shared text plus at most 512 prior shared units. Four development personas informed frozen English cue families; validation and test contain three disjoint personas each. Gold operations are attached only after prediction for scoring.
+
+On 5,954 test sessions, the high-confidence detector identifies invalidating sessions with 97.89% precision and 79.64% recall. This does not solve construction: among 2,823 predicted predecessor links, only 566 match a released obsolete-value predecessor (20.05% precision), and only 45.38% of true-positive linked sessions contain any correct predecessor. Event-kind accuracy is 82.34%. Those three checks fail the frozen gate, although p95 latency is 5.51 ms and forbidden runtime metadata reads are zero. V1 must therefore remain labeled oracle-management evidence. The next technical target is not a broader cue list but scope-aware entity/state resolution with abstention.
 
 ## Iteration rule
 

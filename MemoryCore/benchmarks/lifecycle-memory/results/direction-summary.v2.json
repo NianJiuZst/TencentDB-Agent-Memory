@@ -1,0 +1,179 @@
+{
+  "registryVersion": "lifecycle-direction-summary-v2.0",
+  "generatedAt": "2026-08-24",
+  "researchQuestion": "How should a MemoryCore sidecar update, invalidate, retrieve, organize and budget memory under controlled feedback without replacing the base index?",
+  "incumbent": {
+    "id": "lifecycle-adaptive-v1.0",
+    "name": "correction-linked fixed-budget redirection",
+    "status": "conditional_research_incumbent",
+    "deploymentBoundary": "Positive on stale-exposed, forgetting-bearing and recommending Memora slices; not supported as an unconditional full-traffic default."
+  },
+  "workload": {
+    "publicDatasets": [
+      {
+        "name": "Memora",
+        "revision": "a6493188efc836d6511ed5e4163fe3ba87da30ff",
+        "questions": 600,
+        "sessions": 27614,
+        "personas": 10
+      },
+      {
+        "name": "MemOps",
+        "pairedInstances": 403,
+        "operations": 2558,
+        "longitudinalProbes": 2006
+      },
+      {
+        "name": "LongMemEval-V2 small tier",
+        "selectedQuestions": 200,
+        "sourceTrajectories": 1870
+      }
+    ],
+    "currentModelCallsExcludingLegacySecondaryRun": {
+      "readerCalls": 2456,
+      "judgeCalls": 3018,
+      "totalCalls": 5474,
+      "note": "Primary V1/V2, D1, D4, D14, D15 and D16 calls; byte-identical reused cells are not double-counted."
+    },
+    "d16ApiTokens": 2805144,
+    "d16FrozenCaseArmContexts": 2600,
+    "d16UniqueReaderPromptsPerModel": 947
+  },
+  "directions": [
+    {
+      "id": "V1",
+      "name": "纠错链固定预算重定向",
+      "hypothesis": "检索到旧记忆时沿高置信 predecessor-to-successor 边重定向，可减少过时事实并保持 k=5。",
+      "mainEvidence": "50-case conditioned panel: FAMA +0.0809 [0.0517,0.1259]. Broad 200-case panel: FAMA +0.0142 [-0.00005,0.0308]; forgetting-bearing +0.0296 [0.0074,0.0549].",
+      "decision": "retain_conditionally",
+      "lesson": "Mechanism is useful in high-risk lifecycle traffic but is not a universal default."
+    },
+    {
+      "id": "V2",
+      "name": "上下文策略组合",
+      "hypothesis": "更高阈值、两跳、额外槽位和历史聚合保护可同时改善召回与遗忘。",
+      "mainEvidence": "Conditioned panel versus V1: FAMA -0.0043, FAA -0.0408, tokens +37.5%. Broad panel: FAMA +0.0021 [-0.0073,0.0108], tokens +11.1%.",
+      "decision": "rejected",
+      "lesson": "A proxy-selected joint policy can improve retrieval while degrading answer safety and cost."
+    },
+    {
+      "id": "D1",
+      "name": "过时值屏蔽渲染",
+      "mainEvidence": "Obsolete context exposure 74% to 8%, but MPA -0.0202 with a negative confidence interval.",
+      "decision": "rejected_answer_gate"
+    },
+    {
+      "id": "D2",
+      "name": "查询风险路由",
+      "mainEvidence": "FAA +0.0283 but MPA -0.0115 and one reader's FAMA direction remained negative.",
+      "decision": "rejected_cross_fitted_gate"
+    },
+    {
+      "id": "D3",
+      "name": "删除空位回填",
+      "mainEvidence": "Direct proxy +0.0140 but below the +0.02 gate; tokens +2.89%.",
+      "decision": "rejected_proxy_gate"
+    },
+    {
+      "id": "D4",
+      "name": "反馈优化的有效状态装箱",
+      "mainEvidence": "Fresh 50-case answer panel FAMA +0.0116 and tokens -3.27%, but CI [-0.0014,0.0290].",
+      "decision": "rejected_uncertainty_gate",
+      "lesson": "Near miss; positive point estimates are insufficient for promotion."
+    },
+    {
+      "id": "D5",
+      "name": "目标键控状态投影",
+      "mainEvidence": "Untouched test state-FAMA +0.0646 but CI [-0.0240,0.1510] with four harmed cases.",
+      "decision": "rejected_test_gate"
+    },
+    {
+      "id": "D6",
+      "name": "incumbent 保真组合守卫",
+      "mainEvidence": "Post-hoc consumed audit state-FAMA +0.0611, 28 improved and zero harmed.",
+      "decision": "posthoc_viability_only"
+    },
+    {
+      "id": "D7",
+      "name": "状态变化差分组织",
+      "mainEvidence": "Development support +0.0813; validation reversed to -0.0667 and tokens +3.50%.",
+      "decision": "rejected_validation_gate"
+    },
+    {
+      "id": "D8",
+      "name": "反馈学习的变化效用门",
+      "mainEvidence": "Untouched test tokens -2.92%, direct support exactly unchanged with zero improved cases.",
+      "decision": "rejected_quality_no_effect"
+    },
+    {
+      "id": "D9",
+      "name": "结果门控的过程记忆",
+      "mainEvidence": "Development signal favored the outcome-agnostic ablation; validation support -0.1111.",
+      "decision": "rejected_validation_reversal"
+    },
+    {
+      "id": "D10",
+      "name": "局部验证过程替换",
+      "mainEvidence": "Tokens -33.55% but one correct StaticText answer body was lost; local feedback added no quality lift.",
+      "decision": "rejected_safety_gate"
+    },
+    {
+      "id": "D11",
+      "name": "证据保真压缩",
+      "mainEvidence": "Untouched 30-question test tokens 2796.8 to 2213.9 (-20.84%); direct support equal on all 12 scored questions.",
+      "decision": "quality_rejected_efficiency_result_retained",
+      "claimBoundary": "No answer-level noninferiority evidence."
+    },
+    {
+      "id": "D12",
+      "name": "轨迹一致外部证据扩展",
+      "mainEvidence": "Development direct support -0.0333 versus Base; five harmed cases.",
+      "decision": "rejected_development_gate"
+    },
+    {
+      "id": "D13",
+      "name": "残差反馈补丁",
+      "mainEvidence": "23 direct questions all equal to Base while tokens increased 0.99%.",
+      "decision": "rejected_development_no_effect"
+    },
+    {
+      "id": "D14",
+      "name": "前提反驳证据",
+      "mainEvidence": "2 valid triggers from 33 premise cases; four reader pairs all equal to Base.",
+      "decision": "rejected_answer_no_effect"
+    },
+    {
+      "id": "D15",
+      "name": "类型化反驳与充分性契约",
+      "mainEvidence": "Three of four consumed design pairs improved, but fresh validation had zero triggers over 23 premise cases.",
+      "decision": "rejected_zero_validation_coverage"
+    },
+    {
+      "id": "D16",
+      "name": "广覆盖基线与单因素答案消融",
+      "mainEvidence": "200 unconsumed answer cases, 13 arms, 1894 reader and 1894 crossed-judge calls. No challenger passed the frozen full-population gate.",
+      "decision": "retain_v1_conditional_incumbent",
+      "lesson": "V1 helps forgetting-bearing and recommending traffic but shows an MPA harm signal on remembering questions."
+    },
+    {
+      "id": "D17",
+      "name": "立场感知代理指标",
+      "mainEvidence": "Kendall tau-b with answer FAMA improved only 0.5290 to 0.5385, below the frozen +0.10 gate.",
+      "decision": "rejected_proxy_alignment_gate"
+    },
+    {
+      "id": "D18",
+      "name": "文本纠错检测与自动构链",
+      "mainEvidence": "Persona-disjoint test: event precision 0.9789, recall 0.7964, but predecessor-link precision 0.2005, any-correct-link rate 0.4538 and kind accuracy 0.8234.",
+      "decision": "rejected_linking_gate",
+      "lesson": "Detecting that a correction occurred is much easier than deciding exactly which prior memory it invalidates. V1 remains oracle-management evidence."
+    }
+  ],
+  "finalConclusions": [
+    "Use V1 only behind a risk/coverage gate until a fresh selective-routing confirmation exists.",
+    "Keep D11 as a separately promoted efficiency candidate and require answer-level noninferiority on new data.",
+    "Do not promote policies from retrieval proxies alone; D16 and D17 show imperfect proxy-answer alignment.",
+    "The largest unresolved technical problem is scoped predecessor linking, especially for repository, branch, commit, environment and task-phase state.",
+    "Every adaptive sidecar remains switchable and must return the exact Base call on disablement, damage or timeout."
+  ]
+}

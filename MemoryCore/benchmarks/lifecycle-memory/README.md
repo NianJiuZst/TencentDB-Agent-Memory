@@ -2,11 +2,11 @@
 
 This benchmark evaluates a switchable lifecycle sidecar above MemoryCore L0 retrieval. It keeps the existing FTS5/vector candidate path, learns a bounded correction policy from controlled feedback, and returns the original Base prefix on disablement, timeout, corruption, or missing state.
 
-For a Chinese, decision-oriented summary of the complete V1--D15 evidence, see [`REPORT_CN.md`](REPORT_CN.md). The English paper remains the theory and full experimental-process artifact.
+For a Chinese, decision-oriented account of the complete V1--D18 evidence, see [`REPORT_CN.md`](REPORT_CN.md). The English paper remains the theory and full experimental-process artifact. The compact machine-readable registry is [`results/direction-summary.v2.json`](results/direction-summary.v2.json).
 
 ## Outcome
 
-**V1 is the best-tested policy; the larger V2 challenger is rejected.** V2 improved the direct retrieval proxy, but the frozen answer-level experiment did not show an improvement over V1 and found a statistically negative FAA difference. A predeclared promotion gate therefore retains V1 as the research incumbent. The protocol is versioned in the repository but was not externally timestamped. No result here authorizes an unconditional production rollout or establishes effectiveness on real programming sessions.
+**V1 is a conditional research incumbent; the larger V2 challenger is rejected.** The original 50-case Base-stale-exposed panel establishes that V1 can help when lifecycle correction is needed. D16 broadens answer evaluation to all 200 cases unused by earlier answer panels and finds a smaller, uncertain full-population effect, a confirmed positive forgetting-bearing effect, and a remembering-MPA harm signal. No simple baseline or isolated V2 factor passes the frozen promotion gate. D18 further shows that text-only correction-event detection transfers but predecessor linking does not, so V1 remains oracle-management evidence rather than an end-to-end extraction result. No result here authorizes an unconditional rollout or establishes effectiveness on real programming sessions.
 
 | Frozen 50-case cross-model evaluation | Base | V1 | V2 | V1 vs Base [95% CI] | V2 vs V1 [95% CI] |
 |---|---:|---:|---:|---:|---:|
@@ -18,6 +18,8 @@ For a Chinese, decision-oriented summary of the complete V1--D15 evidence, see [
 Both MiniMax-M3 and DeepSeek-V4-Flash act as readers and judges. The primary crossed aggregation lets DeepSeek judge MiniMax answers and MiniMax judge DeepSeek answers, excluding self-judgment. The full-factorial sensitivity result agrees with the primary ordering: V1 versus Base is +8.26 FAMA points, V2 versus Base is +7.66, and V2 versus V1 is -0.60.
 
 The two judges agree on 96.79% of 8,532 paired criterion votes (Cohen's kappa 0.899). The run completed 300 reader calls and 600 judge calls with zero retries and zero returned-model mismatches; three of 8,532 DeepSeek verdicts were `unclear` and counted as incorrect.
+
+The conditioned table above is not a population estimate. D16 uses the other 200 answer cases (100 reasoning, 62 remembering, 38 recommending; only six Base-stale-exposed). V1 versus Base is +1.42 FAMA points with a persona-bootstrap interval that touches zero, +2.96 points with a positive interval on 92 forgetting-bearing questions, and -1.53 MPA points with a negative interval on 62 remembering questions. D16 completes 1,894 reader and 1,894 crossed-judge calls over 13 arms; an independent validator reproduces every aggregate with zero mismatch.
 
 ## What was optimized
 
@@ -49,8 +51,11 @@ A post-hoc Safe-Hybrid diagnostic (V1 for current-state queries, Base for histor
 - `src/contextual-e2e-runner.ts`: Base/V1/V2 two-reader, two-judge answer evaluation with crossed primary aggregation.
 - `src/contextual-e2e-failure-analysis.ts`: deterministic post-hoc exposure and criterion-transition audit.
 - `src/safe-hybrid-runner.ts`: explicitly post-hoc safety-contraction diagnostic.
+- `src/broad-ablation-context.ts` and `src/broad-ablation-e2e-runner.ts`: D16 13-arm broad contexts, exact prompt reuse, crossed answer evaluation, and subgroup reports.
+- `src/stance-proxy-runner.ts`: D17 policy-rank alignment between direct and answer metrics.
+- `src/text-correction-detector.ts`: D18 bounded text-only correction cues and predecessor linker; runtime does not read Memora operation metadata.
 - `protocol*.json`: immutable protocol history; semantic changes receive new versions.
-- `results/result-card.v1.json`: checked-in structured result record. Raw answers and per-case outputs stay in the selected run directory.
+- `results/direction-summary.v2.json`: compact V1/V2/D1--D18 registry; D16--D18 raw and summary artifacts are checked in below their result directories.
 
 ## Reproduction
 
@@ -102,6 +107,22 @@ pnpm eval:lifecycle-safe-hybrid -- \
   --selection benchmark-runs/lifecycle-memory/e2e-adaptive-v1.1/selection.json \
   --output benchmark-runs/lifecycle-memory/safe-hybrid-v3
 
+# Recompute D16 from checked-in raw verdicts; makes no provider call.
+pnpm validate:lifecycle-broad-ablation-e2e -- \
+  --contexts benchmarks/lifecycle-memory/results/d16-broad-ablation/context/context-manifest.json \
+  --evaluations benchmarks/lifecycle-memory/results/d16-broad-ablation/e2e/evaluations.jsonl \
+  --summary benchmarks/lifecycle-memory/results/d16-broad-ablation/e2e/summary.json
+
+# Recompute D17 policy-rank alignment; makes no provider call.
+pnpm analyze:lifecycle-stance-proxy -- \
+  --data /path/to/Memora/data \
+  --contexts benchmarks/lifecycle-memory/results/d16-broad-ablation/context/context-manifest.json \
+  --answers benchmarks/lifecycle-memory/results/d16-broad-ablation/e2e/summary.json
+
+# Re-run D18 text-only detector/linker; makes no provider call.
+pnpm eval:lifecycle-text-correction -- \
+  --data /path/to/Memora/data
+
 pnpm test:lifecycle-memory
 vitest run src/core/lifecycle
 ```
@@ -115,6 +136,8 @@ The final answer-level command reads `MINIMAX_API_KEY` and `DEEPSEEK_API_KEY`, u
 - V2 optimization: all weekly/monthly questions. Quarterly had already been observed during V1 development, so V2 calls it a confirmation split rather than a pristine holdout.
 - Protocol v2.0 fixed the grid, objective, split, uncertainty, and gates. A pre-score intent check found 30 repeated-template false negatives; v2.1 changed only those query-text patterns and reran all 600 cases. The repository protocols are predeclared artifacts, not externally timestamped preregistrations.
 - Answer-level sample: the same frozen 50 quarterly, Base-stale-exposed cases (five per persona; 43 recommending and seven remembering). V2 candidate IDs differed on all 50, so all Base, V1, and V2 answers were generated afresh.
+- D16 broad sample: all 200 quarterly cases not used by the two earlier answer panels. Selection is outcome-blind and not conditioned on Base stale exposure, but quarterly Memora was already visible to proxy development.
+- D18: uses only ten quarterly persona histories to avoid recounting weekly/monthly prefixes. Runtime prediction is persona-disjoint and cannot read operation metadata; gold operations are attached after prediction for scoring.
 - Labels score results and validate the query-intent adapter; they are not available to the runtime controller. The public classifier matches Memora's repeated templates with zero errors on 600 cases, which should not be interpreted as general-language accuracy.
 - Batched criterion scoring is not directly comparable to Memora Table 3.
 
@@ -142,8 +165,10 @@ Likely signals include “use X instead of Y,” renamed files or symbols, rever
 
 - Main evidence comes from personalized dialogue, not private multi-turn programming data.
 - The answer-level set is conditional on stale exposure and is task-imbalanced; it is not a population estimate over all 600 questions.
+- D16 reduces that selection bias but still comes from the same already-observed Memora revision; it finds heterogeneous rather than universal V1 effects.
 - Neither V1 nor V2 meets every strict production-style magnitude gate; V1 is the best-tested research policy, not an unconditional deployment recommendation.
 - The crossed design reduces self-judging bias but still uses a fixed two-model pool.
 - The V2 direct proxy selected a policy that did not improve answer-level FAMA, demonstrating proxy-to-generation mismatch.
 - Exact value matching misses paraphrases and can collide on short or reused values.
+- D18 event detection is strong, but predecessor-link precision is only 20.05%; automatic graph construction is not validated.
 - Branch-local and concurrently valid facts require an internal scope adapter and new evaluation data.
