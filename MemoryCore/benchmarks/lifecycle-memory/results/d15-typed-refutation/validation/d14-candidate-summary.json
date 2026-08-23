@@ -1,0 +1,83 @@
+{
+  "protocolVersion": "lifecycle-longmemeval-v2-premise-evidence-v1.0",
+  "mode": "premise_evidence",
+  "phase": "validation",
+  "status": "validation_direct_failed",
+  "preScoreCommit": "8fb6b1b4d66e7793d9f23e5f017c52550c9242d2",
+  "authorizationSha256": "fe6d7e62bbb405854fc8c8e52d215dc027226bc61e0a5965795f77406e161899",
+  "baselineArtifact": {
+    "casesSha256": "4c671cb2e0d03e8d6d5344f1840b084738a3815c5a11bc30135c05d94d59a5d4",
+    "summarySha256": "c358d5048249c6cfd660ea93d0c929a2bf3a23f185f4db46bf16a7d280d1eff7"
+  },
+  "splitCanonicalSha256": "325105dfbffb4d564229400f5cadd424bbad0a34c4663afadd4c13897f0bbdb0",
+  "cases": 43,
+  "index": {
+    "buildLatencyMs": 18089.138791,
+    "trajectories": 200,
+    "states": 5095,
+    "inventories": 24844,
+    "adjacencyKeys": 13252,
+    "terminalAfterKeys": 1445,
+    "terminalBeforeKeys": 2213,
+    "skippedOversizedInventories": 33295,
+    "supersededInventories": 42587,
+    "available": true,
+    "failureReason": null,
+    "scopeAdapterId": "longmemeval-v2-url-scope-v1"
+  },
+  "metrics": {
+    "premiseQuestions": 23,
+    "controlQuestions": 20,
+    "premiseChallenges": 0,
+    "validPremiseChallenges": 0,
+    "invalidPremiseChallenges": 0,
+    "controlChallenges": 0,
+    "premiseRecall": 0,
+    "controlSpecificity": 1,
+    "challengePrecision": 0,
+    "changedContexts": 0,
+    "exactBaseNoops": 43,
+    "exactBaseNoopRate": 1,
+    "meanBaseInjectedTokens": 2810.1162790697676,
+    "meanInjectedTokens": 2810.1162790697676,
+    "meanInjectedTokenDelta": 0,
+    "meanInjectedTokenIncreaseFraction": 0,
+    "meanTriggeredCapsuleTokens": 0,
+    "selectionLatencyP50Ms": 0.005249999998341082,
+    "selectionLatencyP95Ms": 0.03333299999940209,
+    "fallbacks": 0,
+    "basePrefixViolations": 0,
+    "certificateViolations": 0,
+    "tokenViolations": 0
+  },
+  "decisionReasons": {
+    "no_structural_witness": 5,
+    "unsupported_query_operator": 38
+  },
+  "forcedFallbackMismatches": {
+    "no_selected_witness_available": 0
+  },
+  "casesSha256": "94186db9f2234841dbd568fded5e48c0656575d57b3bc75f8c23f2e1e1d40569",
+  "gate": {
+    "passed": false,
+    "checks": {
+      "validChallenges": false,
+      "noInvalidChallenges": true,
+      "noControlChallenges": true,
+      "noFallbacks": true,
+      "certificates": true,
+      "basePrefix": true,
+      "tokenBudget": true,
+      "meanTokenCost": true,
+      "selectionLatency": true,
+      "indexLatency": true,
+      "exactOrdinaryNoops": true,
+      "exactForcedFallbacks": true
+    },
+    "failedChecks": [
+      "validChallenges"
+    ]
+  },
+  "answerLevelState": "not_admitted",
+  "laterPhaseState": "unread"
+}

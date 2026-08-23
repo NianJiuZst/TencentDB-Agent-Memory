@@ -1,0 +1,59 @@
+{
+  "decisionVersion": "lifecycle-longmemeval-v2-typed-refutation-validation-decision-v1.0",
+  "sourceProtocolVersion": "lifecycle-longmemeval-v2-typed-refutation-validation-v1.0",
+  "phase": "validation",
+  "status": "rejected_no_validation_coverage",
+  "decision": "reject_D15_and_keep_test_unread",
+  "candidatePolicyId": "typed-action-contract-v1",
+  "preReadImplementationCommit": "8fb6b1b4d66e7793d9f23e5f017c52550c9242d2",
+  "readAdmissionCommit": "e1e3a29",
+  "reportingAmendmentCommit": "8fd659f6e62284410dec9162bc0687206d887821",
+  "reportingAmendmentBoundary": "After validation revealed zero structural triggers, the runner was changed only to serialize the already-determined failed gate instead of throwing. Candidate selection, thresholds, contexts, and the decision were unchanged.",
+  "inputSha256": {
+    "readAdmission": "fe6d7e62bbb405854fc8c8e52d215dc027226bc61e0a5965795f77406e161899",
+    "baselineCases": "4c671cb2e0d03e8d6d5344f1840b084738a3815c5a11bc30135c05d94d59a5d4",
+    "baselineSummary": "c358d5048249c6cfd660ea93d0c929a2bf3a23f185f4db46bf16a7d280d1eff7",
+    "d14CandidateCases": "94186db9f2234841dbd568fded5e48c0656575d57b3bc75f8c23f2e1e1d40569",
+    "d14CandidateSummary": "5075316003bbb262a9c471f3cd7d318e06cf846fe36d1b64015116a6ec25ec3f",
+    "d14IndependentValidation": "77ae9b297c86d8d0edb089cc8631bbb0a4af0e44815d76e0dae9897ed9279d26"
+  },
+  "population": {
+    "premiseQuestions": 23,
+    "controlQuestions": 20,
+    "totalQuestions": 43
+  },
+  "directResult": {
+    "premiseChallenges": 0,
+    "validPremiseChallenges": 0,
+    "invalidPremiseChallenges": 0,
+    "controlChallenges": 0,
+    "changedContexts": 0,
+    "exactBaseNoops": 43,
+    "exactBaseNoopRate": 1,
+    "meanInjectedTokenDelta": 0,
+    "fallbacks": 0,
+    "basePrefixViolations": 0,
+    "certificateViolations": 0,
+    "tokenViolations": 0,
+    "decisionReasons": {
+      "unsupported_query_operator": 38,
+      "no_structural_witness": 5
+    },
+    "failedGateChecks": ["validChallenges"]
+  },
+  "independentReplay": {
+    "mismatchCount": 0,
+    "integrityChecksPassed": 16,
+    "integrityChecksFailed": 0,
+    "protocolStatusPassed": false,
+    "failedChecks": ["protocolStatus"]
+  },
+  "answerPanel": {
+    "admitted": false,
+    "readerCalls": 0,
+    "judgeCalls": 0,
+    "reason": "The frozen direct gate required at least two valid validation challenges; zero were observed."
+  },
+  "testState": "unread",
+  "claimBoundary": "The typed action contract remains a development-only positive result. Fresh validation shows that its prerequisite D14 structural trigger did not replicate, so D15 provides no validation answer-quality evidence and cannot be promoted."
+}

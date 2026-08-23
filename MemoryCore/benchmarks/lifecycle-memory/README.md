@@ -2,6 +2,8 @@
 
 This benchmark evaluates a switchable lifecycle sidecar above MemoryCore L0 retrieval. It keeps the existing FTS5/vector candidate path, learns a bounded correction policy from controlled feedback, and returns the original Base prefix on disablement, timeout, corruption, or missing state.
 
+For a Chinese, decision-oriented summary of the complete V1--D15 evidence, see [`REPORT_CN.md`](REPORT_CN.md). The English paper remains the theory and full experimental-process artifact.
+
 ## Outcome
 
 **V1 is the best-tested policy; the larger V2 challenger is rejected.** V2 improved the direct retrieval proxy, but the frozen answer-level experiment did not show an improvement over V1 and found a statistically negative FAA difference. A predeclared promotion gate therefore retains V1 as the research incumbent. The protocol is versioned in the repository but was not externally timestamped. No result here authorizes an unconditional production rollout or establishes effectiveness on real programming sessions.
