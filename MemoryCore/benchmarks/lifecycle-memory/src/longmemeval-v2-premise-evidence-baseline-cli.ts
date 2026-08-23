@@ -4,7 +4,7 @@ import { dirname, resolve } from "node:path";
 import { parseArgs } from "node:util";
 import {
   runLongMemEvalV2PremiseEvidenceBaseline,
-  type PremiseEvidencePhaseAdmission,
+  type PremiseEvidenceReadAdmission,
 } from "./longmemeval-v2-premise-evidence-baseline-runner.js";
 import type { LongMemEvalV2PremiseEvidencePhase } from "./longmemeval-v2-premise-evidence-protocol.js";
 
@@ -29,11 +29,11 @@ if (!values["data-root"] || !values.phase || !values["pre-score-commit"]
 if (!( ["development", "validation", "test"] as string[]).includes(values.phase)) {
   throw new Error(`invalid D14 phase ${values.phase}`);
 }
-let authorization: PremiseEvidencePhaseAdmission | undefined;
+let authorization: PremiseEvidenceReadAdmission | undefined;
 let authorizationSha256: string | undefined;
 if (values.authorization) {
   const text = await readFile(resolve(values.authorization), "utf8");
-  authorization = JSON.parse(text) as PremiseEvidencePhaseAdmission;
+  authorization = JSON.parse(text) as PremiseEvidenceReadAdmission;
   authorizationSha256 = createHash("sha256").update(text).digest("hex");
 }
 const result = await runLongMemEvalV2PremiseEvidenceBaseline({

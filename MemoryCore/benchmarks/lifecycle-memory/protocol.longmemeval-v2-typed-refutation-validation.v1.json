@@ -1,0 +1,112 @@
+{
+  "protocolVersion": "lifecycle-longmemeval-v2-typed-refutation-validation-v1.0",
+  "direction": "D15 fresh validation of the frozen typed action contract",
+  "evidenceRole": "A single-policy replication on the previously unread D14 validation split. It may authorize one untouched test read, but it is not a claim about private programming-agent traffic.",
+  "sourceSelection": {
+    "protocolVersion": "lifecycle-longmemeval-v2-typed-refutation-v1.0",
+    "selectionCommit": "b17cc9dcd9c3841265b90da2ffc6609796d4464f",
+    "summarySha256": "90d8554a5a3a184528f74669cbed62915f765189afcf230c803e90d95ec635d2",
+    "contextsSha256": "fa62a4e2676c192c5c35767a6b4a9a7dcf2b59fae614ccfc944633de5a50c809",
+    "evaluationsSha256": "5742351e4165aeae096be19b3160af8233c96be38ce3a58144a8487ee0e80ecb",
+    "selectedPolicyId": "typed-action-contract-v1",
+    "developmentPrimaryImprovedReaderPairs": 3,
+    "developmentPrimaryHarmedReaderPairs": 0,
+    "developmentUnanimousImprovedReaderPairs": 3,
+    "developmentAnyJudgeHarmedReaderPairs": 0,
+    "developmentChangedReaderPairs": 4
+  },
+  "dataBoundary": {
+    "dataset": "LongMemEval-V2",
+    "revision": "2cc8c540bdb87fe6761629b585e727e1c4704520",
+    "manifestSha256": "70a2be47e7117ef8f2ee77aa499c6126358b5f9ffa28a848b5c565a4ec8fc99a",
+    "questionsSha256": "0a3ae5ebea938c24d7800e1e0b0828e08ae1646f939a53853b2b8cdc08e292b7",
+    "splitProtocolVersion": "lifecycle-longmemeval-v2-premise-evidence-split-v1.0",
+    "splitFileSha256": "afd0ee4782269d7242142e1ae5dc4b217543882d1bbbfabb8ba98c8394e5acef",
+    "splitCanonicalSha256": "325105dfbffb4d564229400f5cadd424bbad0a34c4663afadd4c13897f0bbdb0",
+    "validationPremiseQuestions": 23,
+    "validationControlQuestions": 20,
+    "validationTotalQuestions": 43,
+    "stateAtFreeze": "unread",
+    "testStateAtFreeze": "unread",
+    "readAuthorization": "The protocol, direct runner, direct validator, answer runner, answer validator, and a checksummed admission artifact must be committed before validation data are loaded."
+  },
+  "invariants": {
+    "singlePolicy": "Only typed-action-contract-v1 is executable; no renderer ladder or threshold search is allowed.",
+    "structuralTrigger": "Exactly the D14 premise-evidence-ktalico-mi8-co2-ds1-cc1200 trigger, scope adapter, latest-version rule, and source certificate.",
+    "base": "Every validation Base context is regenerated through MemoryCore SQLite L0 FTS5 and remains a byte-identical prefix of the candidate.",
+    "readerPrompt": "Exactly the D14 LongMemEval-V2 domain prompt and question construction.",
+    "modelsAndJudges": "Exactly MiniMax-M3 and deepseek-v4-flash in the frozen crossed two-reader/two-judge panel.",
+    "noPostValidationTuning": "Any decision-changing change after validation is read rejects this protocol and requires a new split; test cannot become design data."
+  },
+  "candidate": {
+    "policyId": "typed-action-contract-v1",
+    "maxCapsuleTokens": 192,
+    "maxCandidateItems": 7,
+    "maxCandidateTokens": 3264,
+    "maxSelectionLatencyMs": 25,
+    "requiredQuestionRelation": "REFUTES_PREMISE",
+    "requiredEvidenceSufficiency": "SUFFICIENT_FOR_CORRECTION",
+    "requiredAnswerMode": "CORRECT_FALSE_PREMISE",
+    "requiredGenerationContract": "Use the corrected conclusion as the final boxed answer; a sufficient refutation must not be reduced to UNKNOWN.",
+    "hardFallback": "Disabled, D14 selection failure, missing or corrupt source, renderer failure, timeout, item or token overflow, or certificate failure returns exact Base."
+  },
+  "directGate": {
+    "minValidPremiseChallenges": 2,
+    "maxInvalidPremiseChallenges": 0,
+    "maxControlChallenges": 0,
+    "maxFallbacks": 0,
+    "maxCertificateViolations": 0,
+    "maxBasePrefixViolations": 0,
+    "maxTokenViolations": 0,
+    "maxMeanInjectedTokenIncreaseFraction": 0.005,
+    "maxP95SelectionLatencyMs": 12,
+    "maxIndexBuildLatencyMs": 20000,
+    "requireExactOrdinaryNoops": true,
+    "requireExactForcedFallbacks": true,
+    "requireIndependentValidation": true
+  },
+  "answerPanel": {
+    "runOnlyAfterDirectPass": true,
+    "scope": "Generate fresh Base and typed-action-contract answers only for validation questions whose context changed. Every unchanged validation question contributes exact paired delta zero without a model call.",
+    "noOpenRouter": true,
+    "transport": "Direct MiniMax and DeepSeek endpoints",
+    "arms": ["base", "typed_action_contract"],
+    "readers": [
+      {"id": "minimax-m3", "provider": "minimax", "model": "MiniMax-M3", "baseUrl": "https://api.minimaxi.com/v1", "apiKeyEnv": "MINIMAX_API_KEY", "temperature": 0.1, "topP": 0.95, "maxTokens": 700, "thinking": "disabled"},
+      {"id": "deepseek-v4-flash", "provider": "deepseek", "model": "deepseek-v4-flash", "baseUrl": "https://api.deepseek.com", "apiKeyEnv": "DEEPSEEK_API_KEY", "temperature": 0, "maxTokens": 700, "thinking": "disabled"}
+    ],
+    "judges": [
+      {"id": "minimax-m3", "provider": "minimax", "model": "MiniMax-M3", "baseUrl": "https://api.minimaxi.com/v1", "apiKeyEnv": "MINIMAX_API_KEY", "temperature": 0.1, "topP": 0.95, "maxTokens": 8192, "thinking": "disabled"},
+      {"id": "deepseek-v4-flash", "provider": "deepseek", "model": "deepseek-v4-flash", "baseUrl": "https://api.deepseek.com", "apiKeyEnv": "DEEPSEEK_API_KEY", "temperature": 0, "maxTokens": 8192, "thinking": "disabled"}
+    ],
+    "retries": 3,
+    "maxConcurrency": 2,
+    "gate": {
+      "minChangedQuestions": 2,
+      "minPrimaryImprovedReaderPairs": 2,
+      "minPrimaryImprovementRate": 0.5,
+      "maxPrimaryHarmedReaderPairs": 0,
+      "minUnanimousImprovedReaderPairs": 2,
+      "minUnanimousImprovementRate": 0.5,
+      "maxAnyJudgeHarmedReaderPairs": 0,
+      "minReadersWithAtLeastOnePrimaryImprovement": 2,
+      "maxReadersWithNegativeMeanDelta": 0,
+      "requirePositivePrimaryPopulationWeightedDelta": true,
+      "requirePositiveFullFactorialPopulationWeightedDelta": true,
+      "requireZeroModelMismatches": true,
+      "requireCompleteExecution": true,
+      "requireExactUnchangedContexts": true
+    }
+  },
+  "promotion": {
+    "validationPass": "A direct and answer pass replicates D15 on fresh public data and authorizes one frozen test read.",
+    "validationFailure": "Any direct or answer gate failure rejects D15 under this protocol; do not retune on validation and keep test unread.",
+    "testPass": "Test confirmation remains a public long-dialogue method result, not proof on internal multi-turn programming sessions."
+  },
+  "claimBoundary": [
+    "Development selected the renderer; validation estimates replication and cannot be pooled with development as if both were untouched.",
+    "The direct structural label is a deterministic source certificate; answer correctness still depends on two model families and a strict judge rubric.",
+    "LongMemEval-V2 ordered UI inventories are a method proxy for source-certified programming constraints, not a programming benchmark.",
+    "Validation with fewer than two valid triggers is a predeclared replication failure, not permission to weaken the gate."
+  ]
+}

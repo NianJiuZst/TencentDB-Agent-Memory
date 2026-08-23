@@ -1,0 +1,42 @@
+{
+  "auditVersion": "lifecycle-longmemeval-v2-typed-refutation-readiness-v1.0",
+  "sourceProtocolVersion": "lifecycle-longmemeval-v2-typed-refutation-validation-v1.0",
+  "status": "passed",
+  "inputSha256": {
+    "split": "afd0ee4782269d7242142e1ae5dc4b217543882d1bbbfabb8ba98c8394e5acef",
+    "selectionSummary": "90d8554a5a3a184528f74669cbed62915f765189afcf230c803e90d95ec635d2",
+    "selectionContexts": "fa62a4e2676c192c5c35767a6b4a9a7dcf2b59fae614ccfc944633de5a50c809",
+    "selectionEvaluations": "5742351e4165aeae096be19b3160af8233c96be38ce3a58144a8487ee0e80ecb"
+  },
+  "splitCanonicalSha256": "325105dfbffb4d564229400f5cadd424bbad0a34c4663afadd4c13897f0bbdb0",
+  "counts": {
+    "development": 58,
+    "validation": 43,
+    "test": 59
+  },
+  "validation": {
+    "premiseQuestions": 23,
+    "controlQuestions": 20,
+    "totalQuestions": 43
+  },
+  "selection": {
+    "policyId": "typed-action-contract-v1",
+    "developmentQuestionIds": [
+      "0ace674b",
+      "7ebb0b95"
+    ],
+    "developmentQuestionCount": 2
+  },
+  "checks": {
+    "frozenInputHashes": true,
+    "splitCountsAndUniqueness": true,
+    "phaseDisjointness": true,
+    "developmentOnlySelection": true,
+    "validationAbsentFromResults": true,
+    "validationStateUnread": true,
+    "testStateUnread": true
+  },
+  "resultArtifactValidationIdHits": [],
+  "validationState": "unread",
+  "testState": "unread"
+}

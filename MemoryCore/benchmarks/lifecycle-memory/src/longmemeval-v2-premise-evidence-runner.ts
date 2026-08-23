@@ -8,7 +8,7 @@ import {
   assertPremiseEvidencePhaseReadAuthorized,
   type LongMemEvalV2PremiseEvidenceBaselineCase,
   type LongMemEvalV2PremiseEvidenceBaselineSummary,
-  type PremiseEvidencePhaseAdmission,
+  type PremiseEvidenceReadAdmission,
 } from "./longmemeval-v2-premise-evidence-baseline-runner.js";
 import {
   premiseEvidenceContextSha256,
@@ -380,7 +380,7 @@ export async function runLongMemEvalV2PremiseEvidence(params: {
   preScoreCommit: string;
   baselineCasesPath: string;
   baselineSummaryPath: string;
-  authorization?: PremiseEvidencePhaseAdmission;
+  authorization?: PremiseEvidenceReadAdmission;
   authorizationSha256?: string;
 }): Promise<{
   cases: LongMemEvalV2PremiseEvidenceCase[];

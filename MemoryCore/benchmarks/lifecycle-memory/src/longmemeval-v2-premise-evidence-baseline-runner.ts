@@ -19,6 +19,10 @@ import {
 } from "./longmemeval-v2-premise-evidence-protocol.js";
 import { buildLongMemEvalV2PremiseEvidenceSplit } from "./longmemeval-v2-premise-evidence-split.js";
 import { mean, percentile } from "./longmemeval-v2-procedure-baseline-runner.js";
+import {
+  isTypedRefutationValidationReadAdmission,
+  type TypedRefutationValidationReadAdmission,
+} from "./longmemeval-v2-typed-refutation-validation-protocol.js";
 import type { RetrievedUnit } from "./types.js";
 
 export interface PremiseEvidencePhaseAdmission {
@@ -33,6 +37,9 @@ export interface PremiseEvidencePhaseAdmission {
   answerSummarySha256: string;
   nextPhaseStateAtAdmission: "unread";
 }
+
+export type PremiseEvidenceReadAdmission = PremiseEvidencePhaseAdmission
+  | TypedRefutationValidationReadAdmission;
 
 export interface LongMemEvalV2PremiseEvidenceBaselineCase {
   protocolVersion: string;
@@ -127,7 +134,7 @@ function assertFrozenPremiseEvidenceSplit(questions: LongTaskQuestion[]): void {
 
 export function assertPremiseEvidencePhaseReadAuthorized(params: {
   phase: LongMemEvalV2PremiseEvidencePhase;
-  authorization?: PremiseEvidencePhaseAdmission;
+  authorization?: PremiseEvidenceReadAdmission;
 }): void {
   if (params.phase === "development") {
     if (params.authorization) throw new Error("D14 development must not use an authorization");
@@ -137,6 +144,8 @@ export function assertPremiseEvidencePhaseReadAuthorized(params: {
   const decision = params.phase === "validation"
     ? "authorize_validation_read" : "authorize_test_read";
   const authorization = params.authorization;
+  if (params.phase === "validation"
+    && isTypedRefutationValidationReadAdmission(authorization)) return;
   if (!authorization
     || authorization.admissionVersion
       !== "lifecycle-longmemeval-v2-premise-evidence-admission-v1.0"
@@ -159,7 +168,7 @@ export async function runLongMemEvalV2PremiseEvidenceBaseline(params: {
   dataRoot: string;
   phase: LongMemEvalV2PremiseEvidencePhase;
   preScoreCommit: string;
-  authorization?: PremiseEvidencePhaseAdmission;
+  authorization?: PremiseEvidenceReadAdmission;
   authorizationSha256?: string;
 }): Promise<{
   cases: LongMemEvalV2PremiseEvidenceBaselineCase[];
