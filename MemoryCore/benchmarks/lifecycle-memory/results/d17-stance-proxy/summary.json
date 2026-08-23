@@ -1,0 +1,422 @@
+{
+  "status": "failed",
+  "protocol": {
+    "protocolVersion": "lifecycle-stance-proxy-alignment-v1.0",
+    "researchDirection": "D17",
+    "seed": 20260824,
+    "inputs": {
+      "contextProtocolVersion": "lifecycle-broad-ablation-context-v1.0",
+      "contextSha256": "66093bf108e6aa4e8eb56bc7c7228e3218622383944b058d4ecdfc47597cf7d2",
+      "answerProtocolVersion": "lifecycle-broad-ablation-e2e-v1.0",
+      "cases": 200,
+      "policies": 13
+    },
+    "stance": {
+      "precedence": [
+        "affirmed",
+        "negated",
+        "historical"
+      ],
+      "historicalMarkers": [
+        "[SUPERSEDED",
+        "[DELETED",
+        "historical evidence only"
+      ],
+      "negationMarkers": [
+        "used to",
+        "no longer",
+        "not anymore",
+        "remove",
+        "removed",
+        "delete",
+        "deleted",
+        "changed from",
+        "updated from",
+        "finished",
+        "done with"
+      ],
+      "penaltyWeights": {
+        "affirmed": 1,
+        "negated": 0.25,
+        "historical": 0.1
+      }
+    },
+    "proxy": {
+      "baseline": "released evidenceFamaProxy: currentSessionRecall - lambda * obsoleteExposure, clipped at zero",
+      "candidate": "currentSessionRecall - lambda * stanceWeightedObsoleteExposure, clipped at zero",
+      "lambda": "forgetting evaluation criteria divided by all evaluation criteria",
+      "aggregation": "score each frozen case-arm, then arithmetic mean over all 200 cases",
+      "usesAnswerOutcomesForWeights": false,
+      "usesTaskLabelsAtInference": false
+    },
+    "alignment": {
+      "policyRankStatistic": "Kendall tau-b across all 13 frozen policies",
+      "answerTargets": [
+        "fama",
+        "faa",
+        "mpa"
+      ],
+      "pairwiseStatistic": "sign agreement against V1 over the 12 challengers",
+      "minimumTauImprovementForSuccess": 0.1,
+      "requireV2VsV1DirectionAgreement": true
+    },
+    "diagnostics": [
+      "affirmed obsolete exposure",
+      "negated obsolete exposure",
+      "historical obsolete exposure",
+      "old-value exposure added beyond V1",
+      "current-and-obsolete conflict density",
+      "successor/current evidence coverage",
+      "injected tokens"
+    ],
+    "decisionRule": "D17 succeeds only if the stance-aware proxy improves Kendall tau-b with answer FAMA by at least 0.10 and predicts the observed V2-versus-V1 FAMA direction. It is a diagnostic proxy result, not a policy promotion.",
+    "claimBoundary": "Marker-based stance is intentionally bounded and English-specific. The experiment tests proxy alignment on Memora contexts already frozen by D16; it does not establish end-to-end correction extraction or human semantic correctness."
+  },
+  "generatedAt": "2026-08-23T20:13:28.697Z",
+  "inputs": {
+    "contextSha256": "66093bf108e6aa4e8eb56bc7c7228e3218622383944b058d4ecdfc47597cf7d2",
+    "answerSummarySha256": "52c03fcbc536262583284b7c8bb8fc571c151da655fe7cfe45deeefdd5f481f4",
+    "evaluationsSha256": "05574b0f173747607014d76a00d51877107e962db05415dda881905d6c8191b6",
+    "cases": 200,
+    "policies": 13
+  },
+  "policies": {
+    "base": {
+      "cases": 200,
+      "releasedEvidenceFamaProxy": 0.46379992914931956,
+      "stanceAwareFamaProxy": 0.46379992914931956,
+      "currentSessionRecall": 0.4656830460324364,
+      "weightedObsoleteExposure": 0.012018467643467643,
+      "affirmedObsoleteExposure": 0.011495726495726498,
+      "negatedObsoleteExposure": 0.002090964590964591,
+      "historicalObsoleteExposure": 0,
+      "conflictDensity": 0.01,
+      "meanOldValueAtomsAddedBeyondV1": 0.05,
+      "meanInjectedTokens": 134.185,
+      "answer": {
+        "cases": 200,
+        "mpa": 0.14998313494434182,
+        "faa": 0.9780074748965124,
+        "fama": 0.1428006020217547,
+        "criterionAccuracy": 0.31342794091189147,
+        "meanInjectedTokens": 134.185,
+        "meanInjectedItems": 5
+      }
+    },
+    "v1": {
+      "cases": 200,
+      "releasedEvidenceFamaProxy": 0.4707954630972471,
+      "stanceAwareFamaProxy": 0.4707954630972471,
+      "currentSessionRecall": 0.4707954630972471,
+      "weightedObsoleteExposure": 0,
+      "affirmedObsoleteExposure": 0,
+      "negatedObsoleteExposure": 0,
+      "historicalObsoleteExposure": 0,
+      "conflictDensity": 0,
+      "meanOldValueAtomsAddedBeyondV1": 0,
+      "meanInjectedTokens": 133.155,
+      "answer": {
+        "cases": 200,
+        "mpa": 0.1620204029816099,
+        "faa": 0.9880759360487182,
+        "fama": 0.15696444280401656,
+        "criterionAccuracy": 0.32137710698130406,
+        "meanInjectedTokens": 133.155,
+        "meanInjectedItems": 5
+      }
+    },
+    "tombstone_refill": {
+      "cases": 200,
+      "releasedEvidenceFamaProxy": 0.4679987629361401,
+      "stanceAwareFamaProxy": 0.4679987629361401,
+      "currentSessionRecall": 0.4679987629361401,
+      "weightedObsoleteExposure": 0,
+      "affirmedObsoleteExposure": 0,
+      "negatedObsoleteExposure": 0,
+      "historicalObsoleteExposure": 0,
+      "conflictDensity": 0,
+      "meanOldValueAtomsAddedBeyondV1": 0,
+      "meanInjectedTokens": 133.385,
+      "answer": {
+        "cases": 200,
+        "mpa": 0.16009732605853302,
+        "faa": 0.9837771240971671,
+        "fama": 0.15330714818801455,
+        "criterionAccuracy": 0.32257495695109595,
+        "meanInjectedTokens": 133.385,
+        "meanInjectedItems": 5
+      }
+    },
+    "latest_write_wins": {
+      "cases": 200,
+      "releasedEvidenceFamaProxy": 0.47095361579600903,
+      "stanceAwareFamaProxy": 0.47095361579600903,
+      "currentSessionRecall": 0.47095361579600903,
+      "weightedObsoleteExposure": 0,
+      "affirmedObsoleteExposure": 0,
+      "negatedObsoleteExposure": 0,
+      "historicalObsoleteExposure": 0,
+      "conflictDensity": 0,
+      "meanOldValueAtomsAddedBeyondV1": 0,
+      "meanInjectedTokens": 135.025,
+      "answer": {
+        "cases": 200,
+        "mpa": 0.15983797054917748,
+        "faa": 0.987955093362276,
+        "fama": 0.15429730501845773,
+        "criterionAccuracy": 0.31729015772237257,
+        "meanInjectedTokens": 135.025,
+        "meanInjectedItems": 5
+      }
+    },
+    "recency_top5": {
+      "cases": 200,
+      "releasedEvidenceFamaProxy": 0.4778960481185717,
+      "stanceAwareFamaProxy": 0.4778960481185717,
+      "currentSessionRecall": 0.47931866716619076,
+      "weightedObsoleteExposure": 0.004710069444444445,
+      "affirmedObsoleteExposure": 0.0043124999999999995,
+      "negatedObsoleteExposure": 0.0015902777777777777,
+      "historicalObsoleteExposure": 0,
+      "conflictDensity": 0.015,
+      "meanOldValueAtomsAddedBeyondV1": 0.045,
+      "meanInjectedTokens": 118.965,
+      "answer": {
+        "cases": 200,
+        "mpa": 0.14534139736079396,
+        "faa": 0.9820740669651059,
+        "fama": 0.1393163966032619,
+        "criterionAccuracy": 0.3077234135176463,
+        "meanInjectedTokens": 118.965,
+        "meanInjectedItems": 5
+      }
+    },
+    "superseded_render": {
+      "cases": 200,
+      "releasedEvidenceFamaProxy": 0.46379992914931956,
+      "stanceAwareFamaProxy": 0.4654947343441247,
+      "currentSessionRecall": 0.4656830460324364,
+      "weightedObsoleteExposure": 0.0013586691086691085,
+      "affirmedObsoleteExposure": 0,
+      "negatedObsoleteExposure": 0,
+      "historicalObsoleteExposure": 0.013586691086691085,
+      "conflictDensity": 0.01,
+      "meanOldValueAtomsAddedBeyondV1": 0.05,
+      "meanInjectedTokens": 146.985,
+      "answer": {
+        "cases": 200,
+        "mpa": 0.155871119082326,
+        "faa": 0.9849436814064467,
+        "fama": 0.14967478977094248,
+        "criterionAccuracy": 0.3185478125072013,
+        "meanInjectedTokens": 146.985,
+        "meanInjectedItems": 5
+      }
+    },
+    "v1_h2": {
+      "cases": 200,
+      "releasedEvidenceFamaProxy": 0.47028694912934244,
+      "stanceAwareFamaProxy": 0.47028694912934244,
+      "currentSessionRecall": 0.47028694912934244,
+      "weightedObsoleteExposure": 0,
+      "affirmedObsoleteExposure": 0,
+      "negatedObsoleteExposure": 0,
+      "historicalObsoleteExposure": 0,
+      "conflictDensity": 0,
+      "meanOldValueAtomsAddedBeyondV1": 0,
+      "meanInjectedTokens": 134.415,
+      "answer": {
+        "cases": 200,
+        "mpa": 0.15875463721584415,
+        "faa": 0.9879241503344326,
+        "fama": 0.15357721954837225,
+        "criterionAccuracy": 0.31887407054405714,
+        "meanInjectedTokens": 134.415,
+        "meanInjectedItems": 5
+      }
+    },
+    "v1_slot1": {
+      "cases": 200,
+      "releasedEvidenceFamaProxy": 0.4752421225860659,
+      "stanceAwareFamaProxy": 0.4752421225860659,
+      "currentSessionRecall": 0.4752421225860659,
+      "weightedObsoleteExposure": 0,
+      "affirmedObsoleteExposure": 0,
+      "negatedObsoleteExposure": 0,
+      "historicalObsoleteExposure": 0,
+      "conflictDensity": 0,
+      "meanOldValueAtomsAddedBeyondV1": 0,
+      "meanInjectedTokens": 148.655,
+      "answer": {
+        "cases": 200,
+        "mpa": 0.16702627904998596,
+        "faa": 0.9861950101020596,
+        "fama": 0.16085084725998372,
+        "criterionAccuracy": 0.32240695772481587,
+        "meanInjectedTokens": 148.655,
+        "meanInjectedItems": 5.57
+      }
+    },
+    "v1_slot2": {
+      "cases": 200,
+      "releasedEvidenceFamaProxy": 0.47562459949596425,
+      "stanceAwareFamaProxy": 0.47562459949596425,
+      "currentSessionRecall": 0.47562459949596425,
+      "weightedObsoleteExposure": 0,
+      "affirmedObsoleteExposure": 0,
+      "negatedObsoleteExposure": 0,
+      "historicalObsoleteExposure": 0,
+      "conflictDensity": 0,
+      "meanOldValueAtomsAddedBeyondV1": 0,
+      "meanInjectedTokens": 160.04,
+      "answer": {
+        "cases": 200,
+        "mpa": 0.17402770355141048,
+        "faa": 0.9830692618043492,
+        "fama": 0.1662509299666647,
+        "criterionAccuracy": 0.3269593734128865,
+        "meanInjectedTokens": 160.04,
+        "meanInjectedItems": 5.975
+      }
+    },
+    "v1_tau091": {
+      "cases": 200,
+      "releasedEvidenceFamaProxy": 0.4716287964305805,
+      "stanceAwareFamaProxy": 0.4716287964305805,
+      "currentSessionRecall": 0.4716287964305805,
+      "weightedObsoleteExposure": 0,
+      "affirmedObsoleteExposure": 0,
+      "negatedObsoleteExposure": 0,
+      "historicalObsoleteExposure": 0,
+      "conflictDensity": 0,
+      "meanOldValueAtomsAddedBeyondV1": 0,
+      "meanInjectedTokens": 133.23,
+      "answer": {
+        "cases": 200,
+        "mpa": 0.16160373631494326,
+        "faa": 0.988933078905861,
+        "fama": 0.1565477761373499,
+        "criterionAccuracy": 0.32181113475908185,
+        "meanInjectedTokens": 133.23,
+        "meanInjectedItems": 5
+      }
+    },
+    "v1_tau096": {
+      "cases": 200,
+      "releasedEvidenceFamaProxy": 0.47146212976391383,
+      "stanceAwareFamaProxy": 0.47146212976391383,
+      "currentSessionRecall": 0.47146212976391383,
+      "weightedObsoleteExposure": 0,
+      "affirmedObsoleteExposure": 0,
+      "negatedObsoleteExposure": 0,
+      "historicalObsoleteExposure": 0,
+      "conflictDensity": 0,
+      "meanOldValueAtomsAddedBeyondV1": 0,
+      "meanInjectedTokens": 133.555,
+      "answer": {
+        "cases": 200,
+        "mpa": 0.16560373631494327,
+        "faa": 0.988089283768644,
+        "fama": 0.15999222058179435,
+        "criterionAccuracy": 0.32227298791658726,
+        "meanInjectedTokens": 133.555,
+        "meanInjectedItems": 5
+      }
+    },
+    "v1_aggregate": {
+      "cases": 200,
+      "releasedEvidenceFamaProxy": 0.4709650973144877,
+      "stanceAwareFamaProxy": 0.4709650973144877,
+      "currentSessionRecall": 0.4709650973144877,
+      "weightedObsoleteExposure": 0,
+      "affirmedObsoleteExposure": 0,
+      "negatedObsoleteExposure": 0,
+      "historicalObsoleteExposure": 0,
+      "conflictDensity": 0,
+      "meanOldValueAtomsAddedBeyondV1": 0,
+      "meanInjectedTokens": 134.14,
+      "answer": {
+        "cases": 200,
+        "mpa": 0.15952040298160994,
+        "faa": 0.9880759360487182,
+        "fama": 0.15446444280401658,
+        "criterionAccuracy": 0.3188771069813041,
+        "meanInjectedTokens": 134.14,
+        "meanInjectedItems": 5
+      }
+    },
+    "v2": {
+      "cases": 200,
+      "releasedEvidenceFamaProxy": 0.47534971269910303,
+      "stanceAwareFamaProxy": 0.47534971269910303,
+      "currentSessionRecall": 0.47534971269910303,
+      "weightedObsoleteExposure": 0,
+      "affirmedObsoleteExposure": 0,
+      "negatedObsoleteExposure": 0,
+      "historicalObsoleteExposure": 0,
+      "conflictDensity": 0,
+      "meanOldValueAtomsAddedBeyondV1": 0,
+      "meanInjectedTokens": 147.985,
+      "answer": {
+        "cases": 200,
+        "mpa": 0.1680346479958549,
+        "faa": 0.9831213727323932,
+        "fama": 0.1590833401855881,
+        "criterionAccuracy": 0.3193042790818054,
+        "meanInjectedTokens": 147.985,
+        "meanInjectedItems": 5.48
+      }
+    }
+  },
+  "alignment": {
+    "fama": {
+      "releasedEvidenceFamaProxy": 0.5290432684448219,
+      "stanceAwareFamaProxy": 0.5384615384615384
+    },
+    "faa": {
+      "releasedEvidenceFamaProxy": 0,
+      "stanceAwareFamaProxy": 0.012903494352312729
+    },
+    "mpa": {
+      "releasedEvidenceFamaProxy": 0.47742929103557097,
+      "stanceAwareFamaProxy": 0.48717948717948717
+    }
+  },
+  "pairwiseVsV1": {
+    "released": {
+      "pairs": 12,
+      "agrees": 8,
+      "disagreements": 4,
+      "proxyTies": 0,
+      "answerTies": 0,
+      "rate": 0.6666666666666666
+    },
+    "stanceAware": {
+      "pairs": 12,
+      "agrees": 8,
+      "disagreements": 4,
+      "proxyTies": 0,
+      "answerTies": 0,
+      "rate": 0.6666666666666666
+    }
+  },
+  "v2VsV1Directions": {
+    "releasedProxy": 1,
+    "stanceAwareProxy": 1,
+    "answerFama": 1
+  },
+  "gate": {
+    "passed": false,
+    "checks": {
+      "tauImprovement": false,
+      "v2Direction": true
+    }
+  },
+  "modelCalls": {
+    "readers": 0,
+    "judges": 0
+  },
+  "caveats": [
+    "Marker-based stance is intentionally bounded and English-specific. The experiment tests proxy alignment on Memora contexts already frozen by D16; it does not establish end-to-end correction extraction or human semantic correctness."
+  ]
+}

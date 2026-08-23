@@ -1,0 +1,458 @@
+{
+  "status": "failed",
+  "generatedAt": "2026-08-23T20:25:42.966Z",
+  "protocol": {
+    "protocolVersion": "lifecycle-text-correction-detection-v1.0",
+    "researchDirection": "D18",
+    "frozenAt": "2026-08-24T00:00:00+08:00",
+    "researchQuestion": "Can a bounded, text-only high-confidence detector recover enough invalidation events and predecessor links to remove Memora operation metadata from the runtime path?",
+    "dataset": {
+      "name": "Memora",
+      "revision": "a6493188efc836d6511ed5e4163fe3ba87da30ff",
+      "manifestSha256": "dfc82711dd6647bcb0ba590f43a336f0dac02420e981ce957dd1fd13ae331bfc",
+      "period": "quarterly",
+      "unit": "session",
+      "deduplication": "Use the ten quarterly persona histories only; do not count their weekly or monthly prefixes again."
+    },
+    "personaSplits": {
+      "development": [
+        "financial_analyst",
+        "software_engineer",
+        "marketing_manager",
+        "sales_manager"
+      ],
+      "validation": [
+        "management_consultant",
+        "academic_researcher",
+        "content_writer"
+      ],
+      "test": [
+        "creative_designer",
+        "startup_founder",
+        "business_executive"
+      ],
+      "rule": "The detector and thresholds are fixed before aggregate scores are computed. Development examples may inform the rules; validation and test personas may not change them."
+    },
+    "runtimeInputs": {
+      "allowed": [
+        "session_id",
+        "persona",
+        "conversation speaker",
+        "conversation message",
+        "conversation share_memory",
+        "prior shared-memory text from the same persona"
+      ],
+      "forbidden": [
+        "session_type",
+        "operation",
+        "operation_details",
+        "evaluation questions",
+        "memory evidence",
+        "forgetting evidence"
+      ]
+    },
+    "detector": {
+      "deleteCueFamilies": [
+        "explicit remove/delete/drop",
+        "no-longer/don't-need/not-anymore",
+        "finished/completed/done-with",
+        "bounded completion verbs after just/already/actually/managed-to"
+      ],
+      "updateCueFamilies": [
+        "used-to followed by but/now",
+        "update/change/switch/shift from X to Y",
+        "taste or preference changed/shifted",
+        "explicit instead replacement"
+      ],
+      "precedence": "delete cues outrank update cues when both occur",
+      "historyWindowUnits": 512,
+      "maxPredecessorLinks": 3,
+      "minimumWeightedOverlap": 0.22,
+      "minimumSharedContentTokens": 2,
+      "exceptions": "An exact quoted phrase or exact numeric token shared with a prior unit may satisfy the link threshold with one shared content token.",
+      "complexityBound": "At most 512 prior units are scored for one cue-bearing session and at most three predecessor links are emitted."
+    },
+    "goldUse": {
+      "runtime": false,
+      "scoringOnly": "Released operation metadata is read only after prediction to derive gold invalidating sessions, event kind, obsolete values, and predecessor unit ids.",
+      "goldEventDefinition": "A session is positive only when the existing structured Memora adapter emits at least one update/delete event containing at least one obsolete value.",
+      "goldLinkDefinition": "A prior shared-memory unit is a gold predecessor when it predates the event and contains a normalized released obsolete value."
+    },
+    "baselines": [
+      {
+        "id": "remove_delete_only",
+        "description": "Predict deletion only for literal remove/delete/drop cues; no completion or update rules."
+      },
+      {
+        "id": "cue_only",
+        "description": "Apply the same cue classifier without requiring a predecessor link."
+      },
+      {
+        "id": "linked_high_confidence",
+        "description": "Emit an event only when a cue and a bounded predecessor link both exist."
+      }
+    ],
+    "metrics": {
+      "event": [
+        "precision",
+        "recall",
+        "F1",
+        "kind accuracy among true-positive sessions"
+      ],
+      "link": [
+        "micro predecessor-link precision",
+        "micro predecessor-link recall",
+        "session-level any-correct-link rate"
+      ],
+      "coverage": [
+        "predicted event rate",
+        "gold invalidating session count",
+        "predicted linked session count"
+      ],
+      "cost": [
+        "latency p50/p95",
+        "maximum history candidates scored"
+      ]
+    },
+    "testGate": {
+      "minimumEventPrecision": 0.9,
+      "minimumEventRecall": 0.2,
+      "minimumLinkPrecision": 0.85,
+      "minimumLinkRecall": 0.1,
+      "minimumAnyCorrectLinkRate": 0.7,
+      "minimumKindAccuracy": 0.9,
+      "maximumP95LatencyMs": 10,
+      "requireZeroForbiddenRuntimeReads": true
+    },
+    "decisionRule": "D18 passes only when every linked_high_confidence test gate passes. Validation is descriptive and cannot relax the frozen test thresholds. A failure leaves V1 classified as oracle-management evidence and blocks any end-to-end correction-detection claim.",
+    "claimBoundary": "This deterministic English detector targets explicit corrections and completions. Even a pass would not establish implicit code-state invalidation, repository scope, or human-level semantic linking. No answer-model calls are authorized by this protocol."
+  },
+  "dataset": {
+    "name": "Memora",
+    "revision": "a6493188efc836d6511ed5e4163fe3ba87da30ff",
+    "dataManifestSha256": "dfc82711dd6647bcb0ba590f43a336f0dac02420e981ce957dd1fd13ae331bfc",
+    "groups": 30,
+    "personas": 10,
+    "questions": 600,
+    "sessions": 27614,
+    "memoryUnits": 24856,
+    "operationCounts": {
+      "no_memory:none": 11126,
+      "activity:add": 7790,
+      "preference:add": 2146,
+      "activity:update": 1226,
+      "goal:add": 572,
+      "preference:delete": 1077,
+      "activity:delete": 2082,
+      "preference:update": 1595
+    }
+  },
+  "population": {
+    "groups": 10,
+    "personas": 10,
+    "sessions": 19913,
+    "splitSessions": {
+      "development": 7975,
+      "validation": 5984,
+      "test": 5954
+    }
+  },
+  "reports": {
+    "development": {
+      "remove_delete_only": {
+        "sessions": 7975,
+        "goldPositiveSessions": 1625,
+        "predictedSessions": 258,
+        "truePositiveSessions": 258,
+        "falsePositiveSessions": 0,
+        "falseNegativeSessions": 1367,
+        "eventPrecision": 1,
+        "eventRecall": 0.15876923076923077,
+        "eventF1": 0.2740308019118428,
+        "kindAccuracy": 1,
+        "predictedLinks": 0,
+        "goldLinks": 4945,
+        "correctLinks": 0,
+        "linkPrecision": 0,
+        "linkRecall": 0,
+        "truePositiveLinkedSessions": 0,
+        "sessionsWithAnyCorrectLink": 0,
+        "anyCorrectLinkRate": 0,
+        "predictedEventRate": 0.03235109717868338,
+        "cueFamilies": {
+          "literal_remove_delete": 258
+        }
+      },
+      "cue_only": {
+        "sessions": 7975,
+        "goldPositiveSessions": 1625,
+        "predictedSessions": 1349,
+        "truePositiveSessions": 1313,
+        "falsePositiveSessions": 36,
+        "falseNegativeSessions": 312,
+        "eventPrecision": 0.9733135656041513,
+        "eventRecall": 0.808,
+        "eventF1": 0.882985877605918,
+        "kindAccuracy": 0.8103579588728104,
+        "predictedLinks": 0,
+        "goldLinks": 4945,
+        "correctLinks": 0,
+        "linkPrecision": 0,
+        "linkRecall": 0,
+        "truePositiveLinkedSessions": 0,
+        "sessionsWithAnyCorrectLink": 0,
+        "anyCorrectLinkRate": 0,
+        "predictedEventRate": 0.16915360501567397,
+        "cueFamilies": {
+          "used_to_now": 656,
+          "explicit_remove": 258,
+          "from_to": 67,
+          "explicit_no_longer": 176,
+          "explicit_completion": 149,
+          "bounded_completion_verb": 30,
+          "taste_shift": 13
+        }
+      },
+      "linked_high_confidence": {
+        "sessions": 7975,
+        "goldPositiveSessions": 1625,
+        "predictedSessions": 1331,
+        "truePositiveSessions": 1297,
+        "falsePositiveSessions": 34,
+        "falseNegativeSessions": 328,
+        "eventPrecision": 0.9744552967693464,
+        "eventRecall": 0.7981538461538461,
+        "eventF1": 0.8775372124492558,
+        "kindAccuracy": 0.8080185042405551,
+        "predictedLinks": 3806,
+        "goldLinks": 4945,
+        "correctLinks": 839,
+        "linkPrecision": 0.22044140830267997,
+        "linkRecall": 0.16966632962588474,
+        "truePositiveLinkedSessions": 1297,
+        "sessionsWithAnyCorrectLink": 645,
+        "anyCorrectLinkRate": 0.4973014649190439,
+        "predictedEventRate": 0.16689655172413792,
+        "cueFamilies": {
+          "used_to_now": 656,
+          "explicit_remove": 258,
+          "from_to": 67,
+          "explicit_no_longer": 176,
+          "explicit_completion": 135,
+          "taste_shift": 13,
+          "bounded_completion_verb": 26
+        }
+      }
+    },
+    "validation": {
+      "remove_delete_only": {
+        "sessions": 5984,
+        "goldPositiveSessions": 1217,
+        "predictedSessions": 162,
+        "truePositiveSessions": 161,
+        "falsePositiveSessions": 1,
+        "falseNegativeSessions": 1056,
+        "eventPrecision": 0.9938271604938271,
+        "eventRecall": 0.1322925225965489,
+        "eventF1": 0.23350253807106602,
+        "kindAccuracy": 1,
+        "predictedLinks": 0,
+        "goldLinks": 3319,
+        "correctLinks": 0,
+        "linkPrecision": 0,
+        "linkRecall": 0,
+        "truePositiveLinkedSessions": 0,
+        "sessionsWithAnyCorrectLink": 0,
+        "anyCorrectLinkRate": 0,
+        "predictedEventRate": 0.027072192513368985,
+        "cueFamilies": {
+          "literal_remove_delete": 162
+        }
+      },
+      "cue_only": {
+        "sessions": 5984,
+        "goldPositiveSessions": 1217,
+        "predictedSessions": 999,
+        "truePositiveSessions": 983,
+        "falsePositiveSessions": 16,
+        "falseNegativeSessions": 234,
+        "eventPrecision": 0.983983983983984,
+        "eventRecall": 0.8077239112571898,
+        "eventF1": 0.8871841155234657,
+        "kindAccuracy": 0.8067141403865717,
+        "predictedLinks": 0,
+        "goldLinks": 3319,
+        "correctLinks": 0,
+        "linkPrecision": 0,
+        "linkRecall": 0,
+        "truePositiveLinkedSessions": 0,
+        "sessionsWithAnyCorrectLink": 0,
+        "anyCorrectLinkRate": 0,
+        "predictedEventRate": 0.1669451871657754,
+        "cueFamilies": {
+          "explicit_remove": 162,
+          "explicit_completion": 122,
+          "used_to_now": 516,
+          "explicit_no_longer": 115,
+          "from_to": 61,
+          "bounded_completion_verb": 12,
+          "taste_shift": 11
+        }
+      },
+      "linked_high_confidence": {
+        "sessions": 5984,
+        "goldPositiveSessions": 1217,
+        "predictedSessions": 988,
+        "truePositiveSessions": 975,
+        "falsePositiveSessions": 13,
+        "falseNegativeSessions": 242,
+        "eventPrecision": 0.9868421052631579,
+        "eventRecall": 0.8011503697617092,
+        "eventF1": 0.8843537414965986,
+        "kindAccuracy": 0.8061538461538461,
+        "predictedLinks": 2834,
+        "goldLinks": 3319,
+        "correctLinks": 561,
+        "linkPrecision": 0.19795342272406494,
+        "linkRecall": 0.169026815305815,
+        "truePositiveLinkedSessions": 975,
+        "sessionsWithAnyCorrectLink": 446,
+        "anyCorrectLinkRate": 0.4574358974358974,
+        "predictedEventRate": 0.16510695187165775,
+        "cueFamilies": {
+          "explicit_remove": 162,
+          "explicit_completion": 114,
+          "used_to_now": 515,
+          "explicit_no_longer": 115,
+          "from_to": 61,
+          "bounded_completion_verb": 11,
+          "taste_shift": 10
+        }
+      }
+    },
+    "test": {
+      "remove_delete_only": {
+        "sessions": 5954,
+        "goldPositiveSessions": 1223,
+        "predictedSessions": 191,
+        "truePositiveSessions": 191,
+        "falsePositiveSessions": 0,
+        "falseNegativeSessions": 1032,
+        "eventPrecision": 1,
+        "eventRecall": 0.1561733442354865,
+        "eventF1": 0.27015558698727016,
+        "kindAccuracy": 1,
+        "predictedLinks": 0,
+        "goldLinks": 3498,
+        "correctLinks": 0,
+        "linkPrecision": 0,
+        "linkRecall": 0,
+        "truePositiveLinkedSessions": 0,
+        "sessionsWithAnyCorrectLink": 0,
+        "anyCorrectLinkRate": 0,
+        "predictedEventRate": 0.03207927443735304,
+        "cueFamilies": {
+          "literal_remove_delete": 191
+        }
+      },
+      "cue_only": {
+        "sessions": 5954,
+        "goldPositiveSessions": 1223,
+        "predictedSessions": 1004,
+        "truePositiveSessions": 982,
+        "falsePositiveSessions": 22,
+        "falseNegativeSessions": 241,
+        "eventPrecision": 0.9780876494023905,
+        "eventRecall": 0.802943581357318,
+        "eventF1": 0.8819039066008083,
+        "kindAccuracy": 0.8228105906313645,
+        "predictedLinks": 0,
+        "goldLinks": 3498,
+        "correctLinks": 0,
+        "linkPrecision": 0,
+        "linkRecall": 0,
+        "truePositiveLinkedSessions": 0,
+        "sessionsWithAnyCorrectLink": 0,
+        "anyCorrectLinkRate": 0,
+        "predictedEventRate": 0.16862613369163587,
+        "cueFamilies": {
+          "used_to_now": 518,
+          "explicit_remove": 191,
+          "from_to": 54,
+          "explicit_completion": 109,
+          "explicit_no_longer": 116,
+          "bounded_completion_verb": 13,
+          "taste_shift": 3
+        }
+      },
+      "linked_high_confidence": {
+        "sessions": 5954,
+        "goldPositiveSessions": 1223,
+        "predictedSessions": 995,
+        "truePositiveSessions": 974,
+        "falsePositiveSessions": 21,
+        "falseNegativeSessions": 249,
+        "eventPrecision": 0.978894472361809,
+        "eventRecall": 0.7964022894521668,
+        "eventF1": 0.8782687105500451,
+        "kindAccuracy": 0.8234086242299795,
+        "predictedLinks": 2823,
+        "goldLinks": 3498,
+        "correctLinks": 566,
+        "linkPrecision": 0.20049592631951824,
+        "linkRecall": 0.16180674671240708,
+        "truePositiveLinkedSessions": 974,
+        "sessionsWithAnyCorrectLink": 442,
+        "anyCorrectLinkRate": 0.4537987679671458,
+        "predictedEventRate": 0.16711454484380248,
+        "cueFamilies": {
+          "used_to_now": 515,
+          "explicit_remove": 190,
+          "from_to": 53,
+          "explicit_completion": 107,
+          "explicit_no_longer": 115,
+          "bounded_completion_verb": 12,
+          "taste_shift": 3
+        }
+      }
+    }
+  },
+  "latency": {
+    "p50Ms": 0.001750000000356522,
+    "p95Ms": 5.510541999999987,
+    "maxMs": 14.000707999999577,
+    "maxHistoryCandidatesScored": 512
+  },
+  "runtimeAudit": {
+    "forbiddenRuntimeReads": 0,
+    "detectorInputFields": [
+      "session_id",
+      "persona",
+      "conversation",
+      "prior shared-memory units"
+    ],
+    "goldAttachedAfterPrediction": true
+  },
+  "decision": {
+    "passed": false,
+    "checks": {
+      "eventPrecision": true,
+      "eventRecall": true,
+      "linkPrecision": false,
+      "linkRecall": true,
+      "anyCorrectLinkRate": false,
+      "kindAccuracy": false,
+      "latency": true,
+      "forbiddenRuntimeReads": true
+    }
+  },
+  "modelCalls": {
+    "readers": 0,
+    "judges": 0
+  },
+  "claimBoundary": "A failed gate leaves V1 as oracle-management evidence. A passed detector would still cover explicit English corrections only and would not validate code-state scope or implicit invalidation.",
+  "artifactHashes": {
+    "protocolSha256": "8acf21b6f80fa4c4388704b16cbd3b9bf6c78a53ef0cb3daaf26cd84ff3bd6fc",
+    "casesSha256": "241586627b44887d0faec1e214fb4513f578958f7b3d1007366a674cc46e0074"
+  }
+}

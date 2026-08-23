@@ -1,0 +1,129 @@
+{
+  "validationVersion": "lifecycle-broad-ablation-e2e-independent-validation-v1.0",
+  "status": "passed",
+  "inputs": {
+    "contextSha256": "66093bf108e6aa4e8eb56bc7c7228e3218622383944b058d4ecdfc47597cf7d2",
+    "evaluationsSha256": "05574b0f173747607014d76a00d51877107e962db05415dda881905d6c8191b6",
+    "summarySha256": "52c03fcbc536262583284b7c8bb8fc571c151da655fe7cfe45deeefdd5f481f4"
+  },
+  "counts": {
+    "cases": 200,
+    "arms": 13,
+    "evaluations": 1894,
+    "uniqueEvaluationKeys": 1894,
+    "aggregateCells": 2600
+  },
+  "checks": {
+    "rawVerdictsRescored": 1894,
+    "armAggregatesRecomputed": 13,
+    "comparisonsVsV1Recomputed": 12,
+    "mismatchCount": 0
+  },
+  "mismatches": [],
+  "recomputedArms": {
+    "base": {
+      "mpa": 0.14998313494434182,
+      "faa": 0.9780074748965124,
+      "fama": 0.1428006020217547,
+      "criterionAccuracy": 0.31342794091189147,
+      "meanInjectedTokens": 134.185,
+      "meanInjectedItems": 5
+    },
+    "v1": {
+      "mpa": 0.1620204029816099,
+      "faa": 0.9880759360487182,
+      "fama": 0.15696444280401656,
+      "criterionAccuracy": 0.32137710698130406,
+      "meanInjectedTokens": 133.155,
+      "meanInjectedItems": 5
+    },
+    "tombstone_refill": {
+      "mpa": 0.16009732605853302,
+      "faa": 0.9837771240971671,
+      "fama": 0.15330714818801455,
+      "criterionAccuracy": 0.32257495695109595,
+      "meanInjectedTokens": 133.385,
+      "meanInjectedItems": 5
+    },
+    "latest_write_wins": {
+      "mpa": 0.15983797054917748,
+      "faa": 0.987955093362276,
+      "fama": 0.15429730501845773,
+      "criterionAccuracy": 0.31729015772237257,
+      "meanInjectedTokens": 135.025,
+      "meanInjectedItems": 5
+    },
+    "recency_top5": {
+      "mpa": 0.14534139736079396,
+      "faa": 0.9820740669651059,
+      "fama": 0.1393163966032619,
+      "criterionAccuracy": 0.3077234135176463,
+      "meanInjectedTokens": 118.965,
+      "meanInjectedItems": 5
+    },
+    "superseded_render": {
+      "mpa": 0.155871119082326,
+      "faa": 0.9849436814064467,
+      "fama": 0.14967478977094248,
+      "criterionAccuracy": 0.3185478125072013,
+      "meanInjectedTokens": 146.985,
+      "meanInjectedItems": 5
+    },
+    "v1_h2": {
+      "mpa": 0.15875463721584415,
+      "faa": 0.9879241503344326,
+      "fama": 0.15357721954837225,
+      "criterionAccuracy": 0.31887407054405714,
+      "meanInjectedTokens": 134.415,
+      "meanInjectedItems": 5
+    },
+    "v1_slot1": {
+      "mpa": 0.16702627904998596,
+      "faa": 0.9861950101020596,
+      "fama": 0.16085084725998372,
+      "criterionAccuracy": 0.32240695772481587,
+      "meanInjectedTokens": 148.655,
+      "meanInjectedItems": 5.57
+    },
+    "v1_slot2": {
+      "mpa": 0.17402770355141048,
+      "faa": 0.9830692618043492,
+      "fama": 0.1662509299666647,
+      "criterionAccuracy": 0.3269593734128865,
+      "meanInjectedTokens": 160.04,
+      "meanInjectedItems": 5.975
+    },
+    "v1_tau091": {
+      "mpa": 0.16160373631494326,
+      "faa": 0.988933078905861,
+      "fama": 0.1565477761373499,
+      "criterionAccuracy": 0.32181113475908185,
+      "meanInjectedTokens": 133.23,
+      "meanInjectedItems": 5
+    },
+    "v1_tau096": {
+      "mpa": 0.16560373631494327,
+      "faa": 0.988089283768644,
+      "fama": 0.15999222058179435,
+      "criterionAccuracy": 0.32227298791658726,
+      "meanInjectedTokens": 133.555,
+      "meanInjectedItems": 5
+    },
+    "v1_aggregate": {
+      "mpa": 0.15952040298160994,
+      "faa": 0.9880759360487182,
+      "fama": 0.15446444280401658,
+      "criterionAccuracy": 0.3188771069813041,
+      "meanInjectedTokens": 134.14,
+      "meanInjectedItems": 5
+    },
+    "v2": {
+      "mpa": 0.1680346479958549,
+      "faa": 0.9831213727323932,
+      "fama": 0.1590833401855881,
+      "criterionAccuracy": 0.3193042790818054,
+      "meanInjectedTokens": 147.985,
+      "meanInjectedItems": 5.48
+    }
+  }
+}
