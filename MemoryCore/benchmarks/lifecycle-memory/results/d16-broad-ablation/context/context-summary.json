@@ -1,0 +1,184 @@
+{
+  "protocolVersion": "lifecycle-broad-ablation-context-v1.0",
+  "status": "context_ready",
+  "protocolSha256": "a0d401d03bbc726d0f2df58d3c1ab92d59ffa2a0264343b43508062445e310b8",
+  "dataset": {
+    "name": "Memora",
+    "revision": "a6493188efc836d6511ed5e4163fe3ba87da30ff",
+    "dataManifestSha256": "dfc82711dd6647bcb0ba590f43a336f0dac02420e981ce957dd1fd13ae331bfc",
+    "groups": 30,
+    "personas": 10,
+    "questions": 600,
+    "sessions": 27614,
+    "memoryUnits": 24856,
+    "operationCounts": {
+      "no_memory:none": 11126,
+      "activity:add": 7790,
+      "preference:add": 2146,
+      "activity:update": 1226,
+      "goal:add": 572,
+      "preference:delete": 1077,
+      "activity:delete": 2082,
+      "preference:update": 1595
+    }
+  },
+  "exclusions": [
+    {
+      "protocolVersion": "lifecycle-adaptive-e2e-v1.1",
+      "sha256": "1e3ab7b21bd1425f98f095ca76a31d350c47f3bb9c9cf0090139567859dadaf1",
+      "cases": 50
+    },
+    {
+      "protocolVersion": "lifecycle-valid-state-packing-e2e-selection-v1.0",
+      "sha256": "fb4ef25cdb4bb3953af94ed8a964c4ec5bebf8fc4c9fc8d13ae0935c67d3188e",
+      "cases": 50
+    }
+  ],
+  "selection": {
+    "quarterlyPopulation": 300,
+    "excludedPriorAnswerCases": 100,
+    "selectedCases": 200,
+    "sampling": "census of every quarterly question not present in either frozen prior answer panel",
+    "outcomeBlind": "Selection may read only question identity, group, period and task plus the two frozen exclusion manifests. It may not read retrieval scores, answer text, judge verdicts or per-case outcomes.",
+    "taskCounts": {
+      "reasoning": 100,
+      "recommending": 38,
+      "remembering": 62
+    },
+    "personaCounts": {
+      "academic_researcher": 20,
+      "business_executive": 20,
+      "content_writer": 20,
+      "creative_designer": 20,
+      "financial_analyst": 20,
+      "management_consultant": 20,
+      "marketing_manager": 20,
+      "sales_manager": 20,
+      "software_engineer": 20,
+      "startup_founder": 20
+    },
+    "forgettingBearingCases": 92,
+    "baseStaleExposedCases": 6
+  },
+  "deduplication": {
+    "caseArmContexts": 2600,
+    "uniquePromptsPerReader": 947,
+    "reusableCaseArmContexts": 1653,
+    "exactPromptReuseOnly": true
+  },
+  "armStats": {
+    "base": {
+      "cases": 200,
+      "uniqueContexts": 200,
+      "changedVsBase": 0,
+      "changedVsV1": 102,
+      "meanInjectedItems": 5,
+      "meanInjectedTokens": 134.185
+    },
+    "v1": {
+      "cases": 200,
+      "uniqueContexts": 200,
+      "changedVsBase": 102,
+      "changedVsV1": 0,
+      "meanInjectedItems": 5,
+      "meanInjectedTokens": 133.155
+    },
+    "tombstone_refill": {
+      "cases": 200,
+      "uniqueContexts": 200,
+      "changedVsBase": 102,
+      "changedVsV1": 76,
+      "meanInjectedItems": 5,
+      "meanInjectedTokens": 133.385
+    },
+    "latest_write_wins": {
+      "cases": 200,
+      "uniqueContexts": 200,
+      "changedVsBase": 92,
+      "changedVsV1": 51,
+      "meanInjectedItems": 5,
+      "meanInjectedTokens": 135.025
+    },
+    "recency_top5": {
+      "cases": 200,
+      "uniqueContexts": 200,
+      "changedVsBase": 200,
+      "changedVsV1": 200,
+      "meanInjectedItems": 5,
+      "meanInjectedTokens": 118.965
+    },
+    "superseded_render": {
+      "cases": 200,
+      "uniqueContexts": 200,
+      "changedVsBase": 102,
+      "changedVsV1": 102,
+      "meanInjectedItems": 5,
+      "meanInjectedTokens": 146.985
+    },
+    "v1_h2": {
+      "cases": 200,
+      "uniqueContexts": 200,
+      "changedVsBase": 102,
+      "changedVsV1": 29,
+      "meanInjectedItems": 5,
+      "meanInjectedTokens": 134.415
+    },
+    "v1_slot1": {
+      "cases": 200,
+      "uniqueContexts": 200,
+      "changedVsBase": 114,
+      "changedVsV1": 114,
+      "meanInjectedItems": 5.57,
+      "meanInjectedTokens": 148.655
+    },
+    "v1_slot2": {
+      "cases": 200,
+      "uniqueContexts": 200,
+      "changedVsBase": 127,
+      "changedVsV1": 127,
+      "meanInjectedItems": 5.975,
+      "meanInjectedTokens": 160.04
+    },
+    "v1_tau091": {
+      "cases": 200,
+      "uniqueContexts": 200,
+      "changedVsBase": 100,
+      "changedVsV1": 4,
+      "meanInjectedItems": 5,
+      "meanInjectedTokens": 133.23
+    },
+    "v1_tau096": {
+      "cases": 200,
+      "uniqueContexts": 200,
+      "changedVsBase": 92,
+      "changedVsV1": 17,
+      "meanInjectedItems": 5,
+      "meanInjectedTokens": 133.555
+    },
+    "v1_aggregate": {
+      "cases": 200,
+      "uniqueContexts": 200,
+      "changedVsBase": 52,
+      "changedVsV1": 50,
+      "meanInjectedItems": 5,
+      "meanInjectedTokens": 134.14
+    },
+    "v2": {
+      "cases": 200,
+      "uniqueContexts": 200,
+      "changedVsBase": 60,
+      "changedVsV1": 114,
+      "meanInjectedItems": 5.48,
+      "meanInjectedTokens": 147.985
+    }
+  },
+  "fallbackValidation": {
+    "cases": 200,
+    "disabledMismatches": 0,
+    "damagedMismatches": 0,
+    "timeoutMismatches": 0,
+    "tombstoneDamagedMismatches": 0,
+    "passed": true
+  },
+  "contextManifestSha256": "66093bf108e6aa4e8eb56bc7c7228e3218622383944b058d4ecdfc47597cf7d2"
+}
