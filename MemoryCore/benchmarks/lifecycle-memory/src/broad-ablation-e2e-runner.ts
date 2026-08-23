@@ -125,6 +125,32 @@ function delay(milliseconds: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
 }
 
+const providerIntervalsMs = { minimax: 1_350, deepseek: 100 } as const;
+const providerGates = new Map<string, Promise<void>>();
+const providerLastStart = new Map<string, number>();
+
+async function waitForProviderSlot(spec: DirectJudgeSpec): Promise<void> {
+  const previous = providerGates.get(spec.provider) ?? Promise.resolve();
+  const gate = previous.catch(() => undefined).then(async () => {
+    const elapsed = Date.now() - (providerLastStart.get(spec.provider) ?? 0);
+    const remaining = providerIntervalsMs[spec.provider] - elapsed;
+    if (remaining > 0) await delay(remaining);
+    providerLastStart.set(spec.provider, Date.now());
+  });
+  providerGates.set(spec.provider, gate);
+  await gate;
+}
+
+async function pacedDirectCall(params: Parameters<typeof callDirectJudge>[0]): Promise<DirectJudgeResponse> {
+  await waitForProviderSlot(params.spec);
+  return callDirectJudge(params);
+}
+
+function retryDelay(error: unknown, attempt: number): number {
+  if (error instanceof Error && error.message.includes("HTTP 429")) return 30_000 * attempt;
+  return 500 * 2 ** (attempt - 1);
+}
+
 async function callReader(params: {
   spec: DirectJudgeSpec;
   apiKey: string;
@@ -135,7 +161,7 @@ async function callReader(params: {
   for (let attempt = 1; attempt <= BROAD_ABLATION_E2E_PROTOCOL.retries; attempt += 1) {
     try {
       return {
-        response: await callDirectJudge({
+        response: await pacedDirectCall({
           spec: params.spec,
           apiKey: params.apiKey,
           messages: readerMessages(params.question, params.candidates),
@@ -147,7 +173,7 @@ async function callReader(params: {
       lastError = error;
       if (!isRetryableJudgeError(error)) throw error;
     }
-    if (attempt < BROAD_ABLATION_E2E_PROTOCOL.retries) await delay(500 * 2 ** (attempt - 1));
+    if (attempt < BROAD_ABLATION_E2E_PROTOCOL.retries) await delay(retryDelay(lastError, attempt));
   }
   throw lastError instanceof Error ? lastError : new Error(String(lastError));
 }
@@ -166,7 +192,7 @@ async function callJudge(params: {
   let lastError: unknown;
   for (let attempt = 1; attempt <= BROAD_ABLATION_E2E_PROTOCOL.retries; attempt += 1) {
     try {
-      const response = await callDirectJudge({
+      const response = await pacedDirectCall({
         spec: params.spec,
         apiKey: params.apiKey,
         messages: judgeMessages(params.answer, params.question.evaluationQuestions),
@@ -182,7 +208,7 @@ async function callJudge(params: {
       lastError = error;
       if (!isRetryableJudgeError(error)) throw error;
     }
-    if (attempt < BROAD_ABLATION_E2E_PROTOCOL.retries) await delay(500 * 2 ** (attempt - 1));
+    if (attempt < BROAD_ABLATION_E2E_PROTOCOL.retries) await delay(retryDelay(lastError, attempt));
   }
   throw lastError instanceof Error ? lastError : new Error(String(lastError));
 }
