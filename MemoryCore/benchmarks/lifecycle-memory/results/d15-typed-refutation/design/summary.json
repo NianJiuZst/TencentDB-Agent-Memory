@@ -1,0 +1,300 @@
+{
+  "protocolVersion": "lifecycle-longmemeval-v2-typed-refutation-v1.0",
+  "mode": "typed_refutation_design",
+  "phase": "development",
+  "status": "renderer_selected",
+  "decision": "freeze_renderer_before_validation",
+  "preScoreCommit": "d040173",
+  "inputSha256": {
+    "baselineCases": "8a5dbbe7ddb1d63fc7d642e9c0b535893e012dec02a5de113eb1b6a9eb5e0278",
+    "d14CandidateCases": "723869b37b296268292aa6f7004a1ca3a6e1d96c4794f2aa2aa150cc6cd8b85d",
+    "d14CandidateSummary": "517546050cee54c25a6cce93e3efa54535166b10392ad48ea9b174c552516952",
+    "d14AnswerEvaluations": "acef3c1aabd097d9cf5f59ff01f224fe9a1854d69f9e1aee9bbab5c6e02b5af4",
+    "d14AnswerSummary": "9cb125982579d49b9dd1bf8b8ac3226a3b33c06f487e203a707861e72d3c2511",
+    "d14Decision": "0393d4e18d5db44c1a7fa88310496d2519abdf52acb6c1489e645a2b965ba4a4"
+  },
+  "runtimeBoundary": "Only D14 development questions and source-certified decisions are used. References are available to judges only; renderer and reader never receive them outside the official judge call.",
+  "structuralReplay": {
+    "trajectories": 200,
+    "states": 5095,
+    "inventories": 24844,
+    "available": true,
+    "scopeAdapterId": "longmemeval-v2-url-scope-v1"
+  },
+  "executedPolicies": [
+    "typed-relation-v1",
+    "typed-answer-mode-v1",
+    "typed-action-contract-v1"
+  ],
+  "unexecutedPolicies": [],
+  "selectedPolicyId": "typed-action-contract-v1",
+  "policyScores": [
+    {
+      "policyId": "typed-relation-v1",
+      "eligible": false,
+      "primaryImprovedReaderPairs": 2,
+      "primaryEqualReaderPairs": 2,
+      "primaryHarmedReaderPairs": 0,
+      "unanimousImprovedReaderPairs": 2,
+      "anyJudgeHarmedReaderPairs": 0,
+      "readersWithAtLeastOnePrimaryImprovement": 1,
+      "readersWithNegativeMeanDelta": 0,
+      "primaryChangedPairMeanDelta": 0.5,
+      "fullFactorialChangedCellMeanDelta": 0.5,
+      "candidateUnknownAnswers": 2,
+      "meanCapsuleTokens": 135.5,
+      "meanCandidateTokenDelta": 135.5,
+      "directCertificateViolations": 0,
+      "fallbackCount": 0,
+      "readerCalls": 4,
+      "judgeCalls": 8,
+      "readerRetries": 0,
+      "judgeRetries": 0,
+      "modelMismatches": 0,
+      "checks": {
+        "primaryImprovement": true,
+        "noPrimaryHarm": true,
+        "unanimousImprovement": true,
+        "noAnyJudgeHarm": true,
+        "readerCoverage": false,
+        "perReaderNonInferiority": true,
+        "returnedModels": true,
+        "directCertificates": true
+      },
+      "failedChecks": [
+        "readerCoverage"
+      ],
+      "changedRows": [
+        {
+          "questionId": "0ace674b",
+          "readerId": "minimax-m3",
+          "crossJudgeId": "deepseek-v4-flash",
+          "basePrimary": 0,
+          "candidatePrimary": 1,
+          "primaryDelta": 1,
+          "judgeDeltas": {
+            "minimax-m3": 1,
+            "deepseek-v4-flash": 1
+          }
+        },
+        {
+          "questionId": "0ace674b",
+          "readerId": "deepseek-v4-flash",
+          "crossJudgeId": "minimax-m3",
+          "basePrimary": 0,
+          "candidatePrimary": 0,
+          "primaryDelta": 0,
+          "judgeDeltas": {
+            "minimax-m3": 0,
+            "deepseek-v4-flash": 0
+          }
+        },
+        {
+          "questionId": "7ebb0b95",
+          "readerId": "minimax-m3",
+          "crossJudgeId": "deepseek-v4-flash",
+          "basePrimary": 0,
+          "candidatePrimary": 1,
+          "primaryDelta": 1,
+          "judgeDeltas": {
+            "minimax-m3": 1,
+            "deepseek-v4-flash": 1
+          }
+        },
+        {
+          "questionId": "7ebb0b95",
+          "readerId": "deepseek-v4-flash",
+          "crossJudgeId": "minimax-m3",
+          "basePrimary": 0,
+          "candidatePrimary": 0,
+          "primaryDelta": 0,
+          "judgeDeltas": {
+            "minimax-m3": 0,
+            "deepseek-v4-flash": 0
+          }
+        }
+      ]
+    },
+    {
+      "policyId": "typed-answer-mode-v1",
+      "eligible": false,
+      "primaryImprovedReaderPairs": 2,
+      "primaryEqualReaderPairs": 2,
+      "primaryHarmedReaderPairs": 0,
+      "unanimousImprovedReaderPairs": 2,
+      "anyJudgeHarmedReaderPairs": 0,
+      "readersWithAtLeastOnePrimaryImprovement": 1,
+      "readersWithNegativeMeanDelta": 0,
+      "primaryChangedPairMeanDelta": 0.5,
+      "fullFactorialChangedCellMeanDelta": 0.5,
+      "candidateUnknownAnswers": 2,
+      "meanCapsuleTokens": 145.5,
+      "meanCandidateTokenDelta": 145.5,
+      "directCertificateViolations": 0,
+      "fallbackCount": 0,
+      "readerCalls": 4,
+      "judgeCalls": 8,
+      "readerRetries": 0,
+      "judgeRetries": 0,
+      "modelMismatches": 0,
+      "checks": {
+        "primaryImprovement": true,
+        "noPrimaryHarm": true,
+        "unanimousImprovement": true,
+        "noAnyJudgeHarm": true,
+        "readerCoverage": false,
+        "perReaderNonInferiority": true,
+        "returnedModels": true,
+        "directCertificates": true
+      },
+      "failedChecks": [
+        "readerCoverage"
+      ],
+      "changedRows": [
+        {
+          "questionId": "0ace674b",
+          "readerId": "minimax-m3",
+          "crossJudgeId": "deepseek-v4-flash",
+          "basePrimary": 0,
+          "candidatePrimary": 1,
+          "primaryDelta": 1,
+          "judgeDeltas": {
+            "minimax-m3": 1,
+            "deepseek-v4-flash": 1
+          }
+        },
+        {
+          "questionId": "0ace674b",
+          "readerId": "deepseek-v4-flash",
+          "crossJudgeId": "minimax-m3",
+          "basePrimary": 0,
+          "candidatePrimary": 0,
+          "primaryDelta": 0,
+          "judgeDeltas": {
+            "minimax-m3": 0,
+            "deepseek-v4-flash": 0
+          }
+        },
+        {
+          "questionId": "7ebb0b95",
+          "readerId": "minimax-m3",
+          "crossJudgeId": "deepseek-v4-flash",
+          "basePrimary": 0,
+          "candidatePrimary": 1,
+          "primaryDelta": 1,
+          "judgeDeltas": {
+            "minimax-m3": 1,
+            "deepseek-v4-flash": 1
+          }
+        },
+        {
+          "questionId": "7ebb0b95",
+          "readerId": "deepseek-v4-flash",
+          "crossJudgeId": "minimax-m3",
+          "basePrimary": 0,
+          "candidatePrimary": 0,
+          "primaryDelta": 0,
+          "judgeDeltas": {
+            "minimax-m3": 0,
+            "deepseek-v4-flash": 0
+          }
+        }
+      ]
+    },
+    {
+      "policyId": "typed-action-contract-v1",
+      "eligible": true,
+      "primaryImprovedReaderPairs": 3,
+      "primaryEqualReaderPairs": 1,
+      "primaryHarmedReaderPairs": 0,
+      "unanimousImprovedReaderPairs": 3,
+      "anyJudgeHarmedReaderPairs": 0,
+      "readersWithAtLeastOnePrimaryImprovement": 2,
+      "readersWithNegativeMeanDelta": 0,
+      "primaryChangedPairMeanDelta": 0.75,
+      "fullFactorialChangedCellMeanDelta": 0.75,
+      "candidateUnknownAnswers": 1,
+      "meanCapsuleTokens": 171.5,
+      "meanCandidateTokenDelta": 171.5,
+      "directCertificateViolations": 0,
+      "fallbackCount": 0,
+      "readerCalls": 4,
+      "judgeCalls": 8,
+      "readerRetries": 0,
+      "judgeRetries": 0,
+      "modelMismatches": 0,
+      "checks": {
+        "primaryImprovement": true,
+        "noPrimaryHarm": true,
+        "unanimousImprovement": true,
+        "noAnyJudgeHarm": true,
+        "readerCoverage": true,
+        "perReaderNonInferiority": true,
+        "returnedModels": true,
+        "directCertificates": true
+      },
+      "failedChecks": [],
+      "changedRows": [
+        {
+          "questionId": "0ace674b",
+          "readerId": "minimax-m3",
+          "crossJudgeId": "deepseek-v4-flash",
+          "basePrimary": 0,
+          "candidatePrimary": 1,
+          "primaryDelta": 1,
+          "judgeDeltas": {
+            "minimax-m3": 1,
+            "deepseek-v4-flash": 1
+          }
+        },
+        {
+          "questionId": "0ace674b",
+          "readerId": "deepseek-v4-flash",
+          "crossJudgeId": "minimax-m3",
+          "basePrimary": 0,
+          "candidatePrimary": 0,
+          "primaryDelta": 0,
+          "judgeDeltas": {
+            "minimax-m3": 0,
+            "deepseek-v4-flash": 0
+          }
+        },
+        {
+          "questionId": "7ebb0b95",
+          "readerId": "minimax-m3",
+          "crossJudgeId": "deepseek-v4-flash",
+          "basePrimary": 0,
+          "candidatePrimary": 1,
+          "primaryDelta": 1,
+          "judgeDeltas": {
+            "minimax-m3": 1,
+            "deepseek-v4-flash": 1
+          }
+        },
+        {
+          "questionId": "7ebb0b95",
+          "readerId": "deepseek-v4-flash",
+          "crossJudgeId": "minimax-m3",
+          "basePrimary": 0,
+          "candidatePrimary": 1,
+          "primaryDelta": 1,
+          "judgeDeltas": {
+            "minimax-m3": 1,
+            "deepseek-v4-flash": 1
+          }
+        }
+      ]
+    }
+  ],
+  "contextsSha256": "fa62a4e2676c192c5c35767a6b4a9a7dcf2b59fae614ccfc944633de5a50c809",
+  "operationalIntegrity": {
+    "candidateReaderCalls": 12,
+    "candidateJudgeCalls": 24,
+    "readerRetries": 0,
+    "judgeRetries": 0,
+    "modelMismatches": 0,
+    "reusedD14BaseReaderCells": 4
+  },
+  "laterPhaseState": "unread",
+  "claimBoundary": "The selected renderer is a development-tuned candidate only; answer-quality replication requires fresh validation."
+}
