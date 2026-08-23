@@ -1,0 +1,115 @@
+{
+  "protocolVersion": "lifecycle-broad-ablation-context-v1.0",
+  "researchDirection": "D16",
+  "seed": 20260824,
+  "dataset": {
+    "name": "Memora",
+    "revision": "a6493188efc836d6511ed5e4163fe3ba87da30ff",
+    "period": "quarterly",
+    "expectedPopulation": 300,
+    "expectedSelectedCases": 200
+  },
+  "exclusions": [
+    {
+      "protocolVersion": "lifecycle-adaptive-e2e-v1.1",
+      "sha256": "1e3ab7b21bd1425f98f095ca76a31d350c47f3bb9c9cf0090139567859dadaf1",
+      "expectedCases": 50,
+      "reason": "Previously consumed V1 answer-level panel."
+    },
+    {
+      "protocolVersion": "lifecycle-valid-state-packing-e2e-selection-v1.0",
+      "sha256": "fb4ef25cdb4bb3953af94ed8a964c4ec5bebf8fc4c9fc8d13ae0935c67d3188e",
+      "expectedCases": 50,
+      "reason": "Previously consumed D4 answer-level panel."
+    }
+  ],
+  "selection": {
+    "includeTasks": ["remembering", "recommending", "reasoning"],
+    "includeForgettingAndNonForgetting": true,
+    "includeBaseStaleExposedAndUnexposed": true,
+    "sampling": "census of every quarterly question not present in either frozen prior answer panel",
+    "outcomeBlind": "Selection may read only question identity, group, period and task plus the two frozen exclusion manifests. It may not read retrieval scores, answer text, judge verdicts or per-case outcomes."
+  },
+  "arms": [
+    {
+      "id": "base",
+      "family": "baseline",
+      "description": "Unmodified MemoryCore FTS candidate order, top 5."
+    },
+    {
+      "id": "v1",
+      "family": "incumbent",
+      "description": "One-hop correction redirection, confidence >= 0.85, fixed k=5."
+    },
+    {
+      "id": "tombstone_refill",
+      "family": "simple_baseline",
+      "description": "Drop correction-linked obsolete candidates and refill from the original FTS pool without injecting successors."
+    },
+    {
+      "id": "latest_write_wins",
+      "family": "simple_baseline",
+      "description": "Follow only high-confidence structured lifecycle edges to their latest reachable value, fixed k=5."
+    },
+    {
+      "id": "recency_top5",
+      "family": "simple_baseline",
+      "description": "Rerank the frozen FTS candidate pool by timestamp and retain the five most recent units."
+    },
+    {
+      "id": "superseded_render",
+      "family": "simple_baseline",
+      "description": "Keep Base candidates but explicitly label correction-linked predecessors as SUPERSEDED or DELETED."
+    },
+    {
+      "id": "v1_h2",
+      "family": "v2_single_factor",
+      "description": "V1 with maxHops changed from 1 to 2 only."
+    },
+    {
+      "id": "v1_slot1",
+      "family": "v2_single_factor",
+      "description": "V1 with at most one redirect-conditioned extra slot only."
+    },
+    {
+      "id": "v1_slot2",
+      "family": "v2_single_factor",
+      "description": "V1 with at most two redirect-conditioned extra slots only."
+    },
+    {
+      "id": "v1_tau091",
+      "family": "v2_single_factor",
+      "description": "V1 with minimum lifecycle confidence changed from 0.85 to 0.91 only."
+    },
+    {
+      "id": "v1_tau096",
+      "family": "v2_single_factor",
+      "description": "V1 with minimum lifecycle confidence changed from 0.85 to 0.96 only."
+    },
+    {
+      "id": "v1_aggregate",
+      "family": "v2_single_factor",
+      "description": "V1 with historical-aggregate query protection enabled only."
+    },
+    {
+      "id": "v2",
+      "family": "combined_candidate",
+      "description": "Selected V2 policy: confidence 0.96, two hops, two redirect-conditioned extra slots and aggregate protection."
+    }
+  ],
+  "capacity": {
+    "baseResultLimit": 5,
+    "candidatePoolLimit": 50,
+    "maxLifecycleHops": 8,
+    "maxLifecycleExpansions": 64,
+    "timeoutMs": 10,
+    "maxArms": 16,
+    "maxSelectedCases": 200
+  },
+  "fallback": {
+    "disabledEquivalentArm": "base",
+    "onMissingLedger": "exact Base top-5 context",
+    "onResolverError": "exact Base top-5 context",
+    "onTimeout": "exact Base top-5 context"
+  }
+}
