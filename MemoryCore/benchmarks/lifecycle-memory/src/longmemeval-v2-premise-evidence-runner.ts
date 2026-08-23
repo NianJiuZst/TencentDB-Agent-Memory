@@ -499,14 +499,16 @@ export async function runLongMemEvalV2PremiseEvidence(params: {
     };
   }).sort((left, right) => left.questionId.localeCompare(right.questionId));
   const changed = cases.find((item) => item.usedPremiseEvidence);
-  if (!changed) throw new Error("D14 direct audit requires at least one selected witness");
-  const auditQuestion = byQuestionId.get(changed.questionId)!;
-  const auditBaseline = locked.byQuestionId.get(changed.questionId)!;
-  const forcedFallbackMismatches = forcedFallbackAudit({
-    baseline: auditBaseline,
-    question: auditQuestion,
-    index,
-  });
+  // A zero-trigger later phase is a valid negative result, not an operational error.
+  // There is no selected witness on which to force capsule-specific failures, while
+  // every ordinary path has already been checked for exact Base equivalence below.
+  const forcedFallbackMismatches = changed
+    ? forcedFallbackAudit({
+      baseline: locked.byQuestionId.get(changed.questionId)!,
+      question: byQuestionId.get(changed.questionId)!,
+      index,
+    })
+    : { no_selected_witness_available: 0 };
   const metrics = aggregate(cases);
   const gate = evaluatePremiseEvidenceDirectGate({
     metrics,

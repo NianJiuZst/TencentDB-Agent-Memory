@@ -84,6 +84,23 @@ describe("D15 frozen validation protocol", () => {
     });
     expect(failed.passed).toBe(false);
     expect(failed.failedChecks).toContain("noControlChallenges");
+    const noTrigger = evaluateTypedRefutationValidationDirectGate({
+      metrics: {
+        ...metrics(),
+        premiseChallenges: 0,
+        validPremiseChallenges: 0,
+        changedContexts: 0,
+        exactBaseNoops: 43,
+        meanInjectedTokens: 2800,
+        meanInjectedTokenDelta: 0,
+        meanInjectedTokenIncreaseFraction: 0,
+        meanTriggeredCapsuleTokens: 0,
+      },
+      indexBuildLatencyMs: 100,
+      forcedFallbackMismatches: { no_selected_witness_available: 0 },
+    });
+    expect(noTrigger.passed).toBe(false);
+    expect(noTrigger.failedChecks).toEqual(["validChallenges"]);
   });
 
   it("requires replicated gains from both reader families with no judge-observed harm", () => {
