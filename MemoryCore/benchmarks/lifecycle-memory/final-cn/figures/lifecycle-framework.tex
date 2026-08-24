@@ -1,0 +1,38 @@
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  font=\small,
+  box/.style={
+    draw=inkblue,
+    fill=paperblue,
+    rounded corners=2mm,
+    minimum height=1.45cm,
+    text width=4.25cm,
+    align=center,
+    inner sep=3mm
+  },
+  accent/.style={box,draw=accentorange,fill=softorange},
+  gate/.style={box,draw=resultgreen,fill=softgreen},
+  decision/.style={box,draw=inkblue,fill=white,line width=0.7pt},
+  flow/.style={-{Stealth[length=2.5mm]},draw=inkblue,line width=0.8pt},
+  fallback/.style={-{Stealth[length=2.5mm]},draw=mutedred,dashed,line width=0.8pt},
+  note/.style={font=\scriptsize,fill=white,inner sep=1.5pt,text=textgray}
+]
+  \node[box] (session) {\textbf{多轮会话与反馈}\\纠错、重述、状态变化、任务结果};
+  \node[box,right=7mm of session] (base) {\textbf{MemoryCore 基座}\\FTS5 / 向量召回与固定候选池};
+  \node[accent,right=7mm of base] (sidecar) {\textbf{生命周期旁路}\\版本链、失效账本、重定向与回填};
+
+  \node[gate,below=9mm of sidecar] (gates) {\textbf{冻结晋升门槛}\\FAMA / FAA / MPA、置信区间、token 与时延};
+  \node[decision,left=7mm of gates] (decision) {\textbf{策略决策}\\通过：晋升候选\quad 失败：保留现行策略};
+  \node[box,left=7mm of decision] (answer) {\textbf{受控注入与答案}\\记录所用策略、成本、证据与回退原因};
+
+  \draw[flow] (session) -- node[note,above]{低成本反馈提出候选} (base);
+  \draw[flow] (base) -- node[note,above]{排序候选} (sidecar);
+  \draw[flow] (sidecar) -- node[note,right]{候选上下文} (gates);
+  \draw[flow] (gates) -- node[note,above]{下游判定} (decision);
+  \draw[flow] (decision) -- node[note,above]{固定预算} (answer);
+  \draw[fallback] (base) -- node[note,right]{关闭、超时、损坏或循环} (decision);
+\end{tikzpicture}
+\caption{下游门控生命周期记忆框架。反馈只负责提出候选；冻结的答案质量与成本门槛决定是否晋升。旁路异常时，整次调用精确回退至基座结果。}
+\label{fig:lifecycle-framework}
+\end{figure}

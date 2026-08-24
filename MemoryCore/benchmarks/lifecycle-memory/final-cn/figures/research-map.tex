@@ -1,0 +1,38 @@
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  font=\scriptsize,
+  phase/.style={
+    draw=inkblue,
+    fill=paperblue,
+    rounded corners=1.5mm,
+    minimum height=1.55cm,
+    text width=3.10cm,
+    align=left,
+    inner sep=2.5mm
+  },
+  rejected/.style={phase,draw=mutedred,fill=softred},
+  efficiency/.style={phase,draw=accentorange,fill=softorange},
+  confirmed/.style={phase,draw=resultgreen,fill=softgreen},
+  diagnostic/.style={phase,draw=inkblue,fill=paperblue},
+  flow/.style={-{Stealth[length=2.2mm]},draw=lineblue,line width=0.75pt}
+]
+  \node[rejected] (d14) {\textbf{D1--D4｜失效与预算}\\屏蔽、路由、回填、装箱\\\textcolor{mutedred}{拒绝或近失}};
+  \node[rejected,right=4mm of d14] (d56) {\textbf{D5--D6｜状态投影}\\显式 target 与支配守卫\\\textcolor{mutedred}{仅后验证据}};
+  \node[efficiency,right=4mm of d56] (d711) {\textbf{D7--D11｜变化与过程}\\状态差分、轨迹、证据压缩\\\textcolor{accentorange}{D11：token $-20.84\%$}};
+  \node[rejected,right=4mm of d711] (d1215) {\textbf{D12--D15｜证据修复}\\扩展、残差、前提反驳\\\textcolor{mutedred}{质量或覆盖失败}};
+
+  \node[confirmed,below=8mm of d56] (d16) {\textbf{D16｜广覆盖因果检验}\\200 题 $\times$ 13 arm\\全量 $+1.42$ pp；遗忘子集 $+2.96$ pp\\\textcolor{resultgreen}{条件确认 V1}};
+  \node[diagnostic,right=6mm of d16] (d17) {\textbf{D17｜代理诊断}\\Kendall $\tau_b$：0.529 $\rightarrow$ 0.538\\\textcolor{mutedred}{未达到替代门槛}};
+  \node[diagnostic,right=6mm of d17] (d18) {\textbf{D18｜纯文本构链}\\事件 P/R：97.89\% / 79.64\%\\链接精确率：20.05\%\\\textcolor{inkblue}{仅事件检测成立}};
+
+  \draw[flow] (d14) -- (d56);
+  \draw[flow] (d56) -- (d711);
+  \draw[flow] (d711) -- (d1215);
+  \draw[flow] (d1215.south) -- ++(0,-4mm) -| (d16.north);
+  \draw[flow] (d16) -- (d17);
+  \draw[flow] (d17) -- (d18);
+\end{tikzpicture}
+\caption{D1--D18 的研究筛选路径。早期方向用于缩小机制空间；D16 负责广覆盖确认，D17 诊断代理失配，D18 检验脱离 oracle 元数据后的自动构链边界。}
+\label{fig:research-map}
+\end{figure}
