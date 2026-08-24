@@ -3,7 +3,7 @@
 % The bibliography is reused directly from ../paper/references.bib.
 \documentclass[UTF8,a4paper,zihao=5,fontset=none]{ctexart}
 
-\usepackage[top=1.85cm,bottom=2.0cm,left=2.2cm,right=2.2cm,headheight=15pt]{geometry}
+\usepackage[top=1.85cm,bottom=2.0cm,left=2.2cm,right=2.2cm,headheight=15pt,headsep=0.55cm]{geometry}
 \usepackage{fontspec}
 \usepackage{amsmath}
 \usepackage{unicode-math}
@@ -22,8 +22,6 @@
 \usepackage{caption}
 \usepackage{xspace}
 \usepackage{microtype}
-\usepackage{tcolorbox}
-\tcbuselibrary{skins,breakable}
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta,positioning,calc}
 
@@ -35,24 +33,25 @@
 \setmonofont{Menlo}
 \setmathfont{STIX Two Math}
 
-\definecolor{inkblue}{HTML}{173B57}
-\definecolor{paperblue}{HTML}{EAF2F8}
-\definecolor{lineblue}{HTML}{7EA6C2}
-\definecolor{accentorange}{HTML}{B8682E}
-\definecolor{softorange}{HTML}{F8EEE6}
-\definecolor{resultgreen}{HTML}{2F7058}
-\definecolor{softgreen}{HTML}{E8F3EE}
-\definecolor{mutedred}{HTML}{A34A43}
-\definecolor{softred}{HTML}{F7EAE8}
-\definecolor{textgray}{HTML}{43515C}
+\definecolor{hyperblue}{HTML}{0000EE}
+\definecolor{inkblue}{HTML}{202020}
+\definecolor{paperblue}{HTML}{F2F2F2}
+\definecolor{lineblue}{HTML}{777777}
+\definecolor{accentorange}{HTML}{555555}
+\definecolor{softorange}{HTML}{F5F5F5}
+\definecolor{resultgreen}{HTML}{333333}
+\definecolor{softgreen}{HTML}{EEEEEE}
+\definecolor{mutedred}{HTML}{666666}
+\definecolor{softred}{HTML}{F7F7F7}
+\definecolor{textgray}{HTML}{333333}
 
 \hypersetup{
   unicode=true,
   hypertexnames=false,
   colorlinks=true,
-  linkcolor=inkblue,
-  citecolor=inkblue,
-  urlcolor=inkblue,
+  linkcolor=hyperblue,
+  citecolor=hyperblue,
+  urlcolor=hyperblue,
   pdftitle={当更好的检索带来更差的答案：跨十八个研究方向的下游门控生命周期记忆},
   pdfauthor={},
   pdfsubject={面向多轮长任务的生命周期记忆自优化研究},
@@ -68,22 +67,23 @@
 \renewcommand{\arraystretch}{1.08}
 \setlist{nosep,leftmargin=2.4em}
 \setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{2}
 \emergencystretch=2em
 \allowdisplaybreaks
 
 \ctexset{
   section = {
-    format = \Large\sffamily\bfseries\color{inkblue},
-    beforeskip = 1.55ex plus .4ex,
-    afterskip = 0.7ex
+    format = \centering\Large\bfseries\color{black},
+    beforeskip = 1.65ex plus .4ex,
+    afterskip = 1.0ex
   },
   subsection = {
-    format = \large\sffamily\bfseries\color{inkblue},
-    beforeskip = 1.05ex plus .25ex,
-    afterskip = 0.42ex
+    format = \large\bfseries\color{black},
+    beforeskip = 1.2ex plus .25ex,
+    afterskip = 0.55ex
   },
   subsubsection = {
-    format = \normalsize\sffamily\bfseries\color{textgray},
+    format = \normalsize\bfseries\color{black},
     beforeskip = 0.9ex plus .2ex,
     afterskip = 0.32ex
   }
@@ -91,22 +91,25 @@
 
 \captionsetup{
   font=small,
-  labelfont={bf,color=inkblue},
-  textfont={color=textgray},
+  labelfont={color=black},
+  textfont={color=black},
   skip=5pt
 }
 
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[L]{\color{textgray}下游门控生命周期记忆}
-\fancyhead[R]{\color{textgray}MemoryCore · D1--D18}
+\fancyhead[L]{\small 学术论文}
+\fancyhead[R]{\small 下游门控生命周期记忆}
 \fancyfoot[C]{\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
 \renewcommand{\footrulewidth}{0pt}
 \fancypagestyle{plain}{
   \fancyhf{}
+  \fancyhead[L]{\small 学术论文}
+  \fancyhead[R]{\small 下游门控生命周期记忆}
   \fancyfoot[C]{\thepage}
-  \renewcommand{\headrulewidth}{0pt}
+  \renewcommand{\headrulewidth}{0.4pt}
+  \renewcommand{\footrulewidth}{0pt}
 }
 
 \newcommand{\base}{\textsf{Base}\xspace}
@@ -114,40 +117,20 @@
 \newcommand{\vtwo}{\textsf{V2}\xspace}
 
 \newenvironment{paperabstract}
-  {\begin{tcolorbox}[
-      enhanced,
-      breakable,
-      colback=paperblue,
-      colframe=lineblue,
-      boxrule=0.55pt,
-      arc=1.2mm,
-      left=5mm,right=5mm,top=3.5mm,bottom=3.5mm,
-      title={摘要},
-      fonttitle=\sffamily\bfseries,
-      coltitle=inkblue
-    ]\small}
-  {\par\vspace{0.55em}\noindent\textbf{关键词：}生命周期记忆；记忆自优化；纠错链；下游门控；多轮编程 Agent\end{tcolorbox}}
+  {\begin{center}\vspace{1.25cm}{\large\bfseries 摘要}\end{center}\vspace{0.45em}\small\noindent}
+  {\par\vspace{0.75em}\noindent\textbf{关键词：}生命周期记忆；记忆自优化；纠错链；下游门控；多轮编程 Agent\par}
 
 \newcommand{\frameworkfigure}{\input{figures/lifecycle-framework}}
 \newcommand{\researchmapfigure}{\input{figures/research-map}}
 
 \begin{document}
 
-\thispagestyle{plain}
+\thispagestyle{empty}
 \begin{center}
-  \vspace*{0.15cm}
-  {\sffamily\bfseries\LARGE\color{inkblue} 当更好的检索带来更差的答案\par}
-  \vspace{0.32em}
-  {\sffamily\bfseries\Large\color{textgray} 跨十八个研究方向的下游门控生命周期记忆\par}
-  \vspace{0.75em}
-  {\color{lineblue}\rule{0.92\linewidth}{0.7pt}\par}
-  \vspace{0.6em}
-  {\small\sffamily\color{textgray}
-    MemoryCore v2.0.0-beta.1\quad·\quad
-    Memora / MemOps / LongMemEval-V2\quad·\quad
-    D1--D18
-  \par}
+  \vspace*{1.35cm}
+  {\bfseries\zihao{2} 当更好的检索带来更差的答案\par}
   \vspace{0.55em}
+  {\zihao{-3} 跨十八个研究方向的下游门控生命周期记忆\par}
 \end{center}
 
 \input{paper-body}
