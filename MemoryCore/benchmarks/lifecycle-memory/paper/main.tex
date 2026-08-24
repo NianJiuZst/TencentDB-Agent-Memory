@@ -159,40 +159,100 @@ D16 takes all remaining 200 quarterly questions unused by either earlier 50-case
 
 The lifecycle benchmark contains 54 versioned protocol JSON files, 251 TypeScript source/test files (50 test files), and machine-readable raw, summary, decision, admission, and independent-validation artifacts. Excluding a legacy GPT-4o-mini secondary run and avoiding double-counting byte-identical reused cells, the current MiniMax/DeepSeek studies make 2,456 reader calls and 3,018 judge calls (5,474 total). D16 alone consumes 2,805,144 API tokens.
 
-\section{Research Trajectory Before the Broad Experiment}
+\section{D1--D15 Research Program: Hypotheses, Tests, and Decisions}
+\label{sec:d1d15}
 
-Table~\ref{tab:directions} summarizes D1--D15. These are retained negative and near-miss results, not a sequence in which every later number is better.
+D1--D15 form a sequence of bounded causal tests. Each direction changes one policy component or auxiliary representation, freezes its data boundary and gate before scoring, and preserves a failed result in the research ledger. Development evidence may propose the next direction; only validation or untouched-test evidence can confirm it. The sequence is organized below by the mechanism under study.
+
+\subsection{D1--D4: Invalidation and Budgeted Context}
+
+\paragraph{D1: obsolete-value shielding.}
+\textbf{Hypothesis.} A redirected V1 context can still quote an invalidated value, so masking only that value should reduce answer contamination while preserving the candidate identity and retrieval order. \textbf{Test.} D1 keeps V1 item ids, ordering, count, and answer protocol fixed and changes only the rendered obsolete span on the frozen answer panel. \textbf{Result.} Obsolete-value context exposure falls from 74\% to 8\%, and FAA rises, but MPA falls by 2.02 points with a negative confidence interval. \textbf{Decision.} Reject on answer safety. The removed span often carries an entity anchor needed to bind the successor to the question.
+
+\paragraph{D2: query-risk routing.}
+\textbf{Hypothesis.} Shielding may help queries that only need the current value and harm queries that need the predecessor as an anchor; a query-observable router could choose between V1 and D1. \textbf{Test.} A cross-fitted surface-feature rule is learned without evaluating a case using a rule fitted on that same case. The selected V1 or shielding context then enters the unchanged answer protocol. \textbf{Result.} FAA gains 2.83 points, MPA loses 1.15 points, and the DeepSeek-reader FAMA direction remains negative. \textbf{Decision.} Reject. The available lexical features do not identify anchor dependence with sufficient reliability.
+
+\paragraph{D3: delete-vacancy refill.}
+\textbf{Hypothesis.} A delete tombstone can consume a Top-$k$ slot without supplying answer evidence; continuing through the same base candidate pool should recover a valid item. \textbf{Test.} D3 changes only vacancy handling, never expands beyond the frozen base pool, and retains the original result-count cap. \textbf{Result.} The direct proxy rises 1.40 points, below the preregistered 2-point gate, while tokens rise 2.89\%. \textbf{Decision.} Reject on effect size and cost before answer generation.
+
+\paragraph{D4: valid-state packing.}
+\textbf{Hypothesis.} A fixed number of items does not bound context length; joint item and token packing can increase valid-state density within the V1 token envelope. \textbf{Test.} Nine count--budget combinations are evaluated on development feedback, one policy is selected, and its parameters are frozen for a fresh 50-case answer panel. \textbf{Result.} FAMA rises 1.16 points and tokens fall 3.27\%, but the 95\% interval is $[-0.14,+2.90]$ points. \textbf{Decision.} Record as a near miss and reject on uncertainty.
+
+\subsection{D5--D6: Explicit State and Incumbent Preservation}
+
+\paragraph{D5: target-keyed state projection.}
+\textbf{Hypothesis.} Matching invalidated value substrings is entity-ambiguous; explicit MemOps operation targets should produce a more faithful current-state view. \textbf{Test.} Update, Delete, and No-op operations are projected by target key on separated development, validation, and untouched-test partitions, then compared with value-linked V1 state. \textbf{Result.} Untouched-test state-FAMA rises 6.46 points with CI $[-2.40,+15.10]$, while four Update cases are harmed. Inspection shows that an independently packed target view can omit current or unknown evidence already recovered by V1. \textbf{Decision.} Reject the standalone projection.
+
+\paragraph{D6: incumbent dominance guard.}
+\textbf{Hypothesis.} Target-keyed state should be admitted only when it preserves every current or unknown incumbent item and introduces no obsolete item. \textbf{Test.} A dominance guard returns V1 whenever the candidate fails that set-level invariant. The rule is audited on already consumed D5 data because it was proposed after observing D5 failures. \textbf{Result.} State-FAMA rises 6.11 points, with 28 improvements and zero harms. \textbf{Decision.} Retain as post-hoc viability evidence only; a fresh confirmation set is required.
+
+\subsection{D7--D11: Transition and Procedure Memory}
+
+\paragraph{D7: state-transition diffs.}
+\textbf{Hypothesis.} Raw browser or tool states contain repeated static content; a pre/action/post difference unit should expose task-relevant change more directly. \textbf{Test.} Accessibility-tree transitions are indexed alongside Base FTS5, with a fixed development-selected retrieval policy evaluated on validation. \textbf{Result.} Direct support rises 8.13 points on development and reverses to $-6.67$ points on validation; tokens rise 3.50\%. \textbf{Decision.} Reject for failed transfer.
+
+\paragraph{D8: learned utility with a null action.}
+\textbf{Hypothesis.} D7 mixes useful and irrelevant transitions; an empirical utility gate plus an explicit no-change action can suppress unsafe substitutions. \textbf{Test.} Utilities are estimated from consumed transition outcomes and the frozen gate is run on untouched test data. \textbf{Result.} Tokens fall 2.92\%, but direct support is exactly equal to Base for every scorable case and no case improves. \textbf{Decision.} Reject as a quality strategy; retain the null-action result as a compression clue.
+
+\paragraph{D9: outcome-gated procedure memory.}
+\textbf{Hypothesis.} Successful trajectories should yield reusable procedures, whereas failed trajectories should be down-weighted at write time. \textbf{Test.} A binding-safe procedure capsule is admitted by whole-trajectory outcome, with an outcome-agnostic ablation evaluated before the selected strategy is frozen for validation. \textbf{Result.} The outcome-agnostic ablation is better on development, and the frozen candidate loses 11.11 direct-support points on validation. \textbf{Decision.} Reject. Terminal outcome is too coarse for step-level credit because failures may contain useful prefixes and successes may contain detours.
+
+\paragraph{D10: locally verified substitution.}
+\textbf{Hypothesis.} Local state progress offers finer credit than terminal outcome, and restricting replacement to Base items from the same trajectory should control contamination. \textbf{Test.} D10 creates a locally verified action skeleton and substitutes only eligible same-trajectory items under a fixed budget. \textbf{Result.} Tokens fall 33.55\%, but a decisive StaticText leaf containing the correct value \emph{priority} is removed; local feedback produces no support gain. \textbf{Decision.} Reject on evidence safety. Preserving action structure alone does not preserve body text, code, or diagnostic evidence.
+
+\paragraph{D11: evidence-preserving substitution.}
+\textbf{Hypothesis.} Compression is admissible only when every bounded semantic leaf, source, order relation, and unrelated Base item survives. \textbf{Test.} A certificate checks those invariants before one same-trajectory capsule can replace Base items; any certificate, capacity, timeout, or integrity failure returns exact Base. The checksum-frozen test has 30 questions, 12 with directly computable answer-atom support. \textbf{Result.} Mean tokens fall 20.84\%; all 12 direct questions equal Base, with zero improvements and zero harms. \textbf{Decision.} Reject under the frozen quality-improvement objective and retain as an efficiency result. Section~\ref{sec:d11eff} reports the full cost evidence.
+
+\subsection{D12--D13: Evidence Reach and Residual Repair}
+
+\paragraph{D12: same-trajectory external expansion.}
+\textbf{Hypothesis.} D11 only compresses evidence already accessible to Base; adding at most one Base-missing item from the same trajectory may recover a missing answer atom. \textbf{Test.} The fixed Base budget and index remain unchanged. The rule considers same-trajectory Top-40 candidates, adds at most one without reading answers, and never tries a second candidate after failure. \textbf{Result.} Development direct support falls 3.33 points relative to Base and five cases are harmed. \textbf{Decision.} Stop at development and reject the expansion.
+
+\paragraph{D13: residual-feedback patch.}
+\textbf{Hypothesis.} D12 should be restricted to cases matching a previously observed missing-evidence signature. \textbf{Test.} Consumed failures define the frozen signature; nonmatching queries return Base exactly. \textbf{Result.} All 23 directly scorable questions equal Base while tokens rise 0.99\%. \textbf{Decision.} Reject for no quality effect. Rule activation did not create new answer-accessible evidence.
+
+\subsection{D14--D15: Premise Refutation Under Sparse Coverage}
+
+\paragraph{D14: premise-refutation retrieval.}
+\textbf{Hypothesis.} Some failures arise because a query presupposes an obsolete fact; retrieving a direct refutation should prevent that premise from entering the answer. \textbf{Test.} A deterministic trigger is evaluated on 33 premise questions and 25 controls, and reader calls are made only for changed contexts. \textbf{Result.} Two premise cases trigger and no control case does, but all four changed reader cells equal Base. \textbf{Decision.} Reject for low coverage and no answer effect.
+
+\paragraph{D15: typed refutation contract.}
+\textbf{Hypothesis.} Explicit \emph{premise}, \emph{refutation}, \emph{witness}, and \emph{scope} fields should make valid counterevidence easier for a reader to consume. \textbf{Test.} The renderer is first audited on the two consumed D14 triggers, then frozen. A new validation first measures trigger coverage over 23 premise and 20 control questions; answer calls are authorized only if coverage passes. \textbf{Result.} Three of four consumed design reader pairs improve, but all 43 validation contexts are exact Base no-ops because the trigger fires zero times. \textbf{Decision.} Reject on zero validation coverage. The early stop is a protocol decision, and no validation answer calls are attempted.
+
+\subsection{Cross-Direction Synthesis}
+
+Table~\ref{tab:directions} records the evidence stage and final interpretation. A later direction does not inherit confirmation from an earlier development gain.
 
 \begin{table}[H]
 \centering
 \scriptsize
 \resizebox{\linewidth}{!}{%
-\begin{tabular}{p{0.55cm}p{3.0cm}p{7.2cm}p{2.6cm}}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.55cm}>{\raggedright\arraybackslash}p{4.0cm}>{\raggedright\arraybackslash}p{6.9cm}>{\raggedright\arraybackslash}p{2.3cm}}
 \toprule
-ID & Hypothesis & Main result & Decision \\
+ID & Changed factor and evidence stage & Primary outcome & Decision \\
 \midrule
-D1 & Obsolete-value shielding & Context exposure falls 74\% to 8\%, but answer MPA falls 2.02 points with a negative CI. & Reject answer safety \\
-D2 & Query risk routing & Cross-fitted routing gains 2.83 FAA points but loses 1.15 MPA points; one reader's FAMA direction is negative. & Reject \\
-D3 & Delete vacancy refill & Direct proxy gains 1.40 points, below the frozen 2-point gate; tokens rise 2.89\%. & Reject proxy/cost \\
-D4 & Valid-state packing & Fresh 50-case FAMA $+1.16$ points and tokens $-3.27\%$; CI is $[-0.14,+2.90]$ points. & Near miss, reject uncertainty \\
-D5 & Target-keyed state & Untouched-test state-FAMA $+6.46$ points, CI $[-2.40,+15.10]$; four Update cases harmed. & Reject test \\
-D6 & Incumbent guard & Post-hoc consumed audit: state-FAMA $+6.11$ points, 28 improved, zero harmed. & Viability only \\
-D7 & Transition diffs & Development support $+8.13$ points; validation reverses to $-6.67$ and tokens $+3.50\%$. & Reject validation \\
-D8 & Learned utility/null action & Untouched-test tokens $-2.92\%$ but support changes exactly zero with no improved case. & Reject quality \\
-D9 & Outcome-gated procedures & Outcome-agnostic ablation is better on development; validation support is $-11.11$ points. & Reject \\
-D10 & Locally verified substitution & Tokens $-33.55\%$, but one decisive body-text answer is removed; local feedback gives no quality lift. & Reject safety \\
-D11 & Evidence-preserving substitution & Untouched-test tokens $-20.84\%$; 12 direct-support questions all equal to \base. & Quality reject; retain efficiency result \\
-D12 & External evidence expansion & Development direct support $-3.33$ points versus \base with five harms. & Reject development \\
-D13 & Residual patch & All 23 direct questions equal \base while tokens rise 0.99\%. & Reject no effect \\
-D14 & Premise refutation & Two triggers among 33 premise cases, zero control false triggers; four changed reader pairs all equal \base. & Reject answer no effect \\
-D15 & Typed refutation contract & Three of four consumed design pairs improve, but fresh validation has zero triggers over 23 premise cases. & Reject zero coverage \\
+D1 & Rendered obsolete span; answer panel & Exposure 74\% to 8\%; MPA $-2.02$ points with negative CI. & Reject safety \\
+D2 & Cross-fitted V1/shield router; answer panel & FAA $+2.83$, MPA $-1.15$ points; one reader FAMA negative. & Reject \\
+D3 & Delete-vacancy refill; direct gate & Proxy $+1.40$ points below gate; tokens $+2.89\%$. & Reject \\
+D4 & Count--token packing; fresh answer panel & FAMA $+1.16$ points, tokens $-3.27\%$, CI crosses zero. & Near miss \\
+D5 & Target-keyed projection; untouched test & State-FAMA $+6.46$ points; four Update harms. & Reject test \\
+D6 & Incumbent dominance guard; consumed audit & State-FAMA $+6.11$ points; 28 improve, zero harm. & Post-hoc only \\
+D7 & Transition-diff index; validation & Development $+8.13$ points; validation $-6.67$ points. & Reject transfer \\
+D8 & Utility/null action; untouched test & Tokens $-2.92\%$; support exactly unchanged. & Reject quality \\
+D9 & Outcome-gated procedure; validation & Outcome-agnostic development ablation wins; validation $-11.11$ points. & Reject \\
+D10 & Local-progress skeleton; validation & Tokens $-33.55\%$ but decisive body-text evidence is lost. & Reject safety \\
+D11 & Certified semantic-leaf capsule; untouched test & Tokens $-20.84\%$; 12 direct questions all equal Base. & Efficiency only \\
+D12 & One external same-trajectory leaf; development & Support $-3.33$ points with five harms. & Reject development \\
+D13 & Failure-signature residual patch; development & 23 direct questions equal Base; tokens $+0.99\%$. & Reject no effect \\
+D14 & Premise-refutation trigger; premise/control panel & Two of 33 triggers, zero controls; changed answers equal Base. & Reject \\
+D15 & Typed contract; fresh coverage validation & Consumed design improves 3/4 pairs; validation triggers 0/23. & Reject coverage \\
 \bottomrule
 \end{tabular}}
-\caption{Research directions D1--D15. Development results are never relabeled as confirmation.}
+\caption{D1--D15 evidence ledger. Results retain their original development, validation, test, or post-hoc status.}
 \label{tab:directions}
 \end{table}
 
-The trajectory identifies recurring mechanisms. Surface shielding removes both harmful old values and useful entity anchors. Fixed item count is not a token guarantee. Explicit target state is stronger than value-substring matching but can discard an incumbent successor. Whole-trajectory success is a noisy credit signal: failed trajectories contain useful prefixes and successful trajectories contain detours. Procedure skeletons can compress actions while losing body text, code, or diagnostics. Finally, a high-quality typed renderer cannot compensate for a trigger with zero validation coverage.
+The combined evidence narrows the mechanism. Surface invalidation requires anchor preservation. Item count and token budget must be controlled separately. Explicit state should be composed under an incumbent-preservation invariant. Trajectory outcomes do not provide sufficient step-level credit. Compression requires semantic-leaf certificates. Evidence expansion needs an answer-accessibility test. Premise repair is limited by trigger coverage before renderer quality becomes relevant.
 
 \section{Conditioned V1/V2 Answer Experiment}
 
@@ -339,6 +399,7 @@ Event precision, recall, link recall, latency, and forbidden-read checks pass. L
 The core error is entity and state ambiguity. A cue-bearing message and many prior units can share words such as ``budget'', ``project'', or ``music'' without referring to the same field or state. Detecting that a correction occurred is substantially easier than deciding exactly what it invalidates. We therefore classify all V1 answer results as oracle-management evidence and reject an end-to-end construction claim.
 
 \section{D11: Separate Efficiency Evidence}
+\label{sec:d11eff}
 
 D11 replaces selected same-trajectory \base items with one bounded capsule only if it preserves every extracted semantic leaf, source order, provenance, unrelated \base item, item count, and token certificate. Otherwise it returns exact \base. The checksum-frozen LongMemEval-V2 test contains 30 questions, of which 12 have directly computable answer-atom support.
 
