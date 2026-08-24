@@ -1,9 +1,9 @@
 % Build from this directory with: tectonic main.tex
 % report-body.tex is generated from ../REPORT_CN.md by tools/markdown_report_to_latex.py.
 % The paper bibliography is reused directly from ../paper/references.bib.
-\documentclass[UTF8,a4paper,zihao=-4,fontset=none]{ctexart}
+\documentclass[UTF8,a4paper,zihao=5,fontset=none]{ctexart}
 
-\usepackage[margin=2.35cm,headheight=15pt]{geometry}
+\usepackage[margin=2.20cm,headheight=15pt]{geometry}
 \usepackage{fontspec}
 \usepackage{amsmath}
 \usepackage{unicode-math}
@@ -40,18 +40,18 @@
   citecolor=linkblue,
   urlcolor=linkblue,
   pdftitle={面向多轮交互式长编程任务的记忆自优化：研究报告与论文中文译稿},
-  pdfauthor={匿名作者},
+  pdfauthor={},
   pdfsubject={MemoryCore 生命周期记忆自优化研究},
   pdfkeywords={MemoryCore, 长期记忆, 生命周期, 自优化, 多轮编程任务}
 }
 \urlstyle{same}
 
 \setlength{\parindent}{2em}
-\setlength{\parskip}{0.22em}
-\linespread{1.18}
-\setlength{\LTpre}{0.7em}
-\setlength{\LTpost}{0.7em}
-\renewcommand{\arraystretch}{1.14}
+\setlength{\parskip}{0.10em}
+\linespread{1.10}
+\setlength{\LTpre}{0.45em}
+\setlength{\LTpost}{0.45em}
+\renewcommand{\arraystretch}{1.08}
 \setlist{nosep,leftmargin=2.4em}
 \setcounter{tocdepth}{3}
 \setcounter{secnumdepth}{3}
@@ -66,18 +66,18 @@
   },
   section = {
     format = \Large\bfseries,
-    beforeskip = 1.7ex plus .5ex,
-    afterskip = 0.8ex
+    beforeskip = 1.45ex plus .4ex,
+    afterskip = 0.65ex
   },
   subsection = {
     format = \large\bfseries,
-    beforeskip = 1.2ex plus .3ex,
-    afterskip = 0.5ex
+    beforeskip = 1.0ex plus .25ex,
+    afterskip = 0.4ex
   },
   subsubsection = {
     format = \normalsize\bfseries,
-    beforeskip = 1.0ex plus .2ex,
-    afterskip = 0.35ex
+    beforeskip = 0.85ex plus .2ex,
+    afterskip = 0.3ex
   }
 }
 
@@ -112,8 +112,6 @@
 \centering
 \vspace*{2.8cm}
 {\sffamily\bfseries\Huge 面向多轮交互式长编程任务的\\[0.25em]记忆自优化\par}
-\vspace{1.0cm}
-{\sffamily\Large 研究报告与学术论文中文译稿\par}
 \vspace{2.2cm}
 \rule{0.78\textwidth}{0.7pt}
 \vspace{1.0cm}
@@ -126,14 +124,13 @@
 \end{tabular}
 
 \vfill
-{\large 匿名作者\par}
-\vspace{0.6cm}
 {\large 2026 年 8 月\par}
 \end{titlepage}
 
 \pagenumbering{Roman}
 \begingroup
 \small
+\linespread{0.98}\selectfont
 \setlength{\parskip}{0pt}
 \tableofcontents
 \endgroup
@@ -150,8 +147,6 @@
 
 \begin{center}
 {\sffamily\bfseries\LARGE \paperzhTitle\par}
-\vspace{0.9em}
-{\large 匿名作者\par}
 \vspace{0.8em}
 {\small 本部分为英文论文的完整中文译稿；实验数据、公式、表格、引用键和参考文献保持一致。\par}
 \end{center}

@@ -103,7 +103,7 @@ Memora 实现使用公开的写入时操作字段构造 V1 边。这些字段不
 
 \subsection{公开数据与适配器}
 
-Memora 修订版 \texttt{a6493188efc836d6511ed5e4163fe3ba87da30ff} 包含 600 个问题、27,614 个 session 文件、10 个 persona，以及周级、月级和季度时间跨度。数据清单 SHA-256 为 \texttt{dfc82711...331bfc}。只有共享记忆轮次进入 L0 形态索引。Memora 支持答案级当前/过时标准，但缺少编程 scope。
+Memora 修订版 \texttt{a6493188efc836d6\allowbreak 511ed5e4163fe3ba\allowbreak 87da30ff} 包含 600 个问题、27,614 个 session 文件、10 个 persona，以及周级、月级和季度时间跨度。数据清单 SHA-256 为 \texttt{dfc82711\allowbreak ...331bfc}。只有共享记忆轮次进入 L0 形态索引。Memora 支持答案级当前/过时标准，但缺少编程 scope。
 
 MemOps 提供 403 对实例、2,558 个操作和 2,006 个带显式 target 的纵向 probe，用于 oracle 状态管理诊断。LongMemEval-V2 修订版 \texttt{2cc8c540} 提供 200 个选定 small-tier 问题和 1,870 条文本轨迹，用于状态变化、过程和压缩实验。数据读取器实现可替换的任务、事件、来源和指标接口；主策略代码不依赖单一公开数据 schema。
 
@@ -418,6 +418,7 @@ D16 展示了一个实用的双保真工作流。精确上下文指标和提示�
 
 实现保持旁路形式。关闭旁路、破坏结构、强制超时、超出容量或遇到循环时，系统返回原始基座调用。替换数据适配器无需重写策略与报告逻辑。
 
+\addtocontents{toc}{\protect\enlargethispage{3\baselineskip}}
 \section{结论}
 \enlargethispage{2\baselineskip}
 
@@ -425,7 +426,6 @@ D16 展示了一个实用的双保真工作流。精确上下文指标和提示�
 
 最终策略保持保守：保留 \base，只在高置信、scope 明确的证据和经过新数据验证的风险门槛下启用生命周期管理；质量与效率使用不同晋升轨；链接歧义时拒答；保持精确运行回退。下一项核心研究问题是面向仓库状态、带 witness 的 scope 化失效，而非扩大 Top-$k$。
 
-\clearpage
 \bibliographystyle{plain}
-\footnotesize
+\small
 \bibliography{../paper/references}
