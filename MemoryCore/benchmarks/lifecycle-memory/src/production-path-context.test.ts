@@ -64,6 +64,7 @@ describe("production-path context generation", () => {
       successor: current,
       update: { predecessorId: "old", successorId: "new", occurredAtMs: current.timestampMs },
       pluginDataDir,
+      lifecycleTimeoutMs: 5_000,
     });
     const final = await executeProductionRecall({
       question: history,
@@ -73,6 +74,7 @@ describe("production-path context generation", () => {
       baseCandidates: [historical],
       successor: current,
       pluginDataDir,
+      lifecycleTimeoutMs: 5_000,
     });
 
     expect(final.entry.prependContext).toContain("HISTORICAL / SUPERSEDED: Previous editor preference: Vim.");
@@ -95,6 +97,7 @@ describe("production-path context generation", () => {
       successor: current,
       update: { predecessorId: "old", successorId: "new", occurredAtMs: current.timestampMs },
       pluginDataDir,
+      lifecycleTimeoutMs: 5_000,
     });
     const final = await executeProductionRecall({
       question: currentQuestion,
@@ -104,6 +107,7 @@ describe("production-path context generation", () => {
       baseCandidates: [historical],
       successor: current,
       pluginDataDir,
+      lifecycleTimeoutMs: 5_000,
     });
 
     expect(final.entry.messages).toEqual(baseline.entry.messages);

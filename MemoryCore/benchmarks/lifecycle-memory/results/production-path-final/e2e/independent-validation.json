@@ -1,0 +1,51 @@
+{
+  "validationVersion": "production-auto-recall-e2e-independent-validation-v1.0",
+  "status": "passed",
+  "inputs": {
+    "contextSha256": "0c940cc4a0ce6fe39213389193421bf477876ab0886d27de16b73c0d460d6a13",
+    "evaluationsSha256": "9700a555d355a8900973c6e6412612fc43a9074dd61b0bef890f088c2d229fe7",
+    "summarySha256": "5739c2ff502098091c9a22c4f5ab9d5c28adcec0649565df71dd3e922ff1eb13"
+  },
+  "counts": {
+    "cases": 210,
+    "naturalCases": 150,
+    "temporalCases": 60,
+    "arms": 2,
+    "caseArmContexts": 420,
+    "evaluations": 500,
+    "uniqueEvaluationKeys": 500,
+    "rawVerdictsRescored": 500
+  },
+  "primaryRecomputation": {
+    "naturalFamaDelta": 0,
+    "temporalCriterionAccuracyDelta": 0.27361111111111114,
+    "temporalCriterionAccuracyInterval": {
+      "mean": 0.27361111111111114,
+      "lower": 0.26527777777777783,
+      "upper": 0.2777777777777778,
+      "clusters": 10
+    },
+    "historyCriterionAccuracyDelta": 0.4875,
+    "changeCriterionAccuracyDelta": 0.33333333333333326,
+    "currentCriterionAccuracyDelta": 0,
+    "combinedTokenIncreaseFraction": 0.005445196868144819,
+    "readerTemporalDirections": {
+      "minimax-m3": 0.2777777777777778,
+      "deepseek-v4-flash": 0.26944444444444454
+    },
+    "checks": {
+      "temporalAccuracy": true,
+      "temporalAccuracyCi": true,
+      "historicalAccuracy": true,
+      "changeAccuracy": true,
+      "currentNonInferiority": true,
+      "naturalNonInferiority": true,
+      "combinedTokenBudget": true,
+      "readerDirection": true,
+      "contextIntegrity": true,
+      "evaluationIntegrity": true
+    }
+  },
+  "mismatchCount": 0,
+  "mismatches": []
+}

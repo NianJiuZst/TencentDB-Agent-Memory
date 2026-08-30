@@ -87,6 +87,8 @@ interface ProductionRecallOptions {
   successor?: RetrievedUnit;
   update?: { predecessorId: string; successorId: string; occurredAtMs: number };
   pluginDataDir: string;
+  /** Test-only override; frozen context generation intentionally uses the protocol value. */
+  lifecycleTimeoutMs?: number;
 }
 
 function sha256(value: string): string {
@@ -238,7 +240,7 @@ export async function executeProductionRecall(
         minConfidence: lifecycle.minConfidence,
         maxHops: lifecycle.maxHops,
         maxExpansions: lifecycle.maxExpansions,
-        timeoutMs: lifecycle.timeoutMs,
+        timeoutMs: options.lifecycleTimeoutMs ?? lifecycle.timeoutMs,
         maxEvents: lifecycle.maxEvents,
       },
     },

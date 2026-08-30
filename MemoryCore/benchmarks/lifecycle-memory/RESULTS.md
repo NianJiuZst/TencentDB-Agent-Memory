@@ -1,156 +1,46 @@
-# Experimental result record
+# Final production-path result
 
 ## Decision
 
-Retain `lifecycle-adaptive-v1.0` as a **conditional research incumbent**, not an unconditional default. The earlier 50-case stale-exposed panel proves that the mechanism can help when Base actually surfaces invalid memory. The newer D16 census over all 200 previously unused answer cases shows that the average full-population effect is smaller and uncertain, while effects differ materially by task. No simple baseline, isolated V2 factor, combined V2 policy, or new proxy cleared its frozen promotion gate.
+Adopt query-aware dual-state recall for explicit historical-state and state-change questions. Preserve current-only output for ordinary, current-state, and historical-aggregate questions. Never expose predecessors from delete or retraction events.
 
-D11 is retained separately as an efficiency finding: it reduced injected tokens by 20.84% on an untouched LongMemEval-V2 test while direct answer-atom support stayed equal. It did not run answer generation and therefore does not establish answer-level noninferiority.
+## Frozen evaluation
 
-D18 rejects an end-to-end claim. Text-only correction-event detection transfers, but automatic predecessor linking is not reliable enough. V1 therefore remains evidence about **management given a correction graph**, not a solved correction-extraction system.
+- Pre-score revision: `59129af4baa2bcaf62586928c489b9ff7b39eeb8`.
+- Dataset: Memora revision `a6493188efc836d6511ed5e4163fe3ba87da30ff`, ten personas.
+- Natural panel: 150 complete weekly questions.
+- Controlled temporal panel: 20 structured preference updates, each asked as current, history, and change; 60 questions.
+- Arms: current-only production recall and query-aware dual-state production recall.
+- Production context generation: 420 `performAutoRecall` executions; 250 unique exact reader prompts after byte-identical reuse.
+- Answer evaluation: 500 reader calls and 500 crossed-model judge calls.
 
-D19 validates the user's labeled old/current idea as a **query-aware capability**, not a new default. On 60 controlled temporal questions, query-aware dual-state rendering improved criterion accuracy by 28.61 points, with a persona-bootstrap 95% interval of +27.78 to +29.86 points; history improved by 52.50 points and change questions by 33.33 points, while current-state questions were identical to V1. On the 150-question natural weekly census, however, there were no explicit history/change questions, so query-aware routing was byte-identical to V1 and could not justify default replacement. Returning pairs unconditionally improved natural FAMA by 1.47 points but increased injected tokens by 29.53%, failing the frozen cost gate.
+## Primary results
 
-## What Base, V1, V2 and D-numbers mean
-
-- **Base**: unchanged MemoryCore L0 retrieval and injection path.
-- **V1**: redirect an obsolete Base candidate through one released high-confidence correction edge; keep `k=5`, a 64-expansion/10 ms bound, and exact Base fallback.
-- **V2**: proxy-selected combination of confidence 0.96, two hops, up to two redirect-conditioned extra slots, and historical-aggregate protection.
-- **D1--D19**: numbered research hypotheses tested after V1. A D-number is an experiment direction, not a later product version. Rejection is retained as a result rather than silently removed.
-
-## D16 broad answer experiment
-
-### Population and integrity
-
-- 200 quarterly Memora questions unused by either prior 50-case answer panel.
-- Ten personas; 100 reasoning, 62 remembering, 38 recommending; 92 forgetting-bearing.
-- Only six Base-stale-exposed cases, so selection is not conditioned on visible Base failure.
-- Thirteen arms and 2,600 frozen case--arm contexts.
-- 947 unique prompts per reader after byte-identical reuse; 1,894 reader and 1,894 crossed-judge calls.
-- Reader/judge retries 0; model mismatches 0; self-judgments 0; two unclear verdicts counted incorrect.
-- Independent reconstruction rescored all 1,894 raw verdicts and reproduced 13 arm aggregates and 12 V1 comparisons with zero mismatch.
-- Total D16 API tokens: 2,805,144.
-
-### Full-population arm result
-
-| Arm | MPA | FAA | FAMA | FAMA vs V1 [95% persona CI] | Mean tokens | Decision |
-|---|---:|---:|---:|---:|---:|---|
-| Base | 0.1500 | 0.9780 | 0.1428 | -0.0142 [-0.0308, +0.00005] | 134.19 | Baseline |
-| **V1** | 0.1620 | **0.9881** | 0.1570 | -- | 133.16 | Conditional incumbent |
-| Tombstone refill | 0.1601 | 0.9838 | 0.1533 | -0.0037 [-0.0149, +0.0070] | 133.39 | Reject |
-| Latest-write-wins | 0.1598 | 0.9880 | 0.1543 | -0.0027 [-0.0094, +0.0039] | 135.03 | Reject |
-| Recency Top-5 | 0.1453 | 0.9821 | 0.1393 | -0.0176 [-0.0403, +0.0057] | 118.97 | Reject |
-| Explicit superseded rendering | 0.1559 | 0.9849 | 0.1497 | -0.0073 [-0.0230, +0.0080] | 146.99 | Reject |
-| V1 + two hops | 0.1588 | 0.9879 | 0.1536 | -0.0034 [-0.0086, 0] | 134.42 | Reject |
-| V1 + one extra slot | 0.1670 | 0.9862 | 0.1609 | +0.0039 [-0.0068, +0.0144] | 148.66 | Reject cost/uncertainty |
-| V1 + two extra slots | **0.1740** | 0.9831 | **0.1663** | +0.0093 [-0.0027, +0.0227] | 160.04 | Reject cost/uncertainty |
-| V1 confidence 0.91 | 0.1616 | 0.9889 | 0.1565 | -0.0004 [-0.0013, 0] | 133.23 | Reject |
-| V1 confidence 0.96 | 0.1656 | 0.9881 | 0.1600 | +0.0030 [-0.0010, +0.0083] | 133.56 | Near miss, not promoted |
-| V1 + aggregate protection | 0.1595 | 0.9881 | 0.1545 | -0.0025 [-0.0100, +0.0050] | 134.14 | Reject |
-| V2 combined | 0.1680 | 0.9831 | 0.1591 | +0.0021 [-0.0073, +0.0108] | 147.99 | Reject |
-
-No challenger passes all frozen effect-size, confidence, FAA/MPA, cost, and integrity checks.
-
-### V1 versus Base: heterogeneous effect
-
-| Slice | n | FAMA delta [95% CI] | MPA delta [95% CI] | Interpretation |
-|---|---:|---:|---:|---|
-| Full population | 200 | +0.0142 [-0.00005, +0.0308] | +0.0120 [-0.0031, +0.0285] | Positive direction, not confirmed as universal |
-| Forgetting-bearing | 92 | **+0.0296 [+0.0074, +0.0549]** | **+0.0262 [+0.0044, +0.0517]** | Confirmed positive slice |
-| Base-stale-exposed | 6 | +0.3919 [+0.2897, +0.4694] | +0.3111 [+0.1400, +0.4286] | Very large conditional effect; only five clusters |
-| Recommending | 38 | **+0.0768 [+0.0203, +0.1395]** | +0.0751 | Strong positive task slice |
-| Remembering | 62 | -0.0095 [-0.0247, +0.0029] | **-0.0153 [-0.0319, -0.0029]** | MPA harm signal |
-| Reasoning | 100 | +0.0050 [-0.0100, +0.0200] | -- | No confirmed effect |
-
-The earlier 50-case panel contained 43 recommending and seven remembering questions and required Base stale exposure. Its +8.09 FAMA-point result remains correct for that conditional population but overstates general full-traffic benefit.
-
-## Earlier conditioned answer panel
-
-| Metric | Base | V1 | V2 | V1 - Base [95% CI] | V2 - V1 [95% CI] |
-|---|---:|---:|---:|---:|---:|
-| MPA | 0.3855 | 0.4342 | 0.4461 | +0.0487 [+0.0196, +0.0928] | +0.0119 [-0.0039, +0.0276] |
-| FAA | 0.8531 | **0.9369** | 0.8961 | +0.0838 [+0.0599, +0.1067] | **-0.0408 [-0.0762, -0.0064]** |
-| FAMA | 0.3195 | **0.4004** | 0.3961 | **+0.0809 [+0.0517, +0.1259]** | -0.0043 [-0.0206, +0.0109] |
-| Mean tokens | 144.52 | 146.76 | 201.84 | +1.55% | +37.53% |
-
-This panel establishes mechanism efficacy under stale exposure and the V2 proxy-to-answer reversal. It is not a population estimate.
-
-## D17 proxy alignment
-
-The stance-aware proxy discounts obsolete mentions marked as negated or historical. Across all 13 D16 policies, Kendall tau-b with answer FAMA moves from 0.5290 to 0.5385, an improvement of only 0.0094 versus the frozen +0.10 requirement. Pairwise sign agreement against V1 remains 8/12. D17 is rejected.
-
-## D18 text-only correction construction
-
-The runtime detector reads only shared dialogue text and at most 512 prior units; released operations are attached afterward for scoring. Quarterly persona histories are split 4/3/3 for development/validation/test.
-
-| Test metric (5,954 sessions) | Remove/delete literal | Cue-only | Linked high-confidence |
-|---|---:|---:|---:|
-| Event precision | 1.0000 | 0.9781 | **0.9789** |
-| Event recall | 0.1562 | 0.8029 | **0.7964** |
-| Event F1 | 0.2702 | 0.8819 | **0.8783** |
-| Kind accuracy | 1.0000 | 0.8228 | **0.8234** |
-| Predecessor-link precision | -- | -- | **0.2005** |
-| Predecessor-link recall | -- | -- | 0.1618 |
-| True-positive sessions with any correct link | -- | -- | 0.4538 |
-| Detector p95 | -- | -- | 5.51 ms |
-
-Event precision/recall and latency pass, but link precision, any-correct-link rate, and kind accuracy fail. The next target is scoped entity/state resolution with abstention, not merely adding more English cues.
-
-## D19 query-aware labeled dual state
-
-### Frozen design and integrity
-
-- Arms: current-only V1, unconditional labeled old/current pairs, and query-aware pairs for explicit history/change queries only.
-- Natural panel: all 150 weekly Memora questions, 50 each reasoning/recommending/remembering; 100 current-state and 50 historical-aggregate queries, but zero explicit history/change queries.
-- Controlled capability panel: 20 structured preference update pairs, each asked as current, history and change, for 60 questions total.
-- 210 cases, 630 case-arm contexts and 336 unique prompts per reader.
-- MiniMax-M3 and DeepSeek-V4-Flash made 672 reader and 672 crossed-judge calls; retries, model mismatches and self-judgments were all zero. Four unclear verdicts were counted incorrect.
-- The independent validator rescored all 672 raw verdicts and reproduced every primary metric and gate with zero mismatch.
-
-### Natural weekly census
-
-| Arm | MPA | FAA | FAMA | FAMA vs V1 [95% persona CI] | Mean tokens | Decision |
-|---|---:|---:|---:|---:|---:|---|
-| V1 | 0.3348 | 0.8859 | 0.2964 | -- | 122.95 | Default incumbent |
-| Unconditional dual | 0.3498 | 0.8818 | 0.3111 | +0.0147 [+0.0014, +0.0281] | 159.27 | Reject: +29.53% tokens |
-| Query-aware dual | 0.3348 | 0.8859 | 0.2964 | 0 [0, 0] | 122.95 | Exact V1; no eligible query |
-
-### Controlled temporal capability
-
-| Query type | n | V1 criterion accuracy | Query-aware dual | Delta [95% persona CI] |
+| Panel | n | Current-only | Query-aware dual | Paired delta [95% persona-cluster interval] |
 |---|---:|---:|---:|---:|
-| Current state | 20 | 1.0000 | 1.0000 | 0 [0, 0] |
-| Historical state | 20 | 0.4750 | 1.0000 | +0.5250 [+0.5000, +0.5625] |
-| State change | 20 | 0.6667 | 1.0000 | +0.3333 [+0.3333, +0.3333] |
-| All temporal | 60 | 0.7139 | 1.0000 | +0.2861 [+0.2778, +0.2986] |
+| Natural FAMA | 150 | 0.2872 | 0.2872 | 0 [0, 0] |
+| Current-state criterion accuracy | 20 | 1.0000 | 1.0000 | 0 [0, 0] |
+| Historical-state criterion accuracy | 20 | 0.5000 | 0.9875 | +0.4875 [+0.4625, +0.5000] |
+| State-change criterion accuracy | 20 | 0.6667 | 1.0000 | +0.3333 [+0.3333, +0.3333] |
+| All temporal criterion accuracy | 60 | 0.7222 | 0.9958 | +0.2736 [+0.2653, +0.2778] |
 
-Both reader directions were positive (+0.2778 MiniMax, +0.2944 DeepSeek). Across all 210 cases, query-aware rendering increased mean injected tokens by 6.92%, below the frozen 10% gate. On the routed history/change subset itself, tokens rose from 7.8 to 40.5 per case; that local cost is material and must not be hidden by the combined average.
+Temporal FAMA improved from 0.5000 to 0.9917. Forty temporal cases improved, twenty were equal, and none were harmed. Reader-specific temporal criterion-accuracy directions were +0.2778 and +0.2694. Mean injected tokens across all 210 cases increased from 549.20 to 552.19, a 0.54% increase. Every frozen value, non-inferiority, cost, context, and operational-integrity gate passed.
 
-D19 therefore supports a default-off `query_aware` option: use V1 current-only output for ordinary/current/aggregate questions, and return one bounded `HISTORICAL / SUPERSEDED` plus `CURRENT / ACTIVE` block only when the query explicitly asks for history or change. Delete/retraction events never expose the old value. The experiment assumes a correct structured update edge; it does not validate automatic predecessor linking, human correctness or real programming traffic.
+## Integrity
 
-## D11 efficiency result
+- Production recall errors: 0.
+- Lifecycle fallbacks: 0.
+- Unexpected pair counts: 0.
+- Non-eligible prompt mismatches: 0.
+- Reader retries: 0; judge retries: 3.
+- Reader or judge model mismatches: 0.
+- Self-judgments: 0.
+- One unclear verdict was counted incorrect.
+- Independent validator rescored all 500 raw verdict records and reproduced every report, interval, gate, and hash with zero mismatches.
+- MemoryCore tests passed 80/80; lifecycle benchmark tests passed 159/159; focused TypeScript checking and the plugin build passed.
+- Context manifest SHA-256: `0c940cc4a0ce6fe39213389193421bf477876ab0886d27de16b73c0d460d6a13`.
+- Raw evaluation SHA-256: `9700a555d355a8900973c6e6412612fc43a9074dd61b0bef890f088c2d229fe7`.
 
-On a checksum-frozen 30-question LongMemEval-V2 test, D11 performs 19 evidence-preserving substitutions and reduces mean injected tokens from 2,796.8 to 2,213.9 (-20.84%). The 12 direct-support questions are all equal to Base (0 improved / 12 equal / 0 harmed), and every token, provenance, capacity, disablement, damage, timeout and corruption certificate passes. Because the frozen objective required quality improvement and no answer model was called, D11 is a secondary efficiency/Pareto result only.
+## Claim boundary
 
-## Final evidence boundary
-
-Supported:
-
-- correction-linked management can help when stale memory is present;
-- effect is heterogeneous, so selective deployment needs fresh confirmation;
-- retrieval proxies cannot safely promote answer policies alone;
-- evidence-preserving compression can reduce measured injection cost;
-- exact fallback and bounded sidecars are implementable;
-- event detection is easier than reliable predecessor linking.
-- labeled old/current state has large value for explicit temporal questions when a correct structured update edge already exists;
-- query-aware routing preserves V1 for ordinary queries and stays within the combined cost gate.
-
-Not supported:
-
-- unconditional V1 deployment over all long-dialogue traffic;
-- real multi-round programming-task effectiveness;
-- end-to-end automatic correction linking;
-- D11 answer-level noninferiority;
-- human correctness from two-model agreement;
-- treating Base fallback as semantic safety.
-- replacing V1 as the default based on a controlled temporal panel;
-- unrestricted old-memory exposure or any resurfacing of delete/retraction events.
+The exact production configuration, persisted-feedback load, scope filtering, successor materialization, temporal routing, budgeting, and final prompt construction were executed. Candidate ranking was frozen behind a deterministic `IMemoryStore` contract adapter, so this run does not measure live SQLite, TCVDB, or COS network behavior. Structured update edges were trusted inputs. The result is not evidence for unrestricted old-memory exposure, automatic predecessor-link correctness, natural temporal-query prevalence, human calibration, or real long-running programming-task impact.
