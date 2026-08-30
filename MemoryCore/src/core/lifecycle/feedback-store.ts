@@ -1,6 +1,11 @@
 import path from "node:path";
 import type { StorageAdapter } from "../storage/adapter.js";
 import { StoragePaths } from "../storage/types.js";
+import {
+  memoryVersionContextApplies,
+  normalizeMemoryVersionContext,
+  type MemoryVersionScopeLevel,
+} from "./version-scope.js";
 
 export interface LifecycleFeedbackScope {
   teamId?: string;
@@ -8,6 +13,13 @@ export interface LifecycleFeedbackScope {
   agentId?: string;
   taskId?: string;
   sessionKey?: string;
+  /** Opaque repository identity shared by all worktrees of one clone. */
+  repositoryId?: string;
+  branch?: string;
+  commitSha?: string;
+  /** Opaque identity of the concrete Git worktree. */
+  worktreeId?: string;
+  versionScopeLevel?: MemoryVersionScopeLevel;
 }
 
 export interface LifecycleFeedbackEvent {
@@ -61,12 +73,29 @@ export function parseLifecycleFeedbackEvent(value: unknown): LifecycleFeedbackEv
   }
   const scopeObject = scopeRaw as Record<string, unknown>;
   const scope: LifecycleFeedbackScope = {};
-  for (const key of ["teamId", "userId", "agentId", "taskId", "sessionKey"] as const) {
+  for (const key of [
+    "teamId",
+    "userId",
+    "agentId",
+    "taskId",
+    "sessionKey",
+    "repositoryId",
+    "branch",
+    "commitSha",
+    "worktreeId",
+  ] as const) {
     const item = scopeObject[key];
     if (item !== undefined) {
       if (typeof item !== "string" || item.length === 0) throw new Error(`invalid lifecycle feedback scope.${key}`);
       scope[key] = item;
     }
+  }
+  const rawScopeLevel = scopeObject.versionScopeLevel;
+  if (rawScopeLevel !== undefined) {
+    if (!["repository", "branch", "worktree", "task"].includes(String(rawScopeLevel))) {
+      throw new Error("invalid lifecycle feedback scope.versionScopeLevel");
+    }
+    scope.versionScopeLevel = rawScopeLevel as MemoryVersionScopeLevel;
   }
   const predecessorMemoryIds = assertStringArray(raw.predecessorMemoryIds, "predecessorMemoryIds");
   const successorMemoryIds = assertStringArray(raw.successorMemoryIds, "successorMemoryIds");
@@ -98,8 +127,39 @@ export function lifecycleFeedbackMatchesScope(
   }
   // taskId is enforced when the recall call knows it. Without task context,
   // the cross-session L1 boundary remains team/user/agent.
-  if (recallScope.taskId !== undefined && eventScope.taskId !== undefined && eventScope.taskId !== recallScope.taskId) {
+  if (
+    (eventScope.repositoryId === undefined || eventScope.versionScopeLevel === "task") &&
+    recallScope.taskId !== undefined &&
+    eventScope.taskId !== undefined &&
+    eventScope.taskId !== recallScope.taskId
+  ) {
     return false;
+  }
+  // Version-scoped events never cross repository/branch/worktree/task validity
+  // boundaries. Legacy events without repositoryId retain the previous
+  // team/user/agent/task behavior for backwards compatibility.
+  if (eventScope.repositoryId !== undefined) {
+    const eventContext = normalizeMemoryVersionContext({
+      schemaVersion: 1,
+      repositoryId: eventScope.repositoryId,
+      branch: eventScope.branch,
+      commitSha: eventScope.commitSha,
+      worktreeId: eventScope.worktreeId,
+      taskId: eventScope.taskId,
+      scopeLevel: eventScope.versionScopeLevel ?? "branch",
+      source: "explicit",
+    });
+    const recallContext = normalizeMemoryVersionContext({
+      schemaVersion: 1,
+      repositoryId: recallScope.repositoryId,
+      branch: recallScope.branch,
+      commitSha: recallScope.commitSha,
+      worktreeId: recallScope.worktreeId,
+      taskId: recallScope.taskId,
+      scopeLevel: recallScope.versionScopeLevel ?? (recallScope.taskId ? "task" : "worktree"),
+      source: "explicit",
+    });
+    if (!eventContext || !recallContext || !memoryVersionContextApplies(eventContext, recallContext)) return false;
   }
   return true;
 }

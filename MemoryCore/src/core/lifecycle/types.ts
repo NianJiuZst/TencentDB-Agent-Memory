@@ -56,6 +56,20 @@ export interface LifecycleDecisionLog {
   dualStatePairs?: number;
   /** A dual-state rendering failure falls back to the already-resolved V1 candidates. */
   dualStateFallbackReason?: string;
+  /** Query intent used by the version/branch-aware multi-state selector. */
+  versionIntent?: import("./version-scope.js").VersionQueryIntent;
+  /** Whether version selection was active, comparative, disabled, or abstained for missing context. */
+  versionScopeStatus?: import("./version-scope.js").VersionScopeStatus;
+  /** Number of retrieved candidates carrying a structured version scope. */
+  versionScopedCandidates?: number;
+  /** Number of retrieved candidates removed because they were invalid for the current scope. */
+  versionSuppressedCandidates?: number;
+  /** Number of explicitly labelled version states injected into the prompt. */
+  versionLabeledStates?: number;
+  /** Number of selected states valid in the current execution scope. */
+  versionActiveStates?: number;
+  /** Opaque, privacy-preserving execution coordinates used for this decision. */
+  versionContext?: import("./version-scope.js").MemoryVersionContext;
 }
 
 export interface LifecycleApplyResult<T> {

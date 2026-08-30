@@ -9,6 +9,7 @@ import { VectorStore } from "../store/sqlite.js";
 import type { EmbeddingService } from "../store/embedding.js";
 import type { MemoryRecord } from "../record/l1-writer.js";
 import { performAutoRecall } from "./auto-recall.js";
+import { withMemoryVersionContext, type MemoryVersionContext } from "../lifecycle/version-scope.js";
 
 const tempDirs: string[] = [];
 
@@ -288,5 +289,104 @@ describe("auto recall lifecycle integration", () => {
 
     expect(result?.recalledL1Memories?.[0]).toMatchObject({ id: "tcvdb-new", content: "新的云数据库方案", score: 0.91 });
     expect(result?.lifecycleDecision?.redirects).toBe(1);
+  });
+
+  it("selects the current branch/worktree from the real SQLite production path and labels comparisons", async () => {
+    const pluginDataDir = await tempDir();
+    const store = new VectorStore(path.join(pluginDataDir, "version-aware.db"), 0);
+    store.init();
+    const baseContext: MemoryVersionContext = {
+      schemaVersion: 1,
+      repositoryId: "repo-a",
+      branch: "main",
+      commitSha: "main-sha",
+      worktreeId: "wt-main",
+      scopeLevel: "worktree",
+      source: "explicit",
+    };
+    const releaseContext: MemoryVersionContext = {
+      ...baseContext,
+      branch: "release",
+      commitSha: "release-sha",
+      worktreeId: "wt-release",
+    };
+    const baseRecord: Omit<MemoryRecord, "id" | "content" | "metadata"> = {
+      type: "work_fact",
+      priority: 80,
+      scene_name: "deployment",
+      source_message_ids: [],
+      timestamps: ["2026-08-30T00:00:00.000Z"],
+      createdAt: "2026-08-30T00:00:00.000Z",
+      updatedAt: "2026-08-30T00:00:00.000Z",
+      sessionKey: "session-1",
+      sessionId: "session-1",
+      teamId: "team-1",
+      userId: "user-1",
+      agentId: "agent-1",
+    };
+    try {
+      expect(store.upsertL1({
+        ...baseRecord,
+        id: "main-state",
+        content: "Project Atlas deploy target is cluster-main-blue.",
+        metadata: withMemoryVersionContext({}, baseContext),
+      })).toBe(true);
+      expect(store.upsertL1({
+        ...baseRecord,
+        id: "release-state",
+        content: "Project Atlas deploy target is cluster-release-green.",
+        metadata: withMemoryVersionContext({}, releaseContext),
+      })).toBe(true);
+      const cfg = parseConfig({
+        recall: {
+          strategy: "keyword",
+          maxResults: 2,
+          scoreThreshold: 0,
+          lifecycle: {
+            enabled: true,
+            versionAwareMode: "strict",
+            autoDetectGit: false,
+            versionCandidateMultiplier: 4,
+            maxVersionStates: 4,
+          },
+        },
+      });
+
+      const current = await performAutoRecall({
+        userText: "Project Atlas deploy target cluster",
+        actorId: "user-1",
+        sessionKey: "session-1",
+        cfg,
+        pluginDataDir,
+        vectorStore: store,
+        profileIsolation: { teamId: "team-1", agentId: "agent-1" },
+        versionContext: releaseContext,
+      });
+      expect(current?.prependContext).toContain("cluster-release-green");
+      expect(current?.prependContext).not.toContain("cluster-main-blue");
+      expect(current?.lifecycleDecision).toMatchObject({
+        versionScopeStatus: "active",
+        versionActiveStates: 1,
+        versionSuppressedCandidates: 1,
+      });
+
+      const comparison = await performAutoRecall({
+        userText: "Compare the Project Atlas deploy target difference between branches",
+        actorId: "user-1",
+        sessionKey: "session-1",
+        cfg,
+        pluginDataDir,
+        vectorStore: store,
+        profileIsolation: { teamId: "team-1", agentId: "agent-1" },
+        versionContext: releaseContext,
+      });
+      expect(comparison?.prependContext).toContain("branch=main");
+      expect(comparison?.prependContext).toContain("branch=release");
+      expect(comparison?.prependContext).toContain("active_here=yes");
+      expect(comparison?.prependContext).toContain("active_here=no");
+      expect(comparison?.lifecycleDecision?.versionScopeStatus).toBe("comparison");
+    } finally {
+      store.close();
+    }
   });
 });

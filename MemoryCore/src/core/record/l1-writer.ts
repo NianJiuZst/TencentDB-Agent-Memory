@@ -23,6 +23,12 @@ import type { StorageAdapter } from "../storage/adapter.js";
 import { StoragePaths } from "../storage/types.js";
 import type { Logger } from "../types.js";
 import { appendLifecycleFeedbackEvent } from "../lifecycle/feedback-store.js";
+import {
+  memoryVersionWriteDomainsEqual,
+  parseMemoryVersionContextFromMetadata,
+  withMemoryVersionContext,
+  type MemoryVersionContext,
+} from "../lifecycle/version-scope.js";
 
 // ============================
 // Types
@@ -67,7 +73,7 @@ export interface MemoryRecord {
   /** Source message IDs that contributed to this memory */
   source_message_ids: string[];
   /** Type-specific metadata (e.g., activity_start_time for episodic) */
-  metadata: EpisodicMetadata | Record<string, never>;
+  metadata: EpisodicMetadata | Record<string, unknown>;
   /** Timestamp trail: all timestamps related to this memory (for merge history tracking) */
   timestamps: string[];
   /** Creation timestamp (ISO) */
@@ -181,8 +187,10 @@ export async function writeMemory(params: {
   storage?: StorageAdapter;
   /** Append structured update/merge feedback for the lifecycle sidecar. */
   lifecycleFeedbackEnabled?: boolean;
+  /** Version/branch/worktree/task validity coordinates attached to the new L1 record. */
+  versionContext?: MemoryVersionContext;
 }): Promise<MemoryRecord | null> {
-  const { memory, decision, baseDir, sessionKey, sessionId, taskId, teamId, userId, agentId, logger, vectorStore, embeddingService, storage, lifecycleFeedbackEnabled } = params;
+  const { memory, decision, baseDir, sessionKey, sessionId, taskId, teamId, userId, agentId, logger, vectorStore, embeddingService, storage, lifecycleFeedbackEnabled, versionContext } = params;
 
   if (decision.action === "skip") {
     logger?.debug?.(`${TAG} Skipping memory: ${memory.content.slice(0, 50)}...`);
@@ -205,12 +213,23 @@ export async function writeMemory(params: {
           teamId,
           userId,
           agentId,
-          taskId,
+          // A branch/worktree fact remains the same validity domain across
+          // sessions and parallel extraction tasks. Domain verification below
+          // is stricter than task isolation and is the authoritative guard.
+          taskId: versionContext ? undefined : taskId,
         });
         existing.push(...rows.filter((row) => requestedSet.has(row.record_id)));
       }
-      verifiedTargetIds = [...new Set(existing.map((row) => row.record_id))];
-      const maxVersion = existing.reduce((max, row) => Math.max(max, row.version ?? 0), 0);
+      const sameDomain = existing.filter((row) => {
+        let metadata: unknown = {};
+        try { metadata = row.metadata_json ? JSON.parse(row.metadata_json) : {}; } catch { metadata = {}; }
+        return memoryVersionWriteDomainsEqual(
+          parseMemoryVersionContextFromMetadata(metadata),
+          versionContext,
+        );
+      });
+      verifiedTargetIds = [...new Set(sameDomain.map((row) => row.record_id))];
+      const maxVersion = sameDomain.reduce((max, row) => Math.max(max, row.version ?? 0), 0);
       nextVersion = maxVersion + 1;
     } catch (err) {
       logger?.warn?.(`${TAG} Failed to read existing memory version, defaulting to v0: ${err instanceof Error ? err.message : String(err)}`);
@@ -243,7 +262,7 @@ export async function writeMemory(params: {
     priority: finalPriority,
     scene_name: memory.scene_name,
     source_message_ids: memory.source_message_ids,
-    metadata: memory.metadata,
+    metadata: withMemoryVersionContext(memory.metadata, versionContext),
     timestamps: finalTimestamps,
     createdAt: now,
     updatedAt: now,
@@ -297,14 +316,19 @@ export async function writeMemory(params: {
     if (vectorStore) {
       try {
         const deleteFilter = teamId || userId || agentId || sessionId
-          ? { teamId, userId, agentId, sessionId: sessionId || undefined, sessionKey }
+          ? (versionContext
+            ? { teamId, userId, agentId }
+            : { teamId, userId, agentId, sessionId: sessionId || undefined, sessionKey })
           : undefined;
-        if (deleteFilter) {
-          await vectorStore.deleteL1Batch(decision.target_ids, deleteFilter);
-        } else {
-          await vectorStore.deleteL1Batch(decision.target_ids);
+        const deleteIds = versionContext ? verifiedTargetIds : decision.target_ids;
+        if (deleteIds.length > 0) {
+          if (deleteFilter) {
+            await vectorStore.deleteL1Batch(deleteIds, deleteFilter);
+          } else {
+            await vectorStore.deleteL1Batch(deleteIds);
+          }
         }
-        logger?.debug?.(`${TAG} VectorStore: deleted ${decision.target_ids.length} target record(s) for ${decision.action}`);
+        logger?.debug?.(`${TAG} VectorStore: deleted ${deleteIds.length} target record(s) for ${decision.action}`);
       } catch (err) {
         logger?.warn?.(
           `${TAG} VectorStore delete failed for ${decision.action}: ${err instanceof Error ? err.message : String(err)}`,
@@ -392,7 +416,18 @@ export async function writeMemory(params: {
           source: decision.action === "update" ? "l1-dedup-update" : "l1-dedup-merge",
           predecessorMemoryIds: verifiedTargetIds,
           successorMemoryIds: [record.id],
-          scope: { teamId, userId, agentId, taskId, sessionKey },
+          scope: {
+            teamId,
+            userId,
+            agentId,
+            taskId: versionContext?.taskId ?? taskId,
+            sessionKey,
+            repositoryId: versionContext?.repositoryId,
+            branch: versionContext?.branch,
+            commitSha: versionContext?.commitSha,
+            worktreeId: versionContext?.worktreeId,
+            versionScopeLevel: versionContext?.scopeLevel,
+          },
         },
       });
       logger?.debug?.(

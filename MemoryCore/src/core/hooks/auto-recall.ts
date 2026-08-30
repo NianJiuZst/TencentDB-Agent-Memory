@@ -33,6 +33,13 @@ import type { RecallDecisionLog } from "../adaptive-recall/types.js";
 import { applyPersistedLifecycle } from "../lifecycle/production-runtime.js";
 import type { LifecycleDecisionLog, LifecyclePolicy } from "../lifecycle/types.js";
 import type { LifecycleFeedbackScope } from "../lifecycle/feedback-store.js";
+import { detectGitMemoryVersionContext } from "../lifecycle/git-context.js";
+import {
+  normalizeMemoryVersionContext,
+  parseMemoryVersionContextFromMetadata,
+  selectVersionAwareCandidates,
+  type MemoryVersionContext,
+} from "../lifecycle/version-scope.js";
 
 const TAG = "[memory-tdai] [recall]";
 const RECALL_TRUNCATION_SUFFIX = "…（已截断；可用 tdai_memory_search 或 tdai_conversation_search 查看详情）";
@@ -113,6 +120,12 @@ export async function performAutoRecall(params: {
   storage?: StorageAdapter;
   /** L2/L3 profile scope. Defaults to the standalone default team and agent. */
   profileIsolation?: ProfileIsolation;
+  /** Explicit execution coordinates; preferred over automatic Git detection. */
+  versionContext?: MemoryVersionContext;
+  /** Current agent workspace used for optional Git/worktree detection. */
+  workspaceDir?: string;
+  /** Parallel task identity, kept separate from conversation session identity. */
+  taskId?: string;
 }): Promise<RecallResult | undefined> {
   const { cfg, logger } = params;
   const timeoutMs = cfg.recall.timeoutMs ?? 5000;
@@ -167,6 +180,9 @@ async function performAutoRecallCore(params: {
   embeddingService?: EmbeddingService;
   storage?: StorageAdapter;
   profileIsolation?: ProfileIsolation;
+  versionContext?: MemoryVersionContext;
+  workspaceDir?: string;
+  taskId?: string;
 }): Promise<RecallResult | undefined> {
   const { userText, cfg, pluginDataDir, logger, vectorStore, embeddingService, storage } = params;
   const tRecallStart = performance.now();
@@ -198,6 +214,19 @@ async function performAutoRecallCore(params: {
     effectiveStrategy = cfg.recall.strategy ?? "hybrid";
     const adaptiveConfig = cfg.recall.adaptive;
     const lifecycleConfig = cfg.recall.lifecycle;
+    const versionAwareEnabled = lifecycleConfig?.versionAwareMode === "strict";
+    const explicitVersionContext = normalizeMemoryVersionContext(params.versionContext);
+    const versionContext = versionAwareEnabled
+      ? (explicitVersionContext ?? (
+        lifecycleConfig?.autoDetectGit && params.workspaceDir
+          ? await detectGitMemoryVersionContext({
+            workspaceDir: params.workspaceDir,
+            taskId: params.taskId,
+            scopeLevel: params.taskId ? "task" : "worktree",
+          })
+          : undefined
+      ))
+      : undefined;
     let searchResult: SearchResult;
     if (lifecycleConfig?.enabled) {
       if (adaptiveConfig?.enabled) {
@@ -205,10 +234,19 @@ async function performAutoRecallCore(params: {
           `${TAG} Both recall.adaptive and recall.lifecycle are enabled; lifecycle V1 takes precedence`,
         );
       }
+      const retrievalLimit = versionAwareEnabled
+        ? Math.max(
+          cfg.recall.maxResults ?? 5,
+          (cfg.recall.maxResults ?? 5) * Math.max(1, lifecycleConfig.versionCandidateMultiplier),
+        )
+        : cfg.recall.maxResults;
+      const searchCfg: MemoryTdaiConfig = retrievalLimit === cfg.recall.maxResults
+        ? cfg
+        : { ...cfg, recall: { ...cfg.recall, maxResults: retrievalLimit } };
       const baseResult = await searchMemories(
         userText,
         pluginDataDir,
-        cfg,
+        searchCfg,
         logger,
         effectiveStrategy as "keyword" | "embedding" | "hybrid",
         vectorStore,
@@ -226,8 +264,17 @@ async function performAutoRecallCore(params: {
           teamId: profileIsolation.teamId,
           userId: params.actorId,
           agentId: profileIsolation.agentId,
+          taskId: params.taskId,
           sessionKey: params.sessionKey,
+          ...(versionContext ? {
+            repositoryId: versionContext.repositoryId,
+            branch: versionContext.branch,
+            commitSha: versionContext.commitSha,
+            worktreeId: versionContext.worktreeId,
+            versionScopeLevel: versionContext.scopeLevel,
+          } : {}),
         },
+        versionContext,
         logger,
       });
       searchResult = applied.searchResult;
@@ -432,6 +479,9 @@ async function performAutoRecallInner(params: {
   embeddingService?: EmbeddingService;
   storage?: StorageAdapter;
   profileIsolation?: ProfileIsolation;
+  versionContext?: MemoryVersionContext;
+  workspaceDir?: string;
+  taskId?: string;
 }): Promise<RecallResult | undefined> {
   try {
     return await performAutoRecallCore(params);
@@ -477,6 +527,7 @@ interface SearchCandidate {
   type: string;
   score: number;
   scope: LifecycleFeedbackScope;
+  versionContext?: MemoryVersionContext;
 }
 
 /** Timing breakdown from memory search */
@@ -505,6 +556,7 @@ async function applyLifecycleToSearchResult(params: {
   storage?: StorageAdapter;
   vectorStore?: IMemoryStore;
   fallbackScope: LifecycleFeedbackScope;
+  versionContext?: MemoryVersionContext;
   logger?: Logger;
 }): Promise<{ searchResult: SearchResult; decision: LifecycleDecisionLog }> {
   const policy: LifecyclePolicy = {
@@ -540,7 +592,6 @@ async function applyLifecycleToSearchResult(params: {
       scope.teamId ?? "",
       scope.userId ?? "",
       scope.agentId ?? "",
-      scope.taskId ?? "",
     ]);
     scopeKeys.set(key, scope);
   }
@@ -566,7 +617,17 @@ async function applyLifecycleToSearchResult(params: {
       },
     };
   }
-  const scope = scopeKeys.values().next().value ?? params.fallbackScope;
+  const identityScope = scopeKeys.values().next().value ?? params.fallbackScope;
+  const scope: LifecycleFeedbackScope = {
+    ...identityScope,
+    taskId: params.fallbackScope.taskId,
+    sessionKey: params.fallbackScope.sessionKey,
+    repositoryId: params.fallbackScope.repositoryId,
+    branch: params.fallbackScope.branch,
+    commitSha: params.fallbackScope.commitSha,
+    worktreeId: params.fallbackScope.worktreeId,
+    versionScopeLevel: params.fallbackScope.versionScopeLevel,
+  };
   const applied = await applyPersistedLifecycle({
     candidates,
     policy,
@@ -585,7 +646,6 @@ async function applyLifecycleToSearchResult(params: {
           teamId: scope.teamId,
           userId: scope.userId,
           agentId: scope.agentId,
-          taskId: scope.taskId,
         });
         rows.push(...materialized.filter((row) => requestedSet.has(row.record_id)));
       }
@@ -608,18 +668,38 @@ async function applyLifecycleToSearchResult(params: {
       },
     },
   });
+  const versionSelection = selectVersionAwareCandidates({
+    candidates: applied.candidates,
+    query: params.query,
+    current: params.versionContext,
+    enabled: params.config.versionAwareMode === "strict",
+    resultLimit: params.resultLimit,
+    maxVersionStates: Math.max(1, params.config.maxVersionStates),
+  });
+  const versionDecision: LifecycleDecisionLog = {
+    ...applied.decision,
+    versionIntent: versionSelection.intent,
+    versionScopeStatus: versionSelection.status,
+    versionScopedCandidates: versionSelection.scopedCandidates,
+    versionSuppressedCandidates: versionSelection.suppressedCandidates,
+    versionLabeledStates: versionSelection.labeledStates,
+    versionActiveStates: versionSelection.activeStates,
+    ...(params.versionContext ? { versionContext: params.versionContext } : {}),
+    outputCandidates: versionSelection.candidates.length,
+  };
   params.logger?.debug?.(
-    `${TAG} Lifecycle decision: mode=${applied.decision.mode}, redirects=${applied.decision.redirects}, ` +
-    `fallback=${applied.decision.fallbackReason ?? "none"}, elapsed=${applied.decision.elapsedMs.toFixed(2)}ms`,
+    `${TAG} Lifecycle decision: mode=${versionDecision.mode}, redirects=${versionDecision.redirects}, ` +
+    `version=${versionDecision.versionScopeStatus ?? "disabled"}, suppressed=${versionDecision.versionSuppressedCandidates ?? 0}, ` +
+    `fallback=${versionDecision.fallbackReason ?? "none"}, elapsed=${versionDecision.elapsedMs.toFixed(2)}ms`,
   );
   return {
     searchResult: {
       ...params.searchResult,
-      candidates: applied.candidates,
-      lines: applied.candidates.map((candidate) => candidate.line),
-      scores: applied.candidates.map((candidate) => candidate.score),
+      candidates: versionSelection.candidates,
+      lines: versionSelection.candidates.map((candidate) => candidate.line),
+      scores: versionSelection.candidates.map((candidate) => candidate.score),
     },
-    decision: applied.decision,
+    decision: versionDecision,
   };
 }
 
@@ -1283,6 +1363,7 @@ function recordToSearchCandidate(record: MemoryRecord, score: number): SearchCan
     content: record.content,
     type: record.type,
     score,
+    versionContext: parseMemoryVersionContextFromMetadata(record.metadata),
     scope: {
       teamId: record.teamId,
       userId: record.userId,
@@ -1294,12 +1375,15 @@ function recordToSearchCandidate(record: MemoryRecord, score: number): SearchCan
 }
 
 function vectorResultToSearchCandidate(result: L1SearchResult): SearchCandidate {
+  let metadata: unknown = {};
+  try { metadata = result.metadata_json ? JSON.parse(result.metadata_json) : {}; } catch { metadata = {}; }
   return {
     id: result.record_id,
     line: formatMemoryLine(vectorResultToFormatable(result)),
     content: result.content,
     type: result.type,
     score: result.score,
+    versionContext: parseMemoryVersionContextFromMetadata(metadata),
     scope: {
       teamId: result.team_id || undefined,
       userId: result.user_id || undefined,
@@ -1311,12 +1395,15 @@ function vectorResultToSearchCandidate(result: L1SearchResult): SearchCandidate 
 }
 
 function ftsResultToSearchCandidate(result: L1FtsResult): SearchCandidate {
+  let metadata: unknown = {};
+  try { metadata = result.metadata_json ? JSON.parse(result.metadata_json) : {}; } catch { metadata = {}; }
   return {
     id: result.record_id,
     line: formatMemoryLine(ftsResultToFormatable(result)),
     content: result.content,
     type: result.type,
     score: result.score,
+    versionContext: parseMemoryVersionContextFromMetadata(metadata),
     scope: {
       teamId: result.team_id || undefined,
       userId: result.user_id || undefined,
@@ -1348,6 +1435,7 @@ function l1RowToSearchCandidate(row: L1RecordRow): SearchCandidate {
     content: row.content,
     type: row.type,
     score: 0,
+    versionContext: parseMemoryVersionContextFromMetadata(metadata),
     scope: {
       teamId: row.team_id || undefined,
       userId: row.user_id || undefined,

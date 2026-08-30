@@ -1400,7 +1400,11 @@ export class TdaiGateway {
     }
 
     const startMs = Date.now();
-    const result = await this.core.handleBeforeRecall(body.query, body.session_key);
+    const result = await this.core.handleBeforeRecall(body.query, body.session_key, {
+      workspaceDir: body.workspace_dir,
+      taskId: body.task_id,
+      versionContext: body.version_context,
+    });
     const elapsed = Date.now() - startMs;
 
     // H-15: distinguish "no recall content to inject" from "recall failed".
@@ -1445,6 +1449,9 @@ export class TdaiGateway {
       ],
       sessionKey: body.session_key,
       sessionId: body.session_id,
+      workspaceDir: body.workspace_dir,
+      taskId: body.task_id,
+      versionContext: body.version_context,
     });
     const elapsed = Date.now() - startMs;
 

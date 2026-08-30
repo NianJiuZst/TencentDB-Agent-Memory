@@ -104,6 +104,14 @@ export interface LifecycleRecallConfig {
   feedbackEnabled: boolean;
   /** Optionally render bounded old/current pairs for explicit history or change queries. */
   dualStateMode: "off" | "query_aware";
+  /** Select memories by repository/branch/worktree/task validity and label explicit multi-state queries. */
+  versionAwareMode: "off" | "strict";
+  /** Detect Git coordinates from the host workspace when no explicit context is supplied. */
+  autoDetectGit: boolean;
+  /** Over-retrieval factor used before version-scope filtering. */
+  versionCandidateMultiplier: number;
+  /** Maximum labelled states returned for compare/migrate/regression/history queries. */
+  maxVersionStates: number;
   /** Minimum released-edge trust weight. This is a policy threshold, not a calibrated probability. */
   minConfidence: number;
   /** Maximum correction-chain traversal depth. V1 is frozen at one hop by default. */
@@ -625,6 +633,10 @@ export function parseConfig(raw: Record<string, unknown> | undefined): MemoryTda
         enabled: bool(lifecycleRecallGroup, "enabled") ?? false,
         feedbackEnabled: bool(lifecycleRecallGroup, "feedbackEnabled") ?? false,
         dualStateMode: validateLifecycleDualStateMode(str(lifecycleRecallGroup, "dualStateMode")) ?? "off",
+        versionAwareMode: validateLifecycleVersionAwareMode(str(lifecycleRecallGroup, "versionAwareMode")) ?? "off",
+        autoDetectGit: bool(lifecycleRecallGroup, "autoDetectGit") ?? true,
+        versionCandidateMultiplier: num(lifecycleRecallGroup, "versionCandidateMultiplier") ?? 4,
+        maxVersionStates: num(lifecycleRecallGroup, "maxVersionStates") ?? 6,
         minConfidence: num(lifecycleRecallGroup, "minConfidence") ?? 0.85,
         maxHops: num(lifecycleRecallGroup, "maxHops") ?? 1,
         maxExpansions: num(lifecycleRecallGroup, "maxExpansions") ?? 64,
@@ -746,6 +758,10 @@ const VALID_LIFECYCLE_DUAL_STATE_MODES: LifecycleRecallConfig["dualStateMode"][]
   "off",
   "query_aware",
 ];
+const VALID_LIFECYCLE_VERSION_AWARE_MODES: LifecycleRecallConfig["versionAwareMode"][] = [
+  "off",
+  "strict",
+];
 
 /**
  * Validate recall strategy against whitelist.
@@ -764,6 +780,15 @@ function validateLifecycleDualStateMode(
   if (!value) return undefined;
   return VALID_LIFECYCLE_DUAL_STATE_MODES.includes(value as LifecycleRecallConfig["dualStateMode"])
     ? (value as LifecycleRecallConfig["dualStateMode"])
+    : undefined;
+}
+
+function validateLifecycleVersionAwareMode(
+  value: string | undefined,
+): LifecycleRecallConfig["versionAwareMode"] | undefined {
+  if (!value) return undefined;
+  return VALID_LIFECYCLE_VERSION_AWARE_MODES.includes(value as LifecycleRecallConfig["versionAwareMode"])
+    ? (value as LifecycleRecallConfig["versionAwareMode"])
     : undefined;
 }
 

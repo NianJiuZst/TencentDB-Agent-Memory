@@ -22,6 +22,11 @@ import { buildFtsQuery } from "../store/sqlite.js";
 import type { EmbeddingService } from "../store/embedding.js";
 import type { LLMRunner, Logger, TraceContext } from "../types.js";
 import { buildTraceParams } from "../types.js";
+import {
+  memoryVersionWriteDomainsEqual,
+  parseMemoryVersionContextFromMetadata,
+  type MemoryVersionContext,
+} from "../lifecycle/version-scope.js";
 
 const TAG = "[memory-tdai][l1-dedup]";
 
@@ -71,6 +76,8 @@ export async function batchDedup(params: {
   filter?: IsolationFilter;
   /** langfuse 上报身份四元组（team/user/agent/session），透传给 llmRunner。 */
   traceContext?: TraceContext;
+  /** Exact write domain; candidates from sibling branches/worktrees/tasks are excluded before LLM dedup. */
+  versionContext?: MemoryVersionContext;
 }): Promise<DedupDecision[]> {
   const { memories, config, logger, model, promptMode = "chat", vectorStore, embeddingService, llmRunner, filter, traceContext } = params;
   const topK = params.conflictRecallTopK ?? 5;
@@ -107,11 +114,11 @@ export async function batchDedup(params: {
   if (hasVectorData && embeddingService) {
     // === Tier 1: Vector recall mode ===
     logger?.debug?.(`${TAG} Using vector recall mode (topK=${topK})`);
-    matches = await findCandidatesByVector(memories, vectorStore!, embeddingService, topK, logger, params.embeddingTimeoutMs, filter);
+    matches = await findCandidatesByVector(memories, vectorStore!, embeddingService, topK, logger, params.embeddingTimeoutMs, filter, params.versionContext);
   } else if (hasFts) {
     // === Tier 2: FTS keyword recall ===
     logger?.debug?.(`${TAG} Using FTS keyword recall mode (no embedding service or no vector data)`);
-    matches = await findCandidatesByFts(memories, vectorStore!, logger, filter);
+    matches = await findCandidatesByFts(memories, vectorStore!, logger, filter, params.versionContext);
   } else {
     // Shouldn't reach here given the fast-path check above, but be defensive
     logger?.debug?.(`${TAG} No usable recall path, skipping conflict detection`);
@@ -211,6 +218,7 @@ async function findCandidatesByVector(
   logger?: Logger,
   embeddingTimeoutMs?: number,
   filter?: IsolationFilter,
+  versionContext?: MemoryVersionContext,
 ): Promise<CandidateMatch[]> {
   const newRecordIds = new Set(memories.map((m) => m.record_id));
 
@@ -232,6 +240,11 @@ async function findCandidatesByVector(
     // Exclude records from current batch, convert to MemoryRecord format
     const candidates: MemoryRecord[] = searchResults
       .filter((r) => !newRecordIds.has(r.record_id))
+      .filter((r) => {
+        let metadata: unknown = {};
+        try { metadata = r.metadata_json ? JSON.parse(r.metadata_json) : {}; } catch { metadata = {}; }
+        return memoryVersionWriteDomainsEqual(parseMemoryVersionContextFromMetadata(metadata), versionContext);
+      })
       .slice(0, topK)
       .map((r) => ({
         id: r.record_id,
@@ -240,7 +253,7 @@ async function findCandidatesByVector(
         priority: r.priority,
         scene_name: r.scene_name,
         source_message_ids: [],
-        metadata: {},
+        metadata: r.metadata_json ? (() => { try { return JSON.parse(r.metadata_json); } catch { return {}; } })() : {},
         timestamps: [r.timestamp_str].filter(Boolean),
         createdAt: "",
         updatedAt: "",
@@ -268,6 +281,7 @@ async function findCandidatesByFts(
   vectorStore: IMemoryStore,
   _logger?: Logger,
   filter?: IsolationFilter,
+  versionContext?: MemoryVersionContext,
 ): Promise<CandidateMatch[]> {
   const newRecordIds = new Set(memories.map((m) => m.record_id));
   const matches: CandidateMatch[] = [];
@@ -281,6 +295,11 @@ async function findCandidatesByFts(
       // Filter out records from the current batch
       const candidates: MemoryRecord[] = ftsResults
         .filter((r) => !newRecordIds.has(r.record_id))
+        .filter((r) => {
+          let metadata: unknown = {};
+          try { metadata = r.metadata_json ? JSON.parse(r.metadata_json) : {}; } catch { metadata = {}; }
+          return memoryVersionWriteDomainsEqual(parseMemoryVersionContextFromMetadata(metadata), versionContext);
+        })
         .slice(0, 5)
         .map((r) => ({
           id: r.record_id,

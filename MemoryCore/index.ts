@@ -720,7 +720,12 @@ export default function register(api: OpenClawPluginApi) {
       try {
         await coreReady;
         const recallStartMs = Date.now();
-        const result = await core.handleBeforeRecall(userText, resolvedSessionKey);
+        const runtimeCtx = ctx as unknown as Record<string, unknown>;
+        const workspaceDir = typeof runtimeCtx.workspaceDir === "string"
+          ? runtimeCtx.workspaceDir
+          : (typeof runtimeCtx.cwd === "string" ? runtimeCtx.cwd : undefined);
+        const taskId = typeof runtimeCtx.taskId === "string" ? runtimeCtx.taskId : undefined;
+        const result = await core.handleBeforeRecall(userText, resolvedSessionKey, { workspaceDir, taskId });
         const elapsedMs = Date.now() - startMs;
         const recallDurationMs = Date.now() - recallStartMs;
 
@@ -864,6 +869,14 @@ export default function register(api: OpenClawPluginApi) {
           sessionId: sessionId || undefined,
           startedAt: pluginStartTimestamp,
           originalUserMessageCount: cachedPrompt?.messageCount,
+          workspaceDir: typeof (ctx as unknown as Record<string, unknown>).workspaceDir === "string"
+            ? (ctx as unknown as Record<string, unknown>).workspaceDir as string
+            : (typeof (ctx as unknown as Record<string, unknown>).cwd === "string"
+              ? (ctx as unknown as Record<string, unknown>).cwd as string
+              : undefined),
+          taskId: typeof (ctx as unknown as Record<string, unknown>).taskId === "string"
+            ? (ctx as unknown as Record<string, unknown>).taskId as string
+            : undefined,
         });
         const captureMs = Date.now() - startMs;
         api.logger.info(

@@ -60,6 +60,7 @@ import {
 } from "../core/profile/profile-sync.js";
 import { createScopedStorageAdapter, StorageAdapter } from "../core/storage/adapter.js";
 import type { Logger } from "../core/types.js";
+import { loadSessionVersionContext } from "../core/lifecycle/version-context-store.js";
 
 const TAG = "[memory-tdai] [pipeline-factory]";
 
@@ -524,7 +525,7 @@ export function createL1Runner(opts: {
       let maxRecordedAtMs = 0;
       for (const m of processed) {
         if (m.recordedAtMs > maxRecordedAtMs) maxRecordedAtMs = m.recordedAtMs;
-        const groupKey = `${m.userId}\u0000${m.agentId}\u0000${m.sessionId}`;
+        const groupKey = `${m.teamId ?? ""}\u0000${m.userId}\u0000${m.agentId}\u0000${m.sessionId}\u0000${m.taskId ?? ""}`;
         let g = groupMap.get(groupKey);
         if (!g) {
           g = { sessionId: m.sessionId, teamId: m.teamId, taskId: m.taskId, userId: m.userId, agentId: m.agentId, messages: [] };
@@ -591,6 +592,15 @@ export function createL1Runner(opts: {
           `${TAG} [l1] Group sessionId=${group.sessionId || "(empty)"}: ${group.messages.length} messages`,
         );
 
+        const versionContext = cfg.recall.lifecycle?.versionAwareMode === "strict"
+          ? await loadSessionVersionContext({
+            baseDir: pluginDataDir,
+            storage,
+            sessionKey,
+            sessionId: group.sessionId,
+            taskId: group.taskId,
+          })
+          : undefined;
         const l1Result = await extractL1Memories({
           messages: group.messages,
           sessionKey,
@@ -617,6 +627,7 @@ export function createL1Runner(opts: {
             conflictRecallTopK: cfg.embedding.conflictRecallTopK,
             embeddingTimeoutMs: cfg.embedding.captureTimeoutMs ?? cfg.embedding.timeoutMs,
             lifecycleFeedbackEnabled: cfg.recall.lifecycle?.feedbackEnabled ?? false,
+            versionContext,
             llmRunner,
           },
           logger,

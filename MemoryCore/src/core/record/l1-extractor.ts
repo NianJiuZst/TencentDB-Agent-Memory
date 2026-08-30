@@ -41,6 +41,7 @@ import {
   buildMemoryGenerationRefId,
   type MemoryGenerationLog,
 } from "../memory-generation-log/types.js";
+import type { MemoryVersionContext } from "../lifecycle/version-scope.js";
 
 const TAG = "[memory-tdai][l1-extractor]";
 
@@ -127,6 +128,8 @@ export async function extractL1Memories(params: {
     embeddingTimeoutMs?: number;
     /** Append structured update/merge decisions for lifecycle correction recall. */
     lifecycleFeedbackEnabled?: boolean;
+    /** Version/branch/worktree/task write domain resolved from the source execution. */
+    versionContext?: MemoryVersionContext;
     /**
      * Host-neutral LLM runner. When provided, used instead of creating
      * a CleanContextRunner (decouples from OpenClaw runtime).
@@ -295,6 +298,7 @@ export async function extractL1Memories(params: {
         embeddingTimeoutMs: options.embeddingTimeoutMs,
         llmRunner: options.llmRunner,
         traceContext: { teamId, userId, agentId, sessionId },
+        versionContext: options.versionContext,
         ...(teamId || userId || agentId || sessionId || taskId ? { filter: { teamId, userId, agentId, sessionId, taskId } } : {}),
       });
       dedupLatencyMs = Date.now() - dedupStartMs;
@@ -332,14 +336,15 @@ export async function extractL1Memories(params: {
         embeddingService: options.embeddingService,
         storage,
         lifecycleFeedbackEnabled: options.lifecycleFeedbackEnabled,
+        versionContext: options.versionContext,
       });
 
     } catch (err) {
       logger?.warn?.(`${TAG} Batch dedup failed, storing all as new: ${err instanceof Error ? err.message : String(err)}`);
-      storedRecords = await storeAllDirectly(memoriesWithIds, baseDir, sessionKey, sessionId, taskId, teamId, userId, agentId, logger, options.vectorStore, options.embeddingService, storage);
+      storedRecords = await storeAllDirectly(memoriesWithIds, baseDir, sessionKey, sessionId, taskId, teamId, userId, agentId, logger, options.vectorStore, options.embeddingService, storage, options.versionContext);
     }
   } else {
-    storedRecords = await storeAllDirectly(memoriesWithIds, baseDir, sessionKey, sessionId, taskId, teamId, userId, agentId, logger, options.vectorStore, options.embeddingService, storage);
+    storedRecords = await storeAllDirectly(memoriesWithIds, baseDir, sessionKey, sessionId, taskId, teamId, userId, agentId, logger, options.vectorStore, options.embeddingService, storage, options.versionContext);
   }
 
   const logStorage = storage ?? new StorageAdapter(new LocalStorageBackend(baseDir));
@@ -623,8 +628,9 @@ async function applyDecisions(params: {
   embeddingService?: EmbeddingService;
   storage?: StorageAdapter;
   lifecycleFeedbackEnabled?: boolean;
+  versionContext?: MemoryVersionContext;
 }): Promise<MemoryRecord[]> {
-  const { memoriesWithIds, decisions, baseDir, sessionKey, sessionId, taskId, teamId, userId, agentId, logger, vectorStore, embeddingService, storage, lifecycleFeedbackEnabled } = params;
+  const { memoriesWithIds, decisions, baseDir, sessionKey, sessionId, taskId, teamId, userId, agentId, logger, vectorStore, embeddingService, storage, lifecycleFeedbackEnabled, versionContext } = params;
   const storedRecords: MemoryRecord[] = [];
 
   // Build a map from record_id → decision
@@ -656,6 +662,7 @@ async function applyDecisions(params: {
         embeddingService,
         storage,
         lifecycleFeedbackEnabled,
+        versionContext,
       });
 
       if (record) {
@@ -687,6 +694,7 @@ async function storeAllDirectly(
   vectorStore?: IMemoryStore,
   embeddingService?: EmbeddingService,
   storage?: StorageAdapter,
+  versionContext?: MemoryVersionContext,
 ): Promise<MemoryRecord[]> {
   const storedRecords: MemoryRecord[] = [];
 
@@ -710,6 +718,7 @@ async function storeAllDirectly(
         vectorStore,
         embeddingService,
         storage,
+        versionContext,
       });
       if (record) {
         storedRecords.push(record);

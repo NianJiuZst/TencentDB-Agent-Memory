@@ -7,6 +7,10 @@ describe("lifecycle recall config", () => {
       enabled: false,
       feedbackEnabled: false,
       dualStateMode: "off",
+      versionAwareMode: "off",
+      autoDetectGit: true,
+      versionCandidateMultiplier: 4,
+      maxVersionStates: 6,
       minConfidence: 0.85,
       maxHops: 1,
       maxExpansions: 64,
@@ -22,6 +26,10 @@ describe("lifecycle recall config", () => {
           enabled: true,
           feedbackEnabled: true,
           dualStateMode: "query_aware",
+          versionAwareMode: "strict",
+          autoDetectGit: false,
+          versionCandidateMultiplier: 8,
+          maxVersionStates: 4,
           minConfidence: 0.9,
           maxHops: 1,
           maxExpansions: 32,
@@ -35,6 +43,10 @@ describe("lifecycle recall config", () => {
       enabled: true,
       feedbackEnabled: true,
       dualStateMode: "query_aware",
+      versionAwareMode: "strict",
+      autoDetectGit: false,
+      versionCandidateMultiplier: 8,
+      maxVersionStates: 4,
       minConfidence: 0.9,
       maxHops: 1,
       maxExpansions: 32,
@@ -49,5 +61,13 @@ describe("lifecycle recall config", () => {
     });
 
     expect(config.recall.lifecycle.dualStateMode).toBe("off");
+  });
+
+  it("fails closed when versionAwareMode is invalid", () => {
+    const config = parseConfig({
+      recall: { lifecycle: { versionAwareMode: "latest_wins" } },
+    });
+
+    expect(config.recall.lifecycle.versionAwareMode).toBe("off");
   });
 });

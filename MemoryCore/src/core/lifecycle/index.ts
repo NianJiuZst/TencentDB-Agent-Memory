@@ -23,6 +23,22 @@ export {
   classifyLifecycleTemporalIntent,
   lifecycleIntentAllowsDualState,
 } from "./temporal-intent.js";
+export { detectGitMemoryVersionContext, clearGitMemoryVersionContextCache } from "./git-context.js";
+export { loadSessionVersionContext, persistSessionVersionContext } from "./version-context-store.js";
+export {
+  classifyVersionQueryIntent,
+  formatMemoryVersionLabel,
+  memoryVersionContextApplies,
+  memoryVersionScopeKey,
+  memoryVersionSpecificity,
+  memoryVersionWriteDomainsEqual,
+  normalizeMemoryVersionContext,
+  parseMemoryVersionContextFromMetadata,
+  selectVersionAwareCandidates,
+  versionIntentAllowsMultipleStates,
+  withMemoryVersionContext,
+  MEMORY_VERSION_CONTEXT_METADATA_KEY,
+} from "./version-scope.js";
 export {
   appendLifecycleFeedbackEvent,
   lifecycleFeedbackMatchesScope,
@@ -33,6 +49,7 @@ export type * from "./types.js";
 export type * from "./feedback-store.js";
 export type * from "./production-runtime.js";
 export type * from "./temporal-intent.js";
+export type * from "./version-scope.js";
 export type {
   LifecycleEvidenceShieldDecision,
   LifecycleEvidenceShieldLimits,

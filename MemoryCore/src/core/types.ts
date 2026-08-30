@@ -273,6 +273,12 @@ export interface CompletedTurn {
    * polluted by prependContext injection.
    */
   originalUserMessageCount?: number;
+  /** Current workspace for optional Git/worktree version-context detection. */
+  workspaceDir?: string;
+  /** Explicit parallel task identity when multiple tasks share one worktree. */
+  taskId?: string;
+  /** Host-supplied execution coordinates override Git auto-detection. */
+  versionContext?: import("./lifecycle/version-scope.js").MemoryVersionContext;
 }
 
 // ============================

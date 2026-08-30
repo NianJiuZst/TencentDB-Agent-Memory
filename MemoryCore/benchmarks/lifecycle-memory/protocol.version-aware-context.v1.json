@@ -1,0 +1,65 @@
+{
+  "protocolVersion": "version-aware-production-context-v1.0",
+  "seed": 20260831,
+  "inputs": {
+    "memora": {
+      "repository": "https://github.com/geniesinc/Memora",
+      "revision": "a6493188efc836d6511ed5e4163fe3ba87da30ff"
+    },
+    "priorNaturalContextManifestSha256": "0c940cc4a0ce6fe39213389193421bf477876ab0886d27de16b73c0d460d6a13"
+  },
+  "selection": {
+    "naturalCases": 40,
+    "naturalRule": "Take the lexicographically first four frozen weekly natural-safety cases for each of the ten Memora personas from the prior production manifest; do not inspect answers or verdicts.",
+    "controlledScenarios": 10,
+    "capabilitySlices": [
+      "branch_current",
+      "worktree_current",
+      "parallel_task_current",
+      "branch_comparison",
+      "migration",
+      "regression",
+      "missing_scope_abstention"
+    ],
+    "capabilityCases": 70,
+    "totalCases": 110
+  },
+  "arms": [
+    "global_latest",
+    "old_current_dual",
+    "version_aware_multistate"
+  ],
+  "productionPath": {
+    "storage": "Real SQLite VectorStore with FTS5 plus writeMemory structured writes; no deterministic IMemoryStore ranking adapter.",
+    "recall": "performAutoRecall final prompt path with keyword retrieval, lifecycle sidecar, prompt budgeting, and exact prepend/append context construction.",
+    "git": "A real repository is created with main, release, and two detached worktrees. Git coordinates are obtained by detectGitMemoryVersionContext; raw paths are not persisted.",
+    "resultLimit": 4,
+    "versionCandidateMultiplier": 4,
+    "maxVersionStates": 6,
+    "lifecycle": {
+      "minConfidence": 0.85,
+      "maxHops": 1,
+      "maxExpansions": 64,
+      "timeoutMs": 100,
+      "maxEvents": 5000
+    }
+  },
+  "expectedBehavior": {
+    "global_latest": "No version filtering and no dual-state rendering; all top-ranked states are treated as globally usable.",
+    "old_current_dual": "Concurrent branch/worktree/task states are deliberately linked as one old-to-current chain, reproducing the semantic limitation of the prior design.",
+    "version_aware_multistate": "Ordinary queries select only the current valid scope; compare/migrate/regression queries receive labelled same-repository states; missing repository context abstains from scoped memory."
+  },
+  "contextGates": {
+    "requireRealGit": true,
+    "requireSharedRepositoryIdAcrossWorktrees": true,
+    "requireDistinctWorktreeIds": true,
+    "requireRealSQLite": true,
+    "requireAllRecallCallsComplete": true,
+    "requireZeroLifecycleFallbacks": true,
+    "requireExactVersionAwareCurrentState": true,
+    "requireCompleteComparisonStateSet": true,
+    "requireMissingScopeAbstention": true,
+    "requireNaturalPromptByteEquivalence": true
+  },
+  "claimBoundary": "The natural safety panel is public Memora data reused from a previously frozen weekly census. The version capability panel is a controlled, generated programming-state benchmark grounded in a real Git repository/worktrees and real SQLite/performAutoRecall execution. It evaluates storage, scope selection, rendering and answer behavior, not automatic LLM extraction quality, live TCVDB/COS network latency, human calibration, merge ancestry inference, or natural prevalence of branch conflicts."
+}

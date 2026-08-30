@@ -34,6 +34,8 @@ import type { IMemoryStore } from "./store/types.js";
 import type { EmbeddingService } from "./store/embedding.js";
 import type { StorageAdapter } from "./storage/adapter.js";
 import { performAutoRecall } from "./hooks/auto-recall.js";
+import { detectGitMemoryVersionContext } from "./lifecycle/git-context.js";
+import { normalizeMemoryVersionContext, type MemoryVersionContext } from "./lifecycle/version-scope.js";
 import { reportRecallMetrics } from "./report/metric-tracking-recall.js";
 import { performAutoCapture } from "./hooks/auto-capture.js";
 import { executeMemorySearch, formatSearchResponse } from "./tools/memory-search.js";
@@ -371,7 +373,11 @@ export class TdaiCore {
    * Handle recall (memory retrieval) before an LLM turn.
    * Maps to: OpenClaw `before_prompt_build` / Hermes `prefetch()`.
    */
-  async handleBeforeRecall(userText: string, sessionKey: string): Promise<RecallResult> {
+  async handleBeforeRecall(userText: string, sessionKey: string, execution?: {
+    workspaceDir?: string;
+    taskId?: string;
+    versionContext?: MemoryVersionContext;
+  }): Promise<RecallResult> {
     await this.storeReady?.catch(() => {});
 
     const tStart = performance.now();
@@ -385,6 +391,9 @@ export class TdaiCore {
       vectorStore: this.vectorStore,
       embeddingService: this.embeddingService,
       storage: this.storage,
+      workspaceDir: execution?.workspaceDir ?? this.hostAdapter.getRuntimeContext().workspaceDir,
+      taskId: execution?.taskId,
+      versionContext: execution?.versionContext,
     });
     const recallLatencyMs = performance.now() - tStart;
 
@@ -414,6 +423,20 @@ export class TdaiCore {
     await this.storeReady?.catch(() => {});
     await this.ensureSchedulerStarted();
 
+    const workspaceDir = turn.workspaceDir ?? this.hostAdapter.getRuntimeContext().workspaceDir;
+    const explicitVersionContext = normalizeMemoryVersionContext(turn.versionContext);
+    const versionContext = this.cfg.recall.lifecycle?.versionAwareMode === "strict"
+      ? (explicitVersionContext ?? (
+        this.cfg.recall.lifecycle.autoDetectGit && workspaceDir
+          ? await detectGitMemoryVersionContext({
+            workspaceDir,
+            taskId: turn.taskId,
+            scopeLevel: turn.taskId ? "task" : "worktree",
+          })
+          : undefined
+      ))
+      : undefined;
+
     return performAutoCapture({
       messages: turn.messages,
       sessionKey: turn.sessionKey,
@@ -429,6 +452,7 @@ export class TdaiCore {
       embeddingService: this.embeddingService,
       bgTaskRegistry: this.bgTasks,
       storage: this.storage,
+      versionContext,
     });
   }
 

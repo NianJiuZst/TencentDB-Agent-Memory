@@ -19,6 +19,8 @@ import type { ConversationMessage } from "../conversation/l0-recorder.js";
 import { DEFAULT_ISOLATION_ID, type IMemoryStore, type L0Record } from "../store/types.js";
 import type { EmbeddingService } from "../store/embedding.js";
 import type { StorageAdapter } from "../storage/adapter.js";
+import { persistSessionVersionContext } from "../lifecycle/version-context-store.js";
+import type { MemoryVersionContext } from "../lifecycle/version-scope.js";
 
 import type { Logger } from "../types.js";
 
@@ -85,15 +87,32 @@ export async function performAutoCapture(params: {
   bgTaskRegistry?: Set<Promise<void>>;
   /** StorageAdapter for file operations (COS/local). Falls back to fs when absent. */
   storage?: StorageAdapter;
+  /** Version scope captured with this execution and reused by asynchronous L1 extraction. */
+  versionContext?: MemoryVersionContext;
 }): Promise<AutoCaptureResult> {
   const {
     messages, sessionKey, sessionId, cfg, pluginDataDir, logger, scheduler,
     originalUserText, originalUserMessageCount, pluginStartTimestamp,
-    vectorStore, embeddingService, bgTaskRegistry, storage,
+    vectorStore, embeddingService, bgTaskRegistry, storage, versionContext,
   } = params;
   const tCaptureStart = performance.now();
 
   const checkpoint = new CheckpointManager(pluginDataDir, logger, storage);
+
+  if (versionContext) {
+    try {
+      await persistSessionVersionContext({
+        baseDir: pluginDataDir,
+        storage,
+        sessionKey,
+        sessionId: sessionId || DEFAULT_ISOLATION_ID,
+        taskId: versionContext.taskId,
+        context: versionContext,
+      });
+    } catch (error) {
+      logger?.warn?.(`${TAG} Version context persistence failed (non-blocking): ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
 
   // ============================
   // Step 1 + 2: L0 recording + checkpoint update (ATOMIC)
@@ -185,6 +204,7 @@ export async function performAutoCapture(params: {
           id: generateL0RecordId(sessionKey, i),
           sessionKey,
           sessionId: sessionId || DEFAULT_ISOLATION_ID,
+          taskId: versionContext?.taskId,
           role: msg.role,
           messageText: msg.content,
           recordedAt: now,

@@ -39,6 +39,9 @@ export interface RecallRequest {
   query: string;
   session_key: string;
   user_id?: string;
+  workspace_dir?: string;
+  task_id?: string;
+  version_context?: import("../core/lifecycle/version-scope.js").MemoryVersionContext;
 }
 
 export interface RecallResponse {
@@ -65,6 +68,9 @@ export interface CaptureRequest {
   session_id?: string;
   user_id?: string;
   messages?: unknown[];
+  workspace_dir?: string;
+  task_id?: string;
+  version_context?: import("../core/lifecycle/version-scope.js").MemoryVersionContext;
 }
 
 export interface CaptureResponse {
