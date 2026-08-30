@@ -119,6 +119,8 @@
     "eval:production-path-e2e": "tsx benchmarks/lifecycle-memory/src/production-path-e2e-cli.ts",
     "validate:production-path-e2e": "tsx benchmarks/lifecycle-memory/src/production-path-e2e-validator-cli.ts",
     "build:version-aware-context": "tsx benchmarks/lifecycle-memory/src/version-aware-context-cli.ts",
+    "eval:version-aware-e2e": "tsx benchmarks/lifecycle-memory/src/version-aware-e2e-cli.ts",
+    "validate:version-aware-e2e": "tsx benchmarks/lifecycle-memory/src/version-aware-e2e-validator-cli.ts",
     "test:standalone:memory": "bash __tests__/standalone/e2e.sh",
     "test:standalone:skill": "bash __tests__/standalone/skill-e2e.sh",
     "test:standalone:conv": "bash __tests__/standalone/all-e2e.sh",
