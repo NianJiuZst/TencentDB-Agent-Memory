@@ -2,6 +2,10 @@ import { performance } from "node:perf_hooks";
 import type { StorageAdapter } from "../storage/adapter.js";
 import { applyLifecyclePolicy, LifecycleLedger } from "./ledger.js";
 import { loadLifecycleFeedbackEvents, type LifecycleFeedbackScope } from "./feedback-store.js";
+import {
+  classifyLifecycleTemporalIntent,
+  lifecycleIntentAllowsDualState,
+} from "./temporal-intent.js";
 import type { LifecycleApplyResult, LifecycleEvent, LifecyclePolicy, LifecycleUnit } from "./types.js";
 
 export interface LifecycleRuntimeCandidate {
@@ -9,6 +13,13 @@ export interface LifecycleRuntimeCandidate {
   content: string;
   /** Optional retriever score; direct successors inherit their predecessor's score. */
   score?: number;
+}
+
+export interface LifecycleDualStateRuntime<T extends LifecycleRuntimeCandidate> {
+  mode: "off" | "query_aware";
+  query: string;
+  /** Host-specific rendering preserves ids, scores, scope and line formatting. */
+  render: (historical: T, current: T) => T;
 }
 
 /**
@@ -23,6 +34,7 @@ export async function applyPersistedLifecycle<T extends LifecycleRuntimeCandidat
   storage?: StorageAdapter;
   scope: LifecycleFeedbackScope;
   materialize: (ids: string[]) => Promise<T[]>;
+  dualState?: LifecycleDualStateRuntime<T>;
 }): Promise<LifecycleApplyResult<T>> {
   const startedAt = performance.now();
   const baseline = params.candidates.slice(0, params.policy.resultLimit);
@@ -119,10 +131,64 @@ export async function applyPersistedLifecycle<T extends LifecycleRuntimeCandidat
         policy: params.policy,
         materialize: (id) => materializedById.get(id),
       });
-      return {
-        candidates: applied.candidates,
-        decision: { ...applied.decision, elapsedMs: performance.now() - startedAt },
-      };
+      const queryIntent = params.dualState?.mode === "query_aware"
+        ? classifyLifecycleTemporalIntent(params.dualState.query)
+        : undefined;
+      if (!queryIntent || !lifecycleIntentAllowsDualState(queryIntent)) {
+        return {
+          candidates: applied.candidates,
+          decision: {
+            ...applied.decision,
+            elapsedMs: performance.now() - startedAt,
+            ...(queryIntent ? { queryIntent, dualStatePairs: 0 } : {}),
+          },
+        };
+      }
+
+      const baseRank = new Map(params.candidates.map((candidate, index) => [candidate.id, index]));
+      const updateBySuccessor = new Map<string, typeof releasedEvents[number]>();
+      for (const event of releasedEvents
+        .filter((item) => item.kind === "update")
+        .sort((left, right) => right.occurredAtMs - left.occurredAtMs || left.eventId.localeCompare(right.eventId))) {
+        if (!event.predecessorMemoryIds.some((id) => baseRank.has(id))) continue;
+        for (const successorId of event.successorMemoryIds) {
+          if (!updateBySuccessor.has(successorId)) updateBySuccessor.set(successorId, event);
+        }
+      }
+      try {
+        let dualStatePairs = 0;
+        const candidates = applied.candidates.map((current) => {
+          const event = updateBySuccessor.get(current.id);
+          if (!event) return current;
+          const predecessorId = event.predecessorMemoryIds
+            .filter((id) => baseRank.has(id))
+            .sort((left, right) => baseRank.get(left)! - baseRank.get(right)!)[0];
+          const historical = materializedById.get(predecessorId);
+          if (!historical) return current;
+          dualStatePairs += 1;
+          return params.dualState!.render(historical, current);
+        });
+        return {
+          candidates,
+          decision: {
+            ...applied.decision,
+            elapsedMs: performance.now() - startedAt,
+            queryIntent,
+            dualStatePairs,
+          },
+        };
+      } catch (error) {
+        return {
+          candidates: applied.candidates,
+          decision: {
+            ...applied.decision,
+            elapsedMs: performance.now() - startedAt,
+            queryIntent,
+            dualStatePairs: 0,
+            dualStateFallbackReason: error instanceof Error ? error.message : String(error),
+          },
+        };
+      }
     };
     const timeout = new Promise<never>((_resolve, reject) => {
       deadline = setTimeout(

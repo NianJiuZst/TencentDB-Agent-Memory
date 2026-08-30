@@ -50,6 +50,12 @@ export interface LifecycleDecisionLog {
   expansions: number;
   elapsedMs: number;
   fallbackReason?: string;
+  /** Query-text-only temporal intent used by the optional dual-state renderer. */
+  queryIntent?: "current_state" | "historical_state" | "state_change" | "historical_aggregate";
+  /** Number of bounded old/current transition blocks returned. */
+  dualStatePairs?: number;
+  /** A dual-state rendering failure falls back to the already-resolved V1 candidates. */
+  dualStateFallbackReason?: string;
 }
 
 export interface LifecycleApplyResult<T> {

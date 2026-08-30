@@ -215,6 +215,7 @@ async function performAutoRecallCore(params: {
         embeddingService,
       );
       const applied = await applyLifecycleToSearchResult({
+        query: userText,
         searchResult: baseResult,
         config: lifecycleConfig,
         resultLimit: cfg.recall.maxResults ?? 5,
@@ -496,6 +497,7 @@ interface SearchResult {
 }
 
 async function applyLifecycleToSearchResult(params: {
+  query: string;
   searchResult: SearchResult;
   config: NonNullable<MemoryTdaiConfig["recall"]["lifecycle"]>;
   resultLimit: number;
@@ -588,6 +590,22 @@ async function applyLifecycleToSearchResult(params: {
         rows.push(...materialized.filter((row) => requestedSet.has(row.record_id)));
       }
       return rows.map(l1RowToSearchCandidate);
+    },
+    dualState: {
+      mode: params.config.dualStateMode,
+      query: params.query,
+      render: (historical, current) => {
+        const content = [
+          "[STATE TRANSITION — use CURRENT for present-state answers]",
+          `HISTORICAL / SUPERSEDED: ${historical.content}`,
+          `CURRENT / ACTIVE: ${current.content}`,
+        ].join("\n");
+        return {
+          ...current,
+          content,
+          line: `- [lifecycle-transition] ${content}`,
+        };
+      },
     },
   });
   params.logger?.debug?.(

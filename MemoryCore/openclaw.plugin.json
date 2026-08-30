@@ -105,6 +105,7 @@
             "properties": {
               "enabled": { "type": "boolean", "default": false, "description": "是否让已发布纠错边参与自动召回；默认关闭" },
               "feedbackEnabled": { "type": "boolean", "default": false, "description": "是否把结构化 update/merge 决策追加为纠错反馈；可先单独开启做影子采集" },
+              "dualStateMode": { "type": "string", "enum": ["off", "query_aware"], "default": "off", "description": "是否仅对明确追问历史状态或变化过程的查询返回带标签的新旧状态；默认关闭" },
               "minConfidence": { "type": "number", "default": 0.85, "minimum": 0, "maximum": 1, "description": "纠错边最小策略信任权重；不是校准概率" },
               "maxHops": { "type": "number", "default": 1, "minimum": 1, "description": "单次召回最多追踪的纠错跳数；V1 默认 1" },
               "maxExpansions": { "type": "number", "default": 64, "minimum": 1, "description": "单次召回最多展开的后继数量" },

@@ -127,6 +127,65 @@ describe("auto recall lifecycle integration", () => {
     expect(result?.lifecycleDecision).toMatchObject({ mode: "adaptive", redirects: 1 });
   });
 
+  it("injects labeled old/current states only for an explicit temporal query", async () => {
+    const pluginDataDir = await tempDir();
+    await appendLifecycleFeedbackEvent({
+      baseDir: pluginDataDir,
+      event: {
+        schemaVersion: 1,
+        eventId: "preference-transition",
+        kind: "update",
+        occurredAtMs: 1_700_000_000_000,
+        confidence: 0.95,
+        source: "test",
+        predecessorMemoryIds: ["old-id"],
+        successorMemoryIds: ["new-id"],
+        scope: {
+          teamId: "team-1",
+          userId: "user-1",
+          agentId: "agent-1",
+          taskId: "task-1",
+          sessionKey: "session-1",
+        },
+      },
+    });
+    const store = {
+      isFtsAvailable: () => true,
+      searchL1Fts: async () => [searchResult("old-id", "用户以前喜欢 cobalt 集群", 0.9)],
+      queryL1Records: async () => [row("new-id", "用户现在喜欢 azure 集群")],
+    } as unknown as IMemoryStore;
+    const cfg = parseConfig({
+      recall: {
+        strategy: "keyword",
+        maxResults: 1,
+        lifecycle: {
+          enabled: true,
+          feedbackEnabled: false,
+          dualStateMode: "query_aware",
+        },
+      },
+    });
+
+    const result = await performAutoRecall({
+      userText: "用户之前喜欢哪个集群？后来发生了什么变化？",
+      actorId: "user-1",
+      sessionKey: "session-1",
+      cfg,
+      pluginDataDir,
+      vectorStore: store,
+      profileIsolation: { teamId: "team-1", agentId: "agent-1" },
+    });
+
+    expect(result?.prependContext).toContain("HISTORICAL / SUPERSEDED: 用户以前喜欢 cobalt 集群");
+    expect(result?.prependContext).toContain("CURRENT / ACTIVE: 用户现在喜欢 azure 集群");
+    expect(result?.recalledL1Memories?.[0]).toMatchObject({ id: "new-id", score: 0.9 });
+    expect(result?.lifecycleDecision).toMatchObject({
+      queryIntent: "state_change",
+      dualStatePairs: 1,
+      redirects: 1,
+    });
+  });
+
   it("runs through the real SQLite L1 store used by standalone TencentDB Agent Memory", async () => {
     const pluginDataDir = await tempDir();
     const store = new VectorStore(path.join(pluginDataDir, "vectors.db"), 0);

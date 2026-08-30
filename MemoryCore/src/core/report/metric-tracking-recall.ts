@@ -128,6 +128,7 @@ export function reportRecallMetrics(input: RecallMetricInput): void {
       for (const [metric, value] of [
         ["recall_lifecycle_mode", lifecycleModeCode],
         ["recall_lifecycle_redirect_count", decision.redirects],
+        ["recall_lifecycle_dual_state_pair_count", decision.dualStatePairs ?? 0],
         ["recall_lifecycle_fallback_count", decision.mode === "fallback" ? 1 : 0],
         ["recall_lifecycle_latency_ms", Math.round(decision.elapsedMs)],
       ] as const) {

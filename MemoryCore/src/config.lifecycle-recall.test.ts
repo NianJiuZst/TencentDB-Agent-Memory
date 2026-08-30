@@ -6,6 +6,7 @@ describe("lifecycle recall config", () => {
     expect(parseConfig(undefined).recall.lifecycle).toEqual({
       enabled: false,
       feedbackEnabled: false,
+      dualStateMode: "off",
       minConfidence: 0.85,
       maxHops: 1,
       maxExpansions: 64,
@@ -20,6 +21,7 @@ describe("lifecycle recall config", () => {
         lifecycle: {
           enabled: true,
           feedbackEnabled: true,
+          dualStateMode: "query_aware",
           minConfidence: 0.9,
           maxHops: 1,
           maxExpansions: 32,
@@ -32,11 +34,20 @@ describe("lifecycle recall config", () => {
     expect(config.recall.lifecycle).toEqual({
       enabled: true,
       feedbackEnabled: true,
+      dualStateMode: "query_aware",
       minConfidence: 0.9,
       maxHops: 1,
       maxExpansions: 32,
       timeoutMs: 8,
       maxEvents: 1000,
     });
+  });
+
+  it("fails closed when dualStateMode is invalid", () => {
+    const config = parseConfig({
+      recall: { lifecycle: { dualStateMode: "always" } },
+    });
+
+    expect(config.recall.lifecycle.dualStateMode).toBe("off");
   });
 });

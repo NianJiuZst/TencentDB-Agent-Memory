@@ -102,6 +102,8 @@ export interface LifecycleRecallConfig {
   enabled: boolean;
   /** Append structured L1 update/merge decisions as scoped feedback (default: false). */
   feedbackEnabled: boolean;
+  /** Optionally render bounded old/current pairs for explicit history or change queries. */
+  dualStateMode: "off" | "query_aware";
   /** Minimum released-edge trust weight. This is a policy threshold, not a calibrated probability. */
   minConfidence: number;
   /** Maximum correction-chain traversal depth. V1 is frozen at one hop by default. */
@@ -622,6 +624,7 @@ export function parseConfig(raw: Record<string, unknown> | undefined): MemoryTda
       lifecycle: {
         enabled: bool(lifecycleRecallGroup, "enabled") ?? false,
         feedbackEnabled: bool(lifecycleRecallGroup, "feedbackEnabled") ?? false,
+        dualStateMode: validateLifecycleDualStateMode(str(lifecycleRecallGroup, "dualStateMode")) ?? "off",
         minConfidence: num(lifecycleRecallGroup, "minConfidence") ?? 0.85,
         maxHops: num(lifecycleRecallGroup, "maxHops") ?? 1,
         maxExpansions: num(lifecycleRecallGroup, "maxExpansions") ?? 64,
@@ -739,6 +742,10 @@ function strArray(src: Record<string, unknown>, key: string): string[] | undefin
 }
 
 const VALID_STRATEGIES: RecallConfig["strategy"][] = ["embedding", "keyword", "hybrid"];
+const VALID_LIFECYCLE_DUAL_STATE_MODES: LifecycleRecallConfig["dualStateMode"][] = [
+  "off",
+  "query_aware",
+];
 
 /**
  * Validate recall strategy against whitelist.
@@ -748,6 +755,15 @@ function validateStrategy(value: string | undefined): RecallConfig["strategy"] |
   if (!value) return undefined;
   return VALID_STRATEGIES.includes(value as RecallConfig["strategy"])
     ? (value as RecallConfig["strategy"])
+    : undefined;
+}
+
+function validateLifecycleDualStateMode(
+  value: string | undefined,
+): LifecycleRecallConfig["dualStateMode"] | undefined {
+  if (!value) return undefined;
+  return VALID_LIFECYCLE_DUAL_STATE_MODES.includes(value as LifecycleRecallConfig["dualStateMode"])
+    ? (value as LifecycleRecallConfig["dualStateMode"])
     : undefined;
 }
 

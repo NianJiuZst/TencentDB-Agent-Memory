@@ -20,6 +20,10 @@ export { optimizeLifecyclePolicy } from "./optimizer.js";
 export { promoteLifecyclePolicy } from "./promotion.js";
 export { applyPersistedLifecycle } from "./production-runtime.js";
 export {
+  classifyLifecycleTemporalIntent,
+  lifecycleIntentAllowsDualState,
+} from "./temporal-intent.js";
+export {
   appendLifecycleFeedbackEvent,
   lifecycleFeedbackMatchesScope,
   loadLifecycleFeedbackEvents,
@@ -28,6 +32,7 @@ export {
 export type * from "./types.js";
 export type * from "./feedback-store.js";
 export type * from "./production-runtime.js";
+export type * from "./temporal-intent.js";
 export type {
   LifecycleEvidenceShieldDecision,
   LifecycleEvidenceShieldLimits,
