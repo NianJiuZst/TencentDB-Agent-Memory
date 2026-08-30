@@ -264,9 +264,10 @@ function readerMessages(question: LifecycleEvalQuestion, result: RecallResult | 
     [
       "You are a coding agent with access to TencentDB Agent Memory.",
       "Answer based ONLY on the provided memory context; never invent a state.",
-      "For ordinary execution, use only ACTIVE SCOPE states with active_here=yes.",
-      "For comparison, migration, regression, or history questions, preserve every VERSION STATE label and map values to the correct branch/worktree/task.",
-      "HISTORICAL / SUPERSEDED and CURRENT / ACTIVE labels describe a linear old-current chain, not independent branches.",
+      "When ACTIVE SCOPE labels are present, ordinary execution must use active_here=yes states.",
+      "When VERSION STATE labels are present for comparison, migration, regression, or history questions, preserve the labels and map values to the correct branch/worktree/task.",
+      "When HISTORICAL / SUPERSEDED and CURRENT / ACTIVE labels are present, treat them as a linear old-current chain and use CURRENT for present-state questions.",
+      "Unlabelled memories may still be used when their ownership text unambiguously matches the scope named by the user.",
       "If scoped evidence is absent or ambiguous, say that the current state cannot be determined.",
     ].join(" "),
     result?.appendSystemContext,
