@@ -1,0 +1,1781 @@
+{
+  "status": "completed",
+  "protocol": {
+    "protocolVersion": "version-aware-production-e2e-v1.0",
+    "seed": 20260831,
+    "preScoreCommitRequired": true,
+    "context": {
+      "protocolVersion": "version-aware-production-context-v1.0",
+      "sha256": "2c64c12d0a4656d1382edf355bbfa028bd252ef0c0c58db776e77b7ce1a1960f",
+      "cases": 110,
+      "naturalCases": 40,
+      "capabilityCases": 70,
+      "scenarios": 10,
+      "uniquePromptsPerReader": 250,
+      "caseArmContexts": 330
+    },
+    "arms": [
+      "global_latest",
+      "old_current_dual",
+      "version_aware_multistate"
+    ],
+    "readers": [
+      {
+        "id": "minimax-m3",
+        "provider": "minimax",
+        "model": "MiniMax-M3",
+        "baseUrl": "https://api.minimaxi.com/v1",
+        "apiKeyEnv": "MINIMAX_API_KEY",
+        "temperature": 0.1,
+        "topP": 0.95,
+        "maxTokens": 700,
+        "thinking": "disabled"
+      },
+      {
+        "id": "deepseek-v4-flash",
+        "provider": "deepseek",
+        "model": "deepseek-v4-flash",
+        "baseUrl": "https://api.deepseek.com",
+        "apiKeyEnv": "DEEPSEEK_API_KEY",
+        "temperature": 0,
+        "maxTokens": 700,
+        "thinking": "disabled"
+      }
+    ],
+    "judges": [
+      {
+        "id": "minimax-m3",
+        "provider": "minimax",
+        "model": "MiniMax-M3",
+        "baseUrl": "https://api.minimaxi.com/v1",
+        "apiKeyEnv": "MINIMAX_API_KEY",
+        "temperature": 0.1,
+        "topP": 0.95,
+        "maxTokens": 8192,
+        "thinking": "disabled"
+      },
+      {
+        "id": "deepseek-v4-flash",
+        "provider": "deepseek",
+        "model": "deepseek-v4-flash",
+        "baseUrl": "https://api.deepseek.com",
+        "apiKeyEnv": "DEEPSEEK_API_KEY",
+        "temperature": 0,
+        "maxTokens": 8192,
+        "thinking": "disabled"
+      }
+    ],
+    "judgeAssignment": {
+      "minimax-m3": "deepseek-v4-flash",
+      "deepseek-v4-flash": "minimax-m3"
+    },
+    "retries": 3,
+    "aggregation": {
+      "answerUnit": "Each answer is judged only by the other fixed model; self-judging is forbidden.",
+      "caseArm": "Arithmetic mean of the two crossed reader/judge cells.",
+      "naturalPrimary": "FAMA on the frozen 40-case public Memora safety panel.",
+      "capabilityPrimary": "Criterion accuracy on the 70-case controlled version-capability panel.",
+      "contextMetrics": "Exact expected-state set, expected-state recall, and foreign-state contamination are recomputed from frozen recalled IDs before LLM scoring.",
+      "uncertainty": "Paired scenario/persona-cluster bootstrap with 5000 draws."
+    },
+    "uncertainty": {
+      "unit": "scenario_or_persona",
+      "bootstrapSamples": 5000,
+      "confidenceLevel": 0.95
+    },
+    "gates": {
+      "minVersionAwareContextExactSelection": 1,
+      "maxVersionAwareContextContaminationRate": 0,
+      "minCapabilityCriterionAccuracyDeltaVsGlobal": 0.05,
+      "minCapabilityCriterionAccuracyDeltaVsOldCurrentDual": 0.05,
+      "requireCapabilityCiLowerAboveZero": true,
+      "minCurrentSliceCriterionAccuracyDelta": -0.01,
+      "minCrossStateSliceCriterionAccuracyDelta": -0.01,
+      "minMissingScopeCriterionAccuracyDelta": 0.25,
+      "minNaturalFamaDelta": -0.01,
+      "maxCombinedTokenIncreaseFraction": 0.2,
+      "requireNonnegativeCapabilityDirectionForBothReaders": true,
+      "requireCompleteFrozenTaskSet": true,
+      "requireZeroModelMismatches": true,
+      "requireZeroSelfJudgments": true,
+      "requirePassedProductionContext": true
+    },
+    "decisionRule": "Recommend the version-aware multi-state upgrade only if every frozen gate passes against both global-latest and old/current-dual baselines. Controlled capability proves scoped behavior; public Memora is a non-inferiority safety panel.",
+    "reuse": {
+      "rule": "Reuse only byte-identical reader message arrays within the same frozen case.",
+      "expectedReaderCalls": 500,
+      "expectedJudgeCalls": 500
+    },
+    "claimBoundary": "The version-capability panel is controlled and generated, but uses real Git repositories/worktrees, real SQLite writes, and the production performAutoRecall prompt path. The public safety panel is Memora at a fixed revision. This run does not measure automatic LLM extraction quality, live TCVDB/COS latency, merge ancestry inference, or prevalence on uncontrolled programming traffic."
+  },
+  "generatedAt": "2026-08-30T18:29:01.281Z",
+  "preScoreRevision": {
+    "head": "4d77e6984f8113c0e5918152cd02c0d43d90a679",
+    "branch": "codex/version-aware-multistate-memory",
+    "base": "97f94654280b2932c35ba4806a491999ed244cc9"
+  },
+  "dataset": {
+    "name": "Memora",
+    "revision": "a6493188efc836d6511ed5e4163fe3ba87da30ff",
+    "dataManifestSha256": "dfc82711dd6647bcb0ba590f43a336f0dac02420e981ce957dd1fd13ae331bfc",
+    "groups": 30,
+    "personas": 10,
+    "questions": 600,
+    "sessions": 27614,
+    "memoryUnits": 24856,
+    "operationCounts": {
+      "no_memory:none": 11126,
+      "activity:add": 7790,
+      "preference:add": 2146,
+      "activity:update": 1226,
+      "goal:add": 572,
+      "preference:delete": 1077,
+      "activity:delete": 2082,
+      "preference:update": 1595
+    }
+  },
+  "productionPath": {
+    "storage": "Real SQLite VectorStore with FTS5 plus writeMemory structured writes; no deterministic IMemoryStore ranking adapter.",
+    "recall": "performAutoRecall final prompt path with keyword retrieval, lifecycle sidecar, prompt budgeting, and exact prepend/append context construction.",
+    "git": "A real repository is created with main, release, and two detached worktrees. Git coordinates are obtained by detectGitMemoryVersionContext; raw paths are not persisted.",
+    "resultLimit": 4,
+    "versionCandidateMultiplier": 4,
+    "maxVersionStates": 6,
+    "lifecycle": {
+      "minConfidence": 0.85,
+      "maxHops": 1,
+      "maxExpansions": 64,
+      "timeoutMs": 100,
+      "maxEvents": 5000
+    }
+  },
+  "input": {
+    "contextManifestSha256": "2c64c12d0a4656d1382edf355bbfa028bd252ef0c0c58db776e77b7ce1a1960f",
+    "cases": 110,
+    "naturalCases": 40,
+    "capabilityCases": 70,
+    "scenarios": 10,
+    "uniquePromptsPerReader": 250,
+    "caseArmContexts": 330,
+    "contextExecution": {
+      "gitRepositories": 1,
+      "sqliteDatabases": 50,
+      "writeMemoryCalls": 260,
+      "performAutoRecallCalls": 330,
+      "meanRecallMs": 0.585977160606068,
+      "p95RecallMs": 1.1734169999999722,
+      "maxRecallMs": 4.942917000000307,
+      "readerCalls": 0,
+      "judgeCalls": 0
+    },
+    "contextValidation": {
+      "realGit": true,
+      "sharedRepositoryIdentity": true,
+      "distinctWorktreeIdentity": true,
+      "realSQLite": true,
+      "countMismatch": false,
+      "lifecycleFallbacks": 0,
+      "versionCurrentMismatches": 0,
+      "comparisonSetMismatches": 0,
+      "missingScopeMismatches": 0,
+      "naturalPromptMismatches": 0,
+      "passed": true
+    }
+  },
+  "reports": {
+    "combined": {
+      "cases": 110,
+      "arms": {
+        "global_latest": {
+          "cases": 110,
+          "mpa": 0.6118181818181818,
+          "faa": 0.9142424242424243,
+          "fama": 0.6079545454545454,
+          "criterionAccuracy": 0.6308645899554992,
+          "exactSelectionAccuracy": 0.36363636363636365,
+          "expectedStateRecall": 0.9090909090909091,
+          "contaminationRate": 0.6363636363636364,
+          "meanInjectedTokens": 590.3727272727273,
+          "meanInjectedItems": 4.345454545454546,
+          "meanRecallMs": 0.5802083909091131
+        },
+        "old_current_dual": {
+          "cases": 110,
+          "mpa": 0.31181818181818177,
+          "faa": 0.8733333333333334,
+          "fama": 0.3079545454545455,
+          "criterionAccuracy": 0.4604100445009536,
+          "exactSelectionAccuracy": 0.36363636363636365,
+          "expectedStateRecall": 0.5,
+          "contaminationRate": 0.6363636363636364,
+          "meanInjectedTokens": 545.6272727272727,
+          "meanInjectedItems": 3.090909090909091,
+          "meanRecallMs": 0.7074477454545393
+        },
+        "version_aware_multistate": {
+          "cases": 110,
+          "mpa": 0.6481818181818182,
+          "faa": 0.9506060606060607,
+          "fama": 0.6443181818181818,
+          "criterionAccuracy": 0.6672282263191355,
+          "exactSelectionAccuracy": 1,
+          "expectedStateRecall": 1,
+          "contaminationRate": 0,
+          "meanInjectedTokens": 487.2909090909091,
+          "meanInjectedItems": 2.618181818181818,
+          "meanRecallMs": 0.5465098727272809
+        }
+      },
+      "comparisons": {
+        "vs_global_latest": {
+          "mpa": {
+            "mean": 0.03636363636363636,
+            "lower": 0.015306122448979591,
+            "upper": 0.05737704918032787,
+            "clusters": 20
+          },
+          "faa": {
+            "mean": 0.03636363636363636,
+            "lower": 0.015789473684210527,
+            "upper": 0.05737704918032787,
+            "clusters": 20
+          },
+          "fama": {
+            "mean": 0.03636363636363636,
+            "lower": 0.015789473684210527,
+            "upper": 0.05737704918032787,
+            "clusters": 20
+          },
+          "criterionAccuracy": {
+            "mean": 0.03636363636363636,
+            "lower": 0.015306122448979591,
+            "upper": 0.05603448275862069,
+            "clusters": 20
+          }
+        },
+        "vs_old_current_dual": {
+          "mpa": {
+            "mean": 0.33636363636363636,
+            "lower": 0.2193877551020408,
+            "upper": 0.4344262295081967,
+            "clusters": 20
+          },
+          "faa": {
+            "mean": 0.07727272727272727,
+            "lower": 0.04455445544554455,
+            "upper": 0.10655737704918032,
+            "clusters": 20
+          },
+          "fama": {
+            "mean": 0.33636363636363636,
+            "lower": 0.2193877551020408,
+            "upper": 0.4344262295081967,
+            "clusters": 20
+          },
+          "criterionAccuracy": {
+            "mean": 0.20681818181818182,
+            "lower": 0.1326530612244898,
+            "upper": 0.27,
+            "clusters": 20
+          }
+        }
+      },
+      "readerDirections": {
+        "vs_global_latest": {
+          "fama": {
+            "minimax-m3": 0.01818181818181818,
+            "deepseek-v4-flash": 0.05454545454545454
+          },
+          "criterionAccuracy": {
+            "minimax-m3": 0.01818181818181818,
+            "deepseek-v4-flash": 0.05454545454545454
+          }
+        },
+        "vs_old_current_dual": {
+          "fama": {
+            "minimax-m3": 0.3090909090909091,
+            "deepseek-v4-flash": 0.36363636363636365
+          },
+          "criterionAccuracy": {
+            "minimax-m3": 0.17727272727272728,
+            "deepseek-v4-flash": 0.23636363636363636
+          }
+        }
+      },
+      "outcomes": {
+        "vs_global_latest": {
+          "fama": {
+            "cases": 110,
+            "improved": 7,
+            "equal": 103,
+            "harmed": 0
+          },
+          "criterionAccuracy": {
+            "cases": 110,
+            "improved": 7,
+            "equal": 103,
+            "harmed": 0
+          }
+        },
+        "vs_old_current_dual": {
+          "fama": {
+            "cases": 110,
+            "improved": 40,
+            "equal": 70,
+            "harmed": 0
+          },
+          "criterionAccuracy": {
+            "cases": 110,
+            "improved": 40,
+            "equal": 70,
+            "harmed": 0
+          }
+        }
+      }
+    },
+    "natural": {
+      "cases": 40,
+      "arms": {
+        "global_latest": {
+          "cases": 40,
+          "mpa": 0.0325,
+          "faa": 0.8641666666666665,
+          "fama": 0.021875,
+          "criterionAccuracy": 0.08487762237762238,
+          "exactSelectionAccuracy": 1,
+          "expectedStateRecall": 1,
+          "contaminationRate": 0,
+          "meanInjectedTokens": 647.225,
+          "meanInjectedItems": 4.95,
+          "meanRecallMs": 0.5077834250000024
+        },
+        "old_current_dual": {
+          "cases": 40,
+          "mpa": 0.0325,
+          "faa": 0.8641666666666665,
+          "fama": 0.021875,
+          "criterionAccuracy": 0.08487762237762238,
+          "exactSelectionAccuracy": 1,
+          "expectedStateRecall": 1,
+          "contaminationRate": 0,
+          "meanInjectedTokens": 647.225,
+          "meanInjectedItems": 4.95,
+          "meanRecallMs": 0.5077834250000024
+        },
+        "version_aware_multistate": {
+          "cases": 40,
+          "mpa": 0.0325,
+          "faa": 0.8641666666666665,
+          "fama": 0.021875,
+          "criterionAccuracy": 0.08487762237762238,
+          "exactSelectionAccuracy": 1,
+          "expectedStateRecall": 1,
+          "contaminationRate": 0,
+          "meanInjectedTokens": 647.225,
+          "meanInjectedItems": 4.95,
+          "meanRecallMs": 0.5077834250000024
+        }
+      },
+      "comparisons": {
+        "vs_global_latest": {
+          "mpa": {
+            "mean": 0,
+            "lower": 0,
+            "upper": 0,
+            "clusters": 10
+          },
+          "faa": {
+            "mean": 0,
+            "lower": 0,
+            "upper": 0,
+            "clusters": 10
+          },
+          "fama": {
+            "mean": 0,
+            "lower": 0,
+            "upper": 0,
+            "clusters": 10
+          },
+          "criterionAccuracy": {
+            "mean": 0,
+            "lower": 0,
+            "upper": 0,
+            "clusters": 10
+          }
+        },
+        "vs_old_current_dual": {
+          "mpa": {
+            "mean": 0,
+            "lower": 0,
+            "upper": 0,
+            "clusters": 10
+          },
+          "faa": {
+            "mean": 0,
+            "lower": 0,
+            "upper": 0,
+            "clusters": 10
+          },
+          "fama": {
+            "mean": 0,
+            "lower": 0,
+            "upper": 0,
+            "clusters": 10
+          },
+          "criterionAccuracy": {
+            "mean": 0,
+            "lower": 0,
+            "upper": 0,
+            "clusters": 10
+          }
+        }
+      },
+      "readerDirections": {
+        "vs_global_latest": {
+          "fama": {
+            "minimax-m3": 0,
+            "deepseek-v4-flash": 0
+          },
+          "criterionAccuracy": {
+            "minimax-m3": 0,
+            "deepseek-v4-flash": 0
+          }
+        },
+        "vs_old_current_dual": {
+          "fama": {
+            "minimax-m3": 0,
+            "deepseek-v4-flash": 0
+          },
+          "criterionAccuracy": {
+            "minimax-m3": 0,
+            "deepseek-v4-flash": 0
+          }
+        }
+      },
+      "outcomes": {
+        "vs_global_latest": {
+          "fama": {
+            "cases": 40,
+            "improved": 0,
+            "equal": 40,
+            "harmed": 0
+          },
+          "criterionAccuracy": {
+            "cases": 40,
+            "improved": 0,
+            "equal": 40,
+            "harmed": 0
+          }
+        },
+        "vs_old_current_dual": {
+          "fama": {
+            "cases": 40,
+            "improved": 0,
+            "equal": 40,
+            "harmed": 0
+          },
+          "criterionAccuracy": {
+            "cases": 40,
+            "improved": 0,
+            "equal": 40,
+            "harmed": 0
+          }
+        }
+      }
+    },
+    "capability": {
+      "cases": 70,
+      "arms": {
+        "global_latest": {
+          "cases": 70,
+          "mpa": 0.9428571428571428,
+          "faa": 0.9428571428571428,
+          "fama": 0.9428571428571428,
+          "criterionAccuracy": 0.9428571428571428,
+          "exactSelectionAccuracy": 0,
+          "expectedStateRecall": 0.8571428571428571,
+          "contaminationRate": 1,
+          "meanInjectedTokens": 557.8857142857142,
+          "meanInjectedItems": 4,
+          "meanRecallMs": 0.6215940857143193
+        },
+        "old_current_dual": {
+          "cases": 70,
+          "mpa": 0.4714285714285714,
+          "faa": 0.8785714285714286,
+          "fama": 0.4714285714285714,
+          "criterionAccuracy": 0.675,
+          "exactSelectionAccuracy": 0,
+          "expectedStateRecall": 0.21428571428571427,
+          "contaminationRate": 1,
+          "meanInjectedTokens": 487.57142857142856,
+          "meanInjectedItems": 2.0285714285714285,
+          "meanRecallMs": 0.8215416428571318
+        },
+        "version_aware_multistate": {
+          "cases": 70,
+          "mpa": 1,
+          "faa": 1,
+          "fama": 1,
+          "criterionAccuracy": 1,
+          "exactSelectionAccuracy": 1,
+          "expectedStateRecall": 1,
+          "contaminationRate": 0,
+          "meanInjectedTokens": 395.9,
+          "meanInjectedItems": 1.2857142857142858,
+          "meanRecallMs": 0.5686392714285831
+        }
+      },
+      "comparisons": {
+        "vs_global_latest": {
+          "mpa": {
+            "mean": 0.05714285714285714,
+            "lower": 0.02857142857142857,
+            "upper": 0.08571428571428572,
+            "clusters": 10
+          },
+          "faa": {
+            "mean": 0.05714285714285714,
+            "lower": 0.02857142857142857,
+            "upper": 0.08571428571428572,
+            "clusters": 10
+          },
+          "fama": {
+            "mean": 0.05714285714285714,
+            "lower": 0.02857142857142857,
+            "upper": 0.08571428571428572,
+            "clusters": 10
+          },
+          "criterionAccuracy": {
+            "mean": 0.05714285714285714,
+            "lower": 0.02857142857142857,
+            "upper": 0.08571428571428572,
+            "clusters": 10
+          }
+        },
+        "vs_old_current_dual": {
+          "mpa": {
+            "mean": 0.5285714285714286,
+            "lower": 0.5071428571428571,
+            "upper": 0.55,
+            "clusters": 10
+          },
+          "faa": {
+            "mean": 0.12142857142857143,
+            "lower": 0.09285714285714286,
+            "upper": 0.15,
+            "clusters": 10
+          },
+          "fama": {
+            "mean": 0.5285714285714286,
+            "lower": 0.5071428571428571,
+            "upper": 0.55,
+            "clusters": 10
+          },
+          "criterionAccuracy": {
+            "mean": 0.325,
+            "lower": 0.30357142857142855,
+            "upper": 0.3464285714285714,
+            "clusters": 10
+          }
+        }
+      },
+      "readerDirections": {
+        "vs_global_latest": {
+          "fama": {
+            "minimax-m3": 0.02857142857142857,
+            "deepseek-v4-flash": 0.08571428571428572
+          },
+          "criterionAccuracy": {
+            "minimax-m3": 0.02857142857142857,
+            "deepseek-v4-flash": 0.08571428571428572
+          }
+        },
+        "vs_old_current_dual": {
+          "fama": {
+            "minimax-m3": 0.4857142857142857,
+            "deepseek-v4-flash": 0.5714285714285714
+          },
+          "criterionAccuracy": {
+            "minimax-m3": 0.2785714285714286,
+            "deepseek-v4-flash": 0.37142857142857144
+          }
+        }
+      },
+      "outcomes": {
+        "vs_global_latest": {
+          "fama": {
+            "cases": 70,
+            "improved": 7,
+            "equal": 63,
+            "harmed": 0
+          },
+          "criterionAccuracy": {
+            "cases": 70,
+            "improved": 7,
+            "equal": 63,
+            "harmed": 0
+          }
+        },
+        "vs_old_current_dual": {
+          "fama": {
+            "cases": 70,
+            "improved": 40,
+            "equal": 30,
+            "harmed": 0
+          },
+          "criterionAccuracy": {
+            "cases": 70,
+            "improved": 40,
+            "equal": 30,
+            "harmed": 0
+          }
+        }
+      },
+      "bySlice": {
+        "branch_comparison": {
+          "cases": 10,
+          "arms": {
+            "global_latest": {
+              "cases": 10,
+              "mpa": 1,
+              "faa": 1,
+              "fama": 1,
+              "criterionAccuracy": 1,
+              "exactSelectionAccuracy": 0,
+              "expectedStateRecall": 1,
+              "contaminationRate": 1,
+              "meanInjectedTokens": 557.2,
+              "meanInjectedItems": 4,
+              "meanRecallMs": 0.5433667000001151
+            },
+            "old_current_dual": {
+              "cases": 10,
+              "mpa": 1,
+              "faa": 1,
+              "fama": 1,
+              "criterionAccuracy": 1,
+              "exactSelectionAccuracy": 0,
+              "expectedStateRecall": 0.5,
+              "contaminationRate": 1,
+              "meanInjectedTokens": 511.2,
+              "meanInjectedItems": 2,
+              "meanRecallMs": 0.7737081000000217
+            },
+            "version_aware_multistate": {
+              "cases": 10,
+              "mpa": 1,
+              "faa": 1,
+              "fama": 1,
+              "criterionAccuracy": 1,
+              "exactSelectionAccuracy": 1,
+              "expectedStateRecall": 1,
+              "contaminationRate": 0,
+              "meanInjectedTokens": 483.8,
+              "meanInjectedItems": 2,
+              "meanRecallMs": 0.5383623999999145
+            }
+          },
+          "comparisons": {
+            "vs_global_latest": {
+              "mpa": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "faa": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "fama": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "criterionAccuracy": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              }
+            },
+            "vs_old_current_dual": {
+              "mpa": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "faa": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "fama": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "criterionAccuracy": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              }
+            }
+          },
+          "readerDirections": {
+            "vs_global_latest": {
+              "fama": {
+                "minimax-m3": 0,
+                "deepseek-v4-flash": 0
+              },
+              "criterionAccuracy": {
+                "minimax-m3": 0,
+                "deepseek-v4-flash": 0
+              }
+            },
+            "vs_old_current_dual": {
+              "fama": {
+                "minimax-m3": 0,
+                "deepseek-v4-flash": 0
+              },
+              "criterionAccuracy": {
+                "minimax-m3": 0,
+                "deepseek-v4-flash": 0
+              }
+            }
+          },
+          "outcomes": {
+            "vs_global_latest": {
+              "fama": {
+                "cases": 10,
+                "improved": 0,
+                "equal": 10,
+                "harmed": 0
+              },
+              "criterionAccuracy": {
+                "cases": 10,
+                "improved": 0,
+                "equal": 10,
+                "harmed": 0
+              }
+            },
+            "vs_old_current_dual": {
+              "fama": {
+                "cases": 10,
+                "improved": 0,
+                "equal": 10,
+                "harmed": 0
+              },
+              "criterionAccuracy": {
+                "cases": 10,
+                "improved": 0,
+                "equal": 10,
+                "harmed": 0
+              }
+            }
+          }
+        },
+        "branch_current": {
+          "cases": 10,
+          "arms": {
+            "global_latest": {
+              "cases": 10,
+              "mpa": 1,
+              "faa": 1,
+              "fama": 1,
+              "criterionAccuracy": 1,
+              "exactSelectionAccuracy": 0,
+              "expectedStateRecall": 1,
+              "contaminationRate": 1,
+              "meanInjectedTokens": 557.2,
+              "meanInjectedItems": 4,
+              "meanRecallMs": 1.1426251000000776
+            },
+            "old_current_dual": {
+              "cases": 10,
+              "mpa": 0,
+              "faa": 0.85,
+              "fama": 0,
+              "criterionAccuracy": 0.425,
+              "exactSelectionAccuracy": 0,
+              "expectedStateRecall": 0,
+              "contaminationRate": 1,
+              "meanInjectedTokens": 465.6,
+              "meanInjectedItems": 2,
+              "meanRecallMs": 1.0065542000000278
+            },
+            "version_aware_multistate": {
+              "cases": 10,
+              "mpa": 1,
+              "faa": 1,
+              "fama": 1,
+              "criterionAccuracy": 1,
+              "exactSelectionAccuracy": 1,
+              "expectedStateRecall": 1,
+              "contaminationRate": 0,
+              "meanInjectedTokens": 428.9,
+              "meanInjectedItems": 1,
+              "meanRecallMs": 0.6041333000000122
+            }
+          },
+          "comparisons": {
+            "vs_global_latest": {
+              "mpa": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "faa": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "fama": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "criterionAccuracy": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              }
+            },
+            "vs_old_current_dual": {
+              "mpa": {
+                "mean": 1,
+                "lower": 1,
+                "upper": 1,
+                "clusters": 10
+              },
+              "faa": {
+                "mean": 0.15,
+                "lower": 0,
+                "upper": 0.4,
+                "clusters": 10
+              },
+              "fama": {
+                "mean": 1,
+                "lower": 1,
+                "upper": 1,
+                "clusters": 10
+              },
+              "criterionAccuracy": {
+                "mean": 0.575,
+                "lower": 0.5,
+                "upper": 0.675,
+                "clusters": 10
+              }
+            }
+          },
+          "readerDirections": {
+            "vs_global_latest": {
+              "fama": {
+                "minimax-m3": 0,
+                "deepseek-v4-flash": 0
+              },
+              "criterionAccuracy": {
+                "minimax-m3": 0,
+                "deepseek-v4-flash": 0
+              }
+            },
+            "vs_old_current_dual": {
+              "fama": {
+                "minimax-m3": 1,
+                "deepseek-v4-flash": 1
+              },
+              "criterionAccuracy": {
+                "minimax-m3": 0.55,
+                "deepseek-v4-flash": 0.6
+              }
+            }
+          },
+          "outcomes": {
+            "vs_global_latest": {
+              "fama": {
+                "cases": 10,
+                "improved": 0,
+                "equal": 10,
+                "harmed": 0
+              },
+              "criterionAccuracy": {
+                "cases": 10,
+                "improved": 0,
+                "equal": 10,
+                "harmed": 0
+              }
+            },
+            "vs_old_current_dual": {
+              "fama": {
+                "cases": 10,
+                "improved": 10,
+                "equal": 0,
+                "harmed": 0
+              },
+              "criterionAccuracy": {
+                "cases": 10,
+                "improved": 10,
+                "equal": 0,
+                "harmed": 0
+              }
+            }
+          }
+        },
+        "migration": {
+          "cases": 10,
+          "arms": {
+            "global_latest": {
+              "cases": 10,
+              "mpa": 1,
+              "faa": 1,
+              "fama": 1,
+              "criterionAccuracy": 1,
+              "exactSelectionAccuracy": 0,
+              "expectedStateRecall": 1,
+              "contaminationRate": 1,
+              "meanInjectedTokens": 557.2,
+              "meanInjectedItems": 4,
+              "meanRecallMs": 0.5034250000001521
+            },
+            "old_current_dual": {
+              "cases": 10,
+              "mpa": 1,
+              "faa": 1,
+              "fama": 1,
+              "criterionAccuracy": 1,
+              "exactSelectionAccuracy": 0,
+              "expectedStateRecall": 0.5,
+              "contaminationRate": 1,
+              "meanInjectedTokens": 511.2,
+              "meanInjectedItems": 2,
+              "meanRecallMs": 0.729095899999902
+            },
+            "version_aware_multistate": {
+              "cases": 10,
+              "mpa": 1,
+              "faa": 1,
+              "fama": 1,
+              "criterionAccuracy": 1,
+              "exactSelectionAccuracy": 1,
+              "expectedStateRecall": 1,
+              "contaminationRate": 0,
+              "meanInjectedTokens": 483.8,
+              "meanInjectedItems": 2,
+              "meanRecallMs": 0.49301669999995285
+            }
+          },
+          "comparisons": {
+            "vs_global_latest": {
+              "mpa": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "faa": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "fama": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "criterionAccuracy": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              }
+            },
+            "vs_old_current_dual": {
+              "mpa": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "faa": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "fama": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "criterionAccuracy": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              }
+            }
+          },
+          "readerDirections": {
+            "vs_global_latest": {
+              "fama": {
+                "minimax-m3": 0,
+                "deepseek-v4-flash": 0
+              },
+              "criterionAccuracy": {
+                "minimax-m3": 0,
+                "deepseek-v4-flash": 0
+              }
+            },
+            "vs_old_current_dual": {
+              "fama": {
+                "minimax-m3": 0,
+                "deepseek-v4-flash": 0
+              },
+              "criterionAccuracy": {
+                "minimax-m3": 0,
+                "deepseek-v4-flash": 0
+              }
+            }
+          },
+          "outcomes": {
+            "vs_global_latest": {
+              "fama": {
+                "cases": 10,
+                "improved": 0,
+                "equal": 10,
+                "harmed": 0
+              },
+              "criterionAccuracy": {
+                "cases": 10,
+                "improved": 0,
+                "equal": 10,
+                "harmed": 0
+              }
+            },
+            "vs_old_current_dual": {
+              "fama": {
+                "cases": 10,
+                "improved": 0,
+                "equal": 10,
+                "harmed": 0
+              },
+              "criterionAccuracy": {
+                "cases": 10,
+                "improved": 0,
+                "equal": 10,
+                "harmed": 0
+              }
+            }
+          }
+        },
+        "missing_scope_abstention": {
+          "cases": 10,
+          "arms": {
+            "global_latest": {
+              "cases": 10,
+              "mpa": 0.6,
+              "faa": 0.6,
+              "fama": 0.6,
+              "criterionAccuracy": 0.6,
+              "exactSelectionAccuracy": 0,
+              "expectedStateRecall": 0,
+              "contaminationRate": 1,
+              "meanInjectedTokens": 557.4,
+              "meanInjectedItems": 4,
+              "meanRecallMs": 0.4781415000001289
+            },
+            "old_current_dual": {
+              "cases": 10,
+              "mpa": 0.3,
+              "faa": 0.3,
+              "fama": 0.3,
+              "criterionAccuracy": 0.3,
+              "exactSelectionAccuracy": 0,
+              "expectedStateRecall": 0,
+              "contaminationRate": 1,
+              "meanInjectedTokens": 465.7,
+              "meanInjectedItems": 2,
+              "meanRecallMs": 0.6862041999999746
+            },
+            "version_aware_multistate": {
+              "cases": 10,
+              "mpa": 1,
+              "faa": 1,
+              "fama": 1,
+              "criterionAccuracy": 1,
+              "exactSelectionAccuracy": 1,
+              "expectedStateRecall": 1,
+              "contaminationRate": 0,
+              "meanInjectedTokens": 0,
+              "meanInjectedItems": 0,
+              "meanRecallMs": 0.5230792999999722
+            }
+          },
+          "comparisons": {
+            "vs_global_latest": {
+              "mpa": {
+                "mean": 0.4,
+                "lower": 0.2,
+                "upper": 0.6,
+                "clusters": 10
+              },
+              "faa": {
+                "mean": 0.4,
+                "lower": 0.25,
+                "upper": 0.6,
+                "clusters": 10
+              },
+              "fama": {
+                "mean": 0.4,
+                "lower": 0.2,
+                "upper": 0.6,
+                "clusters": 10
+              },
+              "criterionAccuracy": {
+                "mean": 0.4,
+                "lower": 0.2,
+                "upper": 0.6,
+                "clusters": 10
+              }
+            },
+            "vs_old_current_dual": {
+              "mpa": {
+                "mean": 0.7,
+                "lower": 0.55,
+                "upper": 0.85,
+                "clusters": 10
+              },
+              "faa": {
+                "mean": 0.7,
+                "lower": 0.55,
+                "upper": 0.85,
+                "clusters": 10
+              },
+              "fama": {
+                "mean": 0.7,
+                "lower": 0.55,
+                "upper": 0.85,
+                "clusters": 10
+              },
+              "criterionAccuracy": {
+                "mean": 0.7,
+                "lower": 0.55,
+                "upper": 0.85,
+                "clusters": 10
+              }
+            }
+          },
+          "readerDirections": {
+            "vs_global_latest": {
+              "fama": {
+                "minimax-m3": 0.2,
+                "deepseek-v4-flash": 0.6
+              },
+              "criterionAccuracy": {
+                "minimax-m3": 0.2,
+                "deepseek-v4-flash": 0.6
+              }
+            },
+            "vs_old_current_dual": {
+              "fama": {
+                "minimax-m3": 0.4,
+                "deepseek-v4-flash": 1
+              },
+              "criterionAccuracy": {
+                "minimax-m3": 0.4,
+                "deepseek-v4-flash": 1
+              }
+            }
+          },
+          "outcomes": {
+            "vs_global_latest": {
+              "fama": {
+                "cases": 10,
+                "improved": 7,
+                "equal": 3,
+                "harmed": 0
+              },
+              "criterionAccuracy": {
+                "cases": 10,
+                "improved": 7,
+                "equal": 3,
+                "harmed": 0
+              }
+            },
+            "vs_old_current_dual": {
+              "fama": {
+                "cases": 10,
+                "improved": 10,
+                "equal": 0,
+                "harmed": 0
+              },
+              "criterionAccuracy": {
+                "cases": 10,
+                "improved": 10,
+                "equal": 0,
+                "harmed": 0
+              }
+            }
+          }
+        },
+        "parallel_task_current": {
+          "cases": 10,
+          "arms": {
+            "global_latest": {
+              "cases": 10,
+              "mpa": 1,
+              "faa": 1,
+              "fama": 1,
+              "criterionAccuracy": 1,
+              "exactSelectionAccuracy": 0,
+              "expectedStateRecall": 1,
+              "contaminationRate": 1,
+              "meanInjectedTokens": 560.1,
+              "meanInjectedItems": 4,
+              "meanRecallMs": 0.5369999999998981
+            },
+            "old_current_dual": {
+              "cases": 10,
+              "mpa": 0,
+              "faa": 1,
+              "fama": 0,
+              "criterionAccuracy": 0.5,
+              "exactSelectionAccuracy": 0,
+              "expectedStateRecall": 0,
+              "contaminationRate": 1,
+              "meanInjectedTokens": 467.1,
+              "meanInjectedItems": 2,
+              "meanRecallMs": 0.8533458999999312
+            },
+            "version_aware_multistate": {
+              "cases": 10,
+              "mpa": 1,
+              "faa": 1,
+              "fama": 1,
+              "criterionAccuracy": 1,
+              "exactSelectionAccuracy": 1,
+              "expectedStateRecall": 1,
+              "contaminationRate": 0,
+              "meanInjectedTokens": 440.8,
+              "meanInjectedItems": 1,
+              "meanRecallMs": 0.6033834000000752
+            }
+          },
+          "comparisons": {
+            "vs_global_latest": {
+              "mpa": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "faa": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "fama": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "criterionAccuracy": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              }
+            },
+            "vs_old_current_dual": {
+              "mpa": {
+                "mean": 1,
+                "lower": 1,
+                "upper": 1,
+                "clusters": 10
+              },
+              "faa": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "fama": {
+                "mean": 1,
+                "lower": 1,
+                "upper": 1,
+                "clusters": 10
+              },
+              "criterionAccuracy": {
+                "mean": 0.5,
+                "lower": 0.5,
+                "upper": 0.5,
+                "clusters": 10
+              }
+            }
+          },
+          "readerDirections": {
+            "vs_global_latest": {
+              "fama": {
+                "minimax-m3": 0,
+                "deepseek-v4-flash": 0
+              },
+              "criterionAccuracy": {
+                "minimax-m3": 0,
+                "deepseek-v4-flash": 0
+              }
+            },
+            "vs_old_current_dual": {
+              "fama": {
+                "minimax-m3": 1,
+                "deepseek-v4-flash": 1
+              },
+              "criterionAccuracy": {
+                "minimax-m3": 0.5,
+                "deepseek-v4-flash": 0.5
+              }
+            }
+          },
+          "outcomes": {
+            "vs_global_latest": {
+              "fama": {
+                "cases": 10,
+                "improved": 0,
+                "equal": 10,
+                "harmed": 0
+              },
+              "criterionAccuracy": {
+                "cases": 10,
+                "improved": 0,
+                "equal": 10,
+                "harmed": 0
+              }
+            },
+            "vs_old_current_dual": {
+              "fama": {
+                "cases": 10,
+                "improved": 10,
+                "equal": 0,
+                "harmed": 0
+              },
+              "criterionAccuracy": {
+                "cases": 10,
+                "improved": 10,
+                "equal": 0,
+                "harmed": 0
+              }
+            }
+          }
+        },
+        "regression": {
+          "cases": 10,
+          "arms": {
+            "global_latest": {
+              "cases": 10,
+              "mpa": 1,
+              "faa": 1,
+              "fama": 1,
+              "criterionAccuracy": 1,
+              "exactSelectionAccuracy": 0,
+              "expectedStateRecall": 1,
+              "contaminationRate": 1,
+              "meanInjectedTokens": 557.7,
+              "meanInjectedItems": 4,
+              "meanRecallMs": 0.5561919000000671
+            },
+            "old_current_dual": {
+              "cases": 10,
+              "mpa": 1,
+              "faa": 1,
+              "fama": 1,
+              "criterionAccuracy": 1,
+              "exactSelectionAccuracy": 0,
+              "expectedStateRecall": 0.5,
+              "contaminationRate": 1,
+              "meanInjectedTokens": 526,
+              "meanInjectedItems": 2.2,
+              "meanRecallMs": 0.7673666000000594
+            },
+            "version_aware_multistate": {
+              "cases": 10,
+              "mpa": 1,
+              "faa": 1,
+              "fama": 1,
+              "criterionAccuracy": 1,
+              "exactSelectionAccuracy": 1,
+              "expectedStateRecall": 1,
+              "contaminationRate": 0,
+              "meanInjectedTokens": 483.8,
+              "meanInjectedItems": 2,
+              "meanRecallMs": 0.6215415000000576
+            }
+          },
+          "comparisons": {
+            "vs_global_latest": {
+              "mpa": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "faa": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "fama": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "criterionAccuracy": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              }
+            },
+            "vs_old_current_dual": {
+              "mpa": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "faa": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "fama": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "criterionAccuracy": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              }
+            }
+          },
+          "readerDirections": {
+            "vs_global_latest": {
+              "fama": {
+                "minimax-m3": 0,
+                "deepseek-v4-flash": 0
+              },
+              "criterionAccuracy": {
+                "minimax-m3": 0,
+                "deepseek-v4-flash": 0
+              }
+            },
+            "vs_old_current_dual": {
+              "fama": {
+                "minimax-m3": 0,
+                "deepseek-v4-flash": 0
+              },
+              "criterionAccuracy": {
+                "minimax-m3": 0,
+                "deepseek-v4-flash": 0
+              }
+            }
+          },
+          "outcomes": {
+            "vs_global_latest": {
+              "fama": {
+                "cases": 10,
+                "improved": 0,
+                "equal": 10,
+                "harmed": 0
+              },
+              "criterionAccuracy": {
+                "cases": 10,
+                "improved": 0,
+                "equal": 10,
+                "harmed": 0
+              }
+            },
+            "vs_old_current_dual": {
+              "fama": {
+                "cases": 10,
+                "improved": 0,
+                "equal": 10,
+                "harmed": 0
+              },
+              "criterionAccuracy": {
+                "cases": 10,
+                "improved": 0,
+                "equal": 10,
+                "harmed": 0
+              }
+            }
+          }
+        },
+        "worktree_current": {
+          "cases": 10,
+          "arms": {
+            "global_latest": {
+              "cases": 10,
+              "mpa": 1,
+              "faa": 1,
+              "fama": 1,
+              "criterionAccuracy": 1,
+              "exactSelectionAccuracy": 0,
+              "expectedStateRecall": 1,
+              "contaminationRate": 1,
+              "meanInjectedTokens": 558.4,
+              "meanInjectedItems": 4,
+              "meanRecallMs": 0.5904083999997966
+            },
+            "old_current_dual": {
+              "cases": 10,
+              "mpa": 0,
+              "faa": 1,
+              "fama": 0,
+              "criterionAccuracy": 0.5,
+              "exactSelectionAccuracy": 0,
+              "expectedStateRecall": 0,
+              "contaminationRate": 1,
+              "meanInjectedTokens": 466.2,
+              "meanInjectedItems": 2,
+              "meanRecallMs": 0.9345166000000062
+            },
+            "version_aware_multistate": {
+              "cases": 10,
+              "mpa": 1,
+              "faa": 1,
+              "fama": 1,
+              "criterionAccuracy": 1,
+              "exactSelectionAccuracy": 1,
+              "expectedStateRecall": 1,
+              "contaminationRate": 0,
+              "meanInjectedTokens": 450.2,
+              "meanInjectedItems": 1,
+              "meanRecallMs": 0.5969583000000966
+            }
+          },
+          "comparisons": {
+            "vs_global_latest": {
+              "mpa": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "faa": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "fama": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "criterionAccuracy": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              }
+            },
+            "vs_old_current_dual": {
+              "mpa": {
+                "mean": 1,
+                "lower": 1,
+                "upper": 1,
+                "clusters": 10
+              },
+              "faa": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "fama": {
+                "mean": 1,
+                "lower": 1,
+                "upper": 1,
+                "clusters": 10
+              },
+              "criterionAccuracy": {
+                "mean": 0.5,
+                "lower": 0.5,
+                "upper": 0.5,
+                "clusters": 10
+              }
+            }
+          },
+          "readerDirections": {
+            "vs_global_latest": {
+              "fama": {
+                "minimax-m3": 0,
+                "deepseek-v4-flash": 0
+              },
+              "criterionAccuracy": {
+                "minimax-m3": 0,
+                "deepseek-v4-flash": 0
+              }
+            },
+            "vs_old_current_dual": {
+              "fama": {
+                "minimax-m3": 1,
+                "deepseek-v4-flash": 1
+              },
+              "criterionAccuracy": {
+                "minimax-m3": 0.5,
+                "deepseek-v4-flash": 0.5
+              }
+            }
+          },
+          "outcomes": {
+            "vs_global_latest": {
+              "fama": {
+                "cases": 10,
+                "improved": 0,
+                "equal": 10,
+                "harmed": 0
+              },
+              "criterionAccuracy": {
+                "cases": 10,
+                "improved": 0,
+                "equal": 10,
+                "harmed": 0
+              }
+            },
+            "vs_old_current_dual": {
+              "fama": {
+                "cases": 10,
+                "improved": 10,
+                "equal": 0,
+                "harmed": 0
+              },
+              "criterionAccuracy": {
+                "cases": 10,
+                "improved": 10,
+                "equal": 0,
+                "harmed": 0
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "decision": {
+    "recommended": true,
+    "checks": {
+      "contextExactSelection": true,
+      "contextContamination": true,
+      "capabilityVsGlobal": true,
+      "capabilityVsGlobalCi": true,
+      "capabilityVsOldCurrentDual": true,
+      "capabilityVsOldCurrentDualCi": true,
+      "currentSlices": true,
+      "crossStateSlices": true,
+      "missingScope": true,
+      "naturalNonInferiority": true,
+      "combinedTokenBudget": true,
+      "readerDirection": true,
+      "contextIntegrity": true,
+      "evaluationIntegrity": true
+    },
+    "combinedTokenIncreases": {
+      "global_latest": -0.1746046411358002,
+      "old_current_dual": -0.10691614322131326
+    },
+    "capabilityDirections": {
+      "global_latest": {
+        "minimax-m3": 0.02857142857142857,
+        "deepseek-v4-flash": 0.08571428571428572
+      },
+      "old_current_dual": {
+        "minimax-m3": 0.2785714285714286,
+        "deepseek-v4-flash": 0.37142857142857144
+      }
+    }
+  },
+  "recommendation": "Adopt version-aware multi-state recall for branch, worktree, and parallel-task execution, retaining labelled multi-state output only for explicit comparison/migration/regression/history queries.",
+  "usage": {
+    "readers": {
+      "minimax-m3": {
+        "calls": 250,
+        "promptTokens": 182488,
+        "completionTokens": 24135,
+        "totalTokens": 206623,
+        "retries": 0,
+        "meanLatencyMs": 1929.2408406559957
+      },
+      "deepseek-v4-flash": {
+        "calls": 250,
+        "promptTokens": 155563,
+        "completionTokens": 26143,
+        "totalTokens": 181706,
+        "retries": 0,
+        "meanLatencyMs": 1446.2950711639992
+      }
+    },
+    "judges": {
+      "minimax-m3": {
+        "calls": 250,
+        "promptTokens": 97171,
+        "completionTokens": 12801,
+        "totalTokens": 109972,
+        "retries": 0,
+        "meanLatencyMs": 1564.064758144001
+      },
+      "deepseek-v4-flash": {
+        "calls": 250,
+        "promptTokens": 64549,
+        "completionTokens": 12774,
+        "totalTokens": 77323,
+        "retries": 0,
+        "meanLatencyMs": 951.9798898359986
+      }
+    }
+  },
+  "operationalIntegrity": {
+    "evaluations": 500,
+    "expectedEvaluations": 500,
+    "complete": true,
+    "readerCalls": 500,
+    "judgeCalls": 500,
+    "readerRetries": 0,
+    "judgeRetries": 0,
+    "readerModelMismatches": 0,
+    "judgeModelMismatches": 0,
+    "selfJudgments": 0,
+    "unclearVerdicts": 0
+  },
+  "artifactHashes": {
+    "evaluationsSha256": "e546f4f952b6e8a7c790a270cc7a02eac531c7b23807ca3a2ff580f28765ee61"
+  },
+  "caveats": [
+    "The version-capability panel is controlled and generated, but uses real Git repositories/worktrees, real SQLite writes, and the production performAutoRecall prompt path. The public safety panel is Memora at a fixed revision. This run does not measure automatic LLM extraction quality, live TCVDB/COS latency, merge ancestry inference, or prevalence on uncontrolled programming traffic.",
+    "The 40 public Memora questions are a frozen reused safety panel, not a pristine holdout; capability claims come from the separately identified controlled programming-state panel."
+  ]
+}

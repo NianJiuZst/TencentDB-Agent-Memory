@@ -1,0 +1,90 @@
+{
+  "validationVersion": "version-aware-production-e2e-independent-validation-v1.0",
+  "status": "passed",
+  "inputs": {
+    "contextSha256": "2c64c12d0a4656d1382edf355bbfa028bd252ef0c0c58db776e77b7ce1a1960f",
+    "evaluationsSha256": "e546f4f952b6e8a7c790a270cc7a02eac531c7b23807ca3a2ff580f28765ee61",
+    "summarySha256": "fbe7d455895aa9a35777946dce5e459bef00f4e44efc181b028306f9b7f7760b"
+  },
+  "counts": {
+    "cases": 110,
+    "naturalCases": 40,
+    "capabilityCases": 70,
+    "arms": 3,
+    "evaluations": 500,
+    "uniqueEvaluationKeys": 500,
+    "rawVerdictsRescored": 500
+  },
+  "primaryRecomputation": {
+    "capabilityCriterionAccuracyDeltaVsGlobal": {
+      "mean": 0.05714285714285714,
+      "lower": 0.02857142857142857,
+      "upper": 0.08571428571428572,
+      "clusters": 10
+    },
+    "capabilityCriterionAccuracyDeltaVsOldCurrentDual": {
+      "mean": 0.325,
+      "lower": 0.30357142857142855,
+      "upper": 0.3464285714285714,
+      "clusters": 10
+    },
+    "naturalFamaDeltaVsGlobal": {
+      "mean": 0,
+      "lower": 0,
+      "upper": 0,
+      "clusters": 10
+    },
+    "naturalFamaDeltaVsOldCurrentDual": {
+      "mean": 0,
+      "lower": 0,
+      "upper": 0,
+      "clusters": 10
+    },
+    "versionAwareContext": {
+      "cases": 70,
+      "mpa": 1,
+      "faa": 1,
+      "fama": 1,
+      "criterionAccuracy": 1,
+      "exactSelectionAccuracy": 1,
+      "expectedStateRecall": 1,
+      "contaminationRate": 0,
+      "meanInjectedTokens": 395.9,
+      "meanInjectedItems": 1.2857142857142858,
+      "meanRecallMs": 0.5686392714285831
+    },
+    "combinedTokenIncreases": {
+      "global_latest": -0.1746046411358002,
+      "old_current_dual": -0.10691614322131326
+    },
+    "capabilityDirections": {
+      "global_latest": {
+        "minimax-m3": 0.02857142857142857,
+        "deepseek-v4-flash": 0.08571428571428572
+      },
+      "old_current_dual": {
+        "minimax-m3": 0.2785714285714286,
+        "deepseek-v4-flash": 0.37142857142857144
+      }
+    },
+    "checks": {
+      "contextExactSelection": true,
+      "contextContamination": true,
+      "capabilityVsGlobal": true,
+      "capabilityVsGlobalCi": true,
+      "capabilityVsOldCurrentDual": true,
+      "capabilityVsOldCurrentDualCi": true,
+      "currentSlices": true,
+      "crossStateSlices": true,
+      "missingScope": true,
+      "naturalNonInferiority": true,
+      "combinedTokenBudget": true,
+      "readerDirection": true,
+      "contextIntegrity": true,
+      "evaluationIntegrity": true
+    },
+    "recommended": true
+  },
+  "mismatchCount": 0,
+  "mismatches": []
+}
