@@ -1,0 +1,64 @@
+{
+  "protocolVersion": "production-auto-recall-context-v1.0",
+  "seed": 20260830,
+  "hypothesis": "The final query-aware dual-state implementation improves explicit history and state-change answers while preserving current and ordinary answers when contexts are produced by the production performAutoRecall path.",
+  "input": {
+    "dataset": "Memora",
+    "revision": "a6493188efc836d6511ed5e4163fe3ba87da30ff",
+    "frozenCaseManifestSha256": "a0e7cc65a9d7054cf3f0a12706668a400a9727a656815d78fe9d719b06d882c9",
+    "naturalCases": 150,
+    "temporalPairs": 20,
+    "temporalCases": 60,
+    "personas": 10
+  },
+  "productionPath": {
+    "entrypoint": "src/core/hooks/auto-recall.ts#performAutoRecall",
+    "configParser": "src/config.ts#parseConfig",
+    "feedbackWriter": "src/core/lifecycle/feedback-store.ts#appendLifecycleFeedbackEvent",
+    "runtime": "src/core/lifecycle/production-runtime.ts#applyPersistedLifecycle",
+    "retrievalStrategy": "keyword",
+    "retrievalInput": "Deterministic IMemoryStore contract adapter returning the frozen candidate order; lifecycle resolution and prompt construction are not simulated.",
+    "lifecycle": {
+      "enabled": true,
+      "minConfidence": 0.85,
+      "maxHops": 1,
+      "maxExpansions": 64,
+      "timeoutMs": 10,
+      "maxEvents": 5000
+    }
+  },
+  "arms": [
+    {
+      "id": "current_only",
+      "dualStateMode": "off",
+      "description": "Resolve a released update to its active successor and inject only the current state."
+    },
+    {
+      "id": "query_aware_dual",
+      "dualStateMode": "query_aware",
+      "description": "For explicit history/change queries, inject one labelled historical/current transition; otherwise preserve current-only output."
+    }
+  ],
+  "panels": {
+    "naturalSafety": "All 150 frozen weekly questions; fixed current-state candidate inputs are passed through performAutoRecall for both arms.",
+    "temporalCapability": "Twenty frozen structured preference updates, each asked as current, history and change; performAutoRecall receives the obsolete predecessor plus a real persisted update event and materializes the successor through IMemoryStore."
+  },
+  "prompt": {
+    "system": "The production appendSystemContext is appended to the fixed answer-reader system instruction.",
+    "user": "The production prependContext is prepended to the dated user question.",
+    "hash": "SHA256 of the exact reader message array."
+  },
+  "gates": {
+    "expectedCases": 210,
+    "expectedNaturalCases": 150,
+    "expectedTemporalCases": 60,
+    "expectedCurrentCases": 20,
+    "expectedHistoricalCases": 20,
+    "expectedChangeCases": 20,
+    "requireZeroRecallErrors": true,
+    "requireZeroLifecycleFallbacks": true,
+    "requireZeroUnexpectedPairCounts": true,
+    "requireByteIdenticalNonEligiblePrompts": true
+  },
+  "claimBoundary": "This executes the final production auto-recall, configuration, persisted-feedback, resolver, routing and prompt-injection code. Retrieval ranking is frozen behind the IMemoryStore contract, no live SQLite/TCVDB/COS network is measured, structured update edges are treated as trusted inputs, and the panel is not a natural-query prevalence estimate."
+}

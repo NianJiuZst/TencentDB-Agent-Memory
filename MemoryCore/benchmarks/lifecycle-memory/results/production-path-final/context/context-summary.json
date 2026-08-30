@@ -1,0 +1,80 @@
+{
+  "protocolVersion": "production-auto-recall-context-v1.0",
+  "status": "context_ready",
+  "protocolSha256": "64c7f55dbff905927b594d788f41f73eeafd47e0c9ad24c8ceccda1404263187",
+  "inputManifestSha256": "a0e7cc65a9d7054cf3f0a12706668a400a9727a656815d78fe9d719b06d882c9",
+  "dataset": {
+    "name": "Memora",
+    "revision": "a6493188efc836d6511ed5e4163fe3ba87da30ff",
+    "dataManifestSha256": "dfc82711dd6647bcb0ba590f43a336f0dac02420e981ce957dd1fd13ae331bfc",
+    "groups": 30,
+    "personas": 10,
+    "questions": 600,
+    "sessions": 27614,
+    "memoryUnits": 24856,
+    "operationCounts": {
+      "no_memory:none": 11126,
+      "activity:add": 7790,
+      "preference:add": 2146,
+      "activity:update": 1226,
+      "goal:add": 572,
+      "preference:delete": 1077,
+      "activity:delete": 2082,
+      "preference:update": 1595
+    }
+  },
+  "productionPath": {
+    "entrypoint": "src/core/hooks/auto-recall.ts#performAutoRecall",
+    "configParser": "src/config.ts#parseConfig",
+    "feedbackWriter": "src/core/lifecycle/feedback-store.ts#appendLifecycleFeedbackEvent",
+    "runtime": "src/core/lifecycle/production-runtime.ts#applyPersistedLifecycle",
+    "retrievalStrategy": "keyword",
+    "retrievalInput": "Deterministic IMemoryStore contract adapter returning the frozen candidate order; lifecycle resolution and prompt construction are not simulated.",
+    "lifecycle": {
+      "enabled": true,
+      "minConfidence": 0.85,
+      "maxHops": 1,
+      "maxExpansions": 64,
+      "timeoutMs": 10,
+      "maxEvents": 5000
+    }
+  },
+  "selection": {
+    "cases": 210,
+    "naturalCases": 150,
+    "temporalCases": 60,
+    "temporalPairs": 20,
+    "personas": 10,
+    "naturalTaskCounts": {
+      "reasoning": 50,
+      "recommending": 50,
+      "remembering": 50
+    },
+    "temporalTaskCounts": {
+      "temporal_change": 20,
+      "temporal_current": 20,
+      "temporal_history": 20
+    }
+  },
+  "deduplication": {
+    "caseArmContexts": 420,
+    "uniquePromptsPerReader": 250,
+    "reusableCaseArmContexts": 170,
+    "exactPromptReuseOnly": true
+  },
+  "contextGeneration": {
+    "calls": 420,
+    "meanMs": 0.506183557142876,
+    "p95Ms": 0.45095800000126474,
+    "maxMs": 112.71429200000057
+  },
+  "validation": {
+    "recallErrors": 0,
+    "lifecycleFallbacks": 0,
+    "unexpectedPairCounts": 0,
+    "nonEligiblePromptMismatches": 0,
+    "passed": true
+  },
+  "contextManifestSha256": "0c940cc4a0ce6fe39213389193421bf477876ab0886d27de16b73c0d460d6a13",
+  "claimBoundary": "This executes the final production auto-recall, configuration, persisted-feedback, resolver, routing and prompt-injection code. Retrieval ranking is frozen behind the IMemoryStore contract, no live SQLite/TCVDB/COS network is measured, structured update edges are treated as trusted inputs, and the panel is not a natural-query prevalence estimate."
+}

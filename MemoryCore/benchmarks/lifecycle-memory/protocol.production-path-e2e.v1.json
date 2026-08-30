@@ -1,0 +1,100 @@
+{
+  "protocolVersion": "production-auto-recall-e2e-v1.0",
+  "seed": 20260830,
+  "preScoreCommitRequired": true,
+  "context": {
+    "protocolVersion": "production-auto-recall-context-v1.0",
+    "sha256": "0c940cc4a0ce6fe39213389193421bf477876ab0886d27de16b73c0d460d6a13",
+    "cases": 210,
+    "naturalCases": 150,
+    "temporalCases": 60,
+    "temporalPairs": 20,
+    "uniquePromptsPerReader": 250,
+    "caseArmContexts": 420
+  },
+  "arms": ["current_only", "query_aware_dual"],
+  "readers": [
+    {
+      "id": "minimax-m3",
+      "provider": "minimax",
+      "model": "MiniMax-M3",
+      "baseUrl": "https://api.minimaxi.com/v1",
+      "apiKeyEnv": "MINIMAX_API_KEY",
+      "temperature": 0.1,
+      "topP": 0.95,
+      "maxTokens": 700,
+      "thinking": "disabled"
+    },
+    {
+      "id": "deepseek-v4-flash",
+      "provider": "deepseek",
+      "model": "deepseek-v4-flash",
+      "baseUrl": "https://api.deepseek.com",
+      "apiKeyEnv": "DEEPSEEK_API_KEY",
+      "temperature": 0,
+      "maxTokens": 700,
+      "thinking": "disabled"
+    }
+  ],
+  "judges": [
+    {
+      "id": "minimax-m3",
+      "provider": "minimax",
+      "model": "MiniMax-M3",
+      "baseUrl": "https://api.minimaxi.com/v1",
+      "apiKeyEnv": "MINIMAX_API_KEY",
+      "temperature": 0.1,
+      "topP": 0.95,
+      "maxTokens": 8192,
+      "thinking": "disabled"
+    },
+    {
+      "id": "deepseek-v4-flash",
+      "provider": "deepseek",
+      "model": "deepseek-v4-flash",
+      "baseUrl": "https://api.deepseek.com",
+      "apiKeyEnv": "DEEPSEEK_API_KEY",
+      "temperature": 0,
+      "maxTokens": 8192,
+      "thinking": "disabled"
+    }
+  ],
+  "judgeAssignment": {
+    "minimax-m3": "deepseek-v4-flash",
+    "deepseek-v4-flash": "minimax-m3"
+  },
+  "retries": 3,
+  "aggregation": {
+    "answerUnit": "Each exact production message array is answered by both fixed readers; each answer is scored only by the other model.",
+    "caseArm": "Arithmetic mean of the two crossed reader/judge cells.",
+    "naturalPrimary": "FAMA over the frozen 150-question weekly census.",
+    "temporalPrimary": "Criterion accuracy, equally weighted by generated question; current, history and change are reported separately.",
+    "uncertainty": "Paired persona-cluster bootstrap with 5000 draws."
+  },
+  "uncertainty": {
+    "unit": "persona",
+    "bootstrapSamples": 5000,
+    "confidenceLevel": 0.95
+  },
+  "gates": {
+    "minTemporalCriterionAccuracyDelta": 0.15,
+    "requireTemporalCriterionAccuracyCiLowerAboveZero": true,
+    "minHistoryCriterionAccuracyDelta": 0.15,
+    "minChangeCriterionAccuracyDelta": 0.15,
+    "minCurrentCriterionAccuracyDelta": -0.01,
+    "minNaturalFamaDelta": -0.01,
+    "maxCombinedTokenIncreaseFraction": 0.1,
+    "requireNonnegativeTemporalDirectionForBothReaders": true,
+    "requireCompleteFrozenTaskSet": true,
+    "requireZeroModelMismatches": true,
+    "requireZeroSelfJudgments": true,
+    "requirePassedProductionContext": true
+  },
+  "decisionRule": "Recommend the query-aware dual-state production path only if every frozen value, non-inferiority, cost, context and integrity gate passes.",
+  "reuse": {
+    "rule": "Reuse only byte-identical production reader message arrays within the same frozen question.",
+    "expectedReaderCalls": 500,
+    "expectedJudgeCalls": 500
+  },
+  "claimBoundary": "This is a fresh answer run over exact messages emitted by the final production auto-recall path. Candidate ranking is frozen behind the IMemoryStore contract, no live SQLite/TCVDB/COS network is measured, structured update edges are trusted inputs, the controlled temporal panel is not a natural-query prevalence estimate, and crossed model judging is not blinded human calibration."
+}
