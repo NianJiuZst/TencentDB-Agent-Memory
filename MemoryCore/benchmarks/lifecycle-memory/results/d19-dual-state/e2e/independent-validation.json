@@ -1,0 +1,78 @@
+{
+  "validationVersion": "lifecycle-dual-state-e2e-independent-validation-v1.0",
+  "status": "passed",
+  "inputs": {
+    "contextSha256": "a0e7cc65a9d7054cf3f0a12706668a400a9727a656815d78fe9d719b06d882c9",
+    "evaluationsSha256": "fb1e6b132b72ed9962600853f18673733822ef385a5c8175cca9deb0b9842b56",
+    "summarySha256": "834e919e7e350ff321a3041840b4c1349847a36c97c9ce73975d0d719530c52b"
+  },
+  "counts": {
+    "cases": 210,
+    "naturalCases": 150,
+    "temporalCases": 60,
+    "arms": 3,
+    "evaluations": 672,
+    "uniqueEvaluationKeys": 672,
+    "rawVerdictsRescored": 672
+  },
+  "primaryRecomputation": {
+    "naturalDualAllFamaDelta": 0.014695887445887446,
+    "naturalDualAllTokenIncreaseFraction": 0.2953424063330261,
+    "temporalQueryAwareCriterionAccuracyDelta": 0.2861111111111112,
+    "temporalHistoryCriterionAccuracyDelta": 0.525,
+    "temporalChangeCriterionAccuracyDelta": 0.33333333333333326,
+    "temporalCurrentCriterionAccuracyDelta": 0,
+    "combinedQueryAwareTokenIncreaseFraction": 0.06916609380783667,
+    "readerTemporalDirections": {
+      "minimax-m3": 0.2777777777777778,
+      "deepseek-v4-flash": 0.29444444444444445
+    },
+    "primaryIntervals": {
+      "naturalDualAllFama": {
+        "mean": 0.014695887445887446,
+        "lower": 0.0013546176046176043,
+        "upper": 0.028079365079365076,
+        "clusters": 10
+      },
+      "naturalQueryAwareFama": {
+        "mean": 0,
+        "lower": 0,
+        "upper": 0,
+        "clusters": 10
+      },
+      "temporalQueryAwareAccuracy": {
+        "mean": 0.2861111111111112,
+        "lower": 0.2777777777777778,
+        "upper": 0.2986111111111111,
+        "clusters": 10
+      }
+    },
+    "checks": {
+      "unconditionalDual": {
+        "naturalFama": true,
+        "naturalFamaCi": true,
+        "naturalFaa": true,
+        "naturalMpa": true,
+        "naturalTokenBudget": false
+      },
+      "queryAwareValue": {
+        "temporalAccuracy": true,
+        "temporalAccuracyCi": true,
+        "historicalAccuracy": true,
+        "changeAccuracy": true,
+        "currentNonInferiority": true,
+        "naturalNonInferiority": true,
+        "combinedTokenBudget": true,
+        "readerDirection": true,
+        "integrity": true
+      },
+      "defaultReplacement": {
+        "naturalTemporalCoverage": false,
+        "naturalFama": false,
+        "naturalFamaCi": false
+      }
+    }
+  },
+  "mismatchCount": 0,
+  "mismatches": []
+}

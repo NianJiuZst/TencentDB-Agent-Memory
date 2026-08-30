@@ -4,7 +4,7 @@ This file is the persistent direction registry for iterative work above the fixe
 
 ## Current incumbent
 
-`lifecycle-adaptive-v1.0`: correction-linked successor redirection with `minConfidence=0.85`, one hop, `k=5`, bounded expansion, and whole-call Base fallback. D16 retains it as the **conditional research incumbent**, not an unconditional traffic default: its broad effect is positive on forgetting-bearing and recommending questions, uncertain over the full 200-case population, and negative for remembering MPA.
+`lifecycle-adaptive-v1.0`: correction-linked successor redirection with `minConfidence=0.85`, one hop, `k=5`, bounded expansion, and whole-call Base fallback. D16 retains it as the **conditional research incumbent**, not an unconditional traffic default: its broad effect is positive on forgetting-bearing and recommending questions, uncertain over the full 200-case population, and negative for remembering MPA. D19 adds a default-off query-aware renderer for explicit history/change questions; it does not replace V1's current-only default.
 
 ## Direction registry
 
@@ -28,6 +28,7 @@ This file is the persistent direction registry for iterative work above the fixe
 | D16 | Broad baselines and single-factor answer ablation | Compare V1 with four simple baselines and six isolated V2 factors | All 200 Memora answer cases unused by prior panels | Completed; no challenger promoted | V1 is useful on high-risk slices but not established as a universal default |
 | D17 | Stance-aware proxy alignment | Discount negated/historical obsolete mentions before policy ranking | Frozen D16 contexts and answers | Rejected at alignment gate | FAMA rank correlation improved only 0.0094, below the frozen 0.10 threshold |
 | D18 | Text-only correction detection and linking | Detect explicit correction cues and link them to bounded prior units without operation metadata | Persona-disjoint quarterly Memora histories | Rejected at linking gate | Event detection transferred; predecessor linking precision was only 20.05% |
+| D19 | Query-aware labeled dual state | Render one bounded old/current pair only for explicit history or change queries | 150-question natural weekly census + 60 controlled temporal questions | Conditional capability passed; default replacement rejected | Temporal accuracy +28.61 points; combined tokens +6.92%; natural panel had zero eligible queries |
 
 ## Why D1 is first
 
@@ -168,6 +169,16 @@ D17 asks whether the direct proxy ranks policies badly because it counts an obso
 V1 had so far tested management with released Memora operation metadata. D18 removes that metadata from the runtime phase and uses only current shared text plus at most 512 prior shared units. Four development personas informed frozen English cue families; validation and test contain three disjoint personas each. Gold operations are attached only after prediction for scoring.
 
 On 5,954 test sessions, the high-confidence detector identifies invalidating sessions with 97.89% precision and 79.64% recall. This does not solve construction: among 2,823 predicted predecessor links, only 566 match a released obsolete-value predecessor (20.05% precision), and only 45.38% of true-positive linked sessions contain any correct predecessor. Event-kind accuracy is 82.34%. Those three checks fail the frozen gate, although p95 latency is 5.51 ms and forbidden runtime metadata reads are zero. V1 must therefore remain labeled oracle-management evidence. The next technical target is not a broader cue list but scope-aware entity/state resolution with abstention.
+
+## D19: labeled dual state is useful only when the query asks for time
+
+D19 tests a challenge to V1's current-only output: when a correct structured update edge exists, should the reader see both the superseded and active states with explicit labels? The protocol froze three arms before answer scoring: V1 current-only, unconditional dual state, and a query-text-only router that emits the pair only for explicit historical-state or state-change questions. Current-state and historical-aggregate questions remain byte-identical to V1. Delete events are never eligible.
+
+The natural panel is the complete 150-question weekly Memora census, with 50 reasoning, 50 recommending and 50 remembering questions. It contains 100 current-state and 50 aggregate questions but no explicit history/change questions. Unconditional dual state improved natural FAMA by 1.47 points (95% persona interval +0.14 to +2.81), while increasing injected tokens by 29.53%; it therefore failed only the frozen cost gate. Query-aware dual state was exactly V1 on every natural case, so this panel cannot establish default replacement.
+
+The controlled capability panel uses 20 structured preference update pairs and asks current, historical and change questions for each, producing 60 cases. Query-aware dual state improved overall criterion accuracy from 71.39% to 100% (+28.61 points, 95% interval +27.78 to +29.86), history from 47.50% to 100%, and change from 66.67% to 100%; current-state accuracy stayed at 100%. Both readers had positive directions. Across the combined 210 cases, injected tokens increased by 6.92%, below the 10% gate, although routed history/change cases individually rose from 7.8 to 40.5 tokens.
+
+All 672 reader cells and 672 crossed-judge cells completed with zero retries, model mismatches or self-judgments. An independent validator rescored all 672 verdicts with zero mismatch. D19 therefore admits the renderer as a default-off experimental `query_aware` path, not as the default policy. The result assumes a correct structured predecessor edge and does not validate D18's failed automatic linker, human accuracy, production traffic or unrestricted exposure of old memory.
 
 ## Iteration rule
 

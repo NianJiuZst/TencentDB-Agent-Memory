@@ -8,12 +8,14 @@ D11 is retained separately as an efficiency finding: it reduced injected tokens 
 
 D18 rejects an end-to-end claim. Text-only correction-event detection transfers, but automatic predecessor linking is not reliable enough. V1 therefore remains evidence about **management given a correction graph**, not a solved correction-extraction system.
 
+D19 validates the user's labeled old/current idea as a **query-aware capability**, not a new default. On 60 controlled temporal questions, query-aware dual-state rendering improved criterion accuracy by 28.61 points, with a persona-bootstrap 95% interval of +27.78 to +29.86 points; history improved by 52.50 points and change questions by 33.33 points, while current-state questions were identical to V1. On the 150-question natural weekly census, however, there were no explicit history/change questions, so query-aware routing was byte-identical to V1 and could not justify default replacement. Returning pairs unconditionally improved natural FAMA by 1.47 points but increased injected tokens by 29.53%, failing the frozen cost gate.
+
 ## What Base, V1, V2 and D-numbers mean
 
 - **Base**: unchanged MemoryCore L0 retrieval and injection path.
 - **V1**: redirect an obsolete Base candidate through one released high-confidence correction edge; keep `k=5`, a 64-expansion/10 ms bound, and exact Base fallback.
 - **V2**: proxy-selected combination of confidence 0.96, two hops, up to two redirect-conditioned extra slots, and historical-aggregate protection.
-- **D1--D18**: numbered research hypotheses tested after V1. A D-number is an experiment direction, not a later product version. Rejection is retained as a result rather than silently removed.
+- **D1--D19**: numbered research hypotheses tested after V1. A D-number is an experiment direction, not a later product version. Rejection is retained as a result rather than silently removed.
 
 ## D16 broad answer experiment
 
@@ -93,6 +95,38 @@ The runtime detector reads only shared dialogue text and at most 512 prior units
 
 Event precision/recall and latency pass, but link precision, any-correct-link rate, and kind accuracy fail. The next target is scoped entity/state resolution with abstention, not merely adding more English cues.
 
+## D19 query-aware labeled dual state
+
+### Frozen design and integrity
+
+- Arms: current-only V1, unconditional labeled old/current pairs, and query-aware pairs for explicit history/change queries only.
+- Natural panel: all 150 weekly Memora questions, 50 each reasoning/recommending/remembering; 100 current-state and 50 historical-aggregate queries, but zero explicit history/change queries.
+- Controlled capability panel: 20 structured preference update pairs, each asked as current, history and change, for 60 questions total.
+- 210 cases, 630 case-arm contexts and 336 unique prompts per reader.
+- MiniMax-M3 and DeepSeek-V4-Flash made 672 reader and 672 crossed-judge calls; retries, model mismatches and self-judgments were all zero. Four unclear verdicts were counted incorrect.
+- The independent validator rescored all 672 raw verdicts and reproduced every primary metric and gate with zero mismatch.
+
+### Natural weekly census
+
+| Arm | MPA | FAA | FAMA | FAMA vs V1 [95% persona CI] | Mean tokens | Decision |
+|---|---:|---:|---:|---:|---:|---|
+| V1 | 0.3348 | 0.8859 | 0.2964 | -- | 122.95 | Default incumbent |
+| Unconditional dual | 0.3498 | 0.8818 | 0.3111 | +0.0147 [+0.0014, +0.0281] | 159.27 | Reject: +29.53% tokens |
+| Query-aware dual | 0.3348 | 0.8859 | 0.2964 | 0 [0, 0] | 122.95 | Exact V1; no eligible query |
+
+### Controlled temporal capability
+
+| Query type | n | V1 criterion accuracy | Query-aware dual | Delta [95% persona CI] |
+|---|---:|---:|---:|---:|
+| Current state | 20 | 1.0000 | 1.0000 | 0 [0, 0] |
+| Historical state | 20 | 0.4750 | 1.0000 | +0.5250 [+0.5000, +0.5625] |
+| State change | 20 | 0.6667 | 1.0000 | +0.3333 [+0.3333, +0.3333] |
+| All temporal | 60 | 0.7139 | 1.0000 | +0.2861 [+0.2778, +0.2986] |
+
+Both reader directions were positive (+0.2778 MiniMax, +0.2944 DeepSeek). Across all 210 cases, query-aware rendering increased mean injected tokens by 6.92%, below the frozen 10% gate. On the routed history/change subset itself, tokens rose from 7.8 to 40.5 per case; that local cost is material and must not be hidden by the combined average.
+
+D19 therefore supports a default-off `query_aware` option: use V1 current-only output for ordinary/current/aggregate questions, and return one bounded `HISTORICAL / SUPERSEDED` plus `CURRENT / ACTIVE` block only when the query explicitly asks for history or change. Delete/retraction events never expose the old value. The experiment assumes a correct structured update edge; it does not validate automatic predecessor linking, human correctness or real programming traffic.
+
 ## D11 efficiency result
 
 On a checksum-frozen 30-question LongMemEval-V2 test, D11 performs 19 evidence-preserving substitutions and reduces mean injected tokens from 2,796.8 to 2,213.9 (-20.84%). The 12 direct-support questions are all equal to Base (0 improved / 12 equal / 0 harmed), and every token, provenance, capacity, disablement, damage, timeout and corruption certificate passes. Because the frozen objective required quality improvement and no answer model was called, D11 is a secondary efficiency/Pareto result only.
@@ -107,6 +141,8 @@ Supported:
 - evidence-preserving compression can reduce measured injection cost;
 - exact fallback and bounded sidecars are implementable;
 - event detection is easier than reliable predecessor linking.
+- labeled old/current state has large value for explicit temporal questions when a correct structured update edge already exists;
+- query-aware routing preserves V1 for ordinary queries and stays within the combined cost gate.
 
 Not supported:
 
@@ -116,3 +152,5 @@ Not supported:
 - D11 answer-level noninferiority;
 - human correctness from two-model agreement;
 - treating Base fallback as semantic safety.
+- replacing V1 as the default based on a controlled temporal panel;
+- unrestricted old-memory exposure or any resurfacing of delete/retraction events.

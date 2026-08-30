@@ -50,8 +50,8 @@ class ArchitectureFlow(Flowable):
             ("L1 写入 / 去重", "update · merge"),
             ("发布纠错边", "同作用域 + 后继可查"),
             ("真实 ID 召回", "SQLite · TCVDB"),
-            ("V1 一跳替换", "阈值 · 容量 · 期限"),
-            ("注入与观测", "Base fallback · metrics"),
+            ("V1 当前解析", "阈值 · 容量 · 期限"),
+            ("查询感知视图", "current 或 old + new"),
         ]
         gap = 10
         box_width = (self.width - gap * 4) / 5
@@ -142,7 +142,7 @@ def footer(canvas: Canvas, doc: SimpleDocTemplate) -> None:
     canvas.line(17 * mm, 13 * mm, page_width - 17 * mm, 13 * mm)
     canvas.setFont("Heiti-Light", 6.8)
     canvas.setFillColor(MUTED)
-    canvas.drawString(17 * mm, 8.2 * mm, "TencentDB Agent Memory · Lifecycle V1 纠错闭环")
+    canvas.drawString(17 * mm, 8.2 * mm, "TencentDB Agent Memory · Lifecycle V1 + D19 查询感知双状态")
     canvas.drawRightString(page_width - 17 * mm, 8.2 * mm, f"{doc.page} / 3")
     canvas.restoreState()
 
@@ -163,16 +163,16 @@ def result_table(styles: dict[str, ParagraphStyle], width: float) -> Table:
             "条件保留",
         ],
         [
+            "Memora D19",
+            "自然 150 题 + 20 组 update × 3 类时序问题；accuracy、FAMA、token、persona CI",
+            "query-aware 时序 accuracy 0.7139→1.0000；+0.2861，CI [+0.2778,+0.2986]；history +0.5250，change +0.3333，current=0；合并 token +6.92%",
+            "条件通过",
+        ],
+        [
             "Memora D18",
             "27,614 sessions；test=5,954；事件与前驱链接精度/召回",
             "event P/R/F1=0.9789/0.7964/0.8783；link precision=0.2005；任一正确链接率=0.4538",
             "建链失败",
-        ],
-        [
-            "LongMemEval-V2",
-            "固定 SHA：451 questions、200 trajectories；D11 token、支持度与 gate",
-            "源数据审计通过；D11 token -20.84%，未调用答案模型；独立复核 0 mismatch，source gate 失败",
-            "效率证据",
         ],
     ]
     data = [[paragraph(cell, styles["table_head"]) for cell in head]]
@@ -186,8 +186,8 @@ def result_table(styles: dict[str, ParagraphStyle], width: float) -> Table:
         ("ALIGN", (-1, 1), (-1, -1), "CENTER"),
         ("TEXTCOLOR", (-1, 1), (-1, 1), PASS),
         ("TEXTCOLOR", (-1, 2), (-1, 2), WARN),
-        ("TEXTCOLOR", (-1, 3), (-1, 3), FAIL),
-        ("TEXTCOLOR", (-1, 4), (-1, 4), WARN),
+        ("TEXTCOLOR", (-1, 3), (-1, 3), PASS),
+        ("TEXTCOLOR", (-1, 4), (-1, 4), FAIL),
         ("LEFTPADDING", (0, 0), (-1, -1), 4),
         ("RIGHTPADDING", (0, 0), (-1, -1), 4),
         ("TOPPADDING", (0, 0), (-1, -1), 5),
@@ -213,7 +213,7 @@ def build_pdf(output: Path) -> None:
         paragraph("交付日期：2026-08-30　|　实现分支：codex/lifecycle-memory-integration　|　范围：L1 auto-recall", styles["subtitle"]),
     ]
     summary = Table([[paragraph(
-        "<b>交付结论</b><br/>Lifecycle V1 已接入真实 L1 写入与自动召回链路；结构化反馈、作用域隔离、10 ms 决策期限和 exact Base fallback 均有可复现实验覆盖。读取和反馈默认关闭，当前证据支持小流量条件上线，不支持全流量默认开启。",
+        "<b>交付结论</b><br/>Lifecycle V1 已接入真实 L1 写入与自动召回；D19 证明带标签旧/新状态对明确历史或变化问题有价值。V1 仍为当前状态默认语义，双状态默认关闭，只允许 query-aware 条件灰度。",
         styles["callout"],
     )]], colWidths=[width])
     summary.setStyle(TableStyle([
@@ -226,11 +226,11 @@ def build_pdf(output: Path) -> None:
     ]))
     story += [summary, Spacer(1, 7), paragraph("1　方案选择", styles["h1"])]
     story.append(paragraph(
-        "本次复用既有实验中边界最清楚的 <b>Lifecycle V1</b>：在检索结果进入提示词之前，按已发布的“旧记忆 ID → 新记忆 ID”纠错边替换过时项。默认一跳、信任权重阈值 0.85、最多展开 64 个后继；超时、损坏、缺失或容量异常时返回内容与顺序均不变的 Base 前缀。",
+        "<b>Lifecycle V1</b> 在提示词注入前按已发布的“旧 ID → 新 ID”纠错边解析当前状态。<b>D19 query-aware</b> 只在问题明确询问历史或变化时，在同一槽位输出 HISTORICAL / SUPERSEDED 与 CURRENT / ACTIVE；普通、当前与汇总问题保持精确 V1，delete 永不暴露旧值。",
         styles["body"],
     ))
     story.append(paragraph(
-        "Memora 条件样本证明“已知纠错图 + 重定向”有效；D16 说明收益有明显任务异质性；D18 又证明纯文本自动找前驱不可靠。因此只接入可验证的结构化 update/merge 反馈，不接入文本自动建链。",
+        "D19 的受控 60 题时序面板 accuracy 提高 28.61 点；自然 150 题无可触发查询。无条件双状态虽提高 FAMA 1.47 点，却增加 29.53% token。因此思路有条件价值，不能替换 V1 默认；D18 链接精度 20.05%，所以仍只接受结构化 update/merge。",
         styles["body"],
     ))
     story += [paragraph("2　闭环与 TencentDB 接入", styles["h1"]), ArchitectureFlow(width), Spacer(1, 2)]
@@ -239,14 +239,14 @@ def build_pdf(output: Path) -> None:
         styles["body"],
     ))
     story.append(paragraph(
-        "<b>召回执行：</b><font color='#007F7B'>auto-recall.ts</font> 保留 keyword、embedding、SQLite hybrid 和 TCVDB native-hybrid 的真实 ID、分数与作用域；旁路加载 released 事件，经现有 IMemoryStore 按 ID 批量物化后继，再做一跳替换、字符预算和提示词注入。L1 跨 session，sessionKey 仅用于审计。",
+        "<b>召回执行：</b><font color='#007F7B'>auto-recall.ts</font> 保留 keyword、embedding、SQLite hybrid 与 TCVDB native-hybrid 的真实 ID、分数和作用域；旁路物化后继后先完成 V1，再由查询文本分类器决定 current-only 或带标签 old/current。渲染异常保留 V1 新值；旁路异常 exact fallback Base。",
         styles["body"],
     ))
     points = [
-        ["配置", "src/config.ts · openclaw.plugin.json", "读/写双开关；默认 false"],
+        ["配置", "src/config.ts · openclaw.plugin.json", "读/写双开关；dualStateMode 默认 off"],
         ["反馈账本", "feedback-store.ts", "StorageAdapter：本地或 COS；严格 schema 与作用域"],
-        ["生产执行", "production-runtime.ts", "总期限、容量、物化、exact fallback"],
-        ["可观测", "metric-tracking-recall.ts", "mode / redirect / fallback / latency；不传正文或 ID"],
+        ["生产执行", "production-runtime.ts · temporal-intent.ts", "V1、查询意图、delete 隔离、双状态回退"],
+        ["可观测", "metric-tracking-recall.ts", "mode / redirect / pair / fallback / latency；不传正文或 ID"],
     ]
     point_data = [[paragraph(v, styles["table"]) for v in row] for row in points]
     point_table = Table(point_data, colWidths=[0.13 * width, 0.35 * width, 0.52 * width])
@@ -262,8 +262,8 @@ def build_pdf(output: Path) -> None:
     boundary_data = [
         [paragraph("已证明", styles["table_head"]), paragraph("尚未证明", styles["table_head"])],
         [
-            paragraph("结构化纠错边能进入真实召回；作用域隔离、后继物化、超时/损坏/缺失回退可执行；条件场景存在答案收益。", styles["body"]),
-            paragraph("全流量答案质量提升；真实编程长任务效果；纯文本端到端自动建链；D11 的答案级非劣。", styles["body"]),
+            paragraph("结构化纠错边能进入真实召回；D19 在明确历史/变化问题上有答案收益；current 查询不变；delete 不回流；异常可回退。", styles["body"]),
+            paragraph("双状态应成为默认；真实触发率与编程任务收益；纯文本自动建链；人类正确性；真实 COS/TCVDB 网络时延。", styles["body"]),
         ],
     ]
     boundary = Table(boundary_data, colWidths=[width / 2, width / 2])
@@ -275,15 +275,15 @@ def build_pdf(output: Path) -> None:
     ]))
     story += [paragraph("证据边界", styles["h2"]), boundary]
     story.append(paragraph(
-        "<b>运行时证据：</b>results/runtime-integration 下同时保存 result-card.v1.json 与 independent-validation.v1.json。16 类用例覆盖 redirect、无事件、低权重、跨作用域、后继缺失和损坏状态；每类重复 25 次。p95 为本机旁路开销，不能外推到生产网络。",
+        "<b>运行时证据：</b>16 类用例 × 25 次覆盖 redirect、无事件、低权重、跨作用域、后继缺失和损坏；新增测试覆盖 history/change 成对返回、current 精确 V1、delete 不回流与渲染失败保留 V1。p95 为本机开销，不能外推网络。",
         styles["body"],
     ))
     story.append(paragraph(
-        "<b>实验判断：</b>D16 冻结答案实验经独立重算 1,894 条 verdict、13 个 arm 和 12 个 V1 比较，0 mismatch；D18 本次以真实 Memora test split 重跑后仍未过链接门禁；LongMemEval-V2 原始文件的三个 SHA 与固定 revision 一致，D11 独立 gate 仍失败。负结果均保留，未包装为通过。",
+        "<b>实验判断：</b>D19 完成 672 reader + 672 crossed-judge 单元，重试、模型不一致、自评均为 0；独立 validator 重算 672 条 verdict，0 mismatch。query-aware 全部价值门通过，但自然默认替换 3 项门均失败；无条件方案只因 token +29.53% 被拒。",
         styles["body"],
     ))
     story += [paragraph("复现命令", styles["h2"]), paragraph(
-        "npm run eval:lifecycle-runtime-integration<br/>npm run validate:lifecycle-runtime-integration<br/>npm test　　npm run test:lifecycle-memory　　npm run build:plugin",
+        "npm run validate:lifecycle-runtime-integration<br/>npm run validate:lifecycle-dual-state-e2e<br/>npm test　　npm run test:lifecycle-memory　　npm run build:plugin",
         styles["code"],
     ), PageBreak()]
 
@@ -291,7 +291,8 @@ def build_pdf(output: Path) -> None:
     config = (
         '{<br/>&nbsp;&nbsp;"recall": {<br/>&nbsp;&nbsp;&nbsp;&nbsp;"adaptive": { "enabled": false },<br/>'
         '&nbsp;&nbsp;&nbsp;&nbsp;"lifecycle": {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"feedbackEnabled": true, '
-        '"enabled": false,<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"minConfidence": 0.85, "maxHops": 1,<br/>'
+        '"enabled": false,<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"dualStateMode": "off",<br/>'
+        '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"minConfidence": 0.85, "maxHops": 1,<br/>'
         '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"maxExpansions": 64, "timeoutMs": 10, "maxEvents": 5000<br/>'
         '&nbsp;&nbsp;&nbsp;&nbsp;}<br/>&nbsp;&nbsp;}<br/>}'
     )
@@ -302,15 +303,16 @@ def build_pdf(output: Path) -> None:
     ))
     story += [paragraph("阶段 2　条件灰度", styles["h2"])]
     story.append(paragraph(
-        "优先覆盖 forgetting/recommending，或明确发生结构化 update/merge 的小流量。固定 V1 参数，不同时开启旧 adaptive 策略；逐级扩大 traffic，并与 Base 做答案正确率/任务成功率 A/B。",
+        "小流量开启 enabled，保持 dualStateMode=off；验证 V1 当前状态质量。随后只对明确 history/change 查询试验 query_aware，并与 V1 比较时序正确率、误触发率和每次触发 token。",
         styles["body"],
     ))
     gate_rows = [
         ["跨作用域泄漏", "= 0", "立即关读取开关"],
+        ["delete 旧值暴露", "= 0", "立即关双状态与读取开关"],
         ["exact fallback 等价", "= 100%", "立即关读取开关"],
         ["后继可物化率", "≥ 99.9%", "暂停放量并修复反馈"],
         ["p95 总增量", "≤ 10 ms", "回退 Base；检查 COS/TCVDB"],
-        ["答案正确率 / 任务成功率", "不劣于 Base", "最终质量门禁"],
+        ["时序/任务正确率", "不劣于 V1 / Base", "最终质量门禁"],
     ]
     gate_data = [[paragraph(v, styles["table_head"]) for v in ["指标", "门槛", "失败动作"]]] + [
         [paragraph(v, styles["table"]) for v in row] for row in gate_rows
@@ -326,11 +328,11 @@ def build_pdf(output: Path) -> None:
     ]))
     story += [paragraph("上线门禁", styles["h2"]), gates, paragraph("5　限制与最终验收", styles["h1"])]
     story.append(paragraph(
-        "当前完成 auto-recall 提示词注入路径，尚未覆盖独立 memory search 工具调用；没有真实 COS/TCVDB 凭证，因此本次是本地 StorageAdapter、真实 SQLite 与 TCVDB native-hybrid 契约测试，不包含生产网络延迟。10 ms 期限能及时返回 Base，但底层不可取消的只读请求可能在后台结束。生产前仍需真实服务灰度探针。",
+        "当前完成 auto-recall 提示词注入，尚未覆盖独立 memory search 工具；没有真实 COS/TCVDB 网络探针。D19 受控面板假设 update 边正确，不能证明自动链接、自然触发率、人类正确性或编程任务收益。路由后 history/change token 从 7.8 增至 40.5，须单独监控。",
         styles["body"],
     ))
     final_box = Table([[paragraph(
-        "<b>验收结论：</b>“纠错闭环已接入，结构化反馈与运行时契约通过”——成立。<br/>“通用答案质量已提升”或“端到端自动纠错已解决”——不成立，必须继续受灰度质量门禁约束。",
+        "<b>验收结论：</b>“纠错闭环已接入；带标签双状态对明确时序问题有价值”——成立。<br/>“应无条件返回旧值”“应替换 V1 默认”或“端到端自动纠错已解决”——不成立。",
         styles["callout"],
     )]], colWidths=[width])
     final_box.setStyle(TableStyle([

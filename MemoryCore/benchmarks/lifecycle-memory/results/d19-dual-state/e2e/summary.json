@@ -1,0 +1,1535 @@
+{
+  "status": "completed",
+  "protocol": {
+    "protocolVersion": "lifecycle-dual-state-e2e-v1.0",
+    "researchDirection": "D19",
+    "seed": 20260830,
+    "preScoreCommitRequired": true,
+    "context": {
+      "protocolVersion": "lifecycle-dual-state-context-v1.0",
+      "sha256": "a0e7cc65a9d7054cf3f0a12706668a400a9727a656815d78fe9d719b06d882c9",
+      "cases": 210,
+      "naturalCases": 150,
+      "temporalCases": 60,
+      "temporalPairs": 20,
+      "uniquePromptsPerReader": 336
+    },
+    "arms": [
+      "v1",
+      "dual_all",
+      "dual_query_aware"
+    ],
+    "readers": [
+      {
+        "id": "minimax-m3",
+        "provider": "minimax",
+        "model": "MiniMax-M3",
+        "baseUrl": "https://api.minimaxi.com/v1",
+        "apiKeyEnv": "MINIMAX_API_KEY",
+        "temperature": 0.1,
+        "topP": 0.95,
+        "maxTokens": 700,
+        "thinking": "disabled"
+      },
+      {
+        "id": "deepseek-v4-flash",
+        "provider": "deepseek",
+        "model": "deepseek-v4-flash",
+        "baseUrl": "https://api.deepseek.com",
+        "apiKeyEnv": "DEEPSEEK_API_KEY",
+        "temperature": 0,
+        "maxTokens": 700,
+        "thinking": "disabled"
+      }
+    ],
+    "judges": [
+      {
+        "id": "minimax-m3",
+        "provider": "minimax",
+        "model": "MiniMax-M3",
+        "baseUrl": "https://api.minimaxi.com/v1",
+        "apiKeyEnv": "MINIMAX_API_KEY",
+        "temperature": 0.1,
+        "topP": 0.95,
+        "maxTokens": 8192,
+        "thinking": "disabled"
+      },
+      {
+        "id": "deepseek-v4-flash",
+        "provider": "deepseek",
+        "model": "deepseek-v4-flash",
+        "baseUrl": "https://api.deepseek.com",
+        "apiKeyEnv": "DEEPSEEK_API_KEY",
+        "temperature": 0,
+        "maxTokens": 8192,
+        "thinking": "disabled"
+      }
+    ],
+    "judgeAssignment": {
+      "minimax-m3": "deepseek-v4-flash",
+      "deepseek-v4-flash": "minimax-m3"
+    },
+    "retries": 3,
+    "aggregation": {
+      "answerUnit": "One reader answer is scored only by the other fixed model; self-judging is forbidden.",
+      "caseArm": "Arithmetic mean of the two crossed reader/judge cells.",
+      "naturalPrimary": "FAMA over the frozen 150-question weekly census.",
+      "temporalPrimary": "Criterion accuracy, equally weighted by generated question; current/history/change are also reported separately.",
+      "uncertainty": "Paired persona-cluster bootstrap with 5000 draws."
+    },
+    "uncertainty": {
+      "unit": "persona",
+      "bootstrapSamples": 5000,
+      "confidenceLevel": 0.95
+    },
+    "gates": {
+      "unconditionalDual": {
+        "minNaturalFamaDelta": -0.01,
+        "minNaturalFamaCiLower": -0.02,
+        "minNaturalFaaDelta": -0.01,
+        "minNaturalMpaDelta": -0.01,
+        "maxNaturalTokenIncreaseFraction": 0.1
+      },
+      "queryAwareValue": {
+        "minTemporalCriterionAccuracyDelta": 0.15,
+        "requireTemporalCriterionAccuracyCiLowerAboveZero": true,
+        "minHistoryCriterionAccuracyDelta": 0.15,
+        "minChangeCriterionAccuracyDelta": 0.15,
+        "minCurrentCriterionAccuracyDelta": -0.01,
+        "minNaturalFamaDelta": -0.01,
+        "maxCombinedTokenIncreaseFraction": 0.1,
+        "requireNonnegativeTemporalDirectionForBothReaders": true,
+        "requireCompleteFrozenTaskSet": true,
+        "requireZeroModelMismatches": true
+      },
+      "defaultReplacement": {
+        "minNaturalExplicitTemporalCases": 20,
+        "minNaturalFamaDelta": 0.01,
+        "requireNaturalFamaCiLowerAboveZero": true,
+        "explanation": "A controlled temporal probe can establish capability value but cannot by itself replace V1 as the default policy."
+      }
+    },
+    "decisionRule": "Call the idea conditionally valuable only if every queryAwareValue gate passes. Promote unconditional dual return only if every unconditionalDual gate passes. Keep V1 as default unless every defaultReplacement gate also passes.",
+    "reuse": {
+      "rule": "Reuse only byte-identical reader message arrays within the same frozen case.",
+      "expectedReaderCalls": 672,
+      "expectedJudgeCalls": 672
+    },
+    "claimBoundary": "This is a fresh weekly answer run and a controlled structured-edge temporal probe. It does not validate automatic predecessor linking, human correctness, real programming traffic, or unrestricted old-memory exposure."
+  },
+  "generatedAt": "2026-08-30T15:22:07.075Z",
+  "preScoreRevision": {
+    "head": "2103c3e4b2038ded19085660b836a64e948b0a74",
+    "branch": "codex/lifecycle-memory-integration",
+    "base": "97f94654280b2932c35ba4806a491999ed244cc9"
+  },
+  "dataset": {
+    "name": "Memora",
+    "revision": "a6493188efc836d6511ed5e4163fe3ba87da30ff",
+    "dataManifestSha256": "dfc82711dd6647bcb0ba590f43a336f0dac02420e981ce957dd1fd13ae331bfc",
+    "groups": 30,
+    "personas": 10,
+    "questions": 600,
+    "sessions": 27614,
+    "memoryUnits": 24856,
+    "operationCounts": {
+      "no_memory:none": 11126,
+      "activity:add": 7790,
+      "preference:add": 2146,
+      "activity:update": 1226,
+      "goal:add": 572,
+      "preference:delete": 1077,
+      "activity:delete": 2082,
+      "preference:update": 1595
+    }
+  },
+  "input": {
+    "contextManifestSha256": "a0e7cc65a9d7054cf3f0a12706668a400a9727a656815d78fe9d719b06d882c9",
+    "cases": 210,
+    "naturalCases": 150,
+    "temporalCases": 60,
+    "temporalPairs": 20,
+    "uniquePromptsPerReader": 336,
+    "caseArmCells": 630
+  },
+  "reports": {
+    "combined": {
+      "cases": 210,
+      "arms": {
+        "v1": {
+          "cases": 210,
+          "mpa": 0.381984126984127,
+          "faa": 0.9137613378684807,
+          "fama": 0.3545587745587746,
+          "criterionAccuracy": 0.5101076502862222,
+          "meanInjectedTokens": 90.05238095238096,
+          "meanInjectedItems": 3.857142857142857,
+          "meanRenderedPairs": 0
+        },
+        "dual_all": {
+          "cases": 210,
+          "mpa": 0.5355555555555557,
+          "faa": 0.9155697278911563,
+          "fama": 0.5079129798772656,
+          "criterionAccuracy": 0.5976030120672977,
+          "meanInjectedTokens": 125.33333333333333,
+          "meanInjectedItems": 3.857142857142857,
+          "meanRenderedPairs": 0.7666666666666667
+        },
+        "dual_query_aware": {
+          "cases": 210,
+          "mpa": 0.5248412698412699,
+          "faa": 0.9185232426303854,
+          "fama": 0.49741591741591745,
+          "criterionAccuracy": 0.5918536820322534,
+          "meanInjectedTokens": 96.28095238095239,
+          "meanInjectedItems": 3.857142857142857,
+          "meanRenderedPairs": 0.19047619047619047
+        }
+      },
+      "comparisonsVsV1": {
+        "dual_all": {
+          "mpa": {
+            "mean": 0.15357142857142858,
+            "lower": 0.14519841269841266,
+            "upper": 0.16230158730158728,
+            "clusters": 10
+          },
+          "faa": {
+            "mean": 0.0018083900226757359,
+            "lower": -0.009960317460317463,
+            "upper": 0.012281746031746029,
+            "clusters": 10
+          },
+          "fama": {
+            "mean": 0.15335420531849103,
+            "lower": 0.1439909297052154,
+            "upper": 0.16310477221191505,
+            "clusters": 10
+          },
+          "criterionAccuracy": {
+            "mean": 0.08749536178107607,
+            "lower": 0.07945784374355806,
+            "upper": 0.09522392290249432,
+            "clusters": 10
+          }
+        },
+        "dual_query_aware": {
+          "mpa": {
+            "mean": 0.14285714285714285,
+            "lower": 0.14285714285714285,
+            "upper": 0.14285714285714285,
+            "clusters": 10
+          },
+          "faa": {
+            "mean": 0.004761904761904762,
+            "lower": 0,
+            "upper": 0.011904761904761904,
+            "clusters": 10
+          },
+          "fama": {
+            "mean": 0.14285714285714285,
+            "lower": 0.14285714285714285,
+            "upper": 0.14285714285714285,
+            "clusters": 10
+          },
+          "criterionAccuracy": {
+            "mean": 0.08174603174603177,
+            "lower": 0.07936507936507937,
+            "upper": 0.08531746031746032,
+            "clusters": 10
+          }
+        }
+      },
+      "readerDirectionsVsV1": {
+        "dual_all": {
+          "fama": {
+            "minimax-m3": 0.16384766027623168,
+            "deepseek-v4-flash": 0.14286075036075035
+          },
+          "criterionAccuracy": {
+            "minimax-m3": 0.09303700267985983,
+            "deepseek-v4-flash": 0.08195372088229232
+          }
+        },
+        "dual_query_aware": {
+          "fama": {
+            "minimax-m3": 0.14285714285714285,
+            "deepseek-v4-flash": 0.14285714285714285
+          },
+          "criterionAccuracy": {
+            "minimax-m3": 0.07936507936507937,
+            "deepseek-v4-flash": 0.08412698412698413
+          }
+        }
+      },
+      "outcomesVsV1": {
+        "dual_all": {
+          "fama": {
+            "cases": 210,
+            "improved": 64,
+            "equal": 136,
+            "harmed": 10
+          },
+          "criterionAccuracy": {
+            "cases": 210,
+            "improved": 62,
+            "equal": 135,
+            "harmed": 13
+          }
+        },
+        "dual_query_aware": {
+          "fama": {
+            "cases": 210,
+            "improved": 40,
+            "equal": 170,
+            "harmed": 0
+          },
+          "criterionAccuracy": {
+            "cases": 210,
+            "improved": 40,
+            "equal": 170,
+            "harmed": 0
+          }
+        }
+      }
+    },
+    "natural": {
+      "cases": 150,
+      "arms": {
+        "v1": {
+          "cases": 150,
+          "mpa": 0.33477777777777784,
+          "faa": 0.8859325396825396,
+          "fama": 0.2963822843822844,
+          "criterionAccuracy": 0.4285951548451548,
+          "meanInjectedTokens": 122.95333333333333,
+          "meanInjectedItems": 5,
+          "meanRenderedPairs": 0
+        },
+        "dual_all": {
+          "cases": 150,
+          "mpa": 0.3497777777777779,
+          "faa": 0.8817976190476189,
+          "fama": 0.3110781718281718,
+          "criterionAccuracy": 0.4366442168942168,
+          "meanInjectedTokens": 159.26666666666668,
+          "meanInjectedItems": 5,
+          "meanRenderedPairs": 0.6733333333333333
+        },
+        "dual_query_aware": {
+          "cases": 150,
+          "mpa": 0.33477777777777784,
+          "faa": 0.8859325396825396,
+          "fama": 0.2963822843822844,
+          "criterionAccuracy": 0.4285951548451548,
+          "meanInjectedTokens": 122.95333333333333,
+          "meanInjectedItems": 5,
+          "meanRenderedPairs": 0
+        }
+      },
+      "comparisonsVsV1": {
+        "dual_all": {
+          "mpa": {
+            "mean": 0.015000000000000003,
+            "lower": 0.003277777777777778,
+            "upper": 0.02744444444444444,
+            "clusters": 10
+          },
+          "faa": {
+            "mean": -0.004134920634920636,
+            "lower": -0.02141666666666667,
+            "upper": 0.012535714285714284,
+            "clusters": 10
+          },
+          "fama": {
+            "mean": 0.014695887445887446,
+            "lower": 0.0013546176046176043,
+            "upper": 0.028079365079365076,
+            "clusters": 10
+          },
+          "criterionAccuracy": {
+            "mean": 0.008049062049062049,
+            "lower": -0.0015436507936507895,
+            "upper": 0.017132395382395384,
+            "clusters": 10
+          }
+        },
+        "dual_query_aware": {
+          "mpa": {
+            "mean": 0,
+            "lower": 0,
+            "upper": 0,
+            "clusters": 10
+          },
+          "faa": {
+            "mean": 0,
+            "lower": 0,
+            "upper": 0,
+            "clusters": 10
+          },
+          "fama": {
+            "mean": 0,
+            "lower": 0,
+            "upper": 0,
+            "clusters": 10
+          },
+          "criterionAccuracy": {
+            "mean": 0,
+            "lower": 0,
+            "upper": 0,
+            "clusters": 10
+          }
+        }
+      },
+      "readerDirectionsVsV1": {
+        "dual_all": {
+          "fama": {
+            "minimax-m3": 0.029386724386724385,
+            "deepseek-v4-flash": 0.000005050505050504898
+          },
+          "criterionAccuracy": {
+            "minimax-m3": 0.019140692640692646,
+            "deepseek-v4-flash": -0.0030425685425685424
+          }
+        },
+        "dual_query_aware": {
+          "fama": {
+            "minimax-m3": 0,
+            "deepseek-v4-flash": 0
+          },
+          "criterionAccuracy": {
+            "minimax-m3": 0,
+            "deepseek-v4-flash": 0
+          }
+        }
+      },
+      "outcomesVsV1": {
+        "dual_all": {
+          "fama": {
+            "cases": 150,
+            "improved": 24,
+            "equal": 116,
+            "harmed": 10
+          },
+          "criterionAccuracy": {
+            "cases": 150,
+            "improved": 22,
+            "equal": 115,
+            "harmed": 13
+          }
+        },
+        "dual_query_aware": {
+          "fama": {
+            "cases": 150,
+            "improved": 0,
+            "equal": 150,
+            "harmed": 0
+          },
+          "criterionAccuracy": {
+            "cases": 150,
+            "improved": 0,
+            "equal": 150,
+            "harmed": 0
+          }
+        }
+      },
+      "explicitTemporalCases": 0,
+      "byTask": {
+        "reasoning": {
+          "cases": 50,
+          "arms": {
+            "v1": {
+              "cases": 50,
+              "mpa": 0.09333333333333332,
+              "faa": 1,
+              "fama": 0.09333333333333332,
+              "criterionAccuracy": 0.09333333333333332,
+              "meanInjectedTokens": 109.38,
+              "meanInjectedItems": 5,
+              "meanRenderedPairs": 0
+            },
+            "dual_all": {
+              "cases": 50,
+              "mpa": 0.09333333333333332,
+              "faa": 1,
+              "fama": 0.09333333333333332,
+              "criterionAccuracy": 0.09333333333333332,
+              "meanInjectedTokens": 114.5,
+              "meanInjectedItems": 5,
+              "meanRenderedPairs": 0.1
+            },
+            "dual_query_aware": {
+              "cases": 50,
+              "mpa": 0.09333333333333332,
+              "faa": 1,
+              "fama": 0.09333333333333332,
+              "criterionAccuracy": 0.09333333333333332,
+              "meanInjectedTokens": 109.38,
+              "meanInjectedItems": 5,
+              "meanRenderedPairs": 0
+            }
+          },
+          "comparisonsVsV1": {
+            "dual_all": {
+              "mpa": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "faa": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "fama": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "criterionAccuracy": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              }
+            },
+            "dual_query_aware": {
+              "mpa": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "faa": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "fama": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "criterionAccuracy": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              }
+            }
+          },
+          "readerDirectionsVsV1": {
+            "dual_all": {
+              "fama": {
+                "minimax-m3": 0,
+                "deepseek-v4-flash": 0
+              },
+              "criterionAccuracy": {
+                "minimax-m3": 0,
+                "deepseek-v4-flash": 0
+              }
+            },
+            "dual_query_aware": {
+              "fama": {
+                "minimax-m3": 0,
+                "deepseek-v4-flash": 0
+              },
+              "criterionAccuracy": {
+                "minimax-m3": 0,
+                "deepseek-v4-flash": 0
+              }
+            }
+          },
+          "outcomesVsV1": {
+            "dual_all": {
+              "fama": {
+                "cases": 50,
+                "improved": 0,
+                "equal": 50,
+                "harmed": 0
+              },
+              "criterionAccuracy": {
+                "cases": 50,
+                "improved": 0,
+                "equal": 50,
+                "harmed": 0
+              }
+            },
+            "dual_query_aware": {
+              "fama": {
+                "cases": 50,
+                "improved": 0,
+                "equal": 50,
+                "harmed": 0
+              },
+              "criterionAccuracy": {
+                "cases": 50,
+                "improved": 0,
+                "equal": 50,
+                "harmed": 0
+              }
+            }
+          }
+        },
+        "recommending": {
+          "cases": 50,
+          "arms": {
+            "v1": {
+              "cases": 50,
+              "mpa": 0.6064999999999999,
+              "faa": 0.8216666666666665,
+              "fama": 0.5284285714285714,
+              "criterionAccuracy": 0.7092619047619049,
+              "meanInjectedTokens": 138.7,
+              "meanInjectedItems": 5,
+              "meanRenderedPairs": 0
+            },
+            "dual_all": {
+              "cases": 50,
+              "mpa": 0.6014999999999998,
+              "faa": 0.8516666666666666,
+              "fama": 0.5322857142857143,
+              "criterionAccuracy": 0.7160238095238095,
+              "meanInjectedTokens": 203.82,
+              "meanInjectedItems": 5,
+              "meanRenderedPairs": 1.22
+            },
+            "dual_query_aware": {
+              "cases": 50,
+              "mpa": 0.6064999999999999,
+              "faa": 0.8216666666666665,
+              "fama": 0.5284285714285714,
+              "criterionAccuracy": 0.7092619047619049,
+              "meanInjectedTokens": 138.7,
+              "meanInjectedItems": 5,
+              "meanRenderedPairs": 0
+            }
+          },
+          "comparisonsVsV1": {
+            "dual_all": {
+              "mpa": {
+                "mean": -0.005,
+                "lower": -0.02133333333333333,
+                "upper": 0.012,
+                "clusters": 10
+              },
+              "faa": {
+                "mean": 0.029999999999999995,
+                "lower": -0.03,
+                "upper": 0.09166666666666667,
+                "clusters": 10
+              },
+              "fama": {
+                "mean": 0.0038571428571428567,
+                "lower": -0.020095238095238097,
+                "upper": 0.032023809523809524,
+                "clusters": 10
+              },
+              "criterionAccuracy": {
+                "mean": 0.00676190476190476,
+                "lower": -0.017166666666666663,
+                "upper": 0.03388095238095237,
+                "clusters": 10
+              }
+            },
+            "dual_query_aware": {
+              "mpa": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "faa": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "fama": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "criterionAccuracy": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              }
+            }
+          },
+          "readerDirectionsVsV1": {
+            "dual_all": {
+              "fama": {
+                "minimax-m3": 0.03338095238095237,
+                "deepseek-v4-flash": -0.025666666666666667
+              },
+              "criterionAccuracy": {
+                "minimax-m3": 0.034523809523809526,
+                "deepseek-v4-flash": -0.021
+              }
+            },
+            "dual_query_aware": {
+              "fama": {
+                "minimax-m3": 0,
+                "deepseek-v4-flash": 0
+              },
+              "criterionAccuracy": {
+                "minimax-m3": 0,
+                "deepseek-v4-flash": 0
+              }
+            }
+          },
+          "outcomesVsV1": {
+            "dual_all": {
+              "fama": {
+                "cases": 50,
+                "improved": 10,
+                "equal": 32,
+                "harmed": 8
+              },
+              "criterionAccuracy": {
+                "cases": 50,
+                "improved": 10,
+                "equal": 32,
+                "harmed": 8
+              }
+            },
+            "dual_query_aware": {
+              "fama": {
+                "cases": 50,
+                "improved": 0,
+                "equal": 50,
+                "harmed": 0
+              },
+              "criterionAccuracy": {
+                "cases": 50,
+                "improved": 0,
+                "equal": 50,
+                "harmed": 0
+              }
+            }
+          }
+        },
+        "remembering": {
+          "cases": 50,
+          "arms": {
+            "v1": {
+              "cases": 50,
+              "mpa": 0.30450000000000005,
+              "faa": 0.8361309523809523,
+              "fama": 0.2673849483849484,
+              "criterionAccuracy": 0.48319022644022636,
+              "meanInjectedTokens": 120.78,
+              "meanInjectedItems": 5,
+              "meanRenderedPairs": 0
+            },
+            "dual_all": {
+              "cases": 50,
+              "mpa": 0.35450000000000004,
+              "faa": 0.7937261904761905,
+              "fama": 0.3076154678654679,
+              "criterionAccuracy": 0.5005755078255077,
+              "meanInjectedTokens": 159.48,
+              "meanInjectedItems": 5,
+              "meanRenderedPairs": 0.7
+            },
+            "dual_query_aware": {
+              "cases": 50,
+              "mpa": 0.30450000000000005,
+              "faa": 0.8361309523809523,
+              "fama": 0.2673849483849484,
+              "criterionAccuracy": 0.48319022644022636,
+              "meanInjectedTokens": 120.78,
+              "meanInjectedItems": 5,
+              "meanRenderedPairs": 0
+            }
+          },
+          "comparisonsVsV1": {
+            "dual_all": {
+              "mpa": {
+                "mean": 0.05,
+                "lower": 0.019,
+                "upper": 0.08350000000000002,
+                "clusters": 10
+              },
+              "faa": {
+                "mean": -0.0424047619047619,
+                "lower": -0.08464285714285713,
+                "upper": -0.005,
+                "clusters": 10
+              },
+              "fama": {
+                "mean": 0.04023051948051948,
+                "lower": 0.00841666666666667,
+                "upper": 0.07980952380952383,
+                "clusters": 10
+              },
+              "criterionAccuracy": {
+                "mean": 0.017385281385281393,
+                "lower": -0.005503246753246745,
+                "upper": 0.044178571428571435,
+                "clusters": 10
+              }
+            },
+            "dual_query_aware": {
+              "mpa": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "faa": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "fama": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "criterionAccuracy": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              }
+            }
+          },
+          "readerDirectionsVsV1": {
+            "dual_all": {
+              "fama": {
+                "minimax-m3": 0.054779220779220775,
+                "deepseek-v4-flash": 0.025681818181818188
+              },
+              "criterionAccuracy": {
+                "minimax-m3": 0.022898268398268407,
+                "deepseek-v4-flash": 0.01187229437229437
+              }
+            },
+            "dual_query_aware": {
+              "fama": {
+                "minimax-m3": 0,
+                "deepseek-v4-flash": 0
+              },
+              "criterionAccuracy": {
+                "minimax-m3": 0,
+                "deepseek-v4-flash": 0
+              }
+            }
+          },
+          "outcomesVsV1": {
+            "dual_all": {
+              "fama": {
+                "cases": 50,
+                "improved": 14,
+                "equal": 34,
+                "harmed": 2
+              },
+              "criterionAccuracy": {
+                "cases": 50,
+                "improved": 12,
+                "equal": 33,
+                "harmed": 5
+              }
+            },
+            "dual_query_aware": {
+              "fama": {
+                "cases": 50,
+                "improved": 0,
+                "equal": 50,
+                "harmed": 0
+              },
+              "criterionAccuracy": {
+                "cases": 50,
+                "improved": 0,
+                "equal": 50,
+                "harmed": 0
+              }
+            }
+          }
+        }
+      }
+    },
+    "temporal": {
+      "cases": 60,
+      "arms": {
+        "v1": {
+          "cases": 60,
+          "mpa": 0.5,
+          "faa": 0.9833333333333333,
+          "fama": 0.5,
+          "criterionAccuracy": 0.7138888888888888,
+          "meanInjectedTokens": 7.8,
+          "meanInjectedItems": 1,
+          "meanRenderedPairs": 0
+        },
+        "dual_all": {
+          "cases": 60,
+          "mpa": 1,
+          "faa": 1,
+          "fama": 1,
+          "criterionAccuracy": 1,
+          "meanInjectedTokens": 40.5,
+          "meanInjectedItems": 1,
+          "meanRenderedPairs": 1
+        },
+        "dual_query_aware": {
+          "cases": 60,
+          "mpa": 1,
+          "faa": 1,
+          "fama": 1,
+          "criterionAccuracy": 1,
+          "meanInjectedTokens": 29.6,
+          "meanInjectedItems": 1,
+          "meanRenderedPairs": 0.6666666666666666
+        }
+      },
+      "comparisonsVsV1": {
+        "dual_all": {
+          "mpa": {
+            "mean": 0.5,
+            "lower": 0.5,
+            "upper": 0.5,
+            "clusters": 10
+          },
+          "faa": {
+            "mean": 0.016666666666666666,
+            "lower": 0,
+            "upper": 0.041666666666666664,
+            "clusters": 10
+          },
+          "fama": {
+            "mean": 0.5,
+            "lower": 0.5,
+            "upper": 0.5,
+            "clusters": 10
+          },
+          "criterionAccuracy": {
+            "mean": 0.2861111111111112,
+            "lower": 0.2777777777777778,
+            "upper": 0.2986111111111111,
+            "clusters": 10
+          }
+        },
+        "dual_query_aware": {
+          "mpa": {
+            "mean": 0.5,
+            "lower": 0.5,
+            "upper": 0.5,
+            "clusters": 10
+          },
+          "faa": {
+            "mean": 0.016666666666666666,
+            "lower": 0,
+            "upper": 0.041666666666666664,
+            "clusters": 10
+          },
+          "fama": {
+            "mean": 0.5,
+            "lower": 0.5,
+            "upper": 0.5,
+            "clusters": 10
+          },
+          "criterionAccuracy": {
+            "mean": 0.2861111111111112,
+            "lower": 0.2777777777777778,
+            "upper": 0.2986111111111111,
+            "clusters": 10
+          }
+        }
+      },
+      "readerDirectionsVsV1": {
+        "dual_all": {
+          "fama": {
+            "minimax-m3": 0.5,
+            "deepseek-v4-flash": 0.5
+          },
+          "criterionAccuracy": {
+            "minimax-m3": 0.2777777777777778,
+            "deepseek-v4-flash": 0.29444444444444445
+          }
+        },
+        "dual_query_aware": {
+          "fama": {
+            "minimax-m3": 0.5,
+            "deepseek-v4-flash": 0.5
+          },
+          "criterionAccuracy": {
+            "minimax-m3": 0.2777777777777778,
+            "deepseek-v4-flash": 0.29444444444444445
+          }
+        }
+      },
+      "outcomesVsV1": {
+        "dual_all": {
+          "fama": {
+            "cases": 60,
+            "improved": 40,
+            "equal": 20,
+            "harmed": 0
+          },
+          "criterionAccuracy": {
+            "cases": 60,
+            "improved": 40,
+            "equal": 20,
+            "harmed": 0
+          }
+        },
+        "dual_query_aware": {
+          "fama": {
+            "cases": 60,
+            "improved": 40,
+            "equal": 20,
+            "harmed": 0
+          },
+          "criterionAccuracy": {
+            "cases": 60,
+            "improved": 40,
+            "equal": 20,
+            "harmed": 0
+          }
+        }
+      },
+      "pairs": 20,
+      "byTask": {
+        "temporal_change": {
+          "cases": 20,
+          "arms": {
+            "v1": {
+              "cases": 20,
+              "mpa": 0.5,
+              "faa": 1,
+              "fama": 0.5,
+              "criterionAccuracy": 0.6666666666666664,
+              "meanInjectedTokens": 7.8,
+              "meanInjectedItems": 1,
+              "meanRenderedPairs": 0
+            },
+            "dual_all": {
+              "cases": 20,
+              "mpa": 1,
+              "faa": 1,
+              "fama": 1,
+              "criterionAccuracy": 1,
+              "meanInjectedTokens": 40.5,
+              "meanInjectedItems": 1,
+              "meanRenderedPairs": 1
+            },
+            "dual_query_aware": {
+              "cases": 20,
+              "mpa": 1,
+              "faa": 1,
+              "fama": 1,
+              "criterionAccuracy": 1,
+              "meanInjectedTokens": 40.5,
+              "meanInjectedItems": 1,
+              "meanRenderedPairs": 1
+            }
+          },
+          "comparisonsVsV1": {
+            "dual_all": {
+              "mpa": {
+                "mean": 0.5,
+                "lower": 0.5,
+                "upper": 0.5,
+                "clusters": 10
+              },
+              "faa": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "fama": {
+                "mean": 0.5,
+                "lower": 0.5,
+                "upper": 0.5,
+                "clusters": 10
+              },
+              "criterionAccuracy": {
+                "mean": 0.33333333333333326,
+                "lower": 0.33333333333333326,
+                "upper": 0.33333333333333326,
+                "clusters": 10
+              }
+            },
+            "dual_query_aware": {
+              "mpa": {
+                "mean": 0.5,
+                "lower": 0.5,
+                "upper": 0.5,
+                "clusters": 10
+              },
+              "faa": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "fama": {
+                "mean": 0.5,
+                "lower": 0.5,
+                "upper": 0.5,
+                "clusters": 10
+              },
+              "criterionAccuracy": {
+                "mean": 0.33333333333333326,
+                "lower": 0.33333333333333326,
+                "upper": 0.33333333333333326,
+                "clusters": 10
+              }
+            }
+          },
+          "readerDirectionsVsV1": {
+            "dual_all": {
+              "fama": {
+                "minimax-m3": 0.5,
+                "deepseek-v4-flash": 0.5
+              },
+              "criterionAccuracy": {
+                "minimax-m3": 0.33333333333333326,
+                "deepseek-v4-flash": 0.33333333333333326
+              }
+            },
+            "dual_query_aware": {
+              "fama": {
+                "minimax-m3": 0.5,
+                "deepseek-v4-flash": 0.5
+              },
+              "criterionAccuracy": {
+                "minimax-m3": 0.33333333333333326,
+                "deepseek-v4-flash": 0.33333333333333326
+              }
+            }
+          },
+          "outcomesVsV1": {
+            "dual_all": {
+              "fama": {
+                "cases": 20,
+                "improved": 20,
+                "equal": 0,
+                "harmed": 0
+              },
+              "criterionAccuracy": {
+                "cases": 20,
+                "improved": 20,
+                "equal": 0,
+                "harmed": 0
+              }
+            },
+            "dual_query_aware": {
+              "fama": {
+                "cases": 20,
+                "improved": 20,
+                "equal": 0,
+                "harmed": 0
+              },
+              "criterionAccuracy": {
+                "cases": 20,
+                "improved": 20,
+                "equal": 0,
+                "harmed": 0
+              }
+            }
+          }
+        },
+        "temporal_current": {
+          "cases": 20,
+          "arms": {
+            "v1": {
+              "cases": 20,
+              "mpa": 1,
+              "faa": 1,
+              "fama": 1,
+              "criterionAccuracy": 1,
+              "meanInjectedTokens": 7.8,
+              "meanInjectedItems": 1,
+              "meanRenderedPairs": 0
+            },
+            "dual_all": {
+              "cases": 20,
+              "mpa": 1,
+              "faa": 1,
+              "fama": 1,
+              "criterionAccuracy": 1,
+              "meanInjectedTokens": 40.5,
+              "meanInjectedItems": 1,
+              "meanRenderedPairs": 1
+            },
+            "dual_query_aware": {
+              "cases": 20,
+              "mpa": 1,
+              "faa": 1,
+              "fama": 1,
+              "criterionAccuracy": 1,
+              "meanInjectedTokens": 7.8,
+              "meanInjectedItems": 1,
+              "meanRenderedPairs": 0
+            }
+          },
+          "comparisonsVsV1": {
+            "dual_all": {
+              "mpa": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "faa": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "fama": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "criterionAccuracy": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              }
+            },
+            "dual_query_aware": {
+              "mpa": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "faa": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "fama": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              },
+              "criterionAccuracy": {
+                "mean": 0,
+                "lower": 0,
+                "upper": 0,
+                "clusters": 10
+              }
+            }
+          },
+          "readerDirectionsVsV1": {
+            "dual_all": {
+              "fama": {
+                "minimax-m3": 0,
+                "deepseek-v4-flash": 0
+              },
+              "criterionAccuracy": {
+                "minimax-m3": 0,
+                "deepseek-v4-flash": 0
+              }
+            },
+            "dual_query_aware": {
+              "fama": {
+                "minimax-m3": 0,
+                "deepseek-v4-flash": 0
+              },
+              "criterionAccuracy": {
+                "minimax-m3": 0,
+                "deepseek-v4-flash": 0
+              }
+            }
+          },
+          "outcomesVsV1": {
+            "dual_all": {
+              "fama": {
+                "cases": 20,
+                "improved": 0,
+                "equal": 20,
+                "harmed": 0
+              },
+              "criterionAccuracy": {
+                "cases": 20,
+                "improved": 0,
+                "equal": 20,
+                "harmed": 0
+              }
+            },
+            "dual_query_aware": {
+              "fama": {
+                "cases": 20,
+                "improved": 0,
+                "equal": 20,
+                "harmed": 0
+              },
+              "criterionAccuracy": {
+                "cases": 20,
+                "improved": 0,
+                "equal": 20,
+                "harmed": 0
+              }
+            }
+          }
+        },
+        "temporal_history": {
+          "cases": 20,
+          "arms": {
+            "v1": {
+              "cases": 20,
+              "mpa": 0,
+              "faa": 0.95,
+              "fama": 0,
+              "criterionAccuracy": 0.475,
+              "meanInjectedTokens": 7.8,
+              "meanInjectedItems": 1,
+              "meanRenderedPairs": 0
+            },
+            "dual_all": {
+              "cases": 20,
+              "mpa": 1,
+              "faa": 1,
+              "fama": 1,
+              "criterionAccuracy": 1,
+              "meanInjectedTokens": 40.5,
+              "meanInjectedItems": 1,
+              "meanRenderedPairs": 1
+            },
+            "dual_query_aware": {
+              "cases": 20,
+              "mpa": 1,
+              "faa": 1,
+              "fama": 1,
+              "criterionAccuracy": 1,
+              "meanInjectedTokens": 40.5,
+              "meanInjectedItems": 1,
+              "meanRenderedPairs": 1
+            }
+          },
+          "comparisonsVsV1": {
+            "dual_all": {
+              "mpa": {
+                "mean": 1,
+                "lower": 1,
+                "upper": 1,
+                "clusters": 10
+              },
+              "faa": {
+                "mean": 0.05,
+                "lower": 0,
+                "upper": 0.125,
+                "clusters": 10
+              },
+              "fama": {
+                "mean": 1,
+                "lower": 1,
+                "upper": 1,
+                "clusters": 10
+              },
+              "criterionAccuracy": {
+                "mean": 0.525,
+                "lower": 0.5,
+                "upper": 0.5625,
+                "clusters": 10
+              }
+            },
+            "dual_query_aware": {
+              "mpa": {
+                "mean": 1,
+                "lower": 1,
+                "upper": 1,
+                "clusters": 10
+              },
+              "faa": {
+                "mean": 0.05,
+                "lower": 0,
+                "upper": 0.125,
+                "clusters": 10
+              },
+              "fama": {
+                "mean": 1,
+                "lower": 1,
+                "upper": 1,
+                "clusters": 10
+              },
+              "criterionAccuracy": {
+                "mean": 0.525,
+                "lower": 0.5,
+                "upper": 0.5625,
+                "clusters": 10
+              }
+            }
+          },
+          "readerDirectionsVsV1": {
+            "dual_all": {
+              "fama": {
+                "minimax-m3": 1,
+                "deepseek-v4-flash": 1
+              },
+              "criterionAccuracy": {
+                "minimax-m3": 0.5,
+                "deepseek-v4-flash": 0.55
+              }
+            },
+            "dual_query_aware": {
+              "fama": {
+                "minimax-m3": 1,
+                "deepseek-v4-flash": 1
+              },
+              "criterionAccuracy": {
+                "minimax-m3": 0.5,
+                "deepseek-v4-flash": 0.55
+              }
+            }
+          },
+          "outcomesVsV1": {
+            "dual_all": {
+              "fama": {
+                "cases": 20,
+                "improved": 20,
+                "equal": 0,
+                "harmed": 0
+              },
+              "criterionAccuracy": {
+                "cases": 20,
+                "improved": 20,
+                "equal": 0,
+                "harmed": 0
+              }
+            },
+            "dual_query_aware": {
+              "fama": {
+                "cases": 20,
+                "improved": 20,
+                "equal": 0,
+                "harmed": 0
+              },
+              "criterionAccuracy": {
+                "cases": 20,
+                "improved": 20,
+                "equal": 0,
+                "harmed": 0
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "decisions": {
+    "unconditionalDual": {
+      "promoted": false,
+      "checks": {
+        "naturalFama": true,
+        "naturalFamaCi": true,
+        "naturalFaa": true,
+        "naturalMpa": true,
+        "naturalTokenBudget": false
+      },
+      "naturalTokenIncreaseFraction": 0.2953424063330261
+    },
+    "queryAwareValue": {
+      "valuable": true,
+      "checks": {
+        "temporalAccuracy": true,
+        "temporalAccuracyCi": true,
+        "historicalAccuracy": true,
+        "changeAccuracy": true,
+        "currentNonInferiority": true,
+        "naturalNonInferiority": true,
+        "combinedTokenBudget": true,
+        "readerDirection": true,
+        "integrity": true
+      },
+      "combinedTokenIncreaseFraction": 0.06916609380783667,
+      "readerTemporalDirections": {
+        "minimax-m3": 0.2777777777777778,
+        "deepseek-v4-flash": 0.29444444444444445
+      }
+    },
+    "defaultReplacement": {
+      "promoted": false,
+      "checks": {
+        "naturalTemporalCoverage": false,
+        "naturalFama": false,
+        "naturalFamaCi": false
+      },
+      "explanation": "A controlled temporal probe can establish capability value but cannot by itself replace V1 as the default policy."
+    }
+  },
+  "recommendation": "Retain V1 as default; admit labelled dual-state rendering only as an experimental path for explicit historical/change queries.",
+  "usage": {
+    "readers": {
+      "minimax-m3": {
+        "calls": 336,
+        "promptTokens": 133392,
+        "completionTokens": 30996,
+        "totalTokens": 164388,
+        "retries": 0,
+        "meanLatencyMs": 2140.5164817857176
+      },
+      "deepseek-v4-flash": {
+        "calls": 336,
+        "promptTokens": 83870,
+        "completionTokens": 23749,
+        "totalTokens": 107619,
+        "retries": 0,
+        "meanLatencyMs": 1156.5400838214257
+      }
+    },
+    "judges": {
+      "minimax-m3": {
+        "calls": 336,
+        "promptTokens": 148578,
+        "completionTokens": 41079,
+        "totalTokens": 189657,
+        "retries": 0,
+        "meanLatencyMs": 1946.386327883931
+      },
+      "deepseek-v4-flash": {
+        "calls": 336,
+        "promptTokens": 117562,
+        "completionTokens": 43026,
+        "totalTokens": 160588,
+        "retries": 0,
+        "meanLatencyMs": 1090.733255464286
+      }
+    }
+  },
+  "operationalIntegrity": {
+    "evaluations": 672,
+    "expectedEvaluations": 672,
+    "complete": true,
+    "readerCalls": 672,
+    "judgeCalls": 672,
+    "readerRetries": 0,
+    "judgeRetries": 0,
+    "readerModelMismatches": 0,
+    "judgeModelMismatches": 0,
+    "selfJudgments": 0,
+    "unclearVerdicts": 4
+  },
+  "artifactHashes": {
+    "evaluationsSha256": "fb1e6b132b72ed9962600853f18673733822ef385a5c8175cca9deb0b9842b56"
+  },
+  "caveats": [
+    "This is a fresh weekly answer run and a controlled structured-edge temporal probe. It does not validate automatic predecessor linking, human correctness, real programming traffic, or unrestricted old-memory exposure.",
+    "Weekly/monthly Memora were previously used to optimize the incumbent V1 retrieval proxy; this is fresh answer evidence, not a pristine dataset holdout.",
+    "The temporal probe uses structured old/current values and therefore measures resolver/rendering capability, not automatic predecessor-link precision.",
+    "The natural weekly census contains no explicit historical-state or state-change query, so default-policy promotion is structurally unavailable under the frozen gate.",
+    "Crossed model judging is not blinded human calibration."
+  ]
+}
