@@ -1,0 +1,113 @@
+{
+  "protocolVersion": "lifecycle-dual-state-e2e-v1.0",
+  "researchDirection": "D19",
+  "seed": 20260830,
+  "preScoreCommitRequired": true,
+  "context": {
+    "protocolVersion": "lifecycle-dual-state-context-v1.0",
+    "sha256": "a0e7cc65a9d7054cf3f0a12706668a400a9727a656815d78fe9d719b06d882c9",
+    "cases": 210,
+    "naturalCases": 150,
+    "temporalCases": 60,
+    "temporalPairs": 20,
+    "uniquePromptsPerReader": 336
+  },
+  "arms": ["v1", "dual_all", "dual_query_aware"],
+  "readers": [
+    {
+      "id": "minimax-m3",
+      "provider": "minimax",
+      "model": "MiniMax-M3",
+      "baseUrl": "https://api.minimaxi.com/v1",
+      "apiKeyEnv": "MINIMAX_API_KEY",
+      "temperature": 0.1,
+      "topP": 0.95,
+      "maxTokens": 700,
+      "thinking": "disabled"
+    },
+    {
+      "id": "deepseek-v4-flash",
+      "provider": "deepseek",
+      "model": "deepseek-v4-flash",
+      "baseUrl": "https://api.deepseek.com",
+      "apiKeyEnv": "DEEPSEEK_API_KEY",
+      "temperature": 0,
+      "maxTokens": 700,
+      "thinking": "disabled"
+    }
+  ],
+  "judges": [
+    {
+      "id": "minimax-m3",
+      "provider": "minimax",
+      "model": "MiniMax-M3",
+      "baseUrl": "https://api.minimaxi.com/v1",
+      "apiKeyEnv": "MINIMAX_API_KEY",
+      "temperature": 0.1,
+      "topP": 0.95,
+      "maxTokens": 8192,
+      "thinking": "disabled"
+    },
+    {
+      "id": "deepseek-v4-flash",
+      "provider": "deepseek",
+      "model": "deepseek-v4-flash",
+      "baseUrl": "https://api.deepseek.com",
+      "apiKeyEnv": "DEEPSEEK_API_KEY",
+      "temperature": 0,
+      "maxTokens": 8192,
+      "thinking": "disabled"
+    }
+  ],
+  "judgeAssignment": {
+    "minimax-m3": "deepseek-v4-flash",
+    "deepseek-v4-flash": "minimax-m3"
+  },
+  "retries": 3,
+  "aggregation": {
+    "answerUnit": "One reader answer is scored only by the other fixed model; self-judging is forbidden.",
+    "caseArm": "Arithmetic mean of the two crossed reader/judge cells.",
+    "naturalPrimary": "FAMA over the frozen 150-question weekly census.",
+    "temporalPrimary": "Criterion accuracy, equally weighted by generated question; current/history/change are also reported separately.",
+    "uncertainty": "Paired persona-cluster bootstrap with 5000 draws."
+  },
+  "uncertainty": {
+    "unit": "persona",
+    "bootstrapSamples": 5000,
+    "confidenceLevel": 0.95
+  },
+  "gates": {
+    "unconditionalDual": {
+      "minNaturalFamaDelta": -0.01,
+      "minNaturalFamaCiLower": -0.02,
+      "minNaturalFaaDelta": -0.01,
+      "minNaturalMpaDelta": -0.01,
+      "maxNaturalTokenIncreaseFraction": 0.1
+    },
+    "queryAwareValue": {
+      "minTemporalCriterionAccuracyDelta": 0.15,
+      "requireTemporalCriterionAccuracyCiLowerAboveZero": true,
+      "minHistoryCriterionAccuracyDelta": 0.15,
+      "minChangeCriterionAccuracyDelta": 0.15,
+      "minCurrentCriterionAccuracyDelta": -0.01,
+      "minNaturalFamaDelta": -0.01,
+      "maxCombinedTokenIncreaseFraction": 0.1,
+      "requireNonnegativeTemporalDirectionForBothReaders": true,
+      "requireCompleteFrozenTaskSet": true,
+      "requireZeroModelMismatches": true
+    },
+    "defaultReplacement": {
+      "minNaturalExplicitTemporalCases": 20,
+      "minNaturalFamaDelta": 0.01,
+      "requireNaturalFamaCiLowerAboveZero": true,
+      "explanation": "A controlled temporal probe can establish capability value but cannot by itself replace V1 as the default policy."
+    }
+  },
+  "decisionRule": "Call the idea conditionally valuable only if every queryAwareValue gate passes. Promote unconditional dual return only if every unconditionalDual gate passes. Keep V1 as default unless every defaultReplacement gate also passes.",
+  "reuse": {
+    "rule": "Reuse only byte-identical reader message arrays within the same frozen case.",
+    "expectedReaderCalls": 672,
+    "expectedJudgeCalls": 672
+  },
+  "claimBoundary": "This is a fresh weekly answer run and a controlled structured-edge temporal probe. It does not validate automatic predecessor linking, human correctness, real programming traffic, or unrestricted old-memory exposure."
+}

@@ -1,0 +1,106 @@
+{
+  "protocolVersion": "lifecycle-dual-state-context-v1.0",
+  "status": "context_ready",
+  "protocolSha256": "fe79602615c5d7a2c3b98e6854d436c63894a30c85629ba4103851d204502e61",
+  "dataset": {
+    "name": "Memora",
+    "revision": "a6493188efc836d6511ed5e4163fe3ba87da30ff",
+    "dataManifestSha256": "dfc82711dd6647bcb0ba590f43a336f0dac02420e981ce957dd1fd13ae331bfc",
+    "groups": 30,
+    "personas": 10,
+    "questions": 600,
+    "sessions": 27614,
+    "memoryUnits": 24856,
+    "operationCounts": {
+      "no_memory:none": 11126,
+      "activity:add": 7790,
+      "preference:add": 2146,
+      "activity:update": 1226,
+      "goal:add": 572,
+      "preference:delete": 1077,
+      "activity:delete": 2082,
+      "preference:update": 1595
+    }
+  },
+  "selection": {
+    "naturalCases": 150,
+    "temporalPairs": 20,
+    "temporalCases": 60,
+    "personas": 10,
+    "naturalTaskCounts": {
+      "reasoning": 50,
+      "recommending": 50,
+      "remembering": 50
+    },
+    "naturalIntentCounts": {
+      "current_state": 100,
+      "historical_state": 0,
+      "state_change": 0,
+      "historical_aggregate": 50
+    },
+    "temporalTaskCounts": {
+      "temporal_change": 20,
+      "temporal_current": 20,
+      "temporal_history": 20
+    },
+    "probePairIds": [
+      "weekly:academic_researcher:preference-update:69",
+      "weekly:academic_researcher:preference-update:50",
+      "weekly:business_executive:preference-update:119",
+      "weekly:business_executive:preference-update:55",
+      "weekly:content_writer:preference-update:129",
+      "weekly:content_writer:preference-update:113",
+      "weekly:creative_designer:preference-update:84",
+      "weekly:creative_designer:preference-update:26",
+      "weekly:financial_analyst:preference-update:149",
+      "weekly:financial_analyst:preference-update:66",
+      "weekly:management_consultant:preference-update:111",
+      "weekly:management_consultant:preference-update:85",
+      "weekly:marketing_manager:preference-update:74",
+      "weekly:marketing_manager:preference-update:60",
+      "weekly:sales_manager:preference-update:41",
+      "weekly:sales_manager:preference-update:36",
+      "weekly:software_engineer:preference-update:100",
+      "weekly:software_engineer:preference-update:155",
+      "weekly:startup_founder:preference-update:97",
+      "weekly:startup_founder:preference-update:151"
+    ]
+  },
+  "deduplication": {
+    "caseArmContexts": 630,
+    "uniquePromptsPerReader": 336,
+    "reusableCaseArmContexts": 294,
+    "exactPromptReuseOnly": true
+  },
+  "armStats": {
+    "v1": {
+      "cases": 210,
+      "changedVsV1": 0,
+      "meanInjectedItems": 3.857142857142857,
+      "meanInjectedTokens": 90.05238095238096,
+      "totalRenderedPairs": 0
+    },
+    "dual_all": {
+      "cases": 210,
+      "changedVsV1": 126,
+      "meanInjectedItems": 3.857142857142857,
+      "meanInjectedTokens": 125.33333333333333,
+      "totalRenderedPairs": 161
+    },
+    "dual_query_aware": {
+      "cases": 210,
+      "changedVsV1": 40,
+      "meanInjectedItems": 3.857142857142857,
+      "meanInjectedTokens": 96.28095238095239,
+      "totalRenderedPairs": 40
+    }
+  },
+  "fallbackValidation": {
+    "cases": 150,
+    "damagedMismatches": 0,
+    "timeoutMismatches": 0,
+    "passed": true
+  },
+  "contextManifestSha256": "a0e7cc65a9d7054cf3f0a12706668a400a9727a656815d78fe9d719b06d882c9",
+  "claimBoundary": "The natural panel is a fresh answer-level weekly panel but weekly/monthly Memora were previously used for V1 proxy optimization. The temporal panel is a controlled probe generated from quasi-oracle structured updates, not a natural-query or automatic-linking benchmark."
+}

@@ -1,0 +1,67 @@
+{
+  "protocolVersion": "lifecycle-dual-state-context-v1.0",
+  "researchDirection": "D19",
+  "seed": 20260830,
+  "hypothesis": "Returning a bounded, explicitly labelled old/current pair is useful for historical or change queries, but should not replace V1 current-only redirection for ordinary current-state queries.",
+  "dataset": {
+    "name": "Memora",
+    "revision": "a6493188efc836d6511ed5e4163fe3ba87da30ff",
+    "developmentPeriod": "monthly",
+    "validationPeriod": "weekly",
+    "expectedNaturalCases": 150,
+    "expectedPersonas": 10
+  },
+  "panels": {
+    "naturalSafety": {
+      "population": "census of all released weekly Memora questions",
+      "outcomeBlind": "No reader answer or judge verdict from weekly Memora is read before this context manifest and the answer protocol are frozen.",
+      "purpose": "Measure ordinary-task harm and token cost when labelled old/current pairs are exposed unconditionally."
+    },
+    "temporalCapability": {
+      "eligibleEvent": "weekly preference value_update with distinct string old_item/item and like-to-like polarity",
+      "selection": "within each persona, ascending SHA256(seed + NUL + persona + NUL + session_id), then session_id",
+      "pairsPerPersona": 2,
+      "expectedPairs": 20,
+      "queriesPerPair": 3,
+      "queryTypes": ["current_state", "historical_state", "state_change"],
+      "purpose": "Controlled causal probe of whether both states improve history/change answers while query routing preserves current-state behavior."
+    }
+  },
+  "arms": [
+    {
+      "id": "v1",
+      "description": "Incumbent one-hop current-only redirection."
+    },
+    {
+      "id": "dual_all",
+      "description": "For every selected update redirect, return one bounded transition block containing labelled HISTORICAL/SUPERSEDED and CURRENT/ACTIVE states. Deletes remain absent."
+    },
+    {
+      "id": "dual_query_aware",
+      "description": "Return the transition block only for explicit historical-state or state-change queries; otherwise return byte-identical V1 context."
+    }
+  ],
+  "rendering": {
+    "logicalSlots": 5,
+    "candidatePool": 50,
+    "maxHistoricalStatesPerTransition": 1,
+    "maxCurrentStatesPerTransition": 1,
+    "updateLabel": "STATE TRANSITION",
+    "historicalLabel": "HISTORICAL / SUPERSEDED",
+    "currentLabel": "CURRENT / ACTIVE",
+    "deleteRule": "Never materialize a deleted predecessor as historical evidence.",
+    "retractionRule": "Never return a fact classified as retracted or never-valid; Memora exposes update/delete only, so retraction is outside this panel."
+  },
+  "intent": {
+    "dualEligible": ["historical_state", "state_change"],
+    "historicalAggregateRule": "Keep V1 because an aggregate query alone does not establish that an obsolete value was historically valid rather than corrected in place.",
+    "inferenceInputs": "query text only; task labels, gold evidence, answer outcomes and judge outputs are forbidden"
+  },
+  "fallback": {
+    "missingLedger": "byte-identical V1 output",
+    "resolverError": "byte-identical V1 output",
+    "timeout": "byte-identical V1 output",
+    "unknownRelation": "do not expose the predecessor"
+  },
+  "claimBoundary": "The natural panel is a fresh answer-level weekly panel but weekly/monthly Memora were previously used for V1 proxy optimization. The temporal panel is a controlled probe generated from quasi-oracle structured updates, not a natural-query or automatic-linking benchmark."
+}
