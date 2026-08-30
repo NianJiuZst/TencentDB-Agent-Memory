@@ -91,6 +91,29 @@ export interface AdaptiveRecallConfig {
   timeoutMs: number;
 }
 
+/**
+ * Correction-chain sidecar for L1 recall.
+ *
+ * The read path and feedback writer are separate switches so operators can
+ * collect shadow feedback before allowing it to affect prompt injection.
+ */
+export interface LifecycleRecallConfig {
+  /** Apply released correction edges to structured L1 candidates (default: false). */
+  enabled: boolean;
+  /** Append structured L1 update/merge decisions as scoped feedback (default: false). */
+  feedbackEnabled: boolean;
+  /** Minimum released-edge trust weight. This is a policy threshold, not a calibrated probability. */
+  minConfidence: number;
+  /** Maximum correction-chain traversal depth. V1 is frozen at one hop by default. */
+  maxHops: number;
+  /** Maximum successor expansions per recall. */
+  maxExpansions: number;
+  /** Sidecar-only latency budget before exact candidate fallback. */
+  timeoutMs: number;
+  /** Maximum scoped feedback events loaded into one recall decision. */
+  maxEvents: number;
+}
+
 export interface RecallConfig {
   /** Enable auto-recall (default: true) */
   enabled: boolean;
@@ -108,6 +131,8 @@ export interface RecallConfig {
   timeoutMs: number;
   /** Optional, fail-closed adaptive candidate and injection-budget policy. */
   adaptive?: AdaptiveRecallConfig;
+  /** Optional, fail-closed lifecycle correction sidecar. */
+  lifecycle?: LifecycleRecallConfig;
 }
 
 /** Embedding service configuration for vector search. */
@@ -399,6 +424,7 @@ export function parseConfig(raw: Record<string, unknown> | undefined): MemoryTda
   // --- Recall ---
   const recallGroup = obj(c, "recall");
   const adaptiveRecallGroup = obj(recallGroup, "adaptive");
+  const lifecycleRecallGroup = obj(recallGroup, "lifecycle");
 
   // --- Embedding ---
   const embeddingGroup = obj(c, "embedding");
@@ -592,6 +618,15 @@ export function parseConfig(raw: Record<string, unknown> | undefined): MemoryTda
         enabled: bool(adaptiveRecallGroup, "enabled") ?? false,
         policyPath: optStr(adaptiveRecallGroup, "policyPath"),
         timeoutMs: num(adaptiveRecallGroup, "timeoutMs") ?? 250,
+      },
+      lifecycle: {
+        enabled: bool(lifecycleRecallGroup, "enabled") ?? false,
+        feedbackEnabled: bool(lifecycleRecallGroup, "feedbackEnabled") ?? false,
+        minConfidence: num(lifecycleRecallGroup, "minConfidence") ?? 0.85,
+        maxHops: num(lifecycleRecallGroup, "maxHops") ?? 1,
+        maxExpansions: num(lifecycleRecallGroup, "maxExpansions") ?? 64,
+        timeoutMs: num(lifecycleRecallGroup, "timeoutMs") ?? 10,
+        maxEvents: num(lifecycleRecallGroup, "maxEvents") ?? 5000,
       },
     },
     embedding: {

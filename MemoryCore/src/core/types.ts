@@ -286,11 +286,15 @@ export interface RecallResult {
   /** Stable recall context appended to system prompt (persona, scene nav, tools guide). */
   appendSystemContext?: string;
   /** Recalled L1 memories with scores (for metrics). */
-  recalledL1Memories?: Array<{ content: string; score: number; type: string }>;
+  recalledL1Memories?: Array<{ id?: string; content: string; score: number; type: string }>;
   /** L3 Persona content (for metrics). */
   recalledL3Persona?: string | null;
   /** Search strategy used. */
   recallStrategy?: string;
+  /** Adaptive recall policy decision, when enabled. */
+  adaptiveRecallDecision?: import("./adaptive-recall/types.js").RecallDecisionLog;
+  /** Lifecycle correction decision, when enabled. */
+  lifecycleDecision?: import("./lifecycle/types.js").LifecycleDecisionLog;
   /**
    * H-15: structured failure signal. When recall fails (config error / dependency timeout /
    * storage error / etc), this is populated with a RecallError; success leaves it undefined.

@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "status": "passed",
+  "inputSha256": "e44ca89c8cb36d0460ab30cc8991a8cb8ac90848f8b5ca95a32ef576ed377754",
+  "fixtureSha256": "342fd3bc4046cc4ca41c393649bb8d290f4d3e11e53035662dcad7fcf1bffa1a",
+  "coverage": true,
+  "recomputedGates": {
+    "exact_cases": true,
+    "stale_exposure_zero": true,
+    "successor_recall_complete": true,
+    "protected_false_redirect_zero": true,
+    "cross_scope_leakage_zero": true,
+    "fallback_exact": true,
+    "p95_overhead_within_10ms": true
+  },
+  "failures": []
+}

@@ -414,6 +414,7 @@ export class VectorStore implements IMemoryStore {
   private stmtQueryBySessionIdSince!: StatementSync;
   private stmtQueryBySessionKey!: StatementSync;
   private stmtQueryBySessionKeySince!: StatementSync;
+  private stmtQueryByRecordId!: StatementSync;
   private stmtQueryAll!: StatementSync;
   private stmtQueryAllSince!: StatementSync;
 
@@ -1241,6 +1242,11 @@ export class VectorStore implements IMemoryStore {
       ORDER BY updated_time ASC
     `);
 
+    this.stmtQueryByRecordId = this.db.prepare(`
+      SELECT ${l1QueryCols} FROM l1_records
+      WHERE record_id = ?
+    `);
+
     this.stmtQueryAll = this.db.prepare(`
       SELECT ${l1QueryCols} FROM l1_records
       ORDER BY updated_time ASC
@@ -1809,12 +1815,17 @@ export class VectorStore implements IMemoryStore {
       return [];
     }
     try {
-      const { sessionKey, sessionId, taskId, updatedAfter } = filter ?? {};
+      const { recordIds, sessionKey, sessionId, taskId, updatedAfter } = filter ?? {};
 
       let raw: Record<string, unknown>[];
 
+      // Primary-key reads avoid an O(N) scan and match TCVDB documentIds semantics.
+      if (recordIds && recordIds.length > 0) {
+        raw = [...new Set(recordIds)]
+          .map((recordId) => this.stmtQueryByRecordId.get(recordId) as Record<string, unknown> | undefined)
+          .filter((row): row is Record<string, unknown> => row !== undefined);
       // Priority: sessionId > sessionKey (sessionId is more specific)
-      if (sessionId && updatedAfter) {
+      } else if (sessionId && updatedAfter) {
         raw = this.stmtQueryBySessionIdSince.all(sessionId, updatedAfter) as Record<string, unknown>[];
       } else if (sessionId) {
         raw = this.stmtQueryBySessionId.all(sessionId) as Record<string, unknown>[];
@@ -1847,6 +1858,13 @@ export class VectorStore implements IMemoryStore {
       if (filter?.userId !== undefined) rows = rows.filter((r) => r.user_id === filter.userId);
       if (filter?.agentId !== undefined) rows = rows.filter((r) => r.agent_id === filter.agentId);
       if (taskId !== undefined) rows = rows.filter((r) => r.task_id === taskId);
+      // Scan paths already apply these predicates in SQL; primary-key reads
+      // must apply them explicitly so filters compose identically.
+      if (recordIds && recordIds.length > 0) {
+        if (sessionId !== undefined) rows = rows.filter((r) => r.session_id === sessionId);
+        else if (sessionKey !== undefined) rows = rows.filter((r) => r.session_key === sessionKey);
+        if (updatedAfter !== undefined) rows = rows.filter((r) => r.updated_time > updatedAfter);
+      }
 
       this.logger?.info(
         `${TAG} [L1-query] filter={sessionKey=${sessionKey ?? "(all)"}, sessionId=${sessionId ?? "(all)"}, teamId=${filter?.teamId ?? "(all)"}, userId=${filter?.userId ?? "(all)"}, agentId=${filter?.agentId ?? "(all)"}, taskId=${taskId ?? "(all)"}, updatedAfter=${updatedAfter ?? "(none)"}}, ` +

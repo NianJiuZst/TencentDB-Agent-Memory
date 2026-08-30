@@ -18,7 +18,16 @@ export {
 } from "./target-state.js";
 export { optimizeLifecyclePolicy } from "./optimizer.js";
 export { promoteLifecyclePolicy } from "./promotion.js";
+export { applyPersistedLifecycle } from "./production-runtime.js";
+export {
+  appendLifecycleFeedbackEvent,
+  lifecycleFeedbackMatchesScope,
+  loadLifecycleFeedbackEvents,
+  parseLifecycleFeedbackEvent,
+} from "./feedback-store.js";
 export type * from "./types.js";
+export type * from "./feedback-store.js";
+export type * from "./production-runtime.js";
 export type {
   LifecycleEvidenceShieldDecision,
   LifecycleEvidenceShieldLimits,

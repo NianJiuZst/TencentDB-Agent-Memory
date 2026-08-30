@@ -91,18 +91,24 @@ export class LifecycleLedger implements LifecycleResolver {
         }
       }
       const obsoleteValues = [...new Set(event.obsoleteValues.map((value) => value.trim()).filter(Boolean))];
-      if (!obsoleteValues.length) continue;
-      for (const unit of units) {
-        if (unit.sequence >= event.sequence || successorIds.includes(unit.id)) continue;
-        if (!obsoleteValues.some((value) => containsValue(unit.content, value))) continue;
-        const entries = this.edgesByUnitId.get(unit.id) ?? [];
+      const directPredecessorIds = [...new Set(event.predecessorUnitIds ?? [])].filter(Boolean);
+      const predecessorIds = directPredecessorIds.length > 0
+        ? directPredecessorIds
+        : obsoleteValues.length > 0
+          ? units
+              .filter((unit) => unit.sequence < event.sequence && !successorIds.includes(unit.id))
+              .filter((unit) => obsoleteValues.some((value) => containsValue(unit.content, value)))
+              .map((unit) => unit.id)
+          : [];
+      for (const predecessorId of predecessorIds) {
+        const entries = this.edgesByUnitId.get(predecessorId) ?? [];
         entries.push({
           eventId: event.id,
           sequence: event.sequence,
           confidence: event.confidence,
           successorUnitIds: successorIds,
         });
-        this.edgesByUnitId.set(unit.id, entries);
+        this.edgesByUnitId.set(predecessorId, entries);
         edgeCount += 1;
         if (edgeCount > limits.maxEdges) throw new Error(`lifecycle edge capacity exceeded: ${edgeCount}`);
       }

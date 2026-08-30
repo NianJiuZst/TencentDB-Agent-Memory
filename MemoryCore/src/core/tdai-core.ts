@@ -397,6 +397,7 @@ export class TdaiCore {
         recallStrategy: recallResult.recallStrategy ?? "skipped",
         recallLatencyMs,
         hasError: !!recallResult.error,
+        lifecycleDecision: recallResult.lifecycleDecision,
       });
     } catch {
       // 静默失败

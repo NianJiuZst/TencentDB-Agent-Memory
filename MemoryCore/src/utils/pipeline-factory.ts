@@ -616,6 +616,7 @@ export function createL1Runner(opts: {
             embeddingService,
             conflictRecallTopK: cfg.embedding.conflictRecallTopK,
             embeddingTimeoutMs: cfg.embedding.captureTimeoutMs ?? cfg.embedding.timeoutMs,
+            lifecycleFeedbackEnabled: cfg.recall.lifecycle?.feedbackEnabled ?? false,
             llmRunner,
           },
           logger,

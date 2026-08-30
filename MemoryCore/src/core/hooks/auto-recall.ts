@@ -15,7 +15,7 @@ import { readSceneIndex } from "../scene/scene-index.js";
 import { generateSceneNavigation, stripSceneNavigation } from "../scene/scene-navigation.js";
 import { RecallErrors, toRecallFailure, type RecallError } from "./recall-errors.js";
 import type { MemoryRecord } from "../record/l1-reader.js";
-import type { IMemoryStore, L1SearchResult, L1FtsResult } from "../store/types.js";
+import type { IMemoryStore, L1SearchResult, L1FtsResult, L1RecordRow } from "../store/types.js";
 import { buildFtsQuery } from "../store/sqlite.js";
 import type { EmbeddingService, EmbeddingCallOptions } from "../store/embedding.js";
 import { sanitizeText } from "../../utils/sanitize.js";
@@ -30,6 +30,9 @@ import {
 import type { Logger } from "../types.js";
 import { executeAdaptiveLineRecall } from "../adaptive-recall/runtime.js";
 import type { RecallDecisionLog } from "../adaptive-recall/types.js";
+import { applyPersistedLifecycle } from "../lifecycle/production-runtime.js";
+import type { LifecycleDecisionLog, LifecyclePolicy } from "../lifecycle/types.js";
+import type { LifecycleFeedbackScope } from "../lifecycle/feedback-store.js";
 
 const TAG = "[memory-tdai] [recall]";
 const RECALL_TRUNCATION_SUFFIX = "…（已截断；可用 tdai_memory_search 或 tdai_conversation_search 查看详情）";
@@ -57,6 +60,8 @@ const MEMORY_TOOLS_GUIDE = `<memory-tools-guide>
 
 /** A single recalled L1 memory with its search score and type. */
 export interface RecalledMemory {
+  /** Stable L1 memory id when the retriever preserved structured results. */
+  id?: string;
   content: string;
   score: number;
   type: string;
@@ -77,6 +82,8 @@ export interface RecallResult {
   recallStrategy?: string;
   /** Bounded adaptive-policy decision, including hard-fallback reason. */
   adaptiveRecallDecision?: RecallDecisionLog;
+  /** Bounded correction-chain decision, including exact-fallback reason. */
+  lifecycleDecision?: LifecycleDecisionLog;
 
   // ── H-15: structured failure signal ──
   /**
@@ -183,14 +190,48 @@ async function performAutoRecallCore(params: {
   let effectiveStrategy = "skipped";
   let recalledL1Memories: RecalledMemory[] = [];
   let adaptiveRecallDecision: RecallDecisionLog | undefined;
+  let lifecycleDecision: LifecycleDecisionLog | undefined;
   let searchTiming: SearchTiming = { ftsMs: 0, embeddingMs: 0, ftsHits: 0, embeddingHits: 0 };
   if (!userText || userText.length === 0) {
     logger?.debug?.(`${TAG} User text empty/undefined, skipping memory search (persona/scene still injected)`);
   } else {
     effectiveStrategy = cfg.recall.strategy ?? "hybrid";
     const adaptiveConfig = cfg.recall.adaptive;
+    const lifecycleConfig = cfg.recall.lifecycle;
     let searchResult: SearchResult;
-    if (adaptiveConfig?.enabled) {
+    if (lifecycleConfig?.enabled) {
+      if (adaptiveConfig?.enabled) {
+        logger?.warn?.(
+          `${TAG} Both recall.adaptive and recall.lifecycle are enabled; lifecycle V1 takes precedence`,
+        );
+      }
+      const baseResult = await searchMemories(
+        userText,
+        pluginDataDir,
+        cfg,
+        logger,
+        effectiveStrategy as "keyword" | "embedding" | "hybrid",
+        vectorStore,
+        embeddingService,
+      );
+      const applied = await applyLifecycleToSearchResult({
+        searchResult: baseResult,
+        config: lifecycleConfig,
+        resultLimit: cfg.recall.maxResults ?? 5,
+        pluginDataDir,
+        storage,
+        vectorStore,
+        fallbackScope: {
+          teamId: profileIsolation.teamId,
+          userId: params.actorId,
+          agentId: profileIsolation.agentId,
+          sessionKey: params.sessionKey,
+        },
+        logger,
+      });
+      searchResult = applied.searchResult;
+      lifecycleDecision = applied.decision;
+    } else if (adaptiveConfig?.enabled) {
       const configuredPolicyPath = adaptiveConfig.policyPath;
       const policyPath = configuredPolicyPath
         ? (path.isAbsolute(configuredPolicyPath)
@@ -233,12 +274,17 @@ async function performAutoRecallCore(params: {
         embeddingService,
       );
     }
+    searchResult = applySearchResultBudget(searchResult, cfg.recall, logger);
     memoryLines = searchResult.lines;
     searchTiming = searchResult.timing;
-    memoryLines = applyRecallBudget(memoryLines, cfg.recall, logger);
 
-    // Extract structured RecalledMemory from formatted lines for metric reporting
-    recalledL1Memories = memoryLines.map((line, i) => {
+    // Prefer preserved ids; retain the legacy parser only for adaptive line-only recall.
+    recalledL1Memories = searchResult.candidates?.map((candidate) => ({
+      id: candidate.id,
+      content: candidate.content,
+      score: candidate.score,
+      type: candidate.type,
+    })) ?? memoryLines.map((line, i) => {
       const match = line.match(/^-\s+\[([^\]]+)\]\s+(.+?)(?:\s*\(活动时间:.*\))?$/);
       if (match) {
         const tag = match[1];
@@ -359,6 +405,7 @@ async function performAutoRecallCore(params: {
     recalledL3Persona: personaContent ?? null,
     recallStrategy: effectiveStrategy,
     adaptiveRecallDecision,
+    lifecycleDecision,
   };
 }
 
@@ -422,6 +469,15 @@ interface ScoredRecord {
   score: number;
 }
 
+interface SearchCandidate {
+  id: string;
+  line: string;
+  content: string;
+  type: string;
+  score: number;
+  scope: LifecycleFeedbackScope;
+}
+
 /** Timing breakdown from memory search */
 interface SearchTiming {
   ftsMs: number;
@@ -432,9 +488,138 @@ interface SearchTiming {
 
 interface SearchResult {
   lines: string[];
+  /** Real id-bearing results. Adaptive line-only recall intentionally leaves this undefined. */
+  candidates?: SearchCandidate[];
   timing: SearchTiming;
-  /** Per-line similarity scores (parallel to `lines`). Only populated on TCVDB nativeHybridSearch path. */
+  /** Per-line retriever scores, parallel to `lines` when structured results are available. */
   scores?: number[];
+}
+
+async function applyLifecycleToSearchResult(params: {
+  searchResult: SearchResult;
+  config: NonNullable<MemoryTdaiConfig["recall"]["lifecycle"]>;
+  resultLimit: number;
+  pluginDataDir: string;
+  storage?: StorageAdapter;
+  vectorStore?: IMemoryStore;
+  fallbackScope: LifecycleFeedbackScope;
+  logger?: Logger;
+}): Promise<{ searchResult: SearchResult; decision: LifecycleDecisionLog }> {
+  const policy: LifecyclePolicy = {
+    enabled: true,
+    minConfidence: params.config.minConfidence,
+    maxHops: params.config.maxHops,
+    maxExpansions: params.config.maxExpansions,
+    resultLimit: params.resultLimit,
+    timeoutMs: params.config.timeoutMs,
+  };
+  const candidates = params.searchResult.candidates;
+  if (!candidates) {
+    return {
+      searchResult: params.searchResult,
+      decision: {
+        mode: "fallback",
+        policy,
+        inputCandidates: params.searchResult.lines.length,
+        outputCandidates: Math.min(params.searchResult.lines.length, params.resultLimit),
+        redirects: 0,
+        maxObservedHops: 0,
+        expansions: 0,
+        elapsedMs: 0,
+        fallbackReason: "structured recall candidates unavailable",
+      },
+    };
+  }
+
+  const scopeKeys = new Map<string, LifecycleFeedbackScope>();
+  for (const candidate of candidates) {
+    const scope = candidate.scope;
+    const key = JSON.stringify([
+      scope.teamId ?? "",
+      scope.userId ?? "",
+      scope.agentId ?? "",
+      scope.taskId ?? "",
+    ]);
+    scopeKeys.set(key, scope);
+  }
+  if (scopeKeys.size > 1) {
+    const baseline = candidates.slice(0, params.resultLimit);
+    return {
+      searchResult: {
+        ...params.searchResult,
+        candidates: baseline,
+        lines: baseline.map((candidate) => candidate.line),
+        scores: baseline.map((candidate) => candidate.score),
+      },
+      decision: {
+        mode: "fallback",
+        policy,
+        inputCandidates: candidates.length,
+        outputCandidates: baseline.length,
+        redirects: 0,
+        maxObservedHops: 0,
+        expansions: 0,
+        elapsedMs: 0,
+        fallbackReason: "mixed lifecycle candidate scopes",
+      },
+    };
+  }
+  const scope = scopeKeys.values().next().value ?? params.fallbackScope;
+  const applied = await applyPersistedLifecycle({
+    candidates,
+    policy,
+    maxEvents: params.config.maxEvents,
+    baseDir: params.pluginDataDir,
+    storage: params.storage,
+    scope,
+    materialize: async (ids) => {
+      if (!params.vectorStore || ids.length === 0) return [];
+      const rows: L1RecordRow[] = [];
+      for (let start = 0; start < ids.length; start += 20) {
+        const requestedIds = ids.slice(start, start + 20);
+        const requestedSet = new Set(requestedIds);
+        const materialized = await params.vectorStore.queryL1Records({
+          recordIds: requestedIds,
+          teamId: scope.teamId,
+          userId: scope.userId,
+          agentId: scope.agentId,
+          taskId: scope.taskId,
+        });
+        rows.push(...materialized.filter((row) => requestedSet.has(row.record_id)));
+      }
+      return rows.map(l1RowToSearchCandidate);
+    },
+  });
+  params.logger?.debug?.(
+    `${TAG} Lifecycle decision: mode=${applied.decision.mode}, redirects=${applied.decision.redirects}, ` +
+    `fallback=${applied.decision.fallbackReason ?? "none"}, elapsed=${applied.decision.elapsedMs.toFixed(2)}ms`,
+  );
+  return {
+    searchResult: {
+      ...params.searchResult,
+      candidates: applied.candidates,
+      lines: applied.candidates.map((candidate) => candidate.line),
+      scores: applied.candidates.map((candidate) => candidate.score),
+    },
+    decision: applied.decision,
+  };
+}
+
+function applySearchResultBudget(
+  searchResult: SearchResult,
+  recall: MemoryTdaiConfig["recall"],
+  logger?: Logger,
+): SearchResult {
+  const lines = applyRecallBudget(searchResult.lines, recall, logger);
+  const candidates = searchResult.candidates
+    ?.slice(0, lines.length)
+    .map((candidate, index) => ({ ...candidate, line: lines[index] }));
+  return {
+    ...searchResult,
+    lines,
+    candidates,
+    scores: searchResult.scores?.slice(0, lines.length),
+  };
 }
 
 /**
@@ -489,7 +674,7 @@ async function searchMemories(
   vectorStore?: IMemoryStore,
   embeddingService?: EmbeddingService,
 ): Promise<SearchResult> {
-  const emptyResult: SearchResult = { lines: [], timing: { ftsMs: 0, embeddingMs: 0, ftsHits: 0, embeddingHits: 0 } };
+  const emptyResult: SearchResult = { lines: [], candidates: [], timing: { ftsMs: 0, embeddingMs: 0, ftsHits: 0, embeddingHits: 0 } };
   // Strip gateway-injected inbound metadata (Sender, timestamps, media markers,
   // base64 image data, etc.) so FTS / embedding queries are based on pure user intent.
   const cleanText = sanitizeText(userText);
@@ -537,27 +722,41 @@ async function searchMemories(
   try {
     if (effectiveStrategy === "keyword") {
       const tFts = performance.now();
-      const lines = await searchByKeyword(cleanText, pluginDataDir, maxResults, threshold, logger, vectorStore);
-      return { lines, timing: { ftsMs: performance.now() - tFts, embeddingMs: 0, ftsHits: lines.length, embeddingHits: 0 } };
+      const candidates = await searchByKeyword(cleanText, pluginDataDir, maxResults, threshold, logger, vectorStore);
+      return {
+        lines: candidates.map((candidate) => candidate.line),
+        candidates,
+        scores: candidates.map((candidate) => candidate.score),
+        timing: { ftsMs: performance.now() - tFts, embeddingMs: 0, ftsHits: candidates.length, embeddingHits: 0 },
+      };
     }
 
     if (effectiveStrategy === "embedding") {
       const tEmb = performance.now();
-      const lines = await searchByEmbedding(cleanText, maxResults, threshold, vectorStore!, embeddingService!, logger, embeddingCallOpts);
-      return { lines, timing: { ftsMs: 0, embeddingMs: performance.now() - tEmb, ftsHits: 0, embeddingHits: lines.length } };
+      const candidates = await searchByEmbedding(cleanText, maxResults, threshold, vectorStore!, embeddingService!, logger, embeddingCallOpts);
+      return {
+        lines: candidates.map((candidate) => candidate.line),
+        candidates,
+        scores: candidates.map((candidate) => candidate.score),
+        timing: { ftsMs: 0, embeddingMs: performance.now() - tEmb, ftsHits: 0, embeddingHits: candidates.length },
+      };
     }
 
     // Hybrid: if the store natively supports hybrid search (e.g. TCVDB does
     // server-side dense + sparse + RRF in a single API call), short-circuit
     // to avoid a redundant second HTTP request and a wasted local embed().
-    if (vectorStore?.getCapabilities().nativeHybridSearch) {
+    if (vectorStore?.getCapabilities().nativeHybridSearch && vectorStore.searchL1Hybrid) {
       const tNative = performance.now();
       const results = await vectorStore.searchL1Hybrid({ query: cleanText, topK: maxResults });
       const nativeMs = performance.now() - tNative;
       logger?.debug?.(`${TAG} [hybrid-native] Single-call hybrid: ${results.length} results in ${nativeMs.toFixed(0)}ms`);
-      const lines = results.map((r) => formatMemoryLine(vectorResultToFormatable(r)));
-      const scores = results.map((r) => r.score);
-      return { lines, scores, timing: { ftsMs: 0, embeddingMs: nativeMs, ftsHits: 0, embeddingHits: results.length } };
+      const candidates = results.map(vectorResultToSearchCandidate);
+      return {
+        lines: candidates.map((candidate) => candidate.line),
+        candidates,
+        scores: candidates.map((candidate) => candidate.score),
+        timing: { ftsMs: 0, embeddingMs: nativeMs, ftsHits: 0, embeddingHits: results.length },
+      };
     }
 
     // Fallback: run keyword + embedding in parallel, merge with client-side RRF (SQLite path)
@@ -579,7 +778,7 @@ async function searchByKeyword(
   threshold: number,
   logger?: Logger,
   vectorStore?: IMemoryStore,
-): Promise<string[]> {
+): Promise<SearchCandidate[]> {
   // Prefer FTS5 if available
   if (vectorStore?.isFtsAvailable()) {
     const ftsQuery = buildFtsQuery(userText);
@@ -597,7 +796,7 @@ async function searchByKeyword(
 
         if (filtered.length > 0) {
           logger?.debug?.(`${TAG} [keyword-fts] FTS5 found ${filtered.length} results (from ${ftsResults.length} raw, threshold=${threshold})`);
-          return filtered.map((r) => formatMemoryLine(ftsResultToFormatable(r)));
+          return filtered.map(ftsResultToSearchCandidate);
         }
 
         // BM25 absolute scores are unreliable when the document set is very
@@ -608,7 +807,7 @@ async function searchByKeyword(
             `${TAG} [keyword-fts] All ${ftsResults.length} results below threshold=${threshold} ` +
             `but document set is small — returning all matched results`,
           );
-          return ftsResults.slice(0, maxResults).map((r) => formatMemoryLine(ftsResultToFormatable(r)));
+          return ftsResults.slice(0, maxResults).map(ftsResultToSearchCandidate);
         }
         logger?.debug?.(`${TAG} [keyword-fts] FTS5 returned 0 results above threshold (from ${ftsResults.length} raw)`);
       }
@@ -632,7 +831,7 @@ async function searchByEmbedding(
   embeddingService: EmbeddingService,
   logger?: Logger,
   embeddingCallOpts?: EmbeddingCallOptions,
-): Promise<string[]> {
+): Promise<SearchCandidate[]> {
   logger?.debug?.(
     `${TAG} [embedding-search] START query="${userText.slice(0, 80)}...", maxResults=${maxResults}, threshold=${threshold}`,
   );
@@ -664,7 +863,7 @@ async function searchByEmbedding(
 
   if (filtered.length > 0) {
     logger?.debug?.(`${TAG} [embedding-search] Found ${filtered.length} relevant memories above threshold (from ${vecResults.length} candidates)`);
-    return filtered.map((r) => formatMemoryLine(vectorResultToFormatable(r)));
+    return filtered.map(vectorResultToSearchCandidate);
   }
 
   logger?.debug?.(`${TAG} [embedding-search] No results above threshold ${threshold}`);
@@ -725,6 +924,10 @@ async function searchHybrid(
                   updatedAt: "",
                   sessionKey: r.session_key,
                   sessionId: r.session_id,
+                  taskId: r.task_id,
+                  teamId: r.team_id,
+                  userId: r.user_id,
+                  agentId: r.agent_id,
                 },
                 score: r.score,
               }));
@@ -770,14 +973,14 @@ async function searchHybrid(
 
   if (keywordResults.length === 0 && embeddingResults.length === 0) {
     logger?.debug?.(`${TAG} Hybrid search: both strategies returned 0 results`);
-    return { lines: [], timing };
+    return { lines: [], candidates: [], timing };
   }
 
   // RRF merge: k=60 is a standard constant from the RRF paper
   const RRF_K = 60;
 
-  // Map: record_id → { rrfScore, formatable }
-  const mergedMap = new Map<string, { rrfScore: number; formatable: FormatableMemory }>();
+  // Map: record_id → { rrfScore, candidate }
+  const mergedMap = new Map<string, { rrfScore: number; candidate: SearchCandidate }>();
 
   // Process keyword results
   for (let rank = 0; rank < keywordResults.length; rank++) {
@@ -788,7 +991,7 @@ async function searchHybrid(
     if (existing) {
       existing.rrfScore += rrfScore;
     } else {
-      mergedMap.set(id, { rrfScore, formatable: recordToFormatable(r.record) });
+      mergedMap.set(id, { rrfScore, candidate: recordToSearchCandidate(r.record, r.score) });
     }
   }
 
@@ -801,7 +1004,7 @@ async function searchHybrid(
     if (existing) {
       existing.rrfScore += rrfScore;
     } else {
-      mergedMap.set(id, { rrfScore, formatable: vectorResultToFormatable(r) });
+      mergedMap.set(id, { rrfScore, candidate: vectorResultToSearchCandidate(r) });
     }
   }
 
@@ -815,11 +1018,17 @@ async function searchHybrid(
       `${TAG} Hybrid search found ${sorted.length} results ` +
       `(keyword=${keywordResults.length}, embedding=${embeddingResults.length})`,
     );
-    return { lines: sorted.map(([, { formatable }]) => formatMemoryLine(formatable)), timing };
+    const candidates = sorted.map(([, { rrfScore, candidate }]) => ({ ...candidate, score: rrfScore }));
+    return {
+      lines: candidates.map((candidate) => candidate.line),
+      candidates,
+      scores: candidates.map((candidate) => candidate.score),
+      timing,
+    };
   }
 
   logger?.debug?.(`${TAG} Hybrid search: no results after merge`);
-  return { lines: [], timing };
+  return { lines: [], candidates: [], timing };
 }
 
 // ============================
@@ -1045,5 +1254,88 @@ function ftsResultToFormatable(r: L1FtsResult): FormatableMemory {
     activity_start_time: activityStart,
     activity_end_time: activityEnd,
     timestamp: r.timestamp_str || undefined,
+  };
+}
+
+function recordToSearchCandidate(record: MemoryRecord, score: number): SearchCandidate {
+  const formatable = recordToFormatable(record);
+  return {
+    id: record.id,
+    line: formatMemoryLine(formatable),
+    content: record.content,
+    type: record.type,
+    score,
+    scope: {
+      teamId: record.teamId,
+      userId: record.userId,
+      agentId: record.agentId,
+      taskId: record.taskId,
+      sessionKey: record.sessionKey,
+    },
+  };
+}
+
+function vectorResultToSearchCandidate(result: L1SearchResult): SearchCandidate {
+  return {
+    id: result.record_id,
+    line: formatMemoryLine(vectorResultToFormatable(result)),
+    content: result.content,
+    type: result.type,
+    score: result.score,
+    scope: {
+      teamId: result.team_id || undefined,
+      userId: result.user_id || undefined,
+      agentId: result.agent_id || undefined,
+      taskId: result.task_id || undefined,
+      sessionKey: result.session_key || undefined,
+    },
+  };
+}
+
+function ftsResultToSearchCandidate(result: L1FtsResult): SearchCandidate {
+  return {
+    id: result.record_id,
+    line: formatMemoryLine(ftsResultToFormatable(result)),
+    content: result.content,
+    type: result.type,
+    score: result.score,
+    scope: {
+      teamId: result.team_id || undefined,
+      userId: result.user_id || undefined,
+      agentId: result.agent_id || undefined,
+      taskId: result.task_id || undefined,
+      sessionKey: result.session_key || undefined,
+    },
+  };
+}
+
+function l1RowToSearchCandidate(row: L1RecordRow): SearchCandidate {
+  let metadata: Record<string, unknown> = {};
+  try {
+    metadata = row.metadata_json ? JSON.parse(row.metadata_json) as Record<string, unknown> : {};
+  } catch {
+    metadata = {};
+  }
+  const formatable: FormatableMemory = {
+    type: row.type,
+    content: row.content,
+    scene_name: row.scene_name || undefined,
+    activity_start_time: typeof metadata.activity_start_time === "string" ? metadata.activity_start_time : undefined,
+    activity_end_time: typeof metadata.activity_end_time === "string" ? metadata.activity_end_time : undefined,
+    timestamp: row.timestamp_str || undefined,
+  };
+  return {
+    id: row.record_id,
+    line: formatMemoryLine(formatable),
+    content: row.content,
+    type: row.type,
+    score: 0,
+    scope: {
+      teamId: row.team_id || undefined,
+      userId: row.user_id || undefined,
+      agentId: row.agent_id || undefined,
+      taskId: row.task_id || undefined,
+      sessionKey: row.session_key || undefined,
+    },
   };
 }

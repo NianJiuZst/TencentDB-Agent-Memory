@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "name": "runtime-integration-v1",
+  "description": "Synthetic contract dataset for the TencentDB Agent Memory lifecycle sidecar. It measures integration correctness, isolation, fallback equivalence, and local overhead; it is not an answer-quality benchmark.",
+  "cases": [
+    { "id": "redirect-01", "kind": "redirect" },
+    { "id": "redirect-02", "kind": "redirect" },
+    { "id": "redirect-03", "kind": "redirect" },
+    { "id": "redirect-04", "kind": "redirect" },
+    { "id": "redirect-05", "kind": "redirect" },
+    { "id": "redirect-06", "kind": "redirect" },
+    { "id": "no-event-01", "kind": "no_event" },
+    { "id": "no-event-02", "kind": "no_event" },
+    { "id": "low-confidence-01", "kind": "low_confidence" },
+    { "id": "low-confidence-02", "kind": "low_confidence" },
+    { "id": "cross-scope-01", "kind": "cross_scope" },
+    { "id": "cross-scope-02", "kind": "cross_scope" },
+    { "id": "missing-successor-01", "kind": "missing_successor" },
+    { "id": "missing-successor-02", "kind": "missing_successor" },
+    { "id": "corrupt-state-01", "kind": "corrupt_state" },
+    { "id": "corrupt-state-02", "kind": "corrupt_state" }
+  ]
+}

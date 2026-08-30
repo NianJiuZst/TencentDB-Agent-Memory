@@ -98,6 +98,19 @@
               "policyPath": { "type": "string", "description": "由评测晋级阶段生成的版本化 JSON 策略路径；相对路径以插件数据目录解析" },
               "timeoutMs": { "type": "number", "default": 250, "description": "策略读取、探测或候选查询每阶段的超时（毫秒）；失败后执行原始召回" }
             }
+          },
+          "lifecycle": {
+            "type": "object",
+            "description": "作用域化的 L1 纠错链旁路；异常、超时、缺失后继时原样回退 Base 候选",
+            "properties": {
+              "enabled": { "type": "boolean", "default": false, "description": "是否让已发布纠错边参与自动召回；默认关闭" },
+              "feedbackEnabled": { "type": "boolean", "default": false, "description": "是否把结构化 update/merge 决策追加为纠错反馈；可先单独开启做影子采集" },
+              "minConfidence": { "type": "number", "default": 0.85, "minimum": 0, "maximum": 1, "description": "纠错边最小策略信任权重；不是校准概率" },
+              "maxHops": { "type": "number", "default": 1, "minimum": 1, "description": "单次召回最多追踪的纠错跳数；V1 默认 1" },
+              "maxExpansions": { "type": "number", "default": 64, "minimum": 1, "description": "单次召回最多展开的后继数量" },
+              "timeoutMs": { "type": "number", "default": 10, "minimum": 1, "description": "纠错旁路的独立耗时上限；超时后原样回退" },
+              "maxEvents": { "type": "number", "default": 5000, "minimum": 1, "description": "单次召回最多加载的同作用域反馈事件" }
+            }
           }
         }
       },

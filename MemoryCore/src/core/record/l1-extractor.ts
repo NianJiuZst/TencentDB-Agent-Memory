@@ -125,6 +125,8 @@ export async function extractL1Memories(params: {
     conflictRecallTopK?: number;
     /** Override embedding timeout for capture-path calls (milliseconds) */
     embeddingTimeoutMs?: number;
+    /** Append structured update/merge decisions for lifecycle correction recall. */
+    lifecycleFeedbackEnabled?: boolean;
     /**
      * Host-neutral LLM runner. When provided, used instead of creating
      * a CleanContextRunner (decouples from OpenClaw runtime).
@@ -329,6 +331,7 @@ export async function extractL1Memories(params: {
         vectorStore: options.vectorStore,
         embeddingService: options.embeddingService,
         storage,
+        lifecycleFeedbackEnabled: options.lifecycleFeedbackEnabled,
       });
 
     } catch (err) {
@@ -619,8 +622,9 @@ async function applyDecisions(params: {
   vectorStore?: IMemoryStore;
   embeddingService?: EmbeddingService;
   storage?: StorageAdapter;
+  lifecycleFeedbackEnabled?: boolean;
 }): Promise<MemoryRecord[]> {
-  const { memoriesWithIds, decisions, baseDir, sessionKey, sessionId, taskId, teamId, userId, agentId, logger, vectorStore, embeddingService, storage } = params;
+  const { memoriesWithIds, decisions, baseDir, sessionKey, sessionId, taskId, teamId, userId, agentId, logger, vectorStore, embeddingService, storage, lifecycleFeedbackEnabled } = params;
   const storedRecords: MemoryRecord[] = [];
 
   // Build a map from record_id → decision
@@ -651,6 +655,7 @@ async function applyDecisions(params: {
         vectorStore,
         embeddingService,
         storage,
+        lifecycleFeedbackEnabled,
       });
 
       if (record) {

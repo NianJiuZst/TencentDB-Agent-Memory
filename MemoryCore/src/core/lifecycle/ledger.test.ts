@@ -45,6 +45,21 @@ describe("LifecycleLedger", () => {
     expect(result.redirects).toBe(2);
   });
 
+  it("uses exact predecessor ids from a structured write without text matching", () => {
+    const ledger = new LifecycleLedger(units, [{
+      id: "event-direct",
+      kind: "update",
+      sequence: 20,
+      confidence: 1,
+      obsoleteValues: [],
+      predecessorUnitIds: ["old"],
+      successorUnitIds: ["middle"],
+      source: "structured-test",
+    }]);
+
+    expect(ledger.resolveIds(["old", "filler"], policy).ids).toEqual(["middle", "filler"]);
+  });
+
   it("is exactly equivalent to base when disabled", () => {
     const byId = new Map(units.map((unit) => [unit.id, unit]));
     const result = applyLifecyclePolicy({

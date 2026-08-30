@@ -256,6 +256,8 @@ export const StoragePaths = {
   conversationsDir: "conversations/",
   /** L1 memory records directory */
   recordsDir: "records/",
+  /** Append-only lifecycle correction feedback shards */
+  lifecycleEventsDir: "lifecycle-events/",
   /** Metadata directory */
   metadataDir: ".metadata/",
   /** Scene index */
@@ -275,6 +277,8 @@ export const StoragePaths = {
   conversation: (date: string) => `conversations/${date}.jsonl`,
   /** Build memory record JSONL path */
   record: (date: string) => `records/${date}.jsonl`,
+  /** Build lifecycle feedback JSONL path */
+  lifecycleEvents: (date: string) => `lifecycle-events/${date}.jsonl`,
   /** Build persona backup path */
   personaBackup: (index: number) => `.backup/persona/persona.${index}.md`,
   /** Build scene block backup path */

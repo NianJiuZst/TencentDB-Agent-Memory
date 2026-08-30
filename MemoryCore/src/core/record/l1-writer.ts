@@ -17,11 +17,12 @@
  */
 
 import crypto from "node:crypto";
-import { DEFAULT_ISOLATION_ID, type IMemoryStore } from "../store/types.js";
+import { DEFAULT_ISOLATION_ID, type IMemoryStore, type L1RecordRow } from "../store/types.js";
 import type { EmbeddingService } from "../store/embedding.js";
 import type { StorageAdapter } from "../storage/adapter.js";
 import { StoragePaths } from "../storage/types.js";
 import type { Logger } from "../types.js";
+import { appendLifecycleFeedbackEvent } from "../lifecycle/feedback-store.js";
 
 // ============================
 // Types
@@ -178,8 +179,10 @@ export async function writeMemory(params: {
   embeddingService?: EmbeddingService;
   /** StorageAdapter for file operations (COS/local). Falls back to fs when absent. */
   storage?: StorageAdapter;
+  /** Append structured update/merge feedback for the lifecycle sidecar. */
+  lifecycleFeedbackEnabled?: boolean;
 }): Promise<MemoryRecord | null> {
-  const { memory, decision, baseDir, sessionKey, sessionId, taskId, teamId, userId, agentId, logger, vectorStore, embeddingService, storage } = params;
+  const { memory, decision, baseDir, sessionKey, sessionId, taskId, teamId, userId, agentId, logger, vectorStore, embeddingService, storage, lifecycleFeedbackEnabled } = params;
 
   if (decision.action === "skip") {
     logger?.debug?.(`${TAG} Skipping memory: ${memory.content.slice(0, 50)}...`);
@@ -189,9 +192,24 @@ export async function writeMemory(params: {
   const now = new Date().toISOString();
 
   let nextVersion = 0;
+  let verifiedTargetIds: string[] = [];
   if ((decision.action === "update" || decision.action === "merge") && decision.target_ids.length > 0 && vectorStore) {
     try {
-      const existing = await vectorStore.queryL1Records({ recordIds: decision.target_ids });
+      const targetIds = [...new Set(decision.target_ids)];
+      const existing: L1RecordRow[] = [];
+      for (let start = 0; start < targetIds.length; start += 20) {
+        const requestedIds = targetIds.slice(start, start + 20);
+        const requestedSet = new Set(requestedIds);
+        const rows = await vectorStore.queryL1Records({
+          recordIds: requestedIds,
+          teamId,
+          userId,
+          agentId,
+          taskId,
+        });
+        existing.push(...rows.filter((row) => requestedSet.has(row.record_id)));
+      }
+      verifiedTargetIds = [...new Set(existing.map((row) => row.record_id))];
       const maxVersion = existing.reduce((max, row) => Math.max(max, row.version ?? 0), 0);
       nextVersion = maxVersion + 1;
     } catch (err) {
@@ -310,6 +328,7 @@ export async function writeMemory(params: {
   }
 
   // === Vector Store dual-write ===
+  let vectorUpsertSucceeded = false;
   if (vectorStore) {
     try {
       logger?.debug?.(
@@ -337,6 +356,7 @@ export async function writeMemory(params: {
       }
 
       const upsertOk = await vectorStore.upsertL1(record, embedding);
+      vectorUpsertSucceeded = upsertOk;
       logger?.debug?.(`${TAG} [vec-dual-write] upsert result=${upsertOk} id=${record.id}`);
     } catch (err) {
       // Vector write failure should NOT block the main JSONL write
@@ -348,6 +368,41 @@ export async function writeMemory(params: {
     logger?.debug?.(
       `${TAG} [vec-dual-write] SKIPPED id=${record.id}: vectorStore=${!!vectorStore}`,
     );
+  }
+
+  // Structured correction feedback is released only after the successor is
+  // queryable and every predecessor id was verified inside the same scope.
+  if (
+    lifecycleFeedbackEnabled &&
+    vectorUpsertSucceeded &&
+    (decision.action === "update" || decision.action === "merge") &&
+    verifiedTargetIds.length > 0 &&
+    verifiedTargetIds.length === new Set(decision.target_ids).size
+  ) {
+    try {
+      await appendLifecycleFeedbackEvent({
+        baseDir,
+        storage,
+        event: {
+          schemaVersion: 1,
+          eventId: `lifecycle_${crypto.randomUUID()}`,
+          kind: "update",
+          occurredAtMs: Date.parse(record.updatedAt),
+          confidence: decision.action === "update" ? 0.95 : 0.9,
+          source: decision.action === "update" ? "l1-dedup-update" : "l1-dedup-merge",
+          predecessorMemoryIds: verifiedTargetIds,
+          successorMemoryIds: [record.id],
+          scope: { teamId, userId, agentId, taskId, sessionKey },
+        },
+      });
+      logger?.debug?.(
+        `${TAG} lifecycle feedback: [${verifiedTargetIds.join(",")}] → ${record.id} (${decision.action})`,
+      );
+    } catch (error) {
+      logger?.warn?.(
+        `${TAG} Lifecycle feedback append failed (non-fatal): ${error instanceof Error ? error.message : String(error)}`,
+      );
+    }
   }
 
   return record;

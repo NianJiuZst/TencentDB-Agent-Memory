@@ -15,6 +15,7 @@
  */
 
 import { metricProducer } from "./kafka-metric-producer.js";
+import type { LifecycleDecisionLog } from "../lifecycle/types.js";
 
 // ============================
 // Strategy Encoding (numeric for ClickHouse storage)
@@ -42,6 +43,8 @@ export interface RecallMetricInput {
   recallLatencyMs: number;
   /** 是否召回失败 */
   hasError: boolean;
+  /** Lifecycle sidecar outcome; omitted when the feature did not run. */
+  lifecycleDecision?: LifecycleDecisionLog;
 }
 
 // ============================
@@ -116,6 +119,24 @@ export function reportRecallMetrics(input: RecallMetricInput): void {
       });
     } catch {
       // 静默失败
+    }
+
+    // 5. 生命周期纠错旁路：只上报数值化决策，不发送记忆内容或 ID。
+    if (input.lifecycleDecision) {
+      const decision = input.lifecycleDecision;
+      const lifecycleModeCode = decision.mode === "base" ? 0 : decision.mode === "adaptive" ? 1 : 2;
+      for (const [metric, value] of [
+        ["recall_lifecycle_mode", lifecycleModeCode],
+        ["recall_lifecycle_redirect_count", decision.redirects],
+        ["recall_lifecycle_fallback_count", decision.mode === "fallback" ? 1 : 0],
+        ["recall_lifecycle_latency_ms", Math.round(decision.elapsedMs)],
+      ] as const) {
+        try {
+          metricProducer.send({ metric, instanceId: input.instanceId, value, source: "core" });
+        } catch {
+          // 静默失败
+        }
+      }
     }
   } catch {
     // 最外层 catch — 绝不向外抛

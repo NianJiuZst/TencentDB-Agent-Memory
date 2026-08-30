@@ -2,7 +2,7 @@
 
 This benchmark evaluates a switchable lifecycle sidecar above MemoryCore L0 retrieval. It keeps the existing FTS5/vector candidate path, learns a bounded correction policy from controlled feedback, and returns the original Base prefix on disablement, timeout, corruption, or missing state.
 
-For a Chinese, decision-oriented account of the complete V1--D18 evidence, see [`REPORT_CN.md`](REPORT_CN.md). The English paper remains the theory and full experimental-process artifact. The compact machine-readable registry is [`results/direction-summary.v2.json`](results/direction-summary.v2.json).
+For the compact production integration and evaluation handoff, see [`DELIVERY_CN.md`](DELIVERY_CN.md) or the [three-page PDF](../../output/pdf/tencentdb-agent-memory-lifecycle-delivery-cn.pdf). For a Chinese, decision-oriented account of the complete V1--D18 evidence, see [`REPORT_CN.md`](REPORT_CN.md). The English paper remains the theory and full experimental-process artifact. The compact machine-readable registry is [`results/direction-summary.v2.json`](results/direction-summary.v2.json).
 
 ## Outcome
 

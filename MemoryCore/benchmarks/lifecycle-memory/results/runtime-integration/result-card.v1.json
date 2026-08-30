@@ -1,0 +1,281 @@
+{
+  "schemaVersion": 1,
+  "dataset": {
+    "name": "runtime-integration-v1",
+    "cases": 16,
+    "repetitions": 25,
+    "sha256": "342fd3bc4046cc4ca41c393649bb8d290f4d3e11e53035662dcad7fcf1bffa1a",
+    "boundary": "Synthetic contract dataset for the TencentDB Agent Memory lifecycle sidecar. It measures integration correctness, isolation, fallback equivalence, and local overhead; it is not an answer-quality benchmark."
+  },
+  "policy": {
+    "enabled": true,
+    "minConfidence": 0.85,
+    "maxHops": 1,
+    "maxExpansions": 64,
+    "resultLimit": 2,
+    "timeoutMs": 10
+  },
+  "metrics": {
+    "exact_case_rate": 1,
+    "stale_exposure_rate": 0,
+    "successor_recall_rate": 1,
+    "protected_false_redirect_rate": 0,
+    "cross_scope_leakage_rate": 0,
+    "exact_fallback_equivalence_rate": 1,
+    "p50_lifecycle_ms": 0.1540419999999898,
+    "p95_lifecycle_ms": 0.30870900000000745,
+    "p95_base_ms": 0.00533300000000736,
+    "p95_overhead_ms": 0.3033760000000001
+  },
+  "gates": {
+    "exact_cases": true,
+    "stale_exposure_zero": true,
+    "successor_recall_complete": true,
+    "protected_false_redirect_zero": true,
+    "cross_scope_leakage_zero": true,
+    "fallback_exact": true,
+    "p95_overhead_within_10ms": true
+  },
+  "rows": [
+    {
+      "id": "redirect-01",
+      "kind": "redirect",
+      "outputIds": [
+        "redirect-01-new",
+        "redirect-01-stable"
+      ],
+      "expectedIds": [
+        "redirect-01-new",
+        "redirect-01-stable"
+      ],
+      "mode": "adaptive",
+      "redirects": 1,
+      "exact": true
+    },
+    {
+      "id": "redirect-02",
+      "kind": "redirect",
+      "outputIds": [
+        "redirect-02-new",
+        "redirect-02-stable"
+      ],
+      "expectedIds": [
+        "redirect-02-new",
+        "redirect-02-stable"
+      ],
+      "mode": "adaptive",
+      "redirects": 1,
+      "exact": true
+    },
+    {
+      "id": "redirect-03",
+      "kind": "redirect",
+      "outputIds": [
+        "redirect-03-new",
+        "redirect-03-stable"
+      ],
+      "expectedIds": [
+        "redirect-03-new",
+        "redirect-03-stable"
+      ],
+      "mode": "adaptive",
+      "redirects": 1,
+      "exact": true
+    },
+    {
+      "id": "redirect-04",
+      "kind": "redirect",
+      "outputIds": [
+        "redirect-04-new",
+        "redirect-04-stable"
+      ],
+      "expectedIds": [
+        "redirect-04-new",
+        "redirect-04-stable"
+      ],
+      "mode": "adaptive",
+      "redirects": 1,
+      "exact": true
+    },
+    {
+      "id": "redirect-05",
+      "kind": "redirect",
+      "outputIds": [
+        "redirect-05-new",
+        "redirect-05-stable"
+      ],
+      "expectedIds": [
+        "redirect-05-new",
+        "redirect-05-stable"
+      ],
+      "mode": "adaptive",
+      "redirects": 1,
+      "exact": true
+    },
+    {
+      "id": "redirect-06",
+      "kind": "redirect",
+      "outputIds": [
+        "redirect-06-new",
+        "redirect-06-stable"
+      ],
+      "expectedIds": [
+        "redirect-06-new",
+        "redirect-06-stable"
+      ],
+      "mode": "adaptive",
+      "redirects": 1,
+      "exact": true
+    },
+    {
+      "id": "no-event-01",
+      "kind": "no_event",
+      "outputIds": [
+        "no-event-01-old",
+        "no-event-01-stable"
+      ],
+      "expectedIds": [
+        "no-event-01-old",
+        "no-event-01-stable"
+      ],
+      "mode": "base",
+      "redirects": 0,
+      "exact": true
+    },
+    {
+      "id": "no-event-02",
+      "kind": "no_event",
+      "outputIds": [
+        "no-event-02-old",
+        "no-event-02-stable"
+      ],
+      "expectedIds": [
+        "no-event-02-old",
+        "no-event-02-stable"
+      ],
+      "mode": "base",
+      "redirects": 0,
+      "exact": true
+    },
+    {
+      "id": "low-confidence-01",
+      "kind": "low_confidence",
+      "outputIds": [
+        "low-confidence-01-old",
+        "low-confidence-01-stable"
+      ],
+      "expectedIds": [
+        "low-confidence-01-old",
+        "low-confidence-01-stable"
+      ],
+      "mode": "base",
+      "redirects": 0,
+      "exact": true
+    },
+    {
+      "id": "low-confidence-02",
+      "kind": "low_confidence",
+      "outputIds": [
+        "low-confidence-02-old",
+        "low-confidence-02-stable"
+      ],
+      "expectedIds": [
+        "low-confidence-02-old",
+        "low-confidence-02-stable"
+      ],
+      "mode": "base",
+      "redirects": 0,
+      "exact": true
+    },
+    {
+      "id": "cross-scope-01",
+      "kind": "cross_scope",
+      "outputIds": [
+        "cross-scope-01-old",
+        "cross-scope-01-stable"
+      ],
+      "expectedIds": [
+        "cross-scope-01-old",
+        "cross-scope-01-stable"
+      ],
+      "mode": "base",
+      "redirects": 0,
+      "exact": true
+    },
+    {
+      "id": "cross-scope-02",
+      "kind": "cross_scope",
+      "outputIds": [
+        "cross-scope-02-old",
+        "cross-scope-02-stable"
+      ],
+      "expectedIds": [
+        "cross-scope-02-old",
+        "cross-scope-02-stable"
+      ],
+      "mode": "base",
+      "redirects": 0,
+      "exact": true
+    },
+    {
+      "id": "missing-successor-01",
+      "kind": "missing_successor",
+      "outputIds": [
+        "missing-successor-01-old",
+        "missing-successor-01-stable"
+      ],
+      "expectedIds": [
+        "missing-successor-01-old",
+        "missing-successor-01-stable"
+      ],
+      "mode": "fallback",
+      "redirects": 0,
+      "exact": true
+    },
+    {
+      "id": "missing-successor-02",
+      "kind": "missing_successor",
+      "outputIds": [
+        "missing-successor-02-old",
+        "missing-successor-02-stable"
+      ],
+      "expectedIds": [
+        "missing-successor-02-old",
+        "missing-successor-02-stable"
+      ],
+      "mode": "fallback",
+      "redirects": 0,
+      "exact": true
+    },
+    {
+      "id": "corrupt-state-01",
+      "kind": "corrupt_state",
+      "outputIds": [
+        "corrupt-state-01-old",
+        "corrupt-state-01-stable"
+      ],
+      "expectedIds": [
+        "corrupt-state-01-old",
+        "corrupt-state-01-stable"
+      ],
+      "mode": "fallback",
+      "redirects": 0,
+      "exact": true
+    },
+    {
+      "id": "corrupt-state-02",
+      "kind": "corrupt_state",
+      "outputIds": [
+        "corrupt-state-02-old",
+        "corrupt-state-02-stable"
+      ],
+      "expectedIds": [
+        "corrupt-state-02-old",
+        "corrupt-state-02-stable"
+      ],
+      "mode": "fallback",
+      "redirects": 0,
+      "exact": true
+    }
+  ]
+}

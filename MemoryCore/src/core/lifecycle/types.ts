@@ -12,6 +12,8 @@ export interface LifecycleEvent {
   sequence: number;
   confidence: number;
   obsoleteValues: string[];
+  /** Exact predecessors supplied by a trusted structured write path. */
+  predecessorUnitIds?: string[];
   successorUnitIds: string[];
   source: string;
 }
