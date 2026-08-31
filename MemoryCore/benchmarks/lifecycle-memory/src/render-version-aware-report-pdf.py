@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render the concise three-page version-aware memory report in Songti."""
+"""Render the dense three-page version-aware memory report in Songti."""
 
 from __future__ import annotations
 
@@ -19,7 +19,6 @@ from reportlab.platypus import (
     PageBreak,
     Paragraph,
     SimpleDocTemplate,
-    Spacer,
     Table,
     TableStyle,
 )
@@ -35,7 +34,6 @@ INK = colors.HexColor("#1E2935")
 MUTED = colors.HexColor("#526170")
 LINE = colors.HexColor("#CBD5DF")
 PASS = colors.HexColor("#23855B")
-WARN = colors.HexColor("#B26A00")
 SONGTI_PATH = "/System/Library/Fonts/Supplemental/Songti.ttc"
 BRANCH_URL = "https://github.com/NianJiuZst/TencentDB-Agent-Memory/tree/codex/version-aware-multistate-memory"
 CODE_ROOT = "https://github.com/NianJiuZst/TencentDB-Agent-Memory/blob/codex/version-aware-multistate-memory/MemoryCore"
@@ -45,7 +43,7 @@ class ArchitectureFlow(Flowable):
     def __init__(self, width: float):
         super().__init__()
         self.width = width
-        self.height = 54
+        self.height = 61
 
     def draw(self) -> None:
         canvas = self.canv
@@ -65,20 +63,20 @@ class ArchitectureFlow(Flowable):
             stroke = TEAL if index in (1, 4) else (PURPLE if index == 5 else LINE)
             canvas.setFillColor(fill)
             canvas.setStrokeColor(stroke)
-            canvas.roundRect(x, 6, box_width, 39, 5, fill=1, stroke=1)
+            canvas.roundRect(x, 7, box_width, 45, 5, fill=1, stroke=1)
             canvas.setFillColor(NAVY)
-            canvas.setFont("Songti-Bold", 7.1)
-            canvas.drawCentredString(x + box_width / 2, 29, title)
+            canvas.setFont("Songti-Bold", 7.5)
+            canvas.drawCentredString(x + box_width / 2, 34, title)
             canvas.setFillColor(MUTED)
-            canvas.setFont("Songti", 5.5)
-            canvas.drawCentredString(x + box_width / 2, 16, subtitle)
+            canvas.setFont("Songti", 6.0)
+            canvas.drawCentredString(x + box_width / 2, 19, subtitle)
             if index < len(labels) - 1:
                 arrow_x = x + box_width + 1
                 canvas.setStrokeColor(TEAL)
                 canvas.setFillColor(TEAL)
-                canvas.line(arrow_x, 26, arrow_x + gap - 3, 26)
-                canvas.line(arrow_x + gap - 6, 29, arrow_x + gap - 3, 26)
-                canvas.line(arrow_x + gap - 6, 23, arrow_x + gap - 3, 26)
+                canvas.line(arrow_x, 30, arrow_x + gap - 3, 30)
+                canvas.line(arrow_x + gap - 6, 33, arrow_x + gap - 3, 30)
+                canvas.line(arrow_x + gap - 6, 27, arrow_x + gap - 3, 30)
 
 
 class NumberedCanvas(Canvas):
@@ -126,61 +124,61 @@ def make_styles() -> dict[str, ParagraphStyle]:
     base = getSampleStyleSheet()
     return {
         "title": ParagraphStyle(
-            "TitleCN", parent=base["Title"], fontName="Songti-Bold", fontSize=19,
-            leading=23, textColor=NAVY, alignment=TA_LEFT, spaceAfter=4,
+            "TitleCN", parent=base["Title"], fontName="Songti-Bold", fontSize=20.5,
+            leading=25, textColor=NAVY, alignment=TA_LEFT, spaceAfter=4,
         ),
         "subtitle": ParagraphStyle(
-            "SubtitleCN", parent=base["Normal"], fontName="Songti", fontSize=7.7,
-            leading=10.5, textColor=MUTED, spaceAfter=7,
+            "SubtitleCN", parent=base["Normal"], fontName="Songti", fontSize=8.1,
+            leading=11, textColor=MUTED, spaceAfter=8,
         ),
         "h1": ParagraphStyle(
-            "H1CN", parent=base["Heading1"], fontName="Songti-Bold", fontSize=11.5,
-            leading=14.5, textColor=NAVY, spaceBefore=5, spaceAfter=3, keepWithNext=True,
+            "H1CN", parent=base["Heading1"], fontName="Songti-Bold", fontSize=12.8,
+            leading=16.2, textColor=NAVY, spaceBefore=9, spaceAfter=5.5, keepWithNext=True,
         ),
         "h2": ParagraphStyle(
-            "H2CN", parent=base["Heading2"], fontName="Songti-Bold", fontSize=9,
-            leading=11.5, textColor=TEAL, spaceBefore=4, spaceAfter=2, keepWithNext=True,
+            "H2CN", parent=base["Heading2"], fontName="Songti-Bold", fontSize=10.3,
+            leading=13.2, textColor=TEAL, spaceBefore=8, spaceAfter=4.5, keepWithNext=True,
         ),
         "body": ParagraphStyle(
-            "BodyCN", parent=base["BodyText"], fontName="Songti", fontSize=7.7,
-            leading=10.7, textColor=INK, alignment=TA_LEFT, wordWrap="CJK", spaceAfter=3,
+            "BodyCN", parent=base["BodyText"], fontName="Songti", fontSize=9.0,
+            leading=13.7, textColor=INK, alignment=TA_LEFT, wordWrap="CJK", spaceAfter=6.2,
         ),
         "small": ParagraphStyle(
-            "SmallCN", parent=base["BodyText"], fontName="Songti", fontSize=6.25,
-            leading=8.1, textColor=MUTED, wordWrap="CJK",
+            "SmallCN", parent=base["BodyText"], fontName="Songti", fontSize=7.35,
+            leading=9.8, textColor=MUTED, wordWrap="CJK", spaceAfter=2,
         ),
         "table": ParagraphStyle(
-            "TableCN", parent=base["BodyText"], fontName="Songti", fontSize=6.45,
-            leading=8.1, textColor=INK, wordWrap="CJK",
+            "TableCN", parent=base["BodyText"], fontName="Songti", fontSize=7.35,
+            leading=9.4, textColor=INK, wordWrap="CJK",
         ),
         "table_small": ParagraphStyle(
-            "TableSmallCN", parent=base["BodyText"], fontName="Songti", fontSize=5.9,
-            leading=7.4, textColor=INK, wordWrap="CJK",
+            "TableSmallCN", parent=base["BodyText"], fontName="Songti", fontSize=6.85,
+            leading=8.75, textColor=INK, wordWrap="CJK",
         ),
         "table_head": ParagraphStyle(
-            "TableHeadCN", parent=base["BodyText"], fontName="Songti-Bold", fontSize=6.45,
-            leading=8.1, textColor=colors.white, wordWrap="CJK", alignment=TA_CENTER,
+            "TableHeadCN", parent=base["BodyText"], fontName="Songti-Bold", fontSize=7.35,
+            leading=9.4, textColor=colors.white, wordWrap="CJK", alignment=TA_CENTER,
         ),
         "table_head_small": ParagraphStyle(
-            "TableHeadSmallCN", parent=base["BodyText"], fontName="Songti-Bold", fontSize=5.9,
-            leading=7.4, textColor=colors.white, wordWrap="CJK", alignment=TA_CENTER,
+            "TableHeadSmallCN", parent=base["BodyText"], fontName="Songti-Bold", fontSize=6.85,
+            leading=8.75, textColor=colors.white, wordWrap="CJK", alignment=TA_CENTER,
         ),
         "code": ParagraphStyle(
-            "CodeCN", parent=base["Code"], fontName="Songti", fontSize=6.6,
-            leading=8.7, textColor=INK, backColor=PALE_BLUE, leftIndent=4, rightIndent=4,
+            "CodeCN", parent=base["Code"], fontName="Songti", fontSize=7.15,
+            leading=9.4, textColor=INK, backColor=PALE_BLUE, leftIndent=4, rightIndent=4,
             borderPadding=3, borderColor=LINE, borderWidth=0.5, wordWrap="CJK",
         ),
         "callout": ParagraphStyle(
-            "CalloutCN", parent=base["BodyText"], fontName="Songti", fontSize=8.6,
-            leading=12.5, textColor=NAVY, wordWrap="CJK",
+            "CalloutCN", parent=base["BodyText"], fontName="Songti", fontSize=8.9,
+            leading=13.2, textColor=NAVY, wordWrap="CJK",
         ),
         "metric_value": ParagraphStyle(
-            "MetricValueCN", parent=base["BodyText"], fontName="Songti-Bold", fontSize=12.5,
-            leading=14.5, textColor=TEAL, alignment=TA_CENTER,
+            "MetricValueCN", parent=base["BodyText"], fontName="Songti-Bold", fontSize=13.2,
+            leading=15.2, textColor=TEAL, alignment=TA_CENTER,
         ),
         "metric_label": ParagraphStyle(
-            "MetricLabelCN", parent=base["BodyText"], fontName="Songti", fontSize=6.2,
-            leading=7.8, textColor=MUTED, alignment=TA_CENTER,
+            "MetricLabelCN", parent=base["BodyText"], fontName="Songti", fontSize=6.8,
+            leading=8.4, textColor=MUTED, alignment=TA_CENTER,
         ),
     }
 
@@ -267,7 +265,7 @@ def build_pdf(output: Path) -> None:
     output.parent.mkdir(parents=True, exist_ok=True)
     doc = SimpleDocTemplate(
         str(output), pagesize=A4, leftMargin=16 * mm, rightMargin=16 * mm,
-        topMargin=13 * mm, bottomMargin=17 * mm,
+        topMargin=12 * mm, bottomMargin=17 * mm,
         title="TencentDB Agent Memory 版本分支感知多状态记忆",
         author="TencentDB Agent Memory",
     )
@@ -280,22 +278,6 @@ def build_pdf(output: Path) -> None:
         ["worktree", "repo + branch + wt", "再匹配 worktree", "未提交配置、实验环境"],
         ["task", "repo + branch + wt + task", "再匹配 taskId", "并行任务假设、临时命令"],
     ]
-    query_rows = [
-        ["查询模式", "系统行为", "返回形式"],
-        ["普通当前态", "按 task → worktree → branch → repo 过滤", "当前域；ACTIVE SCOPE"],
-        ["比较/迁移/回归/历史", "同仓库每个有效域先保留一条，再补齐", "有界多状态；VERSION STATE"],
-        ["点名两个分支", "优先 branch 状态，不带入全部 task/worktree", "分支、提交、worktree、task 标签"],
-        ["缺少仓库上下文", "抑制全部 scoped 候选", "仅兼容 legacy；不猜当前值"],
-    ]
-    loop_rows = [
-        ["阶段", "实现", "防污染约束"],
-        ["capture", "workspaceDir / taskId / versionContext", "探测失败不猜身份"],
-        ["L0→L1", "sessionKey + sessionId + taskId 延续坐标", "并行 task 不串域"],
-        ["写入/纠错", "精确域内 dedup、update、删除和建边", "兄弟状态不误删/误连"],
-        ["最终召回", "真实池 4 倍过取 → 生命周期 → 版本选择", "正确状态不被其他分支挤出"],
-        ["反馈", "记录意图、抑制数、状态数、fallback、token、延迟", "调策略，不跨域改写事实"],
-    ]
-
     story: list[object] = [
         para("版本/分支感知的多状态记忆闭环", styles["title"]),
         para(
@@ -318,11 +300,39 @@ def build_pdf(output: Path) -> None:
             styles["body"],
         ),
         ArchitectureFlow(width),
-        styled_table(scope_rows, [0.15 * width, 0.29 * width, 0.21 * width, 0.35 * width], styles, padding=2.2),
-        Spacer(1, 3),
-        styled_table(query_rows, [0.20 * width, 0.46 * width, 0.34 * width], styles, padding=2.2, small=True),
-        Spacer(1, 3),
-        styled_table(loop_rows, [0.16 * width, 0.50 * width, 0.34 * width], styles, padding=2.1, small=True),
+        styled_table(scope_rows, [0.15 * width, 0.29 * width, 0.21 * width, 0.35 * width], styles, padding=3.0),
+        para("为什么不能直接用“新记忆”全局覆盖“旧记忆”", styles["h2"]),
+        para(
+            "时间新旧不等于事实有效性。例如 main 已升级到 Java 21，而 release/1.x 仍要求 Java 17；main 上较新的写入不能删除 release/1.x 的状态。只有两个事实的有效域键完全相同时，系统才允许 update、merge、delete 或建立纠错边；跨分支、跨 worktree、跨 task 的状态均保留为并列真值。",
+            styles["body"],
+        ),
+        para(
+            "<b>具体例子：</b>Agent 在 main 提问“当前 Java 版本”时只得到 Java 21，在 release/1.x 提问时只得到 Java 17；提问“比较 main 与 release”时才同时得到两条带分支标签的状态。如果 main 后续升级到 Java 22，系统只在 main 域内更新 21，不影响 release/1.x 的 17。",
+            styles["body"],
+        ),
+        callout(
+            "<b>查询决策：</b>当前态问题只返回执行环境匹配的状态；比较、迁移、回归或历史问题才进入有界多状态模式，并标记 ACTIVE SCOPE / VERSION STATE。缺少仓库上下文时抑制 scoped 候选，只兼容 legacy unscoped，不猜当前值。",
+            width,
+            styles,
+            color=PURPLE,
+        ),
+        para(
+            "系统维护三条不变量：<b>状态身份不可丢失</b>，每条 scoped 记忆都可追溯到 repo/branch/worktree/task；<b>更新只在同域发生</b>，新时间戳不能跨域覆盖事实；<b>返回集合有界</b>，当前态优先最具体有效域，多状态查询也受 maxVersionStates 限制。",
+            styles["body"],
+        ),
+        para(
+            "选择器对普通问题先过滤当前坐标可用的候选，再按 task → worktree → branch → repository 的具体程度排序；有 scoped 命中时 legacy 不参与竞争。多状态问题限定在同一 repository，先为每个有效域保留一条，再按原检索顺序补齐，因此既保留多样性又不破坏相关性排序。",
+            styles["body"],
+        ),
+        para("闭环怎么形成", styles["h2"]),
+        para(
+            "宿主传入 workspaceDir、稳定 taskId 或显式 versionContext；写入阶段把版本坐标固化进 L1 metadata，同域去重只处理完全相同的有效域。召回先从真实 SQLite/FTS5 检索池按 4 倍过取，再执行生命周期解析与版本选择，避免正确状态被其他分支挤出原始 Top-k。",
+            styles["body"],
+        ),
+        para(
+            "每次召回记录查询意图、候选数、被抑制条数、返回状态数、fallback、token 和延迟。反馈只用于调整候选倍率、最大状态数和意图规则，不会自动跨域改写事实；状态内容仍由明确写入或同域纠错更新，从机制上阻断反馈污染。",
+            styles["body"],
+        ),
         PageBreak(),
         para("2　TencentDB Agent Memory 接入与 GitHub 代码", styles["h1"]),
         callout(
@@ -347,32 +357,59 @@ def build_pdf(output: Path) -> None:
         ["Memora 安全", "固定 a6493188…；10 persona × 4 = 40 题", "仅验证 legacy 不退化；复用公开面板，不是新留出集"],
         ["Memora 原始规模", "600 问题；27,614 session；24,856 memory unit", "activity/preference/goal 的 add/update/delete 与 no-memory"],
     ]
-    method_rows = [
-        ["实验环节", "冻结方法", "实际执行量"],
-        ["三组对照", "原始全局混合 / 线性双态 / 版本感知多状态", "110 题 × 3 组"],
-        ["Git 状态", "main、release、两个 detached worktree、两个并行 task", "1 个真实仓库"],
-        ["Agent Memory 写入", "真实 SQLite/FTS5 + writeMemory", "50 DB；260 次"],
-        ["最终上下文", "performAutoRecall + 生命周期 + 版本选择 + 预算", "330 次；fallback 0"],
-        ["Reader", "MiniMax-M3 + deepseek-v4-flash", "每模型 250；共 500"],
-        ["Judge", "每个答案只由另一模型逐 criterion 判断", "500；无自评/错配/重试/unclear"],
-        ["不确定性", "5,000 次配对聚类 bootstrap", "10 场景/persona；95% 区间"],
-        ["独立复算", "原始 verdict 重算指标、门槛和哈希", "500 条；mismatch 0"],
-    ]
     story += [
-        styled_table(code_rows, [0.18 * width, 0.30 * width, 0.52 * width], styles, padding=2.4),
-        para("配置入口", styles["h2"]),
+        styled_table(code_rows, [0.18 * width, 0.30 * width, 0.52 * width], styles, padding=3.0),
+        para("接入现有 Agent，不替换原有记忆链路", styles["h2"]),
         para(
-            '{ "recall": { "lifecycle": { "enabled": true, "versionAwareMode": "strict", '
-            '"autoDetectGit": true, "versionCandidateMultiplier": 4, "maxVersionStates": 6 } } }',
+            "开启 recall.lifecycle.versionAwareMode = strict 和 autoDetectGit 后，宿主只需把当前工作目录和并行任务标识传给原生产调用。performAutoRecall 优先使用显式 versionContext，否则从 workspaceDir 自动探测 Git；writeMemory 接收同一个 versionContext 并写入 L1 metadata。原有检索策略、生命周期解析、Reader 和提示注入接口保持不变。",
+            styles["body"],
+        ),
+        para(
+            "performAutoRecall({ ...baseRecallArgs, workspaceDir, taskId })<br/>"
+            "writeMemory({ ...baseWriteArgs, versionContext: detectedContext })",
             styles["code"],
         ),
-        para("3　数据集与实验方法", styles["h1"]),
-        styled_table(dataset_rows, [0.18 * width, 0.36 * width, 0.46 * width], styles, padding=2.3, small=True),
-        Spacer(1, 4),
-        styled_table(method_rows, [0.18 * width, 0.51 * width, 0.31 * width], styles, padding=2.2, small=True),
         para(
-            "主指标：criterion accuracy。上下文指标：期望集合精确率、期望状态召回率、污染率；同时记录 token、条目和本地耗时。能力题同时检查正确值是否出现、兄弟状态是否被误当成当前值。",
-            styles["small"],
+            "生产参数使用候选过取倍率 4、最多 6 个版本状态。普通当前态通常只注入 1 条；只有问题显式要求比较、迁移、回归或历史时才返回多状态。Git 探测失败走安全 fallback，不改变 legacy unscoped 行为。",
+            styles["body"],
+        ),
+        para("运行时调用链", styles["h2"]),
+        para(
+            "<b>① 捕获：</b>插件入口按 workspaceDir 探测 repo、branch、commit 和 worktree，并把 taskId 作为并行任务维度；显式坐标优先于自动探测。<br/>"
+            "<b>② 写入：</b>L0 抽取结果继承 session + task 对应的坐标，writeMemory 将其写入 metadata；l1-dedup 只比较同域候选。<br/>"
+            "<b>③ 召回：</b>auto-recall 在现有检索之后执行生命周期解析与版本选择，再把带来源标签的结果写回原有 prependContext。",
+            styles["body"],
+        ),
+        para(
+            "<b>Git 坐标：</b>repositoryId 优先对规范化 remote 做 SHA-256 短哈希，无 remote 时使用 git common-dir；worktreeId 对真实顶层目录做同样哈希。detached HEAD 写成 detached@提交前缀，同时保存完整 commitSha。探测超时为 250 ms、缓存 2 秒，异常返回 undefined 而不是泄露路径或猜测身份。",
+            styles["body"],
+        ),
+        para("3　数据集与实验方法", styles["h1"]),
+        styled_table(dataset_rows, [0.18 * width, 0.36 * width, 0.46 * width], styles, padding=3.0, small=True),
+        para("真实生产路径与公平对照", styles["h2"]),
+        para(
+            "实验冻结原始全局混合、线性新旧双态和版本感知多状态三组对照，110 题各跑 3 组。环境包含真实 Git 仓库的 main、release、两个 detached worktree 和两个并行 task；50 个真实 SQLite/FTS5 数据库共执行 260 次 writeMemory，最终答案上下文全部经过 performAutoRecall，共 330 次召回且 fallback 为 0。",
+            styles["body"],
+        ),
+        para(
+            "70 个能力题由 10 个独立编程场景分别生成 7 类查询，场景是 bootstrap 聚类单位。40 个 Memora 安全题按固定规则从 10 个 persona 各取 4 题，选择时不查看答案或 verdict；它用于兼容性检查，不冒充新的外部留出集。",
+            styles["body"],
+        ),
+        para(
+            "答案由 MiniMax-M3 与 deepseek-v4-flash 各读取 250 次，再由另一固定模型逐 criterion 交叉判断，共 500 次 Judge；无自评、错配、重试或 unclear。95% 区间按 10 个场景/persona 做 5,000 次配对聚类 bootstrap；独立验证器从 500 条原始 verdict 重算指标、门槛和哈希，mismatchCount = 0。",
+            styles["body"],
+        ),
+        para(
+            "<b>公平性：</b>三组使用相同数据、SQLite 写入、检索策略、result limit、提示预算、Reader 与 Judge；唯一变化是版本状态的组织和选择策略。因此答案差异可以归因到召回上下文，而不是模型或数据切换。",
+            styles["body"],
+        ),
+        para(
+            "<b>指标口径：</b>主指标为 criterion accuracy；上下文指标为期望集合精确率、期望状态召回率和污染率，同时记录 token、召回条目与本地耗时。能力题同时检查正确值是否出现、兄弟状态是否被误当成当前值。",
+            styles["body"],
+        ),
+        para(
+            "<b>反馈证据：</b>每次生产召回保留选择意图、候选与抑制数量、返回状态数、fallback、token 和耗时；答案侧保存 Reader 输出与交叉 Judge verdict。两条证据链通过 caseId 对齐，使“召回了什么”和“最终答对没有”可以独立复算。",
+            styles["body"],
         ),
         PageBreak(),
         para("4　实验结果", styles["h1"]),
@@ -401,42 +438,49 @@ def build_pdf(output: Path) -> None:
         ("FONTNAME", (3, 1), (4, -1), "Songti-Bold"),
         ("ALIGN", (1, 1), (-1, -1), "CENTER"),
     ]))
-    slice_rows = [
-        ["能力点", "原始全局混合", "版本感知多状态", "提升"],
-        ["分支当前态", "100.00%", "100.00%", "+0.00 点"],
-        ["worktree 当前态", "100.00%", "100.00%", "+0.00 点"],
-        ["并行任务当前态", "100.00%", "100.00%", "+0.00 点"],
-        ["分支比较 / 迁移 / 回归", "100.00%", "100.00%", "+0.00 点；污染 100% → 0%"],
-        ["缺失 scope 弃权", "60.00%", "100.00%", "+40.00 点"],
-    ]
-    robust_rows = [
-        ["稳健性 / 安全检查", "结果"],
-        ["逐题结果（相对原始）", "7 改善、63 持平、0 受损"],
-        ["两位 Reader 方向", "+2.86 / +8.57 点，方向一致"],
-        ["40 题 Memora 安全", "提示与答案完全相同；FAMA 2.19% → 2.19%，只证明 legacy 不退化"],
-        ["独立验证", "passed；500 条 verdict 全量复算；mismatchCount = 0"],
-    ]
-    boundary_rows = [
-        ["已由本实验验证", "本实验未覆盖"],
-        [
-            "真实 Git/worktree、隐私坐标、并行 task 延续、SQLite 写入、同域去重、生产召回、版本选择、标签、双 Reader/交叉 Judge、legacy 兼容。",
-            "自动 LLM 总能抽取正确 scopeLevel；在线 TCVDB/COS 延迟；复杂 merge/cherry-pick/分支重命名；自然流量冲突率；人类 Judge 标定。",
-        ],
-    ]
-    boundary = styled_table(boundary_rows, [0.53 * width, 0.47 * width], styles, padding=3.2)
-    boundary.setStyle(TableStyle([
-        ("BACKGROUND", (0, 0), (0, 0), PASS),
-        ("BACKGROUND", (1, 0), (1, 0), WARN),
-    ]))
     story += [
         result_table,
-        para("各能力点", styles["h2"]),
-        styled_table(slice_rows, [0.29 * width, 0.20 * width, 0.22 * width, 0.29 * width], styles, padding=2.5, small=True),
-        para("稳健性与安全", styles["h2"]),
-        styled_table(robust_rows, [0.30 * width, 0.70 * width], styles, padding=2.5, small=True),
+        para(
+            "<b>如何解读：</b>+5.71 点是高准确率基线上的答案增益；更大的系统收益体现在上下文结构由“正确答案夹杂冲突状态”变为“正确且纯净的状态集合”。因此精确选择和污染率比单独的答案分数更能说明多分支记忆是否安全。",
+            styles["body"],
+        ),
+        para("线性新旧双态为什么下降", styles["h2"]),
+        para(
+            "线性双态把本应并列的 branch/worktree/task 状态强行解释成一条 old → current 链，结果在非当前域问题中丢失有效状态，criterion accuracy 降到 67.50%。这不是更换模型造成的，而是“时间顺序可以代表全部有效性”的建模假设不适用于并行开发。版本坐标把时间关系降为同域内的更新依据，从根本上消除该冲突。",
+            styles["body"],
+        ),
+        para("提升来自状态纯度，而不是牺牲已有能力", styles["h2"]),
+        para(
+            "原始方案在分支、worktree 和并行任务的“正确值出现”题上本来就能达到 100%，但会同时召回兄弟状态，因此期望集合精确率为 0%、污染率为 100%。版本感知方案保留正确值的同时清除无关状态；比较、迁移和回归问题仍按意图返回多个有标签版本。缺失 scope 时的安全弃权从 60% 提升到 100%，这是答案准确率净增益的主要来源。",
+            styles["body"],
+        ),
+        para("稳健性检查没有发现受损样本", styles["h2"]),
+        para(
+            "相对原始方案逐题统计为 <b>7 改善、63 持平、0 受损</b>；两位 Reader 的准确率变化分别为 +2.86 和 +8.57 点，方向一致。40 题 Memora legacy 安全面板中三组提示和答案完全相同，FAMA 维持 2.19%，只说明旧的 unscoped 路径未退化，不把它解释为通用质量提升。独立验证对 500 条 verdict 的复算全部一致。",
+            styles["body"],
+        ),
+        para("实际使用价值", styles["h2"]),
+        para(
+            "多 worktree 或并行 Agent 同时修改不同版本时，每个任务只看到自己的构建命令、依赖版本和临时假设，避免一个分支的 L0/L1 状态污染另一个分支。处理迁移、回归或发布差异时，系统又能主动取回多个带来源标签的状态供 Agent 对比，不必删除仍然有效的历史事实。token 减少 29.04%、条目减少 67.86%，也降低了模型在冲突上下文中选错状态的机会。",
+            styles["body"],
+        ),
+        para(
+            "最典型的受益场景是长期维护 main/release、多 worktree 并行开发、多个 Agent 同仓库分工，以及迁移和回归分析。它们共同特点不是存在一个绝对“最新事实”，而是存在多个各自在特定执行坐标上有效的事实。",
+            styles["body"],
+        ),
         para("5　证据边界", styles["h1"]),
-        boundary,
-        Spacer(1, 4),
+        para(
+            "<b>已验证：</b>真实 Git/worktree 探测、隐私坐标、并行 task 延续、SQLite 写入、同域去重、最终生产召回、版本选择、标签、双 Reader/交叉 Judge 和 legacy 兼容。",
+            styles["body"],
+        ),
+        para(
+            "<b>未覆盖：</b>自动 LLM 在自然对话中总能抽取正确 scopeLevel、在线 TCVDB/COS 延迟、复杂 merge/cherry-pick/分支重命名、自然流量冲突率和人类 Judge 标定；因此本地耗时下降不能直接外推为线上数据库性能。",
+            styles["body"],
+        ),
+        para(
+            "下一轮验证应优先补足三项：从真实开发对话构造自然冲突集，在线后端复测 P50/P95 延迟与 token 预算，并用人工抽检校准 Judge；这些检查不会改变本轮已冻结结果，只用于判断外部泛化和线上成本。",
+            styles["body"],
+        ),
         callout(
             "<b>成果长处：</b>在不更换 Reader/Judge、不过度依赖较弱双态基线的前提下，本方案相对原始 Agent Memory 同时取得答案正增益、状态集合完全正确、跨状态污染清零和显著 token/条目节省；这是面向多分支、多 worktree 与并行 Agent 的系统级改进。",
             width,
