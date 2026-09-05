@@ -2,6 +2,8 @@
 
 方案基于 TencentDB Agent Memory 的 `MemoryCore`，在真实写入与召回链路中保存版本作用域，允许不同分支、工作树、并行任务的事实共存。最终报告在 `../MemoryCore/output/pdf/competition-memory-solution-cn.pdf`。
 
+当前正在补充 **MiniMax-M3、30 个真实任务、无记忆/最终优化方案各一次** 的主评测。现有 PDF 仍是前一轮实现与答案层报告；30 对真实任务结果完成并独立验证后才更新最终 PDF。执行与复算入口见 `MemoryCore/benchmarks/agent-e2e/README.md`，进度在 `evidence/agent-e2e/pilot-30/status.json`。其他模型、额外重复、Pro 和版本扩展暂停，旧结果单独保留。
+
 ## 交付内容
 
 - 实现：`MemoryCore/src/core/lifecycle/`、`MemoryCore/src/core/hooks/auto-recall.ts`，以及原有写入、去重、宿主接入实现。

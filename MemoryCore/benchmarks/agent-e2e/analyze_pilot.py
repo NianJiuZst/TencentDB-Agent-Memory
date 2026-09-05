@@ -29,6 +29,22 @@ def analyze(runtime, evidence, ledger):
                                  and load(p).get('scriptHashes', {}).get('pilot-protocol.json') == sha(scripts / 'pilot-protocol.json'))
     candidates = load(evidence / 'pilot-candidate-order.json')['selected']
     decisions = {p.parent.name: load(p) for p in (pilot / 'references').glob('*/decision.json')}
+    for task, decision in decisions.items():
+        reference_path = evidence / decision['reference']
+        if sha(reference_path) != decision['referenceSha256']:
+            raise RuntimeError('Reference evidence changed: ' + task)
+        reference = load(reference_path)
+        if reference['instance_id'] != task or decision['eligible'] != bool(reference.get('strictReferencePass')):
+            raise RuntimeError('Selection decision disagrees with reference evidence')
+        observed = reference.get('observedTests')
+        reference_success = False
+        if observed:
+            case = load(runtime / 'SWEContextBench/cases/SWEContextBench Full' / (task + '.json'))
+            f2p, p2p = set(case['FAIL_TO_PASS']), set(case['PASS_TO_PASS'])
+            before, after = observed['before'], observed['after']
+            reference_success = bool(f2p) and all(before.get(t) in {'FAILED', 'ERROR'} for t in f2p) and all(before.get(t) == 'PASSED' for t in p2p) and all(after.get(t) == 'PASSED' for t in f2p | p2p)
+        if reference_success != decision['eligible']:
+            raise RuntimeError('Independently recomputed reference eligibility disagrees: ' + task)
     chosen, dispositions = selected_prefix(candidates, decisions)
     selection = load(pilot / 'selection.json')
     if selection['selected'] != chosen or selection['dispositions'] != dispositions:
@@ -72,6 +88,8 @@ def analyze(runtime, evidence, ledger):
             raise RuntimeError('Invalid paired artifact')
         if pair['pilotProtocolSha256'] != sha(scripts / 'pilot-protocol.json') or pair['pilotRegistrationSha256'] not in allowed_registrations:
             raise RuntimeError('Pair protocol/registration changed')
+        if pair['referenceDecisionSha256'] != sha(pilot / 'references' / task / 'decision.json'):
+            raise RuntimeError('Pair reference decision changed')
         frozen = evidence / 'frozen/main' / task
         if sha(frozen / 'freeze.json') != pair['freezeSha256']:
             raise RuntimeError('Frozen descriptor changed')
@@ -95,6 +113,8 @@ def analyze(runtime, evidence, ledger):
             result = validate_reuse(out, task_input, runtime, protocol['agentLimits'])
             if result['environment_probe']['output'].splitlines()[0] != case['base_commit']:
                 raise RuntimeError('Agent initial checkout differs')
+            if result.get('future_history_probe', {}).get('output', '').strip():
+                raise RuntimeError('Agent environment exposed reachable future commits')
             score = load(out / 'grading/score.json')
             if score.get('adapterVersion') != 'digest-alias-v2' or score.get('scorable') is not True:
                 raise RuntimeError('Legacy or unscorable grading')
