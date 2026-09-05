@@ -11,7 +11,7 @@ from pilot_support import load, write
 
 
 def clean(evidence):
-    decisions = {p.parent.name: load(p) for p in (evidence / 'pilot-30/references').glob('*/decision.json')}
+    decisions = {p.parent.name: load(p) for p in evidence.glob('pilot-*/references/*/decision.json')}
     expired = [task for task, d in decisions.items() if not d['eligible']]
     containers = subprocess.check_output(['docker', 'ps', '-q'], text=True).split()
     for container in containers:
@@ -25,7 +25,7 @@ def clean(evidence):
         created = datetime.datetime.fromisoformat(info['Created'][:26] + '+00:00')
         if created < datetime.datetime(2026, 9, 5, 5, tzinfo=datetime.timezone.utc):
             continue
-        out = evidence / 'pilot-30/expired-verifier-cleanup' / container
+        out = evidence / 'expired-verifier-cleanup' / container
         out.mkdir(parents=True, exist_ok=True)
         with (out / 'stdout.log').open('w') as stdout, (out / 'stderr.log').open('w') as stderr:
             subprocess.run(['docker', 'logs', container], stdout=stdout, stderr=stderr, timeout=60)

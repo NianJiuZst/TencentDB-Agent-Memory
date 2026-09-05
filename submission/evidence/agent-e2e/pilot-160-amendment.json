@@ -1,0 +1,73 @@
+{
+  "recordedAtUtc": "2026-09-05T09:35:16.182731+00:00",
+  "reason": "User explicitly approved uniform 160 steps / 1800 seconds after 80-step exhaustion. All previous model runs excluded from the new main estimate; unchanged candidate order and reference-only selection.",
+  "newArtifactDirectory": "pilot-30-160",
+  "previousModelResults": [
+    {
+      "artifact": "pilot-30/runs/psf__requests-3359/none",
+      "resultSha256": "b0f0ab009dc86500bb4aff18c2b01ed449ec78cad12f59a30fbc92b53c4e3824",
+      "exitStatus": "Submitted",
+      "elapsedSeconds": 630.3157110214233,
+      "cancelled": false
+    },
+    {
+      "artifact": "pilot-30/runs/psf__requests-3359/optimized",
+      "resultSha256": "19315bf878c643e15647feb784d0b8f2ab8637ecb891e6ba8e53d3295dddc65a",
+      "exitStatus": "LimitsExceeded",
+      "elapsedSeconds": 491.49617981910706,
+      "cancelled": false
+    },
+    {
+      "artifact": "pilot-30/runs/sphinx-doc__sphinx-2549/none",
+      "resultSha256": "fefaeb1a1e48e1b416ca87163d086c2a145ae92918465999d9d77703881f97bb",
+      "exitStatus": "LimitsExceeded",
+      "elapsedSeconds": 493.7823598384857,
+      "cancelled": false
+    },
+    {
+      "artifact": "pilot-30/runs/sphinx-doc__sphinx-2549/optimized",
+      "resultSha256": "9eb66e6974c97c68d841fe4a47af9802dd3f4a76e477ec0334b7e415105c5f22",
+      "exitStatus": "LimitsExceeded",
+      "elapsedSeconds": 729.7644698619843,
+      "cancelled": false
+    },
+    {
+      "artifact": "pilot-30/runs/sphinx-doc__sphinx-7418/optimized",
+      "resultSha256": "085e870ae7a84e2a584c59e3de689f491ac709fcaf091ca39132ed522e5a4940",
+      "exitStatus": null,
+      "elapsedSeconds": 38.033133029937744,
+      "cancelled": true
+    },
+    {
+      "artifact": "pilot-30/runs/sympy__sympy-19558/none",
+      "resultSha256": "6c45a73eec9a825cfdc6dd5647502d19744fbf0dce234be74ade5b0aee72f53e",
+      "exitStatus": "LimitsExceeded",
+      "elapsedSeconds": 644.9276521205902,
+      "cancelled": false
+    },
+    {
+      "artifact": "pilot-30/runs/sympy__sympy-19558/optimized",
+      "resultSha256": "e36fdbf94fe8bf8fb729bf958b1603a5d2c3af5585122d326f6493fea3643198",
+      "exitStatus": null,
+      "elapsedSeconds": 607.842945098877,
+      "cancelled": true
+    },
+    {
+      "artifact": "formal/main-minimax/mwaskom__seaborn-3091/r0-none",
+      "resultSha256": "76ae4f0d92ed15ecc7142a66bf916cdebda70412918e682c86a81d88145b961e",
+      "exitStatus": "TimeExceeded",
+      "elapsedSeconds": 1213.2743511199951,
+      "cancelled": false
+    },
+    {
+      "artifact": "formal/main-minimax/mwaskom__seaborn-3091/r0-optimized",
+      "resultSha256": "c33c8946d2136e3d4a38b7f4889c60a79c833e715b7d53edcf569f6f01645dff",
+      "exitStatus": "LimitsExceeded",
+      "elapsedSeconds": 1052.1880550384521,
+      "cancelled": false
+    }
+  ],
+  "existingLedgerRequests": 2369,
+  "existingLedgerChargedCny": 42.73331698,
+  "newMainCallsStarted": false
+}

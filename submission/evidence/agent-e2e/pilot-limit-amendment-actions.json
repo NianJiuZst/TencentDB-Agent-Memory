@@ -1,0 +1,37 @@
+{
+  "atUtc": "2026-09-05T09:29:39.671911+00:00",
+  "userInstruction": "160 steps / 1800 seconds for both arms, 30 tasks, MiniMax, one run; prior limits separate",
+  "processes": [
+    {
+      "pid": 57375,
+      "command": "/private/tmp/tdai-real-agent-20260905/venv/bin/python -u /Users/nianjiu/TencentDB-Agent-Memory/.worktrees/competition-submission/MemoryCore/benchmarks/agent-e2e/run_agent.py --runtime /private/tmp/tdai-real-agent-20260905 --input /Users/nianjiu/TencentDB-Agent-Memory/.worktrees/competition-submission/submission/evidence/agent-e2e/pilot-30/runs/sympy__sympy-19558/optimized/agent-input.json --output /Users/nianjiu/TencentDB-Agent-Memory/.worktrees/competition-submission/submission/evidence/agent-e2e/pilot-30/runs/sympy__sympy-19558/optimized --ledger /private/tmp/tdai-real-agent-20260905/budget.sqlite --cap 990 --model MiniMax-M3 --thinking enabled --max-output 8192 --steps 80 --seconds 1200 --network none",
+      "action": "interrupt_old_limit_or_pending_reference"
+    },
+    {
+      "pid": 60413,
+      "command": "/private/tmp/tdai-real-agent-20260905/venv/bin/python -u /Users/nianjiu/TencentDB-Agent-Memory/.worktrees/competition-submission/MemoryCore/benchmarks/agent-e2e/preflight.py --runtime /private/tmp/tdai-real-agent-20260905 --instance matplotlib__matplotlib-20736 --output /Users/nianjiu/TencentDB-Agent-Memory/.worktrees/competition-submission/submission/evidence/agent-e2e/pilot-30/references/matplotlib__matplotlib-20736",
+      "action": "interrupt_old_limit_or_pending_reference"
+    },
+    {
+      "pid": 60682,
+      "command": "docker run --name rebuild_testpatch_matplotlib_matplotlib-20736_02f579485315 jiayuanz3/swecontextbench:matplotlib.matplotlib-20736_df68cb611568_testpatch bash -c cd /testbed && /opt/conda/envs/testbed/bin/pip install wheel -q 2>&1 || true && /opt/conda/envs/testbed/bin/pip install -e . --no-build-isolation --no-deps -q 2>&1 || /opt/conda/envs/testbed/bin/pip install . --no-build-isolation --no-deps -q 2>&1 || /opt/conda/envs/testbed/bin/python setup.py develop -q 2>&1",
+      "action": "interrupt_old_limit_or_pending_reference"
+    },
+    {
+      "pid": 61783,
+      "command": "/private/tmp/tdai-real-agent-20260905/venv/bin/python -u /Users/nianjiu/TencentDB-Agent-Memory/.worktrees/competition-submission/MemoryCore/benchmarks/agent-e2e/run_agent.py --runtime /private/tmp/tdai-real-agent-20260905 --input /Users/nianjiu/TencentDB-Agent-Memory/.worktrees/competition-submission/submission/evidence/agent-e2e/pilot-30/runs/sphinx-doc__sphinx-7418/optimized/agent-input.json --output /Users/nianjiu/TencentDB-Agent-Memory/.worktrees/competition-submission/submission/evidence/agent-e2e/pilot-30/runs/sphinx-doc__sphinx-7418/optimized --ledger /private/tmp/tdai-real-agent-20260905/budget.sqlite --cap 990 --model MiniMax-M3 --thinking enabled --max-output 8192 --steps 80 --seconds 1200 --network none",
+      "action": "interrupt_old_limit_or_pending_reference"
+    },
+    {
+      "pid": 62041,
+      "command": "docker image load -i /private/tmp/tdai-real-agent-20260905/image-77da87a02f9e9779a51cf5f8.tar",
+      "action": "interrupt_old_limit_or_pending_reference"
+    },
+    {
+      "pid": 62053,
+      "command": "docker exec -w /testbed -e PAGER=cat -e MANPAGER=cat -e LESS=-R -e PIP_PROGRESS_BAR=off -e TQDM_DISABLE=1 -e BASH_ENV=/root/.bashrc 14b8d81b65392c4d8b4e1373d77fb56dafbcd9f77f659b8d258fb6c3d7c16b19 bash -c cd /testbed && python -c \"\\012from sympy import *\\012from sympy.functions.elementary.miscellaneous import Min, Max\\012\\012x = Symbol('x')\\012e = (7*x*cos(x) - 12*log(x)**3)*(-log(x)**4 + 2*sin(x) + 1)**2/(2*(x*cos(x) - 2*log(x)**3)*(3*log(x)**4 - 7*sin(x) + 3)**2)\\012\\012# Let me look at all the individual args\\012print('args:', e.args)\\012for i, a in enumerate(e.args):\\012    print(f'--- arg {i}: {a}')\\012    try:\\012        sub = a.subs(x, oo)\\012        print(f'subs: {sub}')\\012    except Exception as ex:\\012        import traceback\\012        traceback.print_exc()\\012\"",
+      "action": "interrupt_old_limit_or_pending_reference"
+    }
+  ],
+  "schedulerPid": 51791
+}

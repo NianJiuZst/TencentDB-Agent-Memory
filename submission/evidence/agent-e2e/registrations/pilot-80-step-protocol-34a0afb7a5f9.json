@@ -1,11 +1,8 @@
 {
-  "id": "real-coding-agent-memory-20260905-pilot30-minimax-160-v2",
+  "id": "real-coding-agent-memory-20260905-pilot30-minimax-v1",
   "reason": "User reduced the evaluation to 30 paired real tasks, two strategies, one run each, and explicitly selected MiniMax.",
   "taskCount": 30,
-  "arms": [
-    "none",
-    "optimized"
-  ],
+  "arms": ["none", "optimized"],
   "replicates": 1,
   "model": "MiniMax-M3",
   "sourceProtocol": "protocol.json",
@@ -13,33 +10,13 @@
   "selection": "Use the previously fixed repository round-robin and SHA256 order, extended to all source-eligible Python cases. Take the first 30 cases with strict reference proof, at most one per repair PR. Record the disposition of every earlier candidate. Selection reads only source metadata and reference checks, never model outcomes.",
   "referenceRule": "Every declared F2P must be FAILED or ERROR before the reference patch; every P2P must be PASSED. All must be PASSED afterward. Missing, skipped, timeout and environment errors do not establish eligibility.",
   "environmentRetries": "Retain every earlier attempt. Pure image transport failures may receive an exact-content OCI recovery with at most five transfer attempts. A final reference disposition is recorded before advancing the selection frontier. No agent-outcome-based retries or replacement.",
-  "agentLimits": {
-    "steps": 160,
-    "seconds": 1800,
-    "maxOutput": 8192,
-    "temperature": 0.2,
-    "thinking": "adaptive",
-    "cpu": 1.5,
-    "memory": "2g",
-    "commandSeconds": 60
-  },
-  "reuse": "All main executions are fresh under 160 steps / 1800 seconds. Earlier 80-step / 1200-second model runs are excluded and archived in pilot-30 and formal. Completed reference environment checks and unchanged frozen memory inputs may be reused because they are independent of agent limits. Each task receives a distinct execution for each arm.",
+  "agentLimits": {"steps": 80, "seconds": 1200, "maxOutput": 8192, "temperature": 0.2, "thinking": "adaptive", "cpu": 1.5, "memory": "2g", "commandSeconds": 60},
+  "reuse": "Reuse only completed main-panel MiniMax-M3 replicate-zero executions whose full frozen input and runtime configuration match. Reuse is declared regardless of success or failure. Interrupted attempts are archived separately. Other models, arms, repeats and extensions never enter this main estimate. The two arms receive separate runs even if contexts happen to be identical.",
   "executionOrder": "For each selected task, order the two arms by SHA256(20260905|instance_id|0|arm), retaining the original order rule. At most two new task workers; scheduling wait is outside each agent time budget.",
-  "paused": [
-    "DeepSeek",
-    "MiniMax repeats 1 and 2",
-    "global memory",
-    "previous memory",
-    "SWE-bench Pro",
-    "historical-version extension"
-  ],
+  "paused": ["DeepSeek", "MiniMax repeats 1 and 2", "global memory", "previous memory", "SWE-bench Pro", "historical-version extension"],
   "primaryMetric": "Fraction of tasks whose submitted patch passes every declared F2P and P2P test in a separate official verifier. Each task has one execution per arm; unfinished submissions at the step/time limit are failures.",
   "uncertainty": "Report paired improvement, tie and harm counts; paired bootstrap over repair PRs with 5000 draws and seed 20260905, and exact two-sided McNemar test. With 30 tasks, one net success is 3.33 percentage points. Do not claim stable general improvement from one or two net wins.",
   "claimScope": "Small-scale validation of complete real coding tasks under this fixed agent configuration; not a leaderboard score or proof of broad stable improvement.",
   "budgetAuthorization": "budget-authorization.json",
-  "historicalDisclosure": "This user-directed scope amendment was made after earlier broad-panel calls. The prior experiment and all results remain archived; the new task order is independent of those outcomes. The user subsequently authorized 160 steps / 1800 seconds after observing 80-step limit exhaustion. This amendment retains the exact candidate order and selection rule; all 80-step outcomes are diagnostic only.",
-  "artifactDirectory": "pilot-30-160",
-  "priorReferenceDirectories": [
-    "pilot-30"
-  ]
+  "historicalDisclosure": "This user-directed scope amendment was made after earlier broad-panel calls. The prior experiment and all results remain archived; the new task order is independent of those outcomes."
 }

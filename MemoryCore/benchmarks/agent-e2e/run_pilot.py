@@ -6,7 +6,7 @@ import json
 import time
 from pathlib import Path
 
-from pilot_support import load, now, prepare_reference, run_pair, sha, write
+from pilot_support import load, now, pilot_root, prior_reference_paths, prepare_reference, run_pair, sha, write
 
 
 def selected_prefix(candidates, decisions, count=30):
@@ -82,7 +82,7 @@ def main():
         raise ValueError('The pilot allows at most two workers in each stage')
     scripts = Path(__file__).parent.resolve()
     registration = check_registration(scripts, a.evidence)
-    out = a.evidence / 'pilot-30'
+    out = pilot_root(a.evidence)
     out.mkdir(exist_ok=True)
     lock = (out / 'scheduler.lock').open('w')
     fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -92,7 +92,7 @@ def main():
     # This scan reads no agent outputs. A guaranteed-selection bound below still
     # controls which tasks may consume model calls.
     previous_references = {}
-    for path in (a.evidence / 'preflight-cohort').rglob('preflight.json'):
+    for path in prior_reference_paths(a.evidence):
         reference = load(path)
         if reference.get('strictReferencePass'):
             previous_references[reference['instance_id']] = path
@@ -122,7 +122,7 @@ def main():
                     errors.append({'instance_id': task, 'error': type(exc).__name__ + ': ' + str(exc)})
                     print(json.dumps({'stage': 'pair_needs_attention', **errors[-1]}), flush=True)
             selected, dispositions = selected_prefix(candidates, decisions)
-            snapshot = {'protocol': 'real-coding-agent-memory-20260905-pilot30-minimax-v1',
+            snapshot = {'protocol': load(scripts / 'pilot-protocol.json')['id'],
                         'candidateManifestSha256': sha(a.evidence / 'pilot-candidate-order.json'),
                         'selectionComplete': len(selected) == 30, 'selected': selected, 'dispositions': dispositions,
                         'selectionRuleUsesAgentOutcomes': False}

@@ -8,7 +8,7 @@ import sqlite3
 from pathlib import Path
 
 from analyze_results import cluster_interval
-from pilot_support import load, sha, validate_reuse, write
+from pilot_support import load, pilot_root, sha, validate_reuse, write
 from run_pilot import selected_prefix
 
 
@@ -21,7 +21,7 @@ def exact_mcnemar(improved, harmed):
 
 def analyze(runtime, evidence, ledger):
     scripts = Path(__file__).parent
-    pilot = evidence / 'pilot-30'
+    pilot = pilot_root(evidence)
     protocol = load(scripts / 'pilot-protocol.json')
     allowed_registrations = {sha(scripts / 'pilot-registration.json')}
     allowed_registrations.update(sha(p) for p in (evidence / 'registrations').glob('pilot-*.json')
@@ -201,5 +201,5 @@ if __name__ == '__main__':
     p.add_argument('--ledger', type=Path, required=True)
     a = p.parse_args()
     summary = analyze(a.runtime.resolve(), a.evidence.resolve(), a.ledger.resolve())
-    write(a.evidence / 'pilot-30/analysis.json', summary)
+    write(pilot_root(a.evidence) / 'analysis.json', summary)
     print(json.dumps({k: summary[k] for k in ['status', 'completedTasks', 'executions', 'reusedExecutions', 'paired']}))

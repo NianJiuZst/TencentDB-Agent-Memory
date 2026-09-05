@@ -30,16 +30,34 @@ def now():
     return datetime.now(timezone.utc).isoformat()
 
 
+def pilot_root(evidence):
+    protocol = load(Path(__file__).with_name('pilot-protocol.json'))
+    return evidence / protocol['artifactDirectory']
+
+
+def prior_reference_paths(evidence):
+    paths = set((evidence / 'preflight-cohort').rglob('preflight.json'))
+    protocol = load(Path(__file__).with_name('pilot-protocol.json'))
+    for directory in protocol.get('priorReferenceDirectories', []):
+        for decision_path in (evidence / directory / 'references').glob('*/decision.json'):
+            decision = load(decision_path)
+            reference_path = evidence / decision['reference']
+            if sha(reference_path) != decision['referenceSha256']:
+                raise RuntimeError('Archived reference evidence changed')
+            paths.add(reference_path)
+    return sorted(paths)
+
+
 def prepare_reference(row, runtime, evidence):
     """Reads reference artifacts only. No model-output directory is accessed."""
     task = row['instance_id']
-    out = evidence / 'pilot-30/references' / task
+    out = pilot_root(evidence) / 'references' / task
     decision_path = out / 'decision.json'
     if decision_path.exists():
         return load(decision_path)
     out.mkdir(parents=True, exist_ok=True)
     found = []
-    for path in sorted((evidence / 'preflight-cohort').rglob('preflight.json')):
+    for path in prior_reference_paths(evidence):
         try:
             reference = load(path)
         except ValueError:
@@ -140,7 +158,7 @@ def run_pair(row, decision, runtime, evidence, ledger, previous_core, registrati
     reference = evidence / decision['reference']
     if sha(reference) != decision['referenceSha256']:
         raise RuntimeError('Selected reference changed')
-    pair_out = evidence / 'pilot-30/pairs' / task_id
+    pair_out = pilot_root(evidence) / 'pairs' / task_id
     pair_out.mkdir(parents=True, exist_ok=True)
     if (pair_out / 'pair.json').exists():
         return load(pair_out / 'pair.json')
@@ -156,20 +174,13 @@ def run_pair(row, decision, runtime, evidence, ledger, previous_core, registrati
     order = sorted(protocol['arms'], key=lambda arm: hashlib.sha256(f'20260905|{task_id}|0|{arm}'.encode()).hexdigest())
     for arm in order:
         task = load(frozen / (arm + '.json'))
-        old = evidence / 'formal/main-minimax' / task_id / ('r0-' + arm)
-        reused = (old / 'result.json').exists() and not (old / 'user-cancelled.json').exists()
-        # A prior, still-active MiniMax run is retained to completion, not replaced.
-        if (old / 'agent-input.json').exists() and not (old / 'result.json').exists():
-            deadline = time.time() + 2400
-            while not (old / 'result.json').exists() and time.time() < deadline:
-                time.sleep(5)
-            if not (old / 'result.json').exists():
-                raise RuntimeError('Existing matching MiniMax execution needs attention')
-            reused = True
-        out = old if reused else evidence / 'pilot-30/runs' / task_id / arm
+        # The user-authorized limit amendment requires fresh runs. Earlier
+        # 80-step outcomes remain diagnostic even when their inputs match.
+        reused = False
+        out = pilot_root(evidence) / 'runs' / task_id / arm
         out.mkdir(parents=True, exist_ok=True)
         if not reused:
-            task['run_id'] = 'pilot30--' + task_id + '--MiniMax-M3--' + arm
+            task['run_id'] = protocol['id'] + '--' + task_id + '--MiniMax-M3--' + arm
             inp = out / 'agent-input.json'
             if inp.exists() and load(inp) != task:
                 raise RuntimeError('Existing pilot input differs')
@@ -217,6 +228,6 @@ def run_pair(row, decision, runtime, evidence, ledger, previous_core, registrati
         print(json.dumps({'stage': 'graded', 'task': task_id, 'arm': arm, 'success': score['strictResolved'], 'reused': reused}), flush=True)
     pair = {'instance_id': task_id, 'complete': True, 'rows': rows, 'freezeSha256': sha(frozen / 'freeze.json'),
             'pilotProtocolSha256': sha(scripts / 'pilot-protocol.json'), 'pilotRegistrationSha256': registration,
-            'referenceDecisionSha256': sha(evidence / 'pilot-30/references' / task_id / 'decision.json')}
+            'referenceDecisionSha256': sha(pilot_root(evidence) / 'references' / task_id / 'decision.json')}
     write(pair_out / 'pair.json', pair)
     return pair
