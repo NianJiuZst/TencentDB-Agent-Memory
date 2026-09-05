@@ -1,0 +1,97 @@
+{
+  "id": "real-coding-agent-memory-20260905-v1",
+  "preScoreCommitRequired": true,
+  "developmentOnlyInstances": [
+    "psf__requests-5474"
+  ],
+  "mainDataset": {
+    "name": "jiayuanz3/SWEContextBench",
+    "revision": "5bec275a2095768a53ac804ae4fdf90b1723b8af",
+    "officialHarnessCommit": "31bb04155f52b184bf31b220e3cff0607ac9c953",
+    "selectionManifest": "submission/evidence/agent-e2e/dataset-audit.json",
+    "selectedUniqueTasks": 100,
+    "selection": "Python repositories, deterministic repository round-robin over SHA256(20260905|instance_id), duplicate task IDs collapsed, development instance excluded",
+    "eligibility": "A reference preflight must observe every declared repair test FAILED or ERROR and every regression test PASSED before the reference patch, then all declared tests PASSED after it. Missing, skipped and timed-out tests do not establish eligibility.",
+    "exclusions": "Record every selected task and environment attempt. No replacement based on an agent outcome. Report eligibility coverage and all exclusions separately from agent success rates.",
+    "memory": "Public earlier reference-experience excerpts across repositories. Exclude target IDs, all target PRs, exact target patches and non-earlier or timezone-ambiguous timestamps. Same-repository reference patches must already reverse-apply to the untouched target base. No target hints or target reference/test patches enter agent input. These are reference-derived memories, not claimed to be generated prior agent experience."
+  },
+  "supplement": {
+    "name": "ScaleAI/SWE-bench_Pro",
+    "revision": "7ab5114912baf22bb098818e604c02fe7ad2c11f",
+    "officialHarnessCommit": "ca10a60a5fcae51e6948ffe1485d4153d421e6c5",
+    "selectionManifest": "submission/evidence/agent-e2e/pro-dataset-audit.json",
+    "selectedUniqueTasks": 20,
+    "purpose": "Independent coding benchmark and irrelevant-memory control: its repositories are disjoint from the public experience corpus. Report separately from the main benchmark. Apply the same strict reference preflight rule and remove future Git objects from agent environments."
+  },
+  "versionExtension": {
+    "name": "Historical-source workspace resumption",
+    "tasks": "Reference-eligible tasks among the first 20 entries of the fixed main manifest; no replacement and no selection by model outcomes",
+    "source": "Initial source inspection of the buggy base and up to five distinct ancestor file states for each of three relevant Python files; selected by the public problem statement using fixed bounded term-frequency/IDF, not reference patches or held-out tests.",
+    "scope": "Immutable detached commit coordinates. Current and historical snippets use the actual production memory writer and recall hooks.",
+    "interpretation": "A custom extension over real public tasks and real Git history, not an official benchmark score. Shared initial source-inspection overhead is counted for all arms."
+  },
+  "arms": [
+    "none",
+    "global",
+    "previous",
+    "optimized"
+  ],
+  "implementations": {
+    "previous": "25a025b4be83dbc28877d8a740bd7a089a7297e5",
+    "optimized": "Production memory source from competition branch, frozen by source hashes before model calls",
+    "global": "Same optimized source with versionAwareMode off",
+    "none": "Empty persistent-memory context; otherwise identical agent configuration"
+  },
+  "recall": {
+    "strategy": "keyword",
+    "maxResults": 5,
+    "maxChars": 12000,
+    "scoreThreshold": 0,
+    "versionCandidateMultiplier": 4,
+    "maxVersionStates": 6,
+    "autoDetectGit": false,
+    "coordinateSource": "Verified real container repository and immutable base commit, explicitly passed across the host/container boundary"
+  },
+  "agent": {
+    "name": "mini-swe-agent",
+    "version": "2.4.6",
+    "commit": "04d809ceab9df28f9adaed044884180159172930",
+    "baseConfig": "src/minisweagent/config/benchmarks/swebench.yaml",
+    "primaryModel": "deepseek-v4-flash",
+    "secondaryModel": "MiniMax-M3",
+    "secondaryPanel": "Reference-eligible tasks among the first 20 entries of the fixed main manifest, three replicates per arm; no replacement and kept separate from the primary model results",
+    "temperature": 0.2,
+    "thinking": "enabled (DeepSeek enabled; MiniMax adaptive)",
+    "maxOutputTokensPerCall": 8192,
+    "maxModelSteps": 80,
+    "maxWallSeconds": 1200,
+    "commandTimeoutSeconds": 60,
+    "cpuLimit": 1.5,
+    "memoryLimit": "2g",
+    "hostCredentialsMounted": false,
+    "network": "No external network in agent containers. Requests uses an internal bridge with unassigned 10.255.255.1 to provide its genuine TCP-timeout test condition; other tasks use network none."
+  },
+  "replicates": 3,
+  "executionOrder": "Deterministic hash-shuffled arm order within each task/replicate; image preparation order may be grouped for caching",
+  "reuse": "Only identical full semantic inputs within the same task, model and replicate may share one execution. Never reuse across replicates. Report nominal arm assignments and actual independent executions separately. Identical patches may share deterministic grading within the same task and environment, with explicit provenance.",
+  "primaryMetric": "Mean pass@1 across three independent runs per task: every declared repair and regression test must pass on the submitted patch in a separate verifier container. Empty submission and exhausted agent step/time budgets count as coding failures.",
+  "secondaryMetrics": [
+    "official resolved",
+    "regression rate",
+    "task pass within three attempts",
+    "model input/output/cache tokens",
+    "published-price CNY estimate",
+    "wall time",
+    "model calls",
+    "memory coverage",
+    "foreign-scope memory rate"
+  ],
+  "uncertainty": "Paired bootstrap over underlying repair PR clusters, retaining related task variants, all replicates and arm pairs within each sampled cluster, 5000 draws, seed 20260905, percentile 95% confidence intervals. The 100 main task IDs contain 88 repair PRs. Pro variants are clustered by repository and repair commit. Report per-repository results and the count of improved, tied and harmed tasks. Do not treat test cases, related issue variants or repeated runs as independent repairs.",
+  "claimRule": "Claim improved task success only when the measured paired success delta supports it; label uncertain or null effects plainly. Do not infer coding success from recall accuracy, a single development task, or a judge model.",
+  "budget": {
+    "additionalLedgerCapCny": 190,
+    "priorWorkReserveCny": 10,
+    "totalAuthorizedCapCny": 200,
+    "accounting": "Transactional reservations before every request, settled from provider token usage with verified published standard prices. DeepSeek uses peak prices; cache hits are counted. Unknown usage retains the full reservation. No unattended purchase or budget increase."
+  }
+}

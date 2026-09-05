@@ -1,0 +1,149 @@
+{
+  "dataset": "ScaleAI/SWE-bench_Pro",
+  "revision": "7ab5114912baf22bb098818e604c02fe7ad2c11f",
+  "rows": 731,
+  "selectionMethod": "Repository round-robin of SHA256(20260905|instance_id), before model calls",
+  "selected": [
+    {
+      "repo": "NodeBB/NodeBB",
+      "instance_id": "instance_NodeBB__NodeBB-397835a05a8e2897324e566b41c5e616e172b4af-v89631a1cdb318276acb48860c5d78077211397c6",
+      "base_commit": "7f48edc02aa68c547d96ad7d6432ff8c1e359742",
+      "dockerhub_tag": "nodebb.nodebb-NodeBB__NodeBB-397835a05a8e2897324e566b41c5e616e172b4af-v89631a1cdb318276acb48860c5d78077211397c6",
+      "repo_language": "js"
+    },
+    {
+      "repo": "ansible/ansible",
+      "instance_id": "instance_ansible__ansible-d2f80991180337e2be23d6883064a67dcbaeb662-vba6da65a0f3baefda7a058ebbd0a8dcafb8512f5",
+      "base_commit": "f9a450551de47ac2b9d1d7e66a103cbf8f05c37f",
+      "dockerhub_tag": "ansible.ansible-ansible__ansible-d2f80991180337e2be23d6883064a67dcbaeb662-vba6da65a0f3baefda7a058ebbd0a8dcafb8512f5",
+      "repo_language": "python"
+    },
+    {
+      "repo": "element-hq/element-web",
+      "instance_id": "instance_element-hq__element-web-5e8488c2838ff4268f39db4a8cca7d74eecf5a7e-vnan",
+      "base_commit": "339e7dab18df52b7fb3e5a86a195eab2adafe36a",
+      "dockerhub_tag": "element-hq.element-element-hq__element-web-5e8488c2838ff4268f39db4a8cca7d74eecf5a7e",
+      "repo_language": "js"
+    },
+    {
+      "repo": "flipt-io/flipt",
+      "instance_id": "instance_flipt-io__flipt-40007b9d97e3862bcef8c20ae6c87b22ea0627f0",
+      "base_commit": "bbf0a917fbdf4c92017f760b63727b921eb9fc98",
+      "dockerhub_tag": "flipt-io.flipt-flipt-io__flipt-40007b9d97e3862bcef8c20ae6c87b22ea0627f0",
+      "repo_language": "go"
+    },
+    {
+      "repo": "future-architect/vuls",
+      "instance_id": "instance_future-architect__vuls-7eb77f5b5127c847481bcf600b4dca2b7a85cf3e",
+      "base_commit": "e1152352999e04f347aaaee64b5b4e361631e7ac",
+      "dockerhub_tag": "future-architect.vuls-future-architect__vuls-7eb77f5b5127c847481bcf600b4dca2b7a85cf3e",
+      "repo_language": "go"
+    },
+    {
+      "repo": "gravitational/teleport",
+      "instance_id": "instance_gravitational__teleport-3a5c1e26394df2cb4fb3f01147fb9979662972c5-vee9b09fb20c43af7e520f57e9239bbcf46b7113d",
+      "base_commit": "12cdaed68d9445f88a540778d2e13443e0011ebb",
+      "dockerhub_tag": "gravitational.teleport-gravitational__teleport-3a5c1e26394df2cb4fb3f01147fb9979662972c5-vee9b09fb20c43af7e520f57e9239bbcf46b7113",
+      "repo_language": "go"
+    },
+    {
+      "repo": "internetarchive/openlibrary",
+      "instance_id": "instance_internetarchive__openlibrary-5de7de19211e71b29b2f2ba3b1dff2fe065d660f-v08d8e8889ec945ab821fb156c04c7d2e2810debb",
+      "base_commit": "5f7d8d190e2f0d837545e582fd5db99aae51a979",
+      "dockerhub_tag": "internetarchive.openlibrary-internetarchive__openlibrary-5de7de19211e71b29b2f2ba3b1dff2fe065d660f-v08d8e8889ec945ab821fb156c04c7",
+      "repo_language": "python"
+    },
+    {
+      "repo": "navidrome/navidrome",
+      "instance_id": "instance_navidrome__navidrome-10108c63c9b5bdf2966ffb3239bbfd89683e37b7",
+      "base_commit": "aac6e2cb0774aa256c00098b2d88bf8af288da79",
+      "dockerhub_tag": "navidrome.navidrome-navidrome__navidrome-10108c63c9b5bdf2966ffb3239bbfd89683e37b7",
+      "repo_language": "go"
+    },
+    {
+      "repo": "protonmail/webclients",
+      "instance_id": "instance_protonmail__webclients-1917e37f5d9941a3459ce4b0177e201e2d94a622",
+      "base_commit": "78e30c07b399db1aac8608275fe101e9d349534f",
+      "dockerhub_tag": "protonmail.webclients-protonmail__webclients-1917e37f5d9941a3459ce4b0177e201e2d94a622",
+      "repo_language": "js"
+    },
+    {
+      "repo": "qutebrowser/qutebrowser",
+      "instance_id": "instance_qutebrowser__qutebrowser-6dd402c0d0f7665d32a74c43c5b4cf5dc8aff28d-v5fc38aaf22415ab0b70567368332beee7955b367",
+      "base_commit": "d6a3d1fe608bae2afedd3019e46de3476ac18ff6",
+      "dockerhub_tag": "qutebrowser.qutebrowser-qutebrowser__qutebrowser-6dd402c0d0f7665d32a74c43c5b4cf5dc8aff28d-v5fc38aaf22415ab0b70567368332beee7955b",
+      "repo_language": "python"
+    },
+    {
+      "repo": "tutao/tutanota",
+      "instance_id": "instance_tutao__tutanota-1e516e989b3c0221f4af6b297d9c0e4c43e4adc3-vbc0d9ba8f0071fbe982809910959a6ff8884dbbf",
+      "base_commit": "7ebf14a3432c8f0d8b31d48968a08d055bec2002",
+      "dockerhub_tag": "tutao.tutanota-tutao__tutanota-1e516e989b3c0221f4af6b297d9c0e4c43e4adc3-vbc0d9ba8f0071fbe982809910959a6ff8884dbbf",
+      "repo_language": "ts"
+    },
+    {
+      "repo": "NodeBB/NodeBB",
+      "instance_id": "instance_NodeBB__NodeBB-70b4a0e2aebebe8f2f559de6680093d96a697b2f-vnan",
+      "base_commit": "6bbe3d1c4cefe56f81629dfa3343fd0a875d9cf1",
+      "dockerhub_tag": "nodebb.nodebb-NodeBB__NodeBB-70b4a0e2aebebe8f2f559de6680093d96a697b2f",
+      "repo_language": "js"
+    },
+    {
+      "repo": "ansible/ansible",
+      "instance_id": "instance_ansible__ansible-9a21e247786ebd294dafafca1105fcd770ff46c6-v67cdaa49f89b34e42b69d5b7830b3c3ad3d8803f",
+      "base_commit": "4c8c40fd3d4a58defdc80e7d22aa8d26b731353e",
+      "dockerhub_tag": "ansible.ansible-ansible__ansible-9a21e247786ebd294dafafca1105fcd770ff46c6-v67cdaa49f89b34e42b69d5b7830b3c3ad3d8803f",
+      "repo_language": "python"
+    },
+    {
+      "repo": "element-hq/element-web",
+      "instance_id": "instance_element-hq__element-web-459df4583e01e4744a52d45446e34183385442d6-vnan",
+      "base_commit": "dd91250111dcf4f398e125e14c686803315ebf5d",
+      "dockerhub_tag": "element-hq.element-element-hq__element-web-459df4583e01e4744a52d45446e34183385442d6",
+      "repo_language": "js"
+    },
+    {
+      "repo": "flipt-io/flipt",
+      "instance_id": "instance_flipt-io__flipt-1dceb5edf3fa8f39495b939ef9cc0c3dd38fa17d",
+      "base_commit": "eafbf82dbc497801453f91bc991421d7491d4e15",
+      "dockerhub_tag": "flipt-io.flipt-flipt-io__flipt-1dceb5edf3fa8f39495b939ef9cc0c3dd38fa17d",
+      "repo_language": "go"
+    },
+    {
+      "repo": "future-architect/vuls",
+      "instance_id": "instance_future-architect__vuls-878c25bf5a9c9fd88ac32eb843f5636834d5712d",
+      "base_commit": "e4728e388120b311c4ed469e4f942e0347a2689b",
+      "dockerhub_tag": "future-architect.vuls-future-architect__vuls-878c25bf5a9c9fd88ac32eb843f5636834d5712d",
+      "repo_language": "go"
+    },
+    {
+      "repo": "gravitational/teleport",
+      "instance_id": "instance_gravitational__teleport-d6ffe82aaf2af1057b69c61bf9df777f5ab5635a-vee9b09fb20c43af7e520f57e9239bbcf46b7113d",
+      "base_commit": "69a9dbf3a27c6a6da4eaafb89d69849c34beed1b",
+      "dockerhub_tag": "gravitational.teleport-gravitational__teleport-d6ffe82aaf2af1057b69c61bf9df777f5ab5635a-vee9b09fb20c43af7e520f57e9239bbcf46b7113",
+      "repo_language": "go"
+    },
+    {
+      "repo": "internetarchive/openlibrary",
+      "instance_id": "instance_internetarchive__openlibrary-3f7db6bbbcc7c418b3db72d157c6aed1d45b2ccf-v430f20c722405e462d9ef44dee7d34c41e76fe7a",
+      "base_commit": "c46e5170e93bbfac133dd1e2e1e3b56882f2519f",
+      "dockerhub_tag": "internetarchive.openlibrary-internetarchive__openlibrary-3f7db6bbbcc7c418b3db72d157c6aed1d45b2ccf-v430f20c722405e462d9ef44dee7d3",
+      "repo_language": "python"
+    },
+    {
+      "repo": "navidrome/navidrome",
+      "instance_id": "instance_navidrome__navidrome-9c3b4561652a15846993d477003e111f0df0c585",
+      "base_commit": "23bebe4e06124becf1000e88472ae71a6ca7de4c",
+      "dockerhub_tag": "navidrome.navidrome-navidrome__navidrome-9c3b4561652a15846993d477003e111f0df0c585",
+      "repo_language": "go"
+    },
+    {
+      "repo": "protonmail/webclients",
+      "instance_id": "instance_protonmail__webclients-bf2e89c0c488ae1a87d503e5b09fe9dd2f2a635f",
+      "base_commit": "a5e37d3fe77abd2279bea864bf57f8d641e1777b",
+      "dockerhub_tag": "protonmail.webclients-protonmail__webclients-bf2e89c0c488ae1a87d503e5b09fe9dd2f2a635f",
+      "repo_language": "js"
+    }
+  ],
+  "parquetSha256": "c8cd7115496ad4e9a8b21d088cef576a65bf821bb542b24336f13f714cef13f8"
+}
