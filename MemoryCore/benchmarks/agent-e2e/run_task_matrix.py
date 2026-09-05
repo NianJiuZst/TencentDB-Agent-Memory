@@ -53,6 +53,11 @@ def main():
         for name, expected in entry['hashes'].items():
             if sha(Path(entry['path']) / name) != expected:
                 raise RuntimeError('Registered production source changed: ' + core_name + '/' + name)
+    cap = protocol['budget']['additionalLedgerCapCny']
+    authorization_path = scripts / 'budget-authorization.json'
+    if authorization_path.exists():
+        authorization = json.loads(authorization_path.read_text())
+        cap = authorization['additionalLedgerCapCny']
     a.output.mkdir(parents=True, exist_ok=True)
     py = str(a.runtime / 'venv/bin/python')
     inputs = {arm: json.loads((a.frozen / (arm + '.json')).read_text()) for arm in protocol['arms']}
@@ -77,7 +82,7 @@ def main():
             input_path.write_text(json.dumps(task, indent=2) + '\n')
             network = reference.get('network') or 'none'
             args = [py, '-u', str(scripts / 'run_agent.py'), '--runtime', str(a.runtime), '--input', str(input_path),
-                    '--output', str(out), '--ledger', str(a.ledger), '--cap', str(protocol['budget']['additionalLedgerCapCny']),
+                    '--output', str(out), '--ledger', str(a.ledger), '--cap', str(cap),
                     '--model', a.model, '--thinking', 'enabled', '--max-output', str(protocol['agent']['maxOutputTokensPerCall']),
                     '--steps', str(protocol['agent']['maxModelSteps']), '--seconds', str(protocol['agent']['maxWallSeconds']),
                     '--network', network]
@@ -112,6 +117,7 @@ def main():
     result = {'instance_id': frozen['instance_id'], 'protocolSha256': frozen['protocolSha256'],
               'preScoreCommit': registration.get('initialSourceCommit', registration['sourceCommit']),
               'evaluationCodeCommit': registration['sourceCommit'], 'freezeSha256': sha(a.frozen / 'freeze.json'),
+              'additionalLedgerCapCny': cap,
               'nominalAssignments': len(rows), 'independentExecutions': sum(r['independentExecution'] for r in rows),
               'rows': rows, 'complete': len(rows) == len(protocol['arms']) * protocol['replicates']}
     (a.output / 'matrix.json').write_text(json.dumps(result, indent=2) + '\n')

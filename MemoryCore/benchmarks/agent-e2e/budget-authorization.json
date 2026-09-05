@@ -1,0 +1,8 @@
+{
+  "authorizedAtUtc": "2026-09-05T08:26:07.857033+00:00",
+  "source": "Explicit user reply in this task: 提高到 1,000 元",
+  "totalAuthorizedCapCny": 1000,
+  "priorWorkReserveCny": 10,
+  "additionalLedgerCapCny": 990,
+  "note": "Funding authorization only. Does not change models, prompts, step/time limits, test definitions or task selection."
+}
