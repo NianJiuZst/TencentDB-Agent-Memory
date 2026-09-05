@@ -4,6 +4,7 @@ import argparse
 import html
 import json
 import re
+from datetime import datetime
 from pathlib import Path
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER
@@ -50,10 +51,11 @@ new_tokens = sum(r['promptTokens']+r['completionTokens'] for section in ('reader
 gate_text = '预设的全部效果与安全门槛通过。' if not failed_gates else '完成了全部评测，但以下预设门槛未通过：' + '、'.join(failed_gates) + '。报告保留这些结果，不据此调整门槛。'
 
 pages = []
+report_date = datetime.now().astimezone()
 pages.append(f'''# 版本与分支感知的多状态记忆
 ## 方案介绍与测试结论
 
-TencentDB Agent Memory · 比赛提交材料 · 2026 年 9 月 5 日
+TencentDB Agent Memory · 比赛提交材料 · {report_date.year} 年 {report_date.month} 月 {report_date.day} 日
 
 **核心结论。** 本方案将“事实是否有效”与“写入时间是否最新”分开建模，在分支、工作树和并行任务中保留各自有效的记忆，并在真实召回链路中选择当前适用的状态。本次优化修复了候选提前截断、异常路径绕过版本选择和 Git 坐标缓存过期等问题。在新增的 180 个候选池内案例中，精确选择由旧版的 45/180 提升到 180/180；新增 12 个池外案例仍未召回，作为明确边界报告。
 

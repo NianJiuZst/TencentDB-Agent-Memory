@@ -90,3 +90,5 @@ NO_PROXY=api.minimaxi.com no_proxy=api.minimaxi.com \
 早期评分器的镜像标签适配错误已修复，旧补丁重放、旧评分保留。最终汇总拒绝旧版或不可评分结果。费用分开报告已知用量计价和未知用量的保守预留，不能当作精确供应商账单。
 
 原四组、三次重复协议及 Pro/版本扩展仍保留供审计，见 `README-broad-archived.md`、`protocol.json` 与 `registration.json`；它们不再是当前默认执行计划。自动清理辅助程序只处理本次已排除且超时遗留的临时验证容器，日志先归档，现有用户服务保持运行。
+
+长时间执行时，可用 `cleanup_excluded_images.py --evidence /path/to/evidence` 预览已排除任务的闲置镜像清单，再加 `--apply` 清理。它核对参考决定与内容摘要，保留逐项记录，不使用强制删除，不处理容器、卷、其他仓库镜像或已纳入任务。
