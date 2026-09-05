@@ -1,0 +1,31 @@
+{
+  "implementationCommit": "caa96f3679a0b8f1465c62a90fc264b0af1f3ea7",
+  "preScoreFreezeCommit": "689c27a8e31c9c70dc02450625cfbaf72e4ca60b",
+  "productionSourcesAndRegressionTestsUnchangedSinceImplementationCommit": true,
+  "files": [
+    {
+      "path": "MemoryCore/src/core/hooks/auto-recall.ts",
+      "sha256": "51d3689468d7817274e5c4a37bda8380bc565fa211182ac6668174de3716178a"
+    },
+    {
+      "path": "MemoryCore/src/core/hooks/auto-recall.version-boundary.test.ts",
+      "sha256": "9f4474ac7c7fc08bd641e7cce3c14f7b778300fa65f2c3f4d538a7c68b3ad509"
+    },
+    {
+      "path": "MemoryCore/src/core/lifecycle/git-context.test.ts",
+      "sha256": "2c48cee0e6e93069893b3ac13364f476082ecd9f08e0d5828cda6d8cb44e4a4a"
+    },
+    {
+      "path": "MemoryCore/src/core/lifecycle/git-context.ts",
+      "sha256": "b934e93d127525e9e240e42681d6b0464bfa972075084e1bd256c7d3b19cf663"
+    },
+    {
+      "path": "MemoryCore/src/core/lifecycle/version-scope.robustness.test.ts",
+      "sha256": "cd601802f6888fbf21b197152ebb041aeaa757bdd1a16a6e92b4721b88e06bd0"
+    },
+    {
+      "path": "MemoryCore/src/core/lifecycle/version-scope.ts",
+      "sha256": "8a7aad8fd01c661ba8d0a4fa3a85cd1ed99da7c6d9ed0ec58d780e4a701e1989"
+    }
+  ]
+}

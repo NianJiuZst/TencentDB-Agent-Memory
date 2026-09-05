@@ -1,0 +1,98 @@
+{
+  "protocolVersion": "version-aware-production-context-v1.0",
+  "status": "context_ready",
+  "preScoreSourceRevision": {
+    "head": "689c27a8e31c9c70dc02450625cfbaf72e4ca60b",
+    "branch": "codex/competition-multistate-final",
+    "base": "97f94654280b2932c35ba4806a491999ed244cc9"
+  },
+  "protocolSha256": "c256d06d711b5205494ff4b172c8af5dc1f4cbdda1274024e8f506503948fc7d",
+  "contextManifestSha256": "7e3109e33fa8e268331913617d96e64711c8e2fae651f5e2a1a1c7fb6c69c59d",
+  "dataset": {
+    "name": "Memora",
+    "revision": "a6493188efc836d6511ed5e4163fe3ba87da30ff",
+    "dataManifestSha256": "dfc82711dd6647bcb0ba590f43a336f0dac02420e981ce957dd1fd13ae331bfc",
+    "groups": 30,
+    "personas": 10,
+    "questions": 600,
+    "sessions": 27614,
+    "memoryUnits": 24856,
+    "operationCounts": {
+      "no_memory:none": 11126,
+      "activity:add": 7790,
+      "preference:add": 2146,
+      "activity:update": 1226,
+      "goal:add": 572,
+      "preference:delete": 1077,
+      "activity:delete": 2082,
+      "preference:update": 1595
+    }
+  },
+  "fixture": {
+    "mainCommit": "08ed1c1d189cbf07f6d14dee43df4c2a5bd35164",
+    "releaseCommit": "625ceefc193ba0148fcb6ebde3f84c5e625c5084",
+    "repositoryId": "repo_a20894ad17d8315dd173",
+    "branches": [
+      "main",
+      "release"
+    ],
+    "worktreeIds": [
+      "wt_a5216568a074e583d1f6",
+      "wt_e79a6dd15181db5fc71d"
+    ],
+    "taskIds": [
+      "parallel-alpha",
+      "parallel-beta"
+    ],
+    "rawPathsPersisted": false,
+    "scenarioCount": 10,
+    "workingTreeStatesGroundedInFiles": true
+  },
+  "selection": {
+    "cases": 110,
+    "naturalCases": 40,
+    "capabilityCases": 70,
+    "scenarios": 10,
+    "bySlice": {
+      "branch_comparison": 10,
+      "branch_current": 10,
+      "migration": 10,
+      "missing_scope_abstention": 10,
+      "natural_safety": 40,
+      "parallel_task_current": 10,
+      "regression": 10,
+      "worktree_current": 10
+    },
+    "personas": 20
+  },
+  "deduplication": {
+    "caseArmContexts": 330,
+    "uniquePromptsPerReader": 250,
+    "exactPromptReuseOnly": true
+  },
+  "execution": {
+    "gitRepositories": 1,
+    "sqliteDatabases": 50,
+    "writeMemoryCalls": 260,
+    "performAutoRecallCalls": 330,
+    "meanRecallMs": 0.3013905121212233,
+    "p95RecallMs": 0.42358299999978044,
+    "maxRecallMs": 2.526375000000371,
+    "readerCalls": 0,
+    "judgeCalls": 0
+  },
+  "validation": {
+    "realGit": true,
+    "sharedRepositoryIdentity": true,
+    "distinctWorktreeIdentity": true,
+    "realSQLite": true,
+    "countMismatch": false,
+    "lifecycleFallbacks": 0,
+    "versionCurrentMismatches": 0,
+    "comparisonSetMismatches": 0,
+    "missingScopeMismatches": 0,
+    "naturalPromptMismatches": 0,
+    "passed": true
+  },
+  "claimBoundary": "The natural safety panel is public Memora data reused from a previously frozen weekly census. The version capability panel is a controlled, generated programming-state benchmark grounded in a real Git repository/worktrees and real SQLite/performAutoRecall execution. It evaluates storage, scope selection, rendering and answer behavior, not automatic LLM extraction quality, live TCVDB/COS network latency, human calibration, merge ancestry inference, or natural prevalence of branch conflicts."
+}

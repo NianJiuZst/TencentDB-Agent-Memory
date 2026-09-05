@@ -133,3 +133,6 @@ coverage/
 
 # Local project docs (generated, not for VCS)
 .local-docs/
+/.worktrees/
+/MemoryCore/node_modules
+/submission/tmp/

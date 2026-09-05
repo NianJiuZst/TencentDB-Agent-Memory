@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "checks": {
+    "settled_spend_preserved": true,
+    "unsettled_reservation_charged_on_resume": true,
+    "negative_reservation_rejected": true,
+    "negative_charge_rejected": true
+  },
+  "apiCalls": 0
+}

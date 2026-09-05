@@ -20,4 +20,5 @@ run('typecheck', ['node_modules/typescript/bin/tsc', '-p', 'benchmarks/competiti
 run('all-tests', ['node_modules/vitest/vitest.mjs', 'run', '--configLoader', 'native', '--no-cache', '--reporter=json', '--outputFile=../submission/evidence/all-tests.json']);
 run('benchmark-tests', ['node_modules/vitest/vitest.mjs', 'run', '--configLoader', 'native', '--no-cache', '-c', 'benchmarks/lifecycle-memory/vitest.config.ts', '--reporter=json', '--outputFile=../submission/evidence/benchmark-tests.json']);
 run('build', ['node_modules/tsdown/dist/run.mjs']);
+run('budget-recovery', ['../submission/check-budget.mjs']);
 run('optimized', ['--import', 'tsx', 'benchmarks/competition/recall-benchmark.ts', '--arm', 'optimized', '--output', '../submission/evidence/optimized.json']);

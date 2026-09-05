@@ -1,0 +1,209 @@
+{
+  "schemaVersion": 1,
+  "checks": {
+    "global_204_unique_cases": true,
+    "global_matched_cases_and_oracles": true,
+    "global_item_budget": true,
+    "global_raw_metrics": true,
+    "global_no_fallbacks": true,
+    "global_protocol": true,
+    "previous_204_unique_cases": true,
+    "previous_matched_cases_and_oracles": true,
+    "previous_item_budget": true,
+    "previous_raw_metrics": true,
+    "previous_no_fallbacks": true,
+    "previous_protocol": true,
+    "optimized_204_unique_cases": true,
+    "optimized_matched_cases_and_oracles": true,
+    "optimized_item_budget": true,
+    "optimized_raw_metrics": true,
+    "optimized_no_fallbacks": true,
+    "optimized_protocol": true,
+    "optimized_within_pool_exact": true,
+    "optimized_zero_contamination": true,
+    "optimized_missing_abstains": true,
+    "outside_pool_failure_disclosed": true,
+    "historical_raw_verdicts_recomputed": true,
+    "fresh_110_case_production_replay": true,
+    "final_code_replay_valid": true,
+    "optimized_110_model_inputs_byte_identical": true,
+    "all_330_inputs_equal_except_activity_timestamps": true,
+    "fresh_500_verdicts_independently_recomputed": true,
+    "model_validation_hashes_current": true,
+    "fresh_model_run_complete": true,
+    "budget_reconciles_and_within_200_cny": true,
+    "fresh_1000_successful_api_calls": true,
+    "budget_recovery_without_api_calls": true,
+    "all-tests": true,
+    "benchmark-tests": true
+  },
+  "passed": true,
+  "groups": {
+    "global": {
+      "all": {
+        "cases": 204,
+        "exactCount": 3,
+        "expectedRecall": 0.234375,
+        "contaminatedCount": 201,
+        "meanTokens": 552.5588235294117,
+        "meanItems": 5.4411764705882355,
+        "p50Ms": 0.20050000000003365,
+        "p95Ms": 0.3420419999999922
+      },
+      "within_pool": {
+        "cases": 180,
+        "exactCount": 3,
+        "expectedRecall": 0.25,
+        "contaminatedCount": 177,
+        "meanTokens": 560,
+        "meanItems": 5.666666666666667,
+        "p50Ms": 0.20308399999998983,
+        "p95Ms": 0.3420419999999922
+      },
+      "beyond_top_k": {
+        "cases": 135,
+        "exactCount": 0,
+        "expectedRecall": 0.0,
+        "contaminatedCount": 135,
+        "meanTokens": 560,
+        "meanItems": 5.666666666666667,
+        "p50Ms": 0.19866700000000037,
+        "p95Ms": 0.33037500000000364
+      },
+      "outside_pool": {
+        "cases": 12,
+        "exactCount": 0,
+        "expectedRecall": 0.0,
+        "contaminatedCount": 12,
+        "meanTokens": 496.75,
+        "meanItems": 3.75,
+        "p50Ms": 0.1887499999999136,
+        "p95Ms": 0.408457999999996
+      },
+      "missing_context": {
+        "cases": 12,
+        "exactCount": 0,
+        "expectedRecall": null,
+        "contaminatedCount": 12,
+        "meanTokens": 496.75,
+        "meanItems": 3.75,
+        "p50Ms": 0.17420800000002146,
+        "p95Ms": 0.32645800000000236
+      }
+    },
+    "previous": {
+      "all": {
+        "cases": 204,
+        "exactCount": 57,
+        "expectedRecall": 0.234375,
+        "contaminatedCount": 0,
+        "meanTokens": 92.94117647058823,
+        "meanItems": 0.22058823529411764,
+        "p50Ms": 0.26804099999998243,
+        "p95Ms": 0.4258329999999546
+      },
+      "within_pool": {
+        "cases": 180,
+        "exactCount": 45,
+        "expectedRecall": 0.25,
+        "contaminatedCount": 0,
+        "meanTokens": 105.33333333333333,
+        "meanItems": 0.25,
+        "p50Ms": 0.26933300000001736,
+        "p95Ms": 0.43779200000000174
+      },
+      "beyond_top_k": {
+        "cases": 135,
+        "exactCount": 0,
+        "expectedRecall": 0.0,
+        "contaminatedCount": 0,
+        "meanTokens": 0,
+        "meanItems": 0,
+        "p50Ms": 0.26637499999998226,
+        "p95Ms": 0.3714170000000081
+      },
+      "outside_pool": {
+        "cases": 12,
+        "exactCount": 0,
+        "expectedRecall": 0.0,
+        "contaminatedCount": 0,
+        "meanTokens": 0,
+        "meanItems": 0,
+        "p50Ms": 0.18000000000000682,
+        "p95Ms": 0.28095799999999826
+      },
+      "missing_context": {
+        "cases": 12,
+        "exactCount": 12,
+        "expectedRecall": null,
+        "contaminatedCount": 0,
+        "meanTokens": 0,
+        "meanItems": 0,
+        "p50Ms": 0.1806670000000281,
+        "p95Ms": 0.37420900000000756
+      }
+    },
+    "optimized": {
+      "all": {
+        "cases": 204,
+        "exactCount": 192,
+        "expectedRecall": 0.9375,
+        "contaminatedCount": 0,
+        "meanTokens": 371.7647058823529,
+        "meanItems": 0.8823529411764706,
+        "p50Ms": 0.2908750000000282,
+        "p95Ms": 0.4242919999999799
+      },
+      "within_pool": {
+        "cases": 180,
+        "exactCount": 180,
+        "expectedRecall": 1.0,
+        "contaminatedCount": 0,
+        "meanTokens": 421.3333333333333,
+        "meanItems": 1,
+        "p50Ms": 0.294208000000026,
+        "p95Ms": 0.4259589999999207
+      },
+      "beyond_top_k": {
+        "cases": 135,
+        "exactCount": 135,
+        "expectedRecall": 1.0,
+        "contaminatedCount": 0,
+        "meanTokens": 421.3333333333333,
+        "meanItems": 1,
+        "p50Ms": 0.2939580000000319,
+        "p95Ms": 0.4219580000000178
+      },
+      "outside_pool": {
+        "cases": 12,
+        "exactCount": 0,
+        "expectedRecall": 0.0,
+        "contaminatedCount": 0,
+        "meanTokens": 0,
+        "meanItems": 0,
+        "p50Ms": 0.24812500000001592,
+        "p95Ms": 0.3525830000000383
+      },
+      "missing_context": {
+        "cases": 12,
+        "exactCount": 12,
+        "expectedRecall": null,
+        "contaminatedCount": 0,
+        "meanTokens": 0,
+        "meanItems": 0,
+        "p50Ms": 0.19133300000004283,
+        "p95Ms": 0.2943329999999378
+      }
+    }
+  },
+  "inputHashes": {
+    "global.json": "9290f6236858379a6f5c6671d8f6645918f552f1c92c3e43fbe442332dbf1293",
+    "previous-strict.json": "e2b5d4e29e7c301e457e2b0565adba7a795633efad12dd1010b0c93b5211e791",
+    "optimized.json": "1d941545d7aed5789a637c824d7cad6fadd230650976d3781612e8aafbefbbef",
+    "historical-revalidation.json": "758cade8f186e498c622d6febb6ad67821b985c059495cb0c129687f84c8a678",
+    "model-rerun/summary.json": "65259894cf8fa45a66756fb0395199bcb3127418e90b2fffcef2dfb7f30a55d1",
+    "model-rerun/evaluations.jsonl": "6847335d6d2237b00c5036e8e68c96fcfabde091b37070a6335d393601018b47",
+    "model-rerun/independent-validation.json": "3f76f064af81a46b25a341c4c0b1e8601be12ea9fa32a3e50c8c848032d5444d",
+    "model-rerun/budget-ledger.json": "e3af0418117d12f6c196467e14248e0e4b5660814ffbb3244862a7a604cbd4df"
+  }
+}

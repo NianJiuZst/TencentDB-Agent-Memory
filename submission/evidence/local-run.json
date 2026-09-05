@@ -1,0 +1,81 @@
+{
+  "node": "v26.8.1",
+  "records": [
+    {
+      "label": "typecheck",
+      "command": [
+        "node",
+        "node_modules/typescript/bin/tsc",
+        "-p",
+        "benchmarks/competition/tsconfig.json"
+      ],
+      "exitCode": 0,
+      "elapsedMs": 653
+    },
+    {
+      "label": "all-tests",
+      "command": [
+        "node",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "--configLoader",
+        "native",
+        "--no-cache",
+        "--reporter=json",
+        "--outputFile=../submission/evidence/all-tests.json"
+      ],
+      "exitCode": 0,
+      "elapsedMs": 915
+    },
+    {
+      "label": "benchmark-tests",
+      "command": [
+        "node",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "--configLoader",
+        "native",
+        "--no-cache",
+        "-c",
+        "benchmarks/lifecycle-memory/vitest.config.ts",
+        "--reporter=json",
+        "--outputFile=../submission/evidence/benchmark-tests.json"
+      ],
+      "exitCode": 0,
+      "elapsedMs": 4067
+    },
+    {
+      "label": "build",
+      "command": [
+        "node",
+        "node_modules/tsdown/dist/run.mjs"
+      ],
+      "exitCode": 0,
+      "elapsedMs": 181
+    },
+    {
+      "label": "budget-recovery",
+      "command": [
+        "node",
+        "../submission/check-budget.mjs"
+      ],
+      "exitCode": 0,
+      "elapsedMs": 885
+    },
+    {
+      "label": "optimized",
+      "command": [
+        "node",
+        "--import",
+        "tsx",
+        "benchmarks/competition/recall-benchmark.ts",
+        "--arm",
+        "optimized",
+        "--output",
+        "../submission/evidence/optimized.json"
+      ],
+      "exitCode": 0,
+      "elapsedMs": 712
+    }
+  ]
+}

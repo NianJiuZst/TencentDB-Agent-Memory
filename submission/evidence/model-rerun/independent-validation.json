@@ -1,0 +1,90 @@
+{
+  "validationVersion": "version-aware-production-e2e-independent-validation-v1.0",
+  "status": "passed",
+  "inputs": {
+    "contextSha256": "69ac20d23e7cd0f9f49170da4775aa7c847ba314f21abd8a218ce55e89693d19",
+    "evaluationsSha256": "6847335d6d2237b00c5036e8e68c96fcfabde091b37070a6335d393601018b47",
+    "summarySha256": "65259894cf8fa45a66756fb0395199bcb3127418e90b2fffcef2dfb7f30a55d1"
+  },
+  "counts": {
+    "cases": 110,
+    "naturalCases": 40,
+    "capabilityCases": 70,
+    "arms": 3,
+    "evaluations": 500,
+    "uniqueEvaluationKeys": 500,
+    "rawVerdictsRescored": 500
+  },
+  "primaryRecomputation": {
+    "capabilityCriterionAccuracyDeltaVsGlobal": {
+      "mean": 0.05,
+      "lower": 0.02142857142857143,
+      "upper": 0.08214285714285714,
+      "clusters": 10
+    },
+    "capabilityCriterionAccuracyDeltaVsOldCurrentDual": {
+      "mean": 0.29642857142857143,
+      "lower": 0.2714285714285714,
+      "upper": 0.325,
+      "clusters": 10
+    },
+    "naturalFamaDeltaVsGlobal": {
+      "mean": 0,
+      "lower": 0,
+      "upper": 0,
+      "clusters": 10
+    },
+    "naturalFamaDeltaVsOldCurrentDual": {
+      "mean": 0,
+      "lower": 0,
+      "upper": 0,
+      "clusters": 10
+    },
+    "versionAwareContext": {
+      "cases": 70,
+      "mpa": 1,
+      "faa": 1,
+      "fama": 1,
+      "criterionAccuracy": 1,
+      "exactSelectionAccuracy": 1,
+      "expectedStateRecall": 1,
+      "contaminationRate": 0,
+      "meanInjectedTokens": 395.4714285714286,
+      "meanInjectedItems": 1.2857142857142858,
+      "meanRecallMs": 0.2905006428571531
+    },
+    "combinedTokenIncreases": {
+      "global_latest": -0.17506659891285936,
+      "old_current_dual": -0.107415984938103
+    },
+    "capabilityDirections": {
+      "global_latest": {
+        "minimax-m3": 0.03571428571428571,
+        "deepseek-v4-flash": 0.06428571428571428
+      },
+      "old_current_dual": {
+        "minimax-m3": 0.2571428571428571,
+        "deepseek-v4-flash": 0.3357142857142857
+      }
+    },
+    "checks": {
+      "contextExactSelection": true,
+      "contextContamination": true,
+      "capabilityVsGlobal": true,
+      "capabilityVsGlobalCi": true,
+      "capabilityVsOldCurrentDual": true,
+      "capabilityVsOldCurrentDualCi": true,
+      "currentSlices": true,
+      "crossStateSlices": true,
+      "missingScope": true,
+      "naturalNonInferiority": true,
+      "combinedTokenBudget": true,
+      "readerDirection": true,
+      "contextIntegrity": true,
+      "evaluationIntegrity": true
+    },
+    "recommended": true
+  },
+  "mismatchCount": 0,
+  "mismatches": []
+}

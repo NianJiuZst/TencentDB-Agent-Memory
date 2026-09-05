@@ -1,0 +1,4633 @@
+{
+  "protocol": "competition-rank-pressure-v1",
+  "arm": "previous_strict",
+  "policy": "strict",
+  "generatedAt": "2026-09-05T05:05:19.454Z",
+  "node": "v26.8.1",
+  "platform": "darwin/arm64",
+  "sourceCommit": "25a025b4be83dbc28877d8a740bd7a089a7297e5",
+  "sourceHashes": {
+    "src/core/hooks/auto-recall.ts": "5dc5b271105b74e21d0988958890639981cc45348b019a95b9fb5cc4f5f3cb55",
+    "src/core/lifecycle/version-scope.ts": "aa1a663fb13302688d0b4b8c919c23813a497ea31e02c30e13e24c3c60c0f999",
+    "src/core/lifecycle/git-context.ts": "874d76e9d71a9f2de199031caefa0f1a99f2485a662e33cc354a925870bcb485",
+    "src/core/lifecycle/production-runtime.ts": "4da78d17d58e198ae737559c607b57f14957655ee39d274e2fa33996138e4ef1"
+  },
+  "protocolSha256": "fd3cf6f5f04787bc6fbfceb9d733bd4c111c84f7fe489912aeff9c556e918d0f",
+  "databases": 12,
+  "writes": 192,
+  "measuredRecallCalls": 204,
+  "warmupCalls": 12,
+  "summary": {
+    "cases": 204,
+    "exactSelection": 0.27941176470588236,
+    "expectedRecall": 0.234375,
+    "contaminationRate": 0,
+    "meanTokens": 92.94117647058823,
+    "meanItems": 0.22058823529411764,
+    "p50Ms": 0.26804099999998243,
+    "p95Ms": 0.4258329999999546,
+    "fallbackCount": 0
+  },
+  "slices": {
+    "within_top_k": {
+      "cases": 45,
+      "exactSelection": 1,
+      "expectedRecall": 1,
+      "contaminationRate": 0,
+      "meanTokens": 421.3333333333333,
+      "meanItems": 1,
+      "p50Ms": 0.30945800000000645,
+      "p95Ms": 0.4869160000000079,
+      "fallbackCount": 0
+    },
+    "beyond_top_k": {
+      "cases": 135,
+      "exactSelection": 0,
+      "expectedRecall": 0,
+      "contaminationRate": 0,
+      "meanTokens": 0,
+      "meanItems": 0,
+      "p50Ms": 0.26637499999998226,
+      "p95Ms": 0.3714170000000081,
+      "fallbackCount": 0
+    },
+    "outside_pool": {
+      "cases": 12,
+      "exactSelection": 0,
+      "expectedRecall": 0,
+      "contaminationRate": 0,
+      "meanTokens": 0,
+      "meanItems": 0,
+      "p50Ms": 0.18000000000000682,
+      "p95Ms": 0.28095799999999826,
+      "fallbackCount": 0
+    },
+    "missing_context": {
+      "cases": 12,
+      "exactSelection": 1,
+      "expectedRecall": 0,
+      "contaminationRate": 0,
+      "meanTokens": 0,
+      "meanItems": 0,
+      "p50Ms": 0.1806670000000281,
+      "p95Ms": 0.37420900000000756,
+      "fallbackCount": 0
+    }
+  },
+  "rows": [
+    {
+      "caseId": "branch-k1-rank1",
+      "level": "branch",
+      "k": 1,
+      "rank": 1,
+      "slice": "within_top_k",
+      "expected": [
+        "state-000"
+      ],
+      "actual": [
+        "state-000"
+      ],
+      "exact": true,
+      "expectedRecall": 1,
+      "contaminated": false,
+      "elapsedMs": 0.46870899999998983,
+      "injectedTokens": 421,
+      "fallback": false,
+      "promptHash": "d37a2336910ba3e6db9814b0ad44dc92ed3cf876b9edea4c23409c77b25c1ee0",
+      "prompt": {
+        "prepend": "<relevant-memories>\n以下是当前对话召回的相关记忆，不代表当前任务进程，仅作为参考：\n\n- [version-state] [ACTIVE SCOPE; branch=branch-0; commit=aaaaaaaaaa; worktree=shared-wor; task=-; scope=branch; active_here=yes] Atlas compiler command is node run variant000.\n</relevant-memories>",
+        "append": "<memory-tools-guide>\n## 记忆工具调用指南\n\n当上方注入的记忆片段不足以回答用户问题时，可主动调用以下工具获取更多信息：\n\n- **tdai_memory_search**：搜索结构化记忆（L1），适用于回忆用户偏好、历史事件节点、规则等关键信息。\n- **tdai_conversation_search**：搜索原始对话（L0），适用于查找具体消息原文、时间线、上下文细节；也可用于补充或校验 memory_search 的结果。\n- **read_file**（Scene Navigation 中的路径）：当已定位到相关情境，且需要该场景的完整画像、事件经过或阶段结论时使用。\n\n### ⚠️ 调用次数限制\n每轮对话中，tdai_memory_search 和 tdai_conversation_search **合计最多调用 3 次**。\n- 首次搜索无结果时，可换关键词或换工具重试，但总调用次数不要超过 3 次。\n- 若 3 次搜索后仍无结果，说明该信息不在记忆中，请直接根据已有信息回复用户，不要继续搜索。\n</memory-tools-guide>"
+      }
+    },
+    {
+      "caseId": "branch-k1-rank2",
+      "level": "branch",
+      "k": 1,
+      "rank": 2,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-001"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.4467909999999904,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k1-rank3",
+      "level": "branch",
+      "k": 1,
+      "rank": 3,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-002"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.2893750000000068,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k1-rank4",
+      "level": "branch",
+      "k": 1,
+      "rank": 4,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-003"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.2293329999999969,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k1-rank5",
+      "level": "branch",
+      "k": 1,
+      "rank": 5,
+      "slice": "outside_pool",
+      "expected": [
+        "state-004"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.20891699999998536,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k1-missing",
+      "level": "branch",
+      "k": 1,
+      "rank": null,
+      "slice": "missing_context",
+      "expected": [],
+      "actual": [],
+      "exact": true,
+      "expectedRecall": null,
+      "contaminated": false,
+      "elapsedMs": 0.23116600000000176,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k2-rank1",
+      "level": "branch",
+      "k": 2,
+      "rank": 1,
+      "slice": "within_top_k",
+      "expected": [
+        "state-000"
+      ],
+      "actual": [
+        "state-000"
+      ],
+      "exact": true,
+      "expectedRecall": 1,
+      "contaminated": false,
+      "elapsedMs": 0.24112500000001091,
+      "injectedTokens": 421,
+      "fallback": false,
+      "promptHash": "d37a2336910ba3e6db9814b0ad44dc92ed3cf876b9edea4c23409c77b25c1ee0",
+      "prompt": {
+        "prepend": "<relevant-memories>\n以下是当前对话召回的相关记忆，不代表当前任务进程，仅作为参考：\n\n- [version-state] [ACTIVE SCOPE; branch=branch-0; commit=aaaaaaaaaa; worktree=shared-wor; task=-; scope=branch; active_here=yes] Atlas compiler command is node run variant000.\n</relevant-memories>",
+        "append": "<memory-tools-guide>\n## 记忆工具调用指南\n\n当上方注入的记忆片段不足以回答用户问题时，可主动调用以下工具获取更多信息：\n\n- **tdai_memory_search**：搜索结构化记忆（L1），适用于回忆用户偏好、历史事件节点、规则等关键信息。\n- **tdai_conversation_search**：搜索原始对话（L0），适用于查找具体消息原文、时间线、上下文细节；也可用于补充或校验 memory_search 的结果。\n- **read_file**（Scene Navigation 中的路径）：当已定位到相关情境，且需要该场景的完整画像、事件经过或阶段结论时使用。\n\n### ⚠️ 调用次数限制\n每轮对话中，tdai_memory_search 和 tdai_conversation_search **合计最多调用 3 次**。\n- 首次搜索无结果时，可换关键词或换工具重试，但总调用次数不要超过 3 次。\n- 若 3 次搜索后仍无结果，说明该信息不在记忆中，请直接根据已有信息回复用户，不要继续搜索。\n</memory-tools-guide>"
+      }
+    },
+    {
+      "caseId": "branch-k2-rank2",
+      "level": "branch",
+      "k": 2,
+      "rank": 2,
+      "slice": "within_top_k",
+      "expected": [
+        "state-001"
+      ],
+      "actual": [
+        "state-001"
+      ],
+      "exact": true,
+      "expectedRecall": 1,
+      "contaminated": false,
+      "elapsedMs": 0.28591700000001197,
+      "injectedTokens": 421,
+      "fallback": false,
+      "promptHash": "59e6c84ef8dabcd92858d7a083ba3ff29f4868eac8caf1936f8aba17fc39b466",
+      "prompt": {
+        "prepend": "<relevant-memories>\n以下是当前对话召回的相关记忆，不代表当前任务进程，仅作为参考：\n\n- [version-state] [ACTIVE SCOPE; branch=branch-1; commit=aaaaaaaaaa; worktree=shared-wor; task=-; scope=branch; active_here=yes] Atlas compiler command is node run variant001.\n</relevant-memories>",
+        "append": "<memory-tools-guide>\n## 记忆工具调用指南\n\n当上方注入的记忆片段不足以回答用户问题时，可主动调用以下工具获取更多信息：\n\n- **tdai_memory_search**：搜索结构化记忆（L1），适用于回忆用户偏好、历史事件节点、规则等关键信息。\n- **tdai_conversation_search**：搜索原始对话（L0），适用于查找具体消息原文、时间线、上下文细节；也可用于补充或校验 memory_search 的结果。\n- **read_file**（Scene Navigation 中的路径）：当已定位到相关情境，且需要该场景的完整画像、事件经过或阶段结论时使用。\n\n### ⚠️ 调用次数限制\n每轮对话中，tdai_memory_search 和 tdai_conversation_search **合计最多调用 3 次**。\n- 首次搜索无结果时，可换关键词或换工具重试，但总调用次数不要超过 3 次。\n- 若 3 次搜索后仍无结果，说明该信息不在记忆中，请直接根据已有信息回复用户，不要继续搜索。\n</memory-tools-guide>"
+      }
+    },
+    {
+      "caseId": "branch-k2-rank3",
+      "level": "branch",
+      "k": 2,
+      "rank": 3,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-002"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.28470799999999485,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k2-rank4",
+      "level": "branch",
+      "k": 2,
+      "rank": 4,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-003"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.2254169999999931,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k2-rank5",
+      "level": "branch",
+      "k": 2,
+      "rank": 5,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-004"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.2372919999999965,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k2-rank6",
+      "level": "branch",
+      "k": 2,
+      "rank": 6,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-005"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.1948330000000169,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k2-rank7",
+      "level": "branch",
+      "k": 2,
+      "rank": 7,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-006"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.17670799999999076,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k2-rank8",
+      "level": "branch",
+      "k": 2,
+      "rank": 8,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-007"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.1760409999999979,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k2-rank9",
+      "level": "branch",
+      "k": 2,
+      "rank": 9,
+      "slice": "outside_pool",
+      "expected": [
+        "state-008"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.17354100000000017,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k2-missing",
+      "level": "branch",
+      "k": 2,
+      "rank": null,
+      "slice": "missing_context",
+      "expected": [],
+      "actual": [],
+      "exact": true,
+      "expectedRecall": null,
+      "contaminated": false,
+      "elapsedMs": 0.1716250000000059,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k4-rank1",
+      "level": "branch",
+      "k": 4,
+      "rank": 1,
+      "slice": "within_top_k",
+      "expected": [
+        "state-000"
+      ],
+      "actual": [
+        "state-000"
+      ],
+      "exact": true,
+      "expectedRecall": 1,
+      "contaminated": false,
+      "elapsedMs": 0.26470800000004147,
+      "injectedTokens": 421,
+      "fallback": false,
+      "promptHash": "d37a2336910ba3e6db9814b0ad44dc92ed3cf876b9edea4c23409c77b25c1ee0",
+      "prompt": {
+        "prepend": "<relevant-memories>\n以下是当前对话召回的相关记忆，不代表当前任务进程，仅作为参考：\n\n- [version-state] [ACTIVE SCOPE; branch=branch-0; commit=aaaaaaaaaa; worktree=shared-wor; task=-; scope=branch; active_here=yes] Atlas compiler command is node run variant000.\n</relevant-memories>",
+        "append": "<memory-tools-guide>\n## 记忆工具调用指南\n\n当上方注入的记忆片段不足以回答用户问题时，可主动调用以下工具获取更多信息：\n\n- **tdai_memory_search**：搜索结构化记忆（L1），适用于回忆用户偏好、历史事件节点、规则等关键信息。\n- **tdai_conversation_search**：搜索原始对话（L0），适用于查找具体消息原文、时间线、上下文细节；也可用于补充或校验 memory_search 的结果。\n- **read_file**（Scene Navigation 中的路径）：当已定位到相关情境，且需要该场景的完整画像、事件经过或阶段结论时使用。\n\n### ⚠️ 调用次数限制\n每轮对话中，tdai_memory_search 和 tdai_conversation_search **合计最多调用 3 次**。\n- 首次搜索无结果时，可换关键词或换工具重试，但总调用次数不要超过 3 次。\n- 若 3 次搜索后仍无结果，说明该信息不在记忆中，请直接根据已有信息回复用户，不要继续搜索。\n</memory-tools-guide>"
+      }
+    },
+    {
+      "caseId": "branch-k4-rank2",
+      "level": "branch",
+      "k": 4,
+      "rank": 2,
+      "slice": "within_top_k",
+      "expected": [
+        "state-001"
+      ],
+      "actual": [
+        "state-001"
+      ],
+      "exact": true,
+      "expectedRecall": 1,
+      "contaminated": false,
+      "elapsedMs": 0.2681670000000054,
+      "injectedTokens": 421,
+      "fallback": false,
+      "promptHash": "59e6c84ef8dabcd92858d7a083ba3ff29f4868eac8caf1936f8aba17fc39b466",
+      "prompt": {
+        "prepend": "<relevant-memories>\n以下是当前对话召回的相关记忆，不代表当前任务进程，仅作为参考：\n\n- [version-state] [ACTIVE SCOPE; branch=branch-1; commit=aaaaaaaaaa; worktree=shared-wor; task=-; scope=branch; active_here=yes] Atlas compiler command is node run variant001.\n</relevant-memories>",
+        "append": "<memory-tools-guide>\n## 记忆工具调用指南\n\n当上方注入的记忆片段不足以回答用户问题时，可主动调用以下工具获取更多信息：\n\n- **tdai_memory_search**：搜索结构化记忆（L1），适用于回忆用户偏好、历史事件节点、规则等关键信息。\n- **tdai_conversation_search**：搜索原始对话（L0），适用于查找具体消息原文、时间线、上下文细节；也可用于补充或校验 memory_search 的结果。\n- **read_file**（Scene Navigation 中的路径）：当已定位到相关情境，且需要该场景的完整画像、事件经过或阶段结论时使用。\n\n### ⚠️ 调用次数限制\n每轮对话中，tdai_memory_search 和 tdai_conversation_search **合计最多调用 3 次**。\n- 首次搜索无结果时，可换关键词或换工具重试，但总调用次数不要超过 3 次。\n- 若 3 次搜索后仍无结果，说明该信息不在记忆中，请直接根据已有信息回复用户，不要继续搜索。\n</memory-tools-guide>"
+      }
+    },
+    {
+      "caseId": "branch-k4-rank3",
+      "level": "branch",
+      "k": 4,
+      "rank": 3,
+      "slice": "within_top_k",
+      "expected": [
+        "state-002"
+      ],
+      "actual": [
+        "state-002"
+      ],
+      "exact": true,
+      "expectedRecall": 1,
+      "contaminated": false,
+      "elapsedMs": 0.3055840000000103,
+      "injectedTokens": 421,
+      "fallback": false,
+      "promptHash": "fbaae9404ff72f8a0a8ce86425f225d847d95895909d8d9756c8880ee26ab9d4",
+      "prompt": {
+        "prepend": "<relevant-memories>\n以下是当前对话召回的相关记忆，不代表当前任务进程，仅作为参考：\n\n- [version-state] [ACTIVE SCOPE; branch=branch-2; commit=aaaaaaaaaa; worktree=shared-wor; task=-; scope=branch; active_here=yes] Atlas compiler command is node run variant002.\n</relevant-memories>",
+        "append": "<memory-tools-guide>\n## 记忆工具调用指南\n\n当上方注入的记忆片段不足以回答用户问题时，可主动调用以下工具获取更多信息：\n\n- **tdai_memory_search**：搜索结构化记忆（L1），适用于回忆用户偏好、历史事件节点、规则等关键信息。\n- **tdai_conversation_search**：搜索原始对话（L0），适用于查找具体消息原文、时间线、上下文细节；也可用于补充或校验 memory_search 的结果。\n- **read_file**（Scene Navigation 中的路径）：当已定位到相关情境，且需要该场景的完整画像、事件经过或阶段结论时使用。\n\n### ⚠️ 调用次数限制\n每轮对话中，tdai_memory_search 和 tdai_conversation_search **合计最多调用 3 次**。\n- 首次搜索无结果时，可换关键词或换工具重试，但总调用次数不要超过 3 次。\n- 若 3 次搜索后仍无结果，说明该信息不在记忆中，请直接根据已有信息回复用户，不要继续搜索。\n</memory-tools-guide>"
+      }
+    },
+    {
+      "caseId": "branch-k4-rank4",
+      "level": "branch",
+      "k": 4,
+      "rank": 4,
+      "slice": "within_top_k",
+      "expected": [
+        "state-003"
+      ],
+      "actual": [
+        "state-003"
+      ],
+      "exact": true,
+      "expectedRecall": 1,
+      "contaminated": false,
+      "elapsedMs": 0.393333000000041,
+      "injectedTokens": 421,
+      "fallback": false,
+      "promptHash": "4c1215a63b8165585c4cdd135cee6b85bdb1e03aeb2ff24a200eead892dfe329",
+      "prompt": {
+        "prepend": "<relevant-memories>\n以下是当前对话召回的相关记忆，不代表当前任务进程，仅作为参考：\n\n- [version-state] [ACTIVE SCOPE; branch=branch-3; commit=aaaaaaaaaa; worktree=shared-wor; task=-; scope=branch; active_here=yes] Atlas compiler command is node run variant003.\n</relevant-memories>",
+        "append": "<memory-tools-guide>\n## 记忆工具调用指南\n\n当上方注入的记忆片段不足以回答用户问题时，可主动调用以下工具获取更多信息：\n\n- **tdai_memory_search**：搜索结构化记忆（L1），适用于回忆用户偏好、历史事件节点、规则等关键信息。\n- **tdai_conversation_search**：搜索原始对话（L0），适用于查找具体消息原文、时间线、上下文细节；也可用于补充或校验 memory_search 的结果。\n- **read_file**（Scene Navigation 中的路径）：当已定位到相关情境，且需要该场景的完整画像、事件经过或阶段结论时使用。\n\n### ⚠️ 调用次数限制\n每轮对话中，tdai_memory_search 和 tdai_conversation_search **合计最多调用 3 次**。\n- 首次搜索无结果时，可换关键词或换工具重试，但总调用次数不要超过 3 次。\n- 若 3 次搜索后仍无结果，说明该信息不在记忆中，请直接根据已有信息回复用户，不要继续搜索。\n</memory-tools-guide>"
+      }
+    },
+    {
+      "caseId": "branch-k4-rank5",
+      "level": "branch",
+      "k": 4,
+      "rank": 5,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-004"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.23666699999995444,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k4-rank6",
+      "level": "branch",
+      "k": 4,
+      "rank": 6,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-005"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.338374999999985,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k4-rank7",
+      "level": "branch",
+      "k": 4,
+      "rank": 7,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-006"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.21691700000002356,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k4-rank8",
+      "level": "branch",
+      "k": 4,
+      "rank": 8,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-007"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.20512500000000955,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k4-rank9",
+      "level": "branch",
+      "k": 4,
+      "rank": 9,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-008"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.22887499999995953,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k4-rank10",
+      "level": "branch",
+      "k": 4,
+      "rank": 10,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-009"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.24454200000002402,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k4-rank11",
+      "level": "branch",
+      "k": 4,
+      "rank": 11,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-010"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.24579199999999446,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k4-rank12",
+      "level": "branch",
+      "k": 4,
+      "rank": 12,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-011"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.25158299999998235,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k4-rank13",
+      "level": "branch",
+      "k": 4,
+      "rank": 13,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-012"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.228541000000007,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k4-rank14",
+      "level": "branch",
+      "k": 4,
+      "rank": 14,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-013"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.2093330000000151,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k4-rank15",
+      "level": "branch",
+      "k": 4,
+      "rank": 15,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-014"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.19420900000000074,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k4-rank16",
+      "level": "branch",
+      "k": 4,
+      "rank": 16,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-015"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.19208400000002257,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k4-rank17",
+      "level": "branch",
+      "k": 4,
+      "rank": 17,
+      "slice": "outside_pool",
+      "expected": [
+        "state-016"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.19079199999998764,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k4-missing",
+      "level": "branch",
+      "k": 4,
+      "rank": null,
+      "slice": "missing_context",
+      "expected": [],
+      "actual": [],
+      "exact": true,
+      "expectedRecall": null,
+      "contaminated": false,
+      "elapsedMs": 0.18079199999999673,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k8-rank1",
+      "level": "branch",
+      "k": 8,
+      "rank": 1,
+      "slice": "within_top_k",
+      "expected": [
+        "state-000"
+      ],
+      "actual": [
+        "state-000"
+      ],
+      "exact": true,
+      "expectedRecall": 1,
+      "contaminated": false,
+      "elapsedMs": 0.4653329999999869,
+      "injectedTokens": 421,
+      "fallback": false,
+      "promptHash": "d37a2336910ba3e6db9814b0ad44dc92ed3cf876b9edea4c23409c77b25c1ee0",
+      "prompt": {
+        "prepend": "<relevant-memories>\n以下是当前对话召回的相关记忆，不代表当前任务进程，仅作为参考：\n\n- [version-state] [ACTIVE SCOPE; branch=branch-0; commit=aaaaaaaaaa; worktree=shared-wor; task=-; scope=branch; active_here=yes] Atlas compiler command is node run variant000.\n</relevant-memories>",
+        "append": "<memory-tools-guide>\n## 记忆工具调用指南\n\n当上方注入的记忆片段不足以回答用户问题时，可主动调用以下工具获取更多信息：\n\n- **tdai_memory_search**：搜索结构化记忆（L1），适用于回忆用户偏好、历史事件节点、规则等关键信息。\n- **tdai_conversation_search**：搜索原始对话（L0），适用于查找具体消息原文、时间线、上下文细节；也可用于补充或校验 memory_search 的结果。\n- **read_file**（Scene Navigation 中的路径）：当已定位到相关情境，且需要该场景的完整画像、事件经过或阶段结论时使用。\n\n### ⚠️ 调用次数限制\n每轮对话中，tdai_memory_search 和 tdai_conversation_search **合计最多调用 3 次**。\n- 首次搜索无结果时，可换关键词或换工具重试，但总调用次数不要超过 3 次。\n- 若 3 次搜索后仍无结果，说明该信息不在记忆中，请直接根据已有信息回复用户，不要继续搜索。\n</memory-tools-guide>"
+      }
+    },
+    {
+      "caseId": "branch-k8-rank2",
+      "level": "branch",
+      "k": 8,
+      "rank": 2,
+      "slice": "within_top_k",
+      "expected": [
+        "state-001"
+      ],
+      "actual": [
+        "state-001"
+      ],
+      "exact": true,
+      "expectedRecall": 1,
+      "contaminated": false,
+      "elapsedMs": 0.4177500000000123,
+      "injectedTokens": 421,
+      "fallback": false,
+      "promptHash": "59e6c84ef8dabcd92858d7a083ba3ff29f4868eac8caf1936f8aba17fc39b466",
+      "prompt": {
+        "prepend": "<relevant-memories>\n以下是当前对话召回的相关记忆，不代表当前任务进程，仅作为参考：\n\n- [version-state] [ACTIVE SCOPE; branch=branch-1; commit=aaaaaaaaaa; worktree=shared-wor; task=-; scope=branch; active_here=yes] Atlas compiler command is node run variant001.\n</relevant-memories>",
+        "append": "<memory-tools-guide>\n## 记忆工具调用指南\n\n当上方注入的记忆片段不足以回答用户问题时，可主动调用以下工具获取更多信息：\n\n- **tdai_memory_search**：搜索结构化记忆（L1），适用于回忆用户偏好、历史事件节点、规则等关键信息。\n- **tdai_conversation_search**：搜索原始对话（L0），适用于查找具体消息原文、时间线、上下文细节；也可用于补充或校验 memory_search 的结果。\n- **read_file**（Scene Navigation 中的路径）：当已定位到相关情境，且需要该场景的完整画像、事件经过或阶段结论时使用。\n\n### ⚠️ 调用次数限制\n每轮对话中，tdai_memory_search 和 tdai_conversation_search **合计最多调用 3 次**。\n- 首次搜索无结果时，可换关键词或换工具重试，但总调用次数不要超过 3 次。\n- 若 3 次搜索后仍无结果，说明该信息不在记忆中，请直接根据已有信息回复用户，不要继续搜索。\n</memory-tools-guide>"
+      }
+    },
+    {
+      "caseId": "branch-k8-rank3",
+      "level": "branch",
+      "k": 8,
+      "rank": 3,
+      "slice": "within_top_k",
+      "expected": [
+        "state-002"
+      ],
+      "actual": [
+        "state-002"
+      ],
+      "exact": true,
+      "expectedRecall": 1,
+      "contaminated": false,
+      "elapsedMs": 0.4145419999999831,
+      "injectedTokens": 421,
+      "fallback": false,
+      "promptHash": "fbaae9404ff72f8a0a8ce86425f225d847d95895909d8d9756c8880ee26ab9d4",
+      "prompt": {
+        "prepend": "<relevant-memories>\n以下是当前对话召回的相关记忆，不代表当前任务进程，仅作为参考：\n\n- [version-state] [ACTIVE SCOPE; branch=branch-2; commit=aaaaaaaaaa; worktree=shared-wor; task=-; scope=branch; active_here=yes] Atlas compiler command is node run variant002.\n</relevant-memories>",
+        "append": "<memory-tools-guide>\n## 记忆工具调用指南\n\n当上方注入的记忆片段不足以回答用户问题时，可主动调用以下工具获取更多信息：\n\n- **tdai_memory_search**：搜索结构化记忆（L1），适用于回忆用户偏好、历史事件节点、规则等关键信息。\n- **tdai_conversation_search**：搜索原始对话（L0），适用于查找具体消息原文、时间线、上下文细节；也可用于补充或校验 memory_search 的结果。\n- **read_file**（Scene Navigation 中的路径）：当已定位到相关情境，且需要该场景的完整画像、事件经过或阶段结论时使用。\n\n### ⚠️ 调用次数限制\n每轮对话中，tdai_memory_search 和 tdai_conversation_search **合计最多调用 3 次**。\n- 首次搜索无结果时，可换关键词或换工具重试，但总调用次数不要超过 3 次。\n- 若 3 次搜索后仍无结果，说明该信息不在记忆中，请直接根据已有信息回复用户，不要继续搜索。\n</memory-tools-guide>"
+      }
+    },
+    {
+      "caseId": "branch-k8-rank4",
+      "level": "branch",
+      "k": 8,
+      "rank": 4,
+      "slice": "within_top_k",
+      "expected": [
+        "state-003"
+      ],
+      "actual": [
+        "state-003"
+      ],
+      "exact": true,
+      "expectedRecall": 1,
+      "contaminated": false,
+      "elapsedMs": 0.37324999999998454,
+      "injectedTokens": 421,
+      "fallback": false,
+      "promptHash": "4c1215a63b8165585c4cdd135cee6b85bdb1e03aeb2ff24a200eead892dfe329",
+      "prompt": {
+        "prepend": "<relevant-memories>\n以下是当前对话召回的相关记忆，不代表当前任务进程，仅作为参考：\n\n- [version-state] [ACTIVE SCOPE; branch=branch-3; commit=aaaaaaaaaa; worktree=shared-wor; task=-; scope=branch; active_here=yes] Atlas compiler command is node run variant003.\n</relevant-memories>",
+        "append": "<memory-tools-guide>\n## 记忆工具调用指南\n\n当上方注入的记忆片段不足以回答用户问题时，可主动调用以下工具获取更多信息：\n\n- **tdai_memory_search**：搜索结构化记忆（L1），适用于回忆用户偏好、历史事件节点、规则等关键信息。\n- **tdai_conversation_search**：搜索原始对话（L0），适用于查找具体消息原文、时间线、上下文细节；也可用于补充或校验 memory_search 的结果。\n- **read_file**（Scene Navigation 中的路径）：当已定位到相关情境，且需要该场景的完整画像、事件经过或阶段结论时使用。\n\n### ⚠️ 调用次数限制\n每轮对话中，tdai_memory_search 和 tdai_conversation_search **合计最多调用 3 次**。\n- 首次搜索无结果时，可换关键词或换工具重试，但总调用次数不要超过 3 次。\n- 若 3 次搜索后仍无结果，说明该信息不在记忆中，请直接根据已有信息回复用户，不要继续搜索。\n</memory-tools-guide>"
+      }
+    },
+    {
+      "caseId": "branch-k8-rank5",
+      "level": "branch",
+      "k": 8,
+      "rank": 5,
+      "slice": "within_top_k",
+      "expected": [
+        "state-004"
+      ],
+      "actual": [
+        "state-004"
+      ],
+      "exact": true,
+      "expectedRecall": 1,
+      "contaminated": false,
+      "elapsedMs": 0.4258329999999546,
+      "injectedTokens": 421,
+      "fallback": false,
+      "promptHash": "87b4c68b99d7939e82c6c436cdff2aa5974e3ad6ec5d4d516e3484687e95d01f",
+      "prompt": {
+        "prepend": "<relevant-memories>\n以下是当前对话召回的相关记忆，不代表当前任务进程，仅作为参考：\n\n- [version-state] [ACTIVE SCOPE; branch=branch-4; commit=aaaaaaaaaa; worktree=shared-wor; task=-; scope=branch; active_here=yes] Atlas compiler command is node run variant004.\n</relevant-memories>",
+        "append": "<memory-tools-guide>\n## 记忆工具调用指南\n\n当上方注入的记忆片段不足以回答用户问题时，可主动调用以下工具获取更多信息：\n\n- **tdai_memory_search**：搜索结构化记忆（L1），适用于回忆用户偏好、历史事件节点、规则等关键信息。\n- **tdai_conversation_search**：搜索原始对话（L0），适用于查找具体消息原文、时间线、上下文细节；也可用于补充或校验 memory_search 的结果。\n- **read_file**（Scene Navigation 中的路径）：当已定位到相关情境，且需要该场景的完整画像、事件经过或阶段结论时使用。\n\n### ⚠️ 调用次数限制\n每轮对话中，tdai_memory_search 和 tdai_conversation_search **合计最多调用 3 次**。\n- 首次搜索无结果时，可换关键词或换工具重试，但总调用次数不要超过 3 次。\n- 若 3 次搜索后仍无结果，说明该信息不在记忆中，请直接根据已有信息回复用户，不要继续搜索。\n</memory-tools-guide>"
+      }
+    },
+    {
+      "caseId": "branch-k8-rank6",
+      "level": "branch",
+      "k": 8,
+      "rank": 6,
+      "slice": "within_top_k",
+      "expected": [
+        "state-005"
+      ],
+      "actual": [
+        "state-005"
+      ],
+      "exact": true,
+      "expectedRecall": 1,
+      "contaminated": false,
+      "elapsedMs": 0.5597500000000082,
+      "injectedTokens": 421,
+      "fallback": false,
+      "promptHash": "5139fd574ff9627d2ec28b5c4f7f6d09dd057df4a7645c8731da6003cc1d92d8",
+      "prompt": {
+        "prepend": "<relevant-memories>\n以下是当前对话召回的相关记忆，不代表当前任务进程，仅作为参考：\n\n- [version-state] [ACTIVE SCOPE; branch=branch-5; commit=aaaaaaaaaa; worktree=shared-wor; task=-; scope=branch; active_here=yes] Atlas compiler command is node run variant005.\n</relevant-memories>",
+        "append": "<memory-tools-guide>\n## 记忆工具调用指南\n\n当上方注入的记忆片段不足以回答用户问题时，可主动调用以下工具获取更多信息：\n\n- **tdai_memory_search**：搜索结构化记忆（L1），适用于回忆用户偏好、历史事件节点、规则等关键信息。\n- **tdai_conversation_search**：搜索原始对话（L0），适用于查找具体消息原文、时间线、上下文细节；也可用于补充或校验 memory_search 的结果。\n- **read_file**（Scene Navigation 中的路径）：当已定位到相关情境，且需要该场景的完整画像、事件经过或阶段结论时使用。\n\n### ⚠️ 调用次数限制\n每轮对话中，tdai_memory_search 和 tdai_conversation_search **合计最多调用 3 次**。\n- 首次搜索无结果时，可换关键词或换工具重试，但总调用次数不要超过 3 次。\n- 若 3 次搜索后仍无结果，说明该信息不在记忆中，请直接根据已有信息回复用户，不要继续搜索。\n</memory-tools-guide>"
+      }
+    },
+    {
+      "caseId": "branch-k8-rank7",
+      "level": "branch",
+      "k": 8,
+      "rank": 7,
+      "slice": "within_top_k",
+      "expected": [
+        "state-006"
+      ],
+      "actual": [
+        "state-006"
+      ],
+      "exact": true,
+      "expectedRecall": 1,
+      "contaminated": false,
+      "elapsedMs": 0.31633300000004283,
+      "injectedTokens": 421,
+      "fallback": false,
+      "promptHash": "04782d6300324f965c25e8918647b858bf0731303083fd28ba43ab4eeee1e79b",
+      "prompt": {
+        "prepend": "<relevant-memories>\n以下是当前对话召回的相关记忆，不代表当前任务进程，仅作为参考：\n\n- [version-state] [ACTIVE SCOPE; branch=branch-6; commit=aaaaaaaaaa; worktree=shared-wor; task=-; scope=branch; active_here=yes] Atlas compiler command is node run variant006.\n</relevant-memories>",
+        "append": "<memory-tools-guide>\n## 记忆工具调用指南\n\n当上方注入的记忆片段不足以回答用户问题时，可主动调用以下工具获取更多信息：\n\n- **tdai_memory_search**：搜索结构化记忆（L1），适用于回忆用户偏好、历史事件节点、规则等关键信息。\n- **tdai_conversation_search**：搜索原始对话（L0），适用于查找具体消息原文、时间线、上下文细节；也可用于补充或校验 memory_search 的结果。\n- **read_file**（Scene Navigation 中的路径）：当已定位到相关情境，且需要该场景的完整画像、事件经过或阶段结论时使用。\n\n### ⚠️ 调用次数限制\n每轮对话中，tdai_memory_search 和 tdai_conversation_search **合计最多调用 3 次**。\n- 首次搜索无结果时，可换关键词或换工具重试，但总调用次数不要超过 3 次。\n- 若 3 次搜索后仍无结果，说明该信息不在记忆中，请直接根据已有信息回复用户，不要继续搜索。\n</memory-tools-guide>"
+      }
+    },
+    {
+      "caseId": "branch-k8-rank8",
+      "level": "branch",
+      "k": 8,
+      "rank": 8,
+      "slice": "within_top_k",
+      "expected": [
+        "state-007"
+      ],
+      "actual": [
+        "state-007"
+      ],
+      "exact": true,
+      "expectedRecall": 1,
+      "contaminated": false,
+      "elapsedMs": 0.28616599999998016,
+      "injectedTokens": 421,
+      "fallback": false,
+      "promptHash": "3b5390d196b09d371a77f58561c82ee41f4204f514050af244d26feb9e1e2864",
+      "prompt": {
+        "prepend": "<relevant-memories>\n以下是当前对话召回的相关记忆，不代表当前任务进程，仅作为参考：\n\n- [version-state] [ACTIVE SCOPE; branch=branch-7; commit=aaaaaaaaaa; worktree=shared-wor; task=-; scope=branch; active_here=yes] Atlas compiler command is node run variant007.\n</relevant-memories>",
+        "append": "<memory-tools-guide>\n## 记忆工具调用指南\n\n当上方注入的记忆片段不足以回答用户问题时，可主动调用以下工具获取更多信息：\n\n- **tdai_memory_search**：搜索结构化记忆（L1），适用于回忆用户偏好、历史事件节点、规则等关键信息。\n- **tdai_conversation_search**：搜索原始对话（L0），适用于查找具体消息原文、时间线、上下文细节；也可用于补充或校验 memory_search 的结果。\n- **read_file**（Scene Navigation 中的路径）：当已定位到相关情境，且需要该场景的完整画像、事件经过或阶段结论时使用。\n\n### ⚠️ 调用次数限制\n每轮对话中，tdai_memory_search 和 tdai_conversation_search **合计最多调用 3 次**。\n- 首次搜索无结果时，可换关键词或换工具重试，但总调用次数不要超过 3 次。\n- 若 3 次搜索后仍无结果，说明该信息不在记忆中，请直接根据已有信息回复用户，不要继续搜索。\n</memory-tools-guide>"
+      }
+    },
+    {
+      "caseId": "branch-k8-rank9",
+      "level": "branch",
+      "k": 8,
+      "rank": 9,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-008"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.333500000000015,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k8-rank10",
+      "level": "branch",
+      "k": 8,
+      "rank": 10,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-009"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.2993749999999977,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k8-rank11",
+      "level": "branch",
+      "k": 8,
+      "rank": 11,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-010"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.28166699999997036,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k8-rank12",
+      "level": "branch",
+      "k": 8,
+      "rank": 12,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-011"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.27295799999996007,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k8-rank13",
+      "level": "branch",
+      "k": 8,
+      "rank": 13,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-012"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.28258299999998826,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k8-rank14",
+      "level": "branch",
+      "k": 8,
+      "rank": 14,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-013"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.2740840000000162,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k8-rank15",
+      "level": "branch",
+      "k": 8,
+      "rank": 15,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-014"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.26804099999998243,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k8-rank16",
+      "level": "branch",
+      "k": 8,
+      "rank": 16,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-015"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.27649999999999864,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k8-rank17",
+      "level": "branch",
+      "k": 8,
+      "rank": 17,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-016"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.27854100000001836,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k8-rank18",
+      "level": "branch",
+      "k": 8,
+      "rank": 18,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-017"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.29000000000002046,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k8-rank19",
+      "level": "branch",
+      "k": 8,
+      "rank": 19,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-018"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.2727499999999736,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k8-rank20",
+      "level": "branch",
+      "k": 8,
+      "rank": 20,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-019"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.26908299999996643,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k8-rank21",
+      "level": "branch",
+      "k": 8,
+      "rank": 21,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-020"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.26191599999998516,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k8-rank22",
+      "level": "branch",
+      "k": 8,
+      "rank": 22,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-021"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.2646670000000313,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k8-rank23",
+      "level": "branch",
+      "k": 8,
+      "rank": 23,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-022"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.39599999999995816,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k8-rank24",
+      "level": "branch",
+      "k": 8,
+      "rank": 24,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-023"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.2966250000000059,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k8-rank25",
+      "level": "branch",
+      "k": 8,
+      "rank": 25,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-024"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.28325000000000955,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k8-rank26",
+      "level": "branch",
+      "k": 8,
+      "rank": 26,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-025"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.2938340000000039,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k8-rank27",
+      "level": "branch",
+      "k": 8,
+      "rank": 27,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-026"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.2845829999999978,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k8-rank28",
+      "level": "branch",
+      "k": 8,
+      "rank": 28,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-027"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.26933300000001736,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k8-rank29",
+      "level": "branch",
+      "k": 8,
+      "rank": 29,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-028"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.27199999999999136,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k8-rank30",
+      "level": "branch",
+      "k": 8,
+      "rank": 30,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-029"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.2682079999999587,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k8-rank31",
+      "level": "branch",
+      "k": 8,
+      "rank": 31,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-030"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.2980000000000018,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k8-rank32",
+      "level": "branch",
+      "k": 8,
+      "rank": 32,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-031"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.3068749999999909,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k8-rank33",
+      "level": "branch",
+      "k": 8,
+      "rank": 33,
+      "slice": "outside_pool",
+      "expected": [
+        "state-032"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.27899999999999636,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "branch-k8-missing",
+      "level": "branch",
+      "k": 8,
+      "rank": null,
+      "slice": "missing_context",
+      "expected": [],
+      "actual": [],
+      "exact": true,
+      "expectedRecall": null,
+      "contaminated": false,
+      "elapsedMs": 0.27575000000001637,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k1-rank1",
+      "level": "worktree",
+      "k": 1,
+      "rank": 1,
+      "slice": "within_top_k",
+      "expected": [
+        "state-000"
+      ],
+      "actual": [
+        "state-000"
+      ],
+      "exact": true,
+      "expectedRecall": 1,
+      "contaminated": false,
+      "elapsedMs": 0.17304200000000947,
+      "injectedTokens": 421,
+      "fallback": false,
+      "promptHash": "359f8fd689d186b434634732aab9df6beedcf22a23384a73e874f762fe37ae85",
+      "prompt": {
+        "prepend": "<relevant-memories>\n以下是当前对话召回的相关记忆，不代表当前任务进程，仅作为参考：\n\n- [version-state] [ACTIVE SCOPE; branch=main; commit=aaaaaaaaaa; worktree=worktree-0; task=-; scope=worktree; active_here=yes] Atlas compiler command is node run variant000.\n</relevant-memories>",
+        "append": "<memory-tools-guide>\n## 记忆工具调用指南\n\n当上方注入的记忆片段不足以回答用户问题时，可主动调用以下工具获取更多信息：\n\n- **tdai_memory_search**：搜索结构化记忆（L1），适用于回忆用户偏好、历史事件节点、规则等关键信息。\n- **tdai_conversation_search**：搜索原始对话（L0），适用于查找具体消息原文、时间线、上下文细节；也可用于补充或校验 memory_search 的结果。\n- **read_file**（Scene Navigation 中的路径）：当已定位到相关情境，且需要该场景的完整画像、事件经过或阶段结论时使用。\n\n### ⚠️ 调用次数限制\n每轮对话中，tdai_memory_search 和 tdai_conversation_search **合计最多调用 3 次**。\n- 首次搜索无结果时，可换关键词或换工具重试，但总调用次数不要超过 3 次。\n- 若 3 次搜索后仍无结果，说明该信息不在记忆中，请直接根据已有信息回复用户，不要继续搜索。\n</memory-tools-guide>"
+      }
+    },
+    {
+      "caseId": "worktree-k1-rank2",
+      "level": "worktree",
+      "k": 1,
+      "rank": 2,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-001"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.17533299999996643,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k1-rank3",
+      "level": "worktree",
+      "k": 1,
+      "rank": 3,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-002"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.15595799999999826,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k1-rank4",
+      "level": "worktree",
+      "k": 1,
+      "rank": 4,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-003"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.1320419999999558,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k1-rank5",
+      "level": "worktree",
+      "k": 1,
+      "rank": 5,
+      "slice": "outside_pool",
+      "expected": [
+        "state-004"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.1478749999999991,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k1-missing",
+      "level": "worktree",
+      "k": 1,
+      "rank": null,
+      "slice": "missing_context",
+      "expected": [],
+      "actual": [],
+      "exact": true,
+      "expectedRecall": null,
+      "contaminated": false,
+      "elapsedMs": 0.13254200000000083,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k2-rank1",
+      "level": "worktree",
+      "k": 2,
+      "rank": 1,
+      "slice": "within_top_k",
+      "expected": [
+        "state-000"
+      ],
+      "actual": [
+        "state-000"
+      ],
+      "exact": true,
+      "expectedRecall": 1,
+      "contaminated": false,
+      "elapsedMs": 0.17545800000004874,
+      "injectedTokens": 421,
+      "fallback": false,
+      "promptHash": "359f8fd689d186b434634732aab9df6beedcf22a23384a73e874f762fe37ae85",
+      "prompt": {
+        "prepend": "<relevant-memories>\n以下是当前对话召回的相关记忆，不代表当前任务进程，仅作为参考：\n\n- [version-state] [ACTIVE SCOPE; branch=main; commit=aaaaaaaaaa; worktree=worktree-0; task=-; scope=worktree; active_here=yes] Atlas compiler command is node run variant000.\n</relevant-memories>",
+        "append": "<memory-tools-guide>\n## 记忆工具调用指南\n\n当上方注入的记忆片段不足以回答用户问题时，可主动调用以下工具获取更多信息：\n\n- **tdai_memory_search**：搜索结构化记忆（L1），适用于回忆用户偏好、历史事件节点、规则等关键信息。\n- **tdai_conversation_search**：搜索原始对话（L0），适用于查找具体消息原文、时间线、上下文细节；也可用于补充或校验 memory_search 的结果。\n- **read_file**（Scene Navigation 中的路径）：当已定位到相关情境，且需要该场景的完整画像、事件经过或阶段结论时使用。\n\n### ⚠️ 调用次数限制\n每轮对话中，tdai_memory_search 和 tdai_conversation_search **合计最多调用 3 次**。\n- 首次搜索无结果时，可换关键词或换工具重试，但总调用次数不要超过 3 次。\n- 若 3 次搜索后仍无结果，说明该信息不在记忆中，请直接根据已有信息回复用户，不要继续搜索。\n</memory-tools-guide>"
+      }
+    },
+    {
+      "caseId": "worktree-k2-rank2",
+      "level": "worktree",
+      "k": 2,
+      "rank": 2,
+      "slice": "within_top_k",
+      "expected": [
+        "state-001"
+      ],
+      "actual": [
+        "state-001"
+      ],
+      "exact": true,
+      "expectedRecall": 1,
+      "contaminated": false,
+      "elapsedMs": 0.3644170000000031,
+      "injectedTokens": 421,
+      "fallback": false,
+      "promptHash": "884826badc61df5b0dd0056b635a5707f94f78e8f076f4d8dc16d06cb83c94de",
+      "prompt": {
+        "prepend": "<relevant-memories>\n以下是当前对话召回的相关记忆，不代表当前任务进程，仅作为参考：\n\n- [version-state] [ACTIVE SCOPE; branch=main; commit=aaaaaaaaaa; worktree=worktree-1; task=-; scope=worktree; active_here=yes] Atlas compiler command is node run variant001.\n</relevant-memories>",
+        "append": "<memory-tools-guide>\n## 记忆工具调用指南\n\n当上方注入的记忆片段不足以回答用户问题时，可主动调用以下工具获取更多信息：\n\n- **tdai_memory_search**：搜索结构化记忆（L1），适用于回忆用户偏好、历史事件节点、规则等关键信息。\n- **tdai_conversation_search**：搜索原始对话（L0），适用于查找具体消息原文、时间线、上下文细节；也可用于补充或校验 memory_search 的结果。\n- **read_file**（Scene Navigation 中的路径）：当已定位到相关情境，且需要该场景的完整画像、事件经过或阶段结论时使用。\n\n### ⚠️ 调用次数限制\n每轮对话中，tdai_memory_search 和 tdai_conversation_search **合计最多调用 3 次**。\n- 首次搜索无结果时，可换关键词或换工具重试，但总调用次数不要超过 3 次。\n- 若 3 次搜索后仍无结果，说明该信息不在记忆中，请直接根据已有信息回复用户，不要继续搜索。\n</memory-tools-guide>"
+      }
+    },
+    {
+      "caseId": "worktree-k2-rank3",
+      "level": "worktree",
+      "k": 2,
+      "rank": 3,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-002"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.1918749999999818,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k2-rank4",
+      "level": "worktree",
+      "k": 2,
+      "rank": 4,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-003"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.21408400000001393,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k2-rank5",
+      "level": "worktree",
+      "k": 2,
+      "rank": 5,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-004"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.17549999999999955,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k2-rank6",
+      "level": "worktree",
+      "k": 2,
+      "rank": 6,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-005"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.15133300000002237,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k2-rank7",
+      "level": "worktree",
+      "k": 2,
+      "rank": 7,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-006"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.16491700000000264,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k2-rank8",
+      "level": "worktree",
+      "k": 2,
+      "rank": 8,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-007"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.2010829999999828,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k2-rank9",
+      "level": "worktree",
+      "k": 2,
+      "rank": 9,
+      "slice": "outside_pool",
+      "expected": [
+        "state-008"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.1761250000000132,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k2-missing",
+      "level": "worktree",
+      "k": 2,
+      "rank": null,
+      "slice": "missing_context",
+      "expected": [],
+      "actual": [],
+      "exact": true,
+      "expectedRecall": null,
+      "contaminated": false,
+      "elapsedMs": 0.14954199999999673,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k4-rank1",
+      "level": "worktree",
+      "k": 4,
+      "rank": 1,
+      "slice": "within_top_k",
+      "expected": [
+        "state-000"
+      ],
+      "actual": [
+        "state-000"
+      ],
+      "exact": true,
+      "expectedRecall": 1,
+      "contaminated": false,
+      "elapsedMs": 0.20279099999999062,
+      "injectedTokens": 421,
+      "fallback": false,
+      "promptHash": "359f8fd689d186b434634732aab9df6beedcf22a23384a73e874f762fe37ae85",
+      "prompt": {
+        "prepend": "<relevant-memories>\n以下是当前对话召回的相关记忆，不代表当前任务进程，仅作为参考：\n\n- [version-state] [ACTIVE SCOPE; branch=main; commit=aaaaaaaaaa; worktree=worktree-0; task=-; scope=worktree; active_here=yes] Atlas compiler command is node run variant000.\n</relevant-memories>",
+        "append": "<memory-tools-guide>\n## 记忆工具调用指南\n\n当上方注入的记忆片段不足以回答用户问题时，可主动调用以下工具获取更多信息：\n\n- **tdai_memory_search**：搜索结构化记忆（L1），适用于回忆用户偏好、历史事件节点、规则等关键信息。\n- **tdai_conversation_search**：搜索原始对话（L0），适用于查找具体消息原文、时间线、上下文细节；也可用于补充或校验 memory_search 的结果。\n- **read_file**（Scene Navigation 中的路径）：当已定位到相关情境，且需要该场景的完整画像、事件经过或阶段结论时使用。\n\n### ⚠️ 调用次数限制\n每轮对话中，tdai_memory_search 和 tdai_conversation_search **合计最多调用 3 次**。\n- 首次搜索无结果时，可换关键词或换工具重试，但总调用次数不要超过 3 次。\n- 若 3 次搜索后仍无结果，说明该信息不在记忆中，请直接根据已有信息回复用户，不要继续搜索。\n</memory-tools-guide>"
+      }
+    },
+    {
+      "caseId": "worktree-k4-rank2",
+      "level": "worktree",
+      "k": 4,
+      "rank": 2,
+      "slice": "within_top_k",
+      "expected": [
+        "state-001"
+      ],
+      "actual": [
+        "state-001"
+      ],
+      "exact": true,
+      "expectedRecall": 1,
+      "contaminated": false,
+      "elapsedMs": 0.20883299999997007,
+      "injectedTokens": 421,
+      "fallback": false,
+      "promptHash": "884826badc61df5b0dd0056b635a5707f94f78e8f076f4d8dc16d06cb83c94de",
+      "prompt": {
+        "prepend": "<relevant-memories>\n以下是当前对话召回的相关记忆，不代表当前任务进程，仅作为参考：\n\n- [version-state] [ACTIVE SCOPE; branch=main; commit=aaaaaaaaaa; worktree=worktree-1; task=-; scope=worktree; active_here=yes] Atlas compiler command is node run variant001.\n</relevant-memories>",
+        "append": "<memory-tools-guide>\n## 记忆工具调用指南\n\n当上方注入的记忆片段不足以回答用户问题时，可主动调用以下工具获取更多信息：\n\n- **tdai_memory_search**：搜索结构化记忆（L1），适用于回忆用户偏好、历史事件节点、规则等关键信息。\n- **tdai_conversation_search**：搜索原始对话（L0），适用于查找具体消息原文、时间线、上下文细节；也可用于补充或校验 memory_search 的结果。\n- **read_file**（Scene Navigation 中的路径）：当已定位到相关情境，且需要该场景的完整画像、事件经过或阶段结论时使用。\n\n### ⚠️ 调用次数限制\n每轮对话中，tdai_memory_search 和 tdai_conversation_search **合计最多调用 3 次**。\n- 首次搜索无结果时，可换关键词或换工具重试，但总调用次数不要超过 3 次。\n- 若 3 次搜索后仍无结果，说明该信息不在记忆中，请直接根据已有信息回复用户，不要继续搜索。\n</memory-tools-guide>"
+      }
+    },
+    {
+      "caseId": "worktree-k4-rank3",
+      "level": "worktree",
+      "k": 4,
+      "rank": 3,
+      "slice": "within_top_k",
+      "expected": [
+        "state-002"
+      ],
+      "actual": [
+        "state-002"
+      ],
+      "exact": true,
+      "expectedRecall": 1,
+      "contaminated": false,
+      "elapsedMs": 0.2296660000000088,
+      "injectedTokens": 421,
+      "fallback": false,
+      "promptHash": "8db578ea2fce89b8591a5afb8eed1e5439e6b325108bc34aa9e7a801fd61c22f",
+      "prompt": {
+        "prepend": "<relevant-memories>\n以下是当前对话召回的相关记忆，不代表当前任务进程，仅作为参考：\n\n- [version-state] [ACTIVE SCOPE; branch=main; commit=aaaaaaaaaa; worktree=worktree-2; task=-; scope=worktree; active_here=yes] Atlas compiler command is node run variant002.\n</relevant-memories>",
+        "append": "<memory-tools-guide>\n## 记忆工具调用指南\n\n当上方注入的记忆片段不足以回答用户问题时，可主动调用以下工具获取更多信息：\n\n- **tdai_memory_search**：搜索结构化记忆（L1），适用于回忆用户偏好、历史事件节点、规则等关键信息。\n- **tdai_conversation_search**：搜索原始对话（L0），适用于查找具体消息原文、时间线、上下文细节；也可用于补充或校验 memory_search 的结果。\n- **read_file**（Scene Navigation 中的路径）：当已定位到相关情境，且需要该场景的完整画像、事件经过或阶段结论时使用。\n\n### ⚠️ 调用次数限制\n每轮对话中，tdai_memory_search 和 tdai_conversation_search **合计最多调用 3 次**。\n- 首次搜索无结果时，可换关键词或换工具重试，但总调用次数不要超过 3 次。\n- 若 3 次搜索后仍无结果，说明该信息不在记忆中，请直接根据已有信息回复用户，不要继续搜索。\n</memory-tools-guide>"
+      }
+    },
+    {
+      "caseId": "worktree-k4-rank4",
+      "level": "worktree",
+      "k": 4,
+      "rank": 4,
+      "slice": "within_top_k",
+      "expected": [
+        "state-003"
+      ],
+      "actual": [
+        "state-003"
+      ],
+      "exact": true,
+      "expectedRecall": 1,
+      "contaminated": false,
+      "elapsedMs": 0.26445799999999053,
+      "injectedTokens": 421,
+      "fallback": false,
+      "promptHash": "bff9aa0181cf9118beb88c8737506ed03191df57410e519606d930858b4cf1ed",
+      "prompt": {
+        "prepend": "<relevant-memories>\n以下是当前对话召回的相关记忆，不代表当前任务进程，仅作为参考：\n\n- [version-state] [ACTIVE SCOPE; branch=main; commit=aaaaaaaaaa; worktree=worktree-3; task=-; scope=worktree; active_here=yes] Atlas compiler command is node run variant003.\n</relevant-memories>",
+        "append": "<memory-tools-guide>\n## 记忆工具调用指南\n\n当上方注入的记忆片段不足以回答用户问题时，可主动调用以下工具获取更多信息：\n\n- **tdai_memory_search**：搜索结构化记忆（L1），适用于回忆用户偏好、历史事件节点、规则等关键信息。\n- **tdai_conversation_search**：搜索原始对话（L0），适用于查找具体消息原文、时间线、上下文细节；也可用于补充或校验 memory_search 的结果。\n- **read_file**（Scene Navigation 中的路径）：当已定位到相关情境，且需要该场景的完整画像、事件经过或阶段结论时使用。\n\n### ⚠️ 调用次数限制\n每轮对话中，tdai_memory_search 和 tdai_conversation_search **合计最多调用 3 次**。\n- 首次搜索无结果时，可换关键词或换工具重试，但总调用次数不要超过 3 次。\n- 若 3 次搜索后仍无结果，说明该信息不在记忆中，请直接根据已有信息回复用户，不要继续搜索。\n</memory-tools-guide>"
+      }
+    },
+    {
+      "caseId": "worktree-k4-rank5",
+      "level": "worktree",
+      "k": 4,
+      "rank": 5,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-004"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.3714170000000081,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k4-rank6",
+      "level": "worktree",
+      "k": 4,
+      "rank": 6,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-005"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.26124999999996135,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k4-rank7",
+      "level": "worktree",
+      "k": 4,
+      "rank": 7,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-006"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.23516599999999244,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k4-rank8",
+      "level": "worktree",
+      "k": 4,
+      "rank": 8,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-007"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.22091700000004266,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k4-rank9",
+      "level": "worktree",
+      "k": 4,
+      "rank": 9,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-008"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.21262500000000273,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k4-rank10",
+      "level": "worktree",
+      "k": 4,
+      "rank": 10,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-009"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.2256659999999897,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k4-rank11",
+      "level": "worktree",
+      "k": 4,
+      "rank": 11,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-010"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.2115000000000009,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k4-rank12",
+      "level": "worktree",
+      "k": 4,
+      "rank": 12,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-011"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.21387500000003,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k4-rank13",
+      "level": "worktree",
+      "k": 4,
+      "rank": 13,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-012"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.20520799999997053,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k4-rank14",
+      "level": "worktree",
+      "k": 4,
+      "rank": 14,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-013"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.2041250000000332,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k4-rank15",
+      "level": "worktree",
+      "k": 4,
+      "rank": 15,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-014"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.32158400000002985,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k4-rank16",
+      "level": "worktree",
+      "k": 4,
+      "rank": 16,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-015"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.25079099999999244,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k4-rank17",
+      "level": "worktree",
+      "k": 4,
+      "rank": 17,
+      "slice": "outside_pool",
+      "expected": [
+        "state-016"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.21762499999999818,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k4-missing",
+      "level": "worktree",
+      "k": 4,
+      "rank": null,
+      "slice": "missing_context",
+      "expected": [],
+      "actual": [],
+      "exact": true,
+      "expectedRecall": null,
+      "contaminated": false,
+      "elapsedMs": 0.2100409999999897,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k8-rank1",
+      "level": "worktree",
+      "k": 8,
+      "rank": 1,
+      "slice": "within_top_k",
+      "expected": [
+        "state-000"
+      ],
+      "actual": [
+        "state-000"
+      ],
+      "exact": true,
+      "expectedRecall": 1,
+      "contaminated": false,
+      "elapsedMs": 0.45283299999999826,
+      "injectedTokens": 421,
+      "fallback": false,
+      "promptHash": "359f8fd689d186b434634732aab9df6beedcf22a23384a73e874f762fe37ae85",
+      "prompt": {
+        "prepend": "<relevant-memories>\n以下是当前对话召回的相关记忆，不代表当前任务进程，仅作为参考：\n\n- [version-state] [ACTIVE SCOPE; branch=main; commit=aaaaaaaaaa; worktree=worktree-0; task=-; scope=worktree; active_here=yes] Atlas compiler command is node run variant000.\n</relevant-memories>",
+        "append": "<memory-tools-guide>\n## 记忆工具调用指南\n\n当上方注入的记忆片段不足以回答用户问题时，可主动调用以下工具获取更多信息：\n\n- **tdai_memory_search**：搜索结构化记忆（L1），适用于回忆用户偏好、历史事件节点、规则等关键信息。\n- **tdai_conversation_search**：搜索原始对话（L0），适用于查找具体消息原文、时间线、上下文细节；也可用于补充或校验 memory_search 的结果。\n- **read_file**（Scene Navigation 中的路径）：当已定位到相关情境，且需要该场景的完整画像、事件经过或阶段结论时使用。\n\n### ⚠️ 调用次数限制\n每轮对话中，tdai_memory_search 和 tdai_conversation_search **合计最多调用 3 次**。\n- 首次搜索无结果时，可换关键词或换工具重试，但总调用次数不要超过 3 次。\n- 若 3 次搜索后仍无结果，说明该信息不在记忆中，请直接根据已有信息回复用户，不要继续搜索。\n</memory-tools-guide>"
+      }
+    },
+    {
+      "caseId": "worktree-k8-rank2",
+      "level": "worktree",
+      "k": 8,
+      "rank": 2,
+      "slice": "within_top_k",
+      "expected": [
+        "state-001"
+      ],
+      "actual": [
+        "state-001"
+      ],
+      "exact": true,
+      "expectedRecall": 1,
+      "contaminated": false,
+      "elapsedMs": 0.5478330000000255,
+      "injectedTokens": 421,
+      "fallback": false,
+      "promptHash": "884826badc61df5b0dd0056b635a5707f94f78e8f076f4d8dc16d06cb83c94de",
+      "prompt": {
+        "prepend": "<relevant-memories>\n以下是当前对话召回的相关记忆，不代表当前任务进程，仅作为参考：\n\n- [version-state] [ACTIVE SCOPE; branch=main; commit=aaaaaaaaaa; worktree=worktree-1; task=-; scope=worktree; active_here=yes] Atlas compiler command is node run variant001.\n</relevant-memories>",
+        "append": "<memory-tools-guide>\n## 记忆工具调用指南\n\n当上方注入的记忆片段不足以回答用户问题时，可主动调用以下工具获取更多信息：\n\n- **tdai_memory_search**：搜索结构化记忆（L1），适用于回忆用户偏好、历史事件节点、规则等关键信息。\n- **tdai_conversation_search**：搜索原始对话（L0），适用于查找具体消息原文、时间线、上下文细节；也可用于补充或校验 memory_search 的结果。\n- **read_file**（Scene Navigation 中的路径）：当已定位到相关情境，且需要该场景的完整画像、事件经过或阶段结论时使用。\n\n### ⚠️ 调用次数限制\n每轮对话中，tdai_memory_search 和 tdai_conversation_search **合计最多调用 3 次**。\n- 首次搜索无结果时，可换关键词或换工具重试，但总调用次数不要超过 3 次。\n- 若 3 次搜索后仍无结果，说明该信息不在记忆中，请直接根据已有信息回复用户，不要继续搜索。\n</memory-tools-guide>"
+      }
+    },
+    {
+      "caseId": "worktree-k8-rank3",
+      "level": "worktree",
+      "k": 8,
+      "rank": 3,
+      "slice": "within_top_k",
+      "expected": [
+        "state-002"
+      ],
+      "actual": [
+        "state-002"
+      ],
+      "exact": true,
+      "expectedRecall": 1,
+      "contaminated": false,
+      "elapsedMs": 0.31829100000004473,
+      "injectedTokens": 421,
+      "fallback": false,
+      "promptHash": "8db578ea2fce89b8591a5afb8eed1e5439e6b325108bc34aa9e7a801fd61c22f",
+      "prompt": {
+        "prepend": "<relevant-memories>\n以下是当前对话召回的相关记忆，不代表当前任务进程，仅作为参考：\n\n- [version-state] [ACTIVE SCOPE; branch=main; commit=aaaaaaaaaa; worktree=worktree-2; task=-; scope=worktree; active_here=yes] Atlas compiler command is node run variant002.\n</relevant-memories>",
+        "append": "<memory-tools-guide>\n## 记忆工具调用指南\n\n当上方注入的记忆片段不足以回答用户问题时，可主动调用以下工具获取更多信息：\n\n- **tdai_memory_search**：搜索结构化记忆（L1），适用于回忆用户偏好、历史事件节点、规则等关键信息。\n- **tdai_conversation_search**：搜索原始对话（L0），适用于查找具体消息原文、时间线、上下文细节；也可用于补充或校验 memory_search 的结果。\n- **read_file**（Scene Navigation 中的路径）：当已定位到相关情境，且需要该场景的完整画像、事件经过或阶段结论时使用。\n\n### ⚠️ 调用次数限制\n每轮对话中，tdai_memory_search 和 tdai_conversation_search **合计最多调用 3 次**。\n- 首次搜索无结果时，可换关键词或换工具重试，但总调用次数不要超过 3 次。\n- 若 3 次搜索后仍无结果，说明该信息不在记忆中，请直接根据已有信息回复用户，不要继续搜索。\n</memory-tools-guide>"
+      }
+    },
+    {
+      "caseId": "worktree-k8-rank4",
+      "level": "worktree",
+      "k": 8,
+      "rank": 4,
+      "slice": "within_top_k",
+      "expected": [
+        "state-003"
+      ],
+      "actual": [
+        "state-003"
+      ],
+      "exact": true,
+      "expectedRecall": 1,
+      "contaminated": false,
+      "elapsedMs": 0.4610410000000229,
+      "injectedTokens": 421,
+      "fallback": false,
+      "promptHash": "bff9aa0181cf9118beb88c8737506ed03191df57410e519606d930858b4cf1ed",
+      "prompt": {
+        "prepend": "<relevant-memories>\n以下是当前对话召回的相关记忆，不代表当前任务进程，仅作为参考：\n\n- [version-state] [ACTIVE SCOPE; branch=main; commit=aaaaaaaaaa; worktree=worktree-3; task=-; scope=worktree; active_here=yes] Atlas compiler command is node run variant003.\n</relevant-memories>",
+        "append": "<memory-tools-guide>\n## 记忆工具调用指南\n\n当上方注入的记忆片段不足以回答用户问题时，可主动调用以下工具获取更多信息：\n\n- **tdai_memory_search**：搜索结构化记忆（L1），适用于回忆用户偏好、历史事件节点、规则等关键信息。\n- **tdai_conversation_search**：搜索原始对话（L0），适用于查找具体消息原文、时间线、上下文细节；也可用于补充或校验 memory_search 的结果。\n- **read_file**（Scene Navigation 中的路径）：当已定位到相关情境，且需要该场景的完整画像、事件经过或阶段结论时使用。\n\n### ⚠️ 调用次数限制\n每轮对话中，tdai_memory_search 和 tdai_conversation_search **合计最多调用 3 次**。\n- 首次搜索无结果时，可换关键词或换工具重试，但总调用次数不要超过 3 次。\n- 若 3 次搜索后仍无结果，说明该信息不在记忆中，请直接根据已有信息回复用户，不要继续搜索。\n</memory-tools-guide>"
+      }
+    },
+    {
+      "caseId": "worktree-k8-rank5",
+      "level": "worktree",
+      "k": 8,
+      "rank": 5,
+      "slice": "within_top_k",
+      "expected": [
+        "state-004"
+      ],
+      "actual": [
+        "state-004"
+      ],
+      "exact": true,
+      "expectedRecall": 1,
+      "contaminated": false,
+      "elapsedMs": 0.317292000000009,
+      "injectedTokens": 421,
+      "fallback": false,
+      "promptHash": "f795697a277472bed4a93a88cf0c6b4cbd3d2ca01b974a632941f2200649d884",
+      "prompt": {
+        "prepend": "<relevant-memories>\n以下是当前对话召回的相关记忆，不代表当前任务进程，仅作为参考：\n\n- [version-state] [ACTIVE SCOPE; branch=main; commit=aaaaaaaaaa; worktree=worktree-4; task=-; scope=worktree; active_here=yes] Atlas compiler command is node run variant004.\n</relevant-memories>",
+        "append": "<memory-tools-guide>\n## 记忆工具调用指南\n\n当上方注入的记忆片段不足以回答用户问题时，可主动调用以下工具获取更多信息：\n\n- **tdai_memory_search**：搜索结构化记忆（L1），适用于回忆用户偏好、历史事件节点、规则等关键信息。\n- **tdai_conversation_search**：搜索原始对话（L0），适用于查找具体消息原文、时间线、上下文细节；也可用于补充或校验 memory_search 的结果。\n- **read_file**（Scene Navigation 中的路径）：当已定位到相关情境，且需要该场景的完整画像、事件经过或阶段结论时使用。\n\n### ⚠️ 调用次数限制\n每轮对话中，tdai_memory_search 和 tdai_conversation_search **合计最多调用 3 次**。\n- 首次搜索无结果时，可换关键词或换工具重试，但总调用次数不要超过 3 次。\n- 若 3 次搜索后仍无结果，说明该信息不在记忆中，请直接根据已有信息回复用户，不要继续搜索。\n</memory-tools-guide>"
+      }
+    },
+    {
+      "caseId": "worktree-k8-rank6",
+      "level": "worktree",
+      "k": 8,
+      "rank": 6,
+      "slice": "within_top_k",
+      "expected": [
+        "state-005"
+      ],
+      "actual": [
+        "state-005"
+      ],
+      "exact": true,
+      "expectedRecall": 1,
+      "contaminated": false,
+      "elapsedMs": 0.2992500000000291,
+      "injectedTokens": 421,
+      "fallback": false,
+      "promptHash": "7f687875ecc52cab4873913777ce6285136166148fcd7d27c4d079451cbf1dac",
+      "prompt": {
+        "prepend": "<relevant-memories>\n以下是当前对话召回的相关记忆，不代表当前任务进程，仅作为参考：\n\n- [version-state] [ACTIVE SCOPE; branch=main; commit=aaaaaaaaaa; worktree=worktree-5; task=-; scope=worktree; active_here=yes] Atlas compiler command is node run variant005.\n</relevant-memories>",
+        "append": "<memory-tools-guide>\n## 记忆工具调用指南\n\n当上方注入的记忆片段不足以回答用户问题时，可主动调用以下工具获取更多信息：\n\n- **tdai_memory_search**：搜索结构化记忆（L1），适用于回忆用户偏好、历史事件节点、规则等关键信息。\n- **tdai_conversation_search**：搜索原始对话（L0），适用于查找具体消息原文、时间线、上下文细节；也可用于补充或校验 memory_search 的结果。\n- **read_file**（Scene Navigation 中的路径）：当已定位到相关情境，且需要该场景的完整画像、事件经过或阶段结论时使用。\n\n### ⚠️ 调用次数限制\n每轮对话中，tdai_memory_search 和 tdai_conversation_search **合计最多调用 3 次**。\n- 首次搜索无结果时，可换关键词或换工具重试，但总调用次数不要超过 3 次。\n- 若 3 次搜索后仍无结果，说明该信息不在记忆中，请直接根据已有信息回复用户，不要继续搜索。\n</memory-tools-guide>"
+      }
+    },
+    {
+      "caseId": "worktree-k8-rank7",
+      "level": "worktree",
+      "k": 8,
+      "rank": 7,
+      "slice": "within_top_k",
+      "expected": [
+        "state-006"
+      ],
+      "actual": [
+        "state-006"
+      ],
+      "exact": true,
+      "expectedRecall": 1,
+      "contaminated": false,
+      "elapsedMs": 0.30391700000001265,
+      "injectedTokens": 421,
+      "fallback": false,
+      "promptHash": "b6f362185dc242f5d29d0669ce3d44a7219676d11e62b305953e137dc46470d5",
+      "prompt": {
+        "prepend": "<relevant-memories>\n以下是当前对话召回的相关记忆，不代表当前任务进程，仅作为参考：\n\n- [version-state] [ACTIVE SCOPE; branch=main; commit=aaaaaaaaaa; worktree=worktree-6; task=-; scope=worktree; active_here=yes] Atlas compiler command is node run variant006.\n</relevant-memories>",
+        "append": "<memory-tools-guide>\n## 记忆工具调用指南\n\n当上方注入的记忆片段不足以回答用户问题时，可主动调用以下工具获取更多信息：\n\n- **tdai_memory_search**：搜索结构化记忆（L1），适用于回忆用户偏好、历史事件节点、规则等关键信息。\n- **tdai_conversation_search**：搜索原始对话（L0），适用于查找具体消息原文、时间线、上下文细节；也可用于补充或校验 memory_search 的结果。\n- **read_file**（Scene Navigation 中的路径）：当已定位到相关情境，且需要该场景的完整画像、事件经过或阶段结论时使用。\n\n### ⚠️ 调用次数限制\n每轮对话中，tdai_memory_search 和 tdai_conversation_search **合计最多调用 3 次**。\n- 首次搜索无结果时，可换关键词或换工具重试，但总调用次数不要超过 3 次。\n- 若 3 次搜索后仍无结果，说明该信息不在记忆中，请直接根据已有信息回复用户，不要继续搜索。\n</memory-tools-guide>"
+      }
+    },
+    {
+      "caseId": "worktree-k8-rank8",
+      "level": "worktree",
+      "k": 8,
+      "rank": 8,
+      "slice": "within_top_k",
+      "expected": [
+        "state-007"
+      ],
+      "actual": [
+        "state-007"
+      ],
+      "exact": true,
+      "expectedRecall": 1,
+      "contaminated": false,
+      "elapsedMs": 0.27804099999997334,
+      "injectedTokens": 421,
+      "fallback": false,
+      "promptHash": "8e205c34186d39502b2314ca2286259a12a658ce24b3a4d46108238b2a33dad8",
+      "prompt": {
+        "prepend": "<relevant-memories>\n以下是当前对话召回的相关记忆，不代表当前任务进程，仅作为参考：\n\n- [version-state] [ACTIVE SCOPE; branch=main; commit=aaaaaaaaaa; worktree=worktree-7; task=-; scope=worktree; active_here=yes] Atlas compiler command is node run variant007.\n</relevant-memories>",
+        "append": "<memory-tools-guide>\n## 记忆工具调用指南\n\n当上方注入的记忆片段不足以回答用户问题时，可主动调用以下工具获取更多信息：\n\n- **tdai_memory_search**：搜索结构化记忆（L1），适用于回忆用户偏好、历史事件节点、规则等关键信息。\n- **tdai_conversation_search**：搜索原始对话（L0），适用于查找具体消息原文、时间线、上下文细节；也可用于补充或校验 memory_search 的结果。\n- **read_file**（Scene Navigation 中的路径）：当已定位到相关情境，且需要该场景的完整画像、事件经过或阶段结论时使用。\n\n### ⚠️ 调用次数限制\n每轮对话中，tdai_memory_search 和 tdai_conversation_search **合计最多调用 3 次**。\n- 首次搜索无结果时，可换关键词或换工具重试，但总调用次数不要超过 3 次。\n- 若 3 次搜索后仍无结果，说明该信息不在记忆中，请直接根据已有信息回复用户，不要继续搜索。\n</memory-tools-guide>"
+      }
+    },
+    {
+      "caseId": "worktree-k8-rank9",
+      "level": "worktree",
+      "k": 8,
+      "rank": 9,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-008"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.410583000000031,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k8-rank10",
+      "level": "worktree",
+      "k": 8,
+      "rank": 10,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-009"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.27795800000001236,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k8-rank11",
+      "level": "worktree",
+      "k": 8,
+      "rank": 11,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-010"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.27441699999997127,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k8-rank12",
+      "level": "worktree",
+      "k": 8,
+      "rank": 12,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-011"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.26937499999996817,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k8-rank13",
+      "level": "worktree",
+      "k": 8,
+      "rank": 13,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-012"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.2713749999999777,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k8-rank14",
+      "level": "worktree",
+      "k": 8,
+      "rank": 14,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-013"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.2739169999999831,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k8-rank15",
+      "level": "worktree",
+      "k": 8,
+      "rank": 15,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-014"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.346458000000041,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k8-rank16",
+      "level": "worktree",
+      "k": 8,
+      "rank": 16,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-015"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.41266700000005585,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k8-rank17",
+      "level": "worktree",
+      "k": 8,
+      "rank": 17,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-016"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.2787500000000023,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k8-rank18",
+      "level": "worktree",
+      "k": 8,
+      "rank": 18,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-017"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.2825419999999781,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k8-rank19",
+      "level": "worktree",
+      "k": 8,
+      "rank": 19,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-018"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.27970899999996846,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k8-rank20",
+      "level": "worktree",
+      "k": 8,
+      "rank": 20,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-019"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.2692920000000072,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k8-rank21",
+      "level": "worktree",
+      "k": 8,
+      "rank": 21,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-020"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.2829999999999586,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k8-rank22",
+      "level": "worktree",
+      "k": 8,
+      "rank": 22,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-021"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.2691669999999817,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k8-rank23",
+      "level": "worktree",
+      "k": 8,
+      "rank": 23,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-022"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.2663329999999746,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k8-rank24",
+      "level": "worktree",
+      "k": 8,
+      "rank": 24,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-023"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.26370900000000574,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k8-rank25",
+      "level": "worktree",
+      "k": 8,
+      "rank": 25,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-024"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.2892500000000382,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k8-rank26",
+      "level": "worktree",
+      "k": 8,
+      "rank": 26,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-025"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.28300000000001546,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k8-rank27",
+      "level": "worktree",
+      "k": 8,
+      "rank": 27,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-026"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.2728330000000483,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k8-rank28",
+      "level": "worktree",
+      "k": 8,
+      "rank": 28,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-027"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.27045900000001666,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k8-rank29",
+      "level": "worktree",
+      "k": 8,
+      "rank": 29,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-028"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.26591700000000174,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k8-rank30",
+      "level": "worktree",
+      "k": 8,
+      "rank": 30,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-029"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.33004199999999173,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k8-rank31",
+      "level": "worktree",
+      "k": 8,
+      "rank": 31,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-030"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.30316699999997354,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k8-rank32",
+      "level": "worktree",
+      "k": 8,
+      "rank": 32,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-031"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.43779200000000174,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k8-rank33",
+      "level": "worktree",
+      "k": 8,
+      "rank": 33,
+      "slice": "outside_pool",
+      "expected": [
+        "state-032"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.28095799999999826,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "worktree-k8-missing",
+      "level": "worktree",
+      "k": 8,
+      "rank": null,
+      "slice": "missing_context",
+      "expected": [],
+      "actual": [],
+      "exact": true,
+      "expectedRecall": null,
+      "contaminated": false,
+      "elapsedMs": 0.37420900000000756,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k1-rank1",
+      "level": "task",
+      "k": 1,
+      "rank": 1,
+      "slice": "within_top_k",
+      "expected": [
+        "state-000"
+      ],
+      "actual": [
+        "state-000"
+      ],
+      "exact": true,
+      "expectedRecall": 1,
+      "contaminated": false,
+      "elapsedMs": 0.22849999999999682,
+      "injectedTokens": 422,
+      "fallback": false,
+      "promptHash": "32b3c9f3f4e8e4ef42c130c5ae25cd428002927c5ccc6c038878a871c326bd20",
+      "prompt": {
+        "prepend": "<relevant-memories>\n以下是当前对话召回的相关记忆，不代表当前任务进程，仅作为参考：\n\n- [version-state] [ACTIVE SCOPE; branch=main; commit=aaaaaaaaaa; worktree=shared-wor; task=task-0; scope=task; active_here=yes] Atlas compiler command is node run variant000.\n</relevant-memories>",
+        "append": "<memory-tools-guide>\n## 记忆工具调用指南\n\n当上方注入的记忆片段不足以回答用户问题时，可主动调用以下工具获取更多信息：\n\n- **tdai_memory_search**：搜索结构化记忆（L1），适用于回忆用户偏好、历史事件节点、规则等关键信息。\n- **tdai_conversation_search**：搜索原始对话（L0），适用于查找具体消息原文、时间线、上下文细节；也可用于补充或校验 memory_search 的结果。\n- **read_file**（Scene Navigation 中的路径）：当已定位到相关情境，且需要该场景的完整画像、事件经过或阶段结论时使用。\n\n### ⚠️ 调用次数限制\n每轮对话中，tdai_memory_search 和 tdai_conversation_search **合计最多调用 3 次**。\n- 首次搜索无结果时，可换关键词或换工具重试，但总调用次数不要超过 3 次。\n- 若 3 次搜索后仍无结果，说明该信息不在记忆中，请直接根据已有信息回复用户，不要继续搜索。\n</memory-tools-guide>"
+      }
+    },
+    {
+      "caseId": "task-k1-rank2",
+      "level": "task",
+      "k": 1,
+      "rank": 2,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-001"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.29187500000000455,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k1-rank3",
+      "level": "task",
+      "k": 1,
+      "rank": 3,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-002"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.19574999999997544,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k1-rank4",
+      "level": "task",
+      "k": 1,
+      "rank": 4,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-003"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.15354200000001583,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k1-rank5",
+      "level": "task",
+      "k": 1,
+      "rank": 5,
+      "slice": "outside_pool",
+      "expected": [
+        "state-004"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.13791700000001583,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k1-missing",
+      "level": "task",
+      "k": 1,
+      "rank": null,
+      "slice": "missing_context",
+      "expected": [],
+      "actual": [],
+      "exact": true,
+      "expectedRecall": null,
+      "contaminated": false,
+      "elapsedMs": 0.1440839999999639,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k2-rank1",
+      "level": "task",
+      "k": 2,
+      "rank": 1,
+      "slice": "within_top_k",
+      "expected": [
+        "state-000"
+      ],
+      "actual": [
+        "state-000"
+      ],
+      "exact": true,
+      "expectedRecall": 1,
+      "contaminated": false,
+      "elapsedMs": 0.17395799999997053,
+      "injectedTokens": 422,
+      "fallback": false,
+      "promptHash": "32b3c9f3f4e8e4ef42c130c5ae25cd428002927c5ccc6c038878a871c326bd20",
+      "prompt": {
+        "prepend": "<relevant-memories>\n以下是当前对话召回的相关记忆，不代表当前任务进程，仅作为参考：\n\n- [version-state] [ACTIVE SCOPE; branch=main; commit=aaaaaaaaaa; worktree=shared-wor; task=task-0; scope=task; active_here=yes] Atlas compiler command is node run variant000.\n</relevant-memories>",
+        "append": "<memory-tools-guide>\n## 记忆工具调用指南\n\n当上方注入的记忆片段不足以回答用户问题时，可主动调用以下工具获取更多信息：\n\n- **tdai_memory_search**：搜索结构化记忆（L1），适用于回忆用户偏好、历史事件节点、规则等关键信息。\n- **tdai_conversation_search**：搜索原始对话（L0），适用于查找具体消息原文、时间线、上下文细节；也可用于补充或校验 memory_search 的结果。\n- **read_file**（Scene Navigation 中的路径）：当已定位到相关情境，且需要该场景的完整画像、事件经过或阶段结论时使用。\n\n### ⚠️ 调用次数限制\n每轮对话中，tdai_memory_search 和 tdai_conversation_search **合计最多调用 3 次**。\n- 首次搜索无结果时，可换关键词或换工具重试，但总调用次数不要超过 3 次。\n- 若 3 次搜索后仍无结果，说明该信息不在记忆中，请直接根据已有信息回复用户，不要继续搜索。\n</memory-tools-guide>"
+      }
+    },
+    {
+      "caseId": "task-k2-rank2",
+      "level": "task",
+      "k": 2,
+      "rank": 2,
+      "slice": "within_top_k",
+      "expected": [
+        "state-001"
+      ],
+      "actual": [
+        "state-001"
+      ],
+      "exact": true,
+      "expectedRecall": 1,
+      "contaminated": false,
+      "elapsedMs": 0.24487500000003593,
+      "injectedTokens": 422,
+      "fallback": false,
+      "promptHash": "1621fd1e45b0fd3e31c28d02c9760adb7a54556f13f88ef93459efd7a501c2e0",
+      "prompt": {
+        "prepend": "<relevant-memories>\n以下是当前对话召回的相关记忆，不代表当前任务进程，仅作为参考：\n\n- [version-state] [ACTIVE SCOPE; branch=main; commit=aaaaaaaaaa; worktree=shared-wor; task=task-1; scope=task; active_here=yes] Atlas compiler command is node run variant001.\n</relevant-memories>",
+        "append": "<memory-tools-guide>\n## 记忆工具调用指南\n\n当上方注入的记忆片段不足以回答用户问题时，可主动调用以下工具获取更多信息：\n\n- **tdai_memory_search**：搜索结构化记忆（L1），适用于回忆用户偏好、历史事件节点、规则等关键信息。\n- **tdai_conversation_search**：搜索原始对话（L0），适用于查找具体消息原文、时间线、上下文细节；也可用于补充或校验 memory_search 的结果。\n- **read_file**（Scene Navigation 中的路径）：当已定位到相关情境，且需要该场景的完整画像、事件经过或阶段结论时使用。\n\n### ⚠️ 调用次数限制\n每轮对话中，tdai_memory_search 和 tdai_conversation_search **合计最多调用 3 次**。\n- 首次搜索无结果时，可换关键词或换工具重试，但总调用次数不要超过 3 次。\n- 若 3 次搜索后仍无结果，说明该信息不在记忆中，请直接根据已有信息回复用户，不要继续搜索。\n</memory-tools-guide>"
+      }
+    },
+    {
+      "caseId": "task-k2-rank3",
+      "level": "task",
+      "k": 2,
+      "rank": 3,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-002"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.20224999999999227,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k2-rank4",
+      "level": "task",
+      "k": 2,
+      "rank": 4,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-003"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.21375000000000455,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k2-rank5",
+      "level": "task",
+      "k": 2,
+      "rank": 5,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-004"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.1908329999999978,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k2-rank6",
+      "level": "task",
+      "k": 2,
+      "rank": 6,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-005"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.16225000000002865,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k2-rank7",
+      "level": "task",
+      "k": 2,
+      "rank": 7,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-006"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.15608399999996436,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k2-rank8",
+      "level": "task",
+      "k": 2,
+      "rank": 8,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-007"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.15512499999999818,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k2-rank9",
+      "level": "task",
+      "k": 2,
+      "rank": 9,
+      "slice": "outside_pool",
+      "expected": [
+        "state-008"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.15350000000000819,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k2-missing",
+      "level": "task",
+      "k": 2,
+      "rank": null,
+      "slice": "missing_context",
+      "expected": [],
+      "actual": [],
+      "exact": true,
+      "expectedRecall": null,
+      "contaminated": false,
+      "elapsedMs": 0.15216699999996308,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k4-rank1",
+      "level": "task",
+      "k": 4,
+      "rank": 1,
+      "slice": "within_top_k",
+      "expected": [
+        "state-000"
+      ],
+      "actual": [
+        "state-000"
+      ],
+      "exact": true,
+      "expectedRecall": 1,
+      "contaminated": false,
+      "elapsedMs": 0.202083000000016,
+      "injectedTokens": 422,
+      "fallback": false,
+      "promptHash": "32b3c9f3f4e8e4ef42c130c5ae25cd428002927c5ccc6c038878a871c326bd20",
+      "prompt": {
+        "prepend": "<relevant-memories>\n以下是当前对话召回的相关记忆，不代表当前任务进程，仅作为参考：\n\n- [version-state] [ACTIVE SCOPE; branch=main; commit=aaaaaaaaaa; worktree=shared-wor; task=task-0; scope=task; active_here=yes] Atlas compiler command is node run variant000.\n</relevant-memories>",
+        "append": "<memory-tools-guide>\n## 记忆工具调用指南\n\n当上方注入的记忆片段不足以回答用户问题时，可主动调用以下工具获取更多信息：\n\n- **tdai_memory_search**：搜索结构化记忆（L1），适用于回忆用户偏好、历史事件节点、规则等关键信息。\n- **tdai_conversation_search**：搜索原始对话（L0），适用于查找具体消息原文、时间线、上下文细节；也可用于补充或校验 memory_search 的结果。\n- **read_file**（Scene Navigation 中的路径）：当已定位到相关情境，且需要该场景的完整画像、事件经过或阶段结论时使用。\n\n### ⚠️ 调用次数限制\n每轮对话中，tdai_memory_search 和 tdai_conversation_search **合计最多调用 3 次**。\n- 首次搜索无结果时，可换关键词或换工具重试，但总调用次数不要超过 3 次。\n- 若 3 次搜索后仍无结果，说明该信息不在记忆中，请直接根据已有信息回复用户，不要继续搜索。\n</memory-tools-guide>"
+      }
+    },
+    {
+      "caseId": "task-k4-rank2",
+      "level": "task",
+      "k": 4,
+      "rank": 2,
+      "slice": "within_top_k",
+      "expected": [
+        "state-001"
+      ],
+      "actual": [
+        "state-001"
+      ],
+      "exact": true,
+      "expectedRecall": 1,
+      "contaminated": false,
+      "elapsedMs": 0.2793750000000159,
+      "injectedTokens": 422,
+      "fallback": false,
+      "promptHash": "1621fd1e45b0fd3e31c28d02c9760adb7a54556f13f88ef93459efd7a501c2e0",
+      "prompt": {
+        "prepend": "<relevant-memories>\n以下是当前对话召回的相关记忆，不代表当前任务进程，仅作为参考：\n\n- [version-state] [ACTIVE SCOPE; branch=main; commit=aaaaaaaaaa; worktree=shared-wor; task=task-1; scope=task; active_here=yes] Atlas compiler command is node run variant001.\n</relevant-memories>",
+        "append": "<memory-tools-guide>\n## 记忆工具调用指南\n\n当上方注入的记忆片段不足以回答用户问题时，可主动调用以下工具获取更多信息：\n\n- **tdai_memory_search**：搜索结构化记忆（L1），适用于回忆用户偏好、历史事件节点、规则等关键信息。\n- **tdai_conversation_search**：搜索原始对话（L0），适用于查找具体消息原文、时间线、上下文细节；也可用于补充或校验 memory_search 的结果。\n- **read_file**（Scene Navigation 中的路径）：当已定位到相关情境，且需要该场景的完整画像、事件经过或阶段结论时使用。\n\n### ⚠️ 调用次数限制\n每轮对话中，tdai_memory_search 和 tdai_conversation_search **合计最多调用 3 次**。\n- 首次搜索无结果时，可换关键词或换工具重试，但总调用次数不要超过 3 次。\n- 若 3 次搜索后仍无结果，说明该信息不在记忆中，请直接根据已有信息回复用户，不要继续搜索。\n</memory-tools-guide>"
+      }
+    },
+    {
+      "caseId": "task-k4-rank3",
+      "level": "task",
+      "k": 4,
+      "rank": 3,
+      "slice": "within_top_k",
+      "expected": [
+        "state-002"
+      ],
+      "actual": [
+        "state-002"
+      ],
+      "exact": true,
+      "expectedRecall": 1,
+      "contaminated": false,
+      "elapsedMs": 0.4141249999999559,
+      "injectedTokens": 422,
+      "fallback": false,
+      "promptHash": "29cb5394e4cfb4b6e9e60074d645e5df651f5cd7004814d69d40daaadaad1f93",
+      "prompt": {
+        "prepend": "<relevant-memories>\n以下是当前对话召回的相关记忆，不代表当前任务进程，仅作为参考：\n\n- [version-state] [ACTIVE SCOPE; branch=main; commit=aaaaaaaaaa; worktree=shared-wor; task=task-2; scope=task; active_here=yes] Atlas compiler command is node run variant002.\n</relevant-memories>",
+        "append": "<memory-tools-guide>\n## 记忆工具调用指南\n\n当上方注入的记忆片段不足以回答用户问题时，可主动调用以下工具获取更多信息：\n\n- **tdai_memory_search**：搜索结构化记忆（L1），适用于回忆用户偏好、历史事件节点、规则等关键信息。\n- **tdai_conversation_search**：搜索原始对话（L0），适用于查找具体消息原文、时间线、上下文细节；也可用于补充或校验 memory_search 的结果。\n- **read_file**（Scene Navigation 中的路径）：当已定位到相关情境，且需要该场景的完整画像、事件经过或阶段结论时使用。\n\n### ⚠️ 调用次数限制\n每轮对话中，tdai_memory_search 和 tdai_conversation_search **合计最多调用 3 次**。\n- 首次搜索无结果时，可换关键词或换工具重试，但总调用次数不要超过 3 次。\n- 若 3 次搜索后仍无结果，说明该信息不在记忆中，请直接根据已有信息回复用户，不要继续搜索。\n</memory-tools-guide>"
+      }
+    },
+    {
+      "caseId": "task-k4-rank4",
+      "level": "task",
+      "k": 4,
+      "rank": 4,
+      "slice": "within_top_k",
+      "expected": [
+        "state-003"
+      ],
+      "actual": [
+        "state-003"
+      ],
+      "exact": true,
+      "expectedRecall": 1,
+      "contaminated": false,
+      "elapsedMs": 0.21212500000001455,
+      "injectedTokens": 422,
+      "fallback": false,
+      "promptHash": "55f9163635a53e53081667b82b53d6ea4eb045c26395b6df67ebce1224d12b7b",
+      "prompt": {
+        "prepend": "<relevant-memories>\n以下是当前对话召回的相关记忆，不代表当前任务进程，仅作为参考：\n\n- [version-state] [ACTIVE SCOPE; branch=main; commit=aaaaaaaaaa; worktree=shared-wor; task=task-3; scope=task; active_here=yes] Atlas compiler command is node run variant003.\n</relevant-memories>",
+        "append": "<memory-tools-guide>\n## 记忆工具调用指南\n\n当上方注入的记忆片段不足以回答用户问题时，可主动调用以下工具获取更多信息：\n\n- **tdai_memory_search**：搜索结构化记忆（L1），适用于回忆用户偏好、历史事件节点、规则等关键信息。\n- **tdai_conversation_search**：搜索原始对话（L0），适用于查找具体消息原文、时间线、上下文细节；也可用于补充或校验 memory_search 的结果。\n- **read_file**（Scene Navigation 中的路径）：当已定位到相关情境，且需要该场景的完整画像、事件经过或阶段结论时使用。\n\n### ⚠️ 调用次数限制\n每轮对话中，tdai_memory_search 和 tdai_conversation_search **合计最多调用 3 次**。\n- 首次搜索无结果时，可换关键词或换工具重试，但总调用次数不要超过 3 次。\n- 若 3 次搜索后仍无结果，说明该信息不在记忆中，请直接根据已有信息回复用户，不要继续搜索。\n</memory-tools-guide>"
+      }
+    },
+    {
+      "caseId": "task-k4-rank5",
+      "level": "task",
+      "k": 4,
+      "rank": 5,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-004"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.20037500000000819,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k4-rank6",
+      "level": "task",
+      "k": 4,
+      "rank": 6,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-005"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.2013329999999769,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k4-rank7",
+      "level": "task",
+      "k": 4,
+      "rank": 7,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-006"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.1811670000000163,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k4-rank8",
+      "level": "task",
+      "k": 4,
+      "rank": 8,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-007"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.18250000000000455,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k4-rank9",
+      "level": "task",
+      "k": 4,
+      "rank": 9,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-008"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.17879199999998718,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k4-rank10",
+      "level": "task",
+      "k": 4,
+      "rank": 10,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-009"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.19941699999998264,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k4-rank11",
+      "level": "task",
+      "k": 4,
+      "rank": 11,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-010"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.22699999999997544,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k4-rank12",
+      "level": "task",
+      "k": 4,
+      "rank": 12,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-011"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.1758750000000191,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k4-rank13",
+      "level": "task",
+      "k": 4,
+      "rank": 13,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-012"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.16937500000000227,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k4-rank14",
+      "level": "task",
+      "k": 4,
+      "rank": 14,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-013"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.18112500000000864,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k4-rank15",
+      "level": "task",
+      "k": 4,
+      "rank": 15,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-014"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.19891699999999446,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k4-rank16",
+      "level": "task",
+      "k": 4,
+      "rank": 16,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-015"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.18679199999996854,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k4-rank17",
+      "level": "task",
+      "k": 4,
+      "rank": 17,
+      "slice": "outside_pool",
+      "expected": [
+        "state-016"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.18000000000000682,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k4-missing",
+      "level": "task",
+      "k": 4,
+      "rank": null,
+      "slice": "missing_context",
+      "expected": [],
+      "actual": [],
+      "exact": true,
+      "expectedRecall": null,
+      "contaminated": false,
+      "elapsedMs": 0.1806670000000281,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k8-rank1",
+      "level": "task",
+      "k": 8,
+      "rank": 1,
+      "slice": "within_top_k",
+      "expected": [
+        "state-000"
+      ],
+      "actual": [
+        "state-000"
+      ],
+      "exact": true,
+      "expectedRecall": 1,
+      "contaminated": false,
+      "elapsedMs": 0.3216669999999908,
+      "injectedTokens": 422,
+      "fallback": false,
+      "promptHash": "32b3c9f3f4e8e4ef42c130c5ae25cd428002927c5ccc6c038878a871c326bd20",
+      "prompt": {
+        "prepend": "<relevant-memories>\n以下是当前对话召回的相关记忆，不代表当前任务进程，仅作为参考：\n\n- [version-state] [ACTIVE SCOPE; branch=main; commit=aaaaaaaaaa; worktree=shared-wor; task=task-0; scope=task; active_here=yes] Atlas compiler command is node run variant000.\n</relevant-memories>",
+        "append": "<memory-tools-guide>\n## 记忆工具调用指南\n\n当上方注入的记忆片段不足以回答用户问题时，可主动调用以下工具获取更多信息：\n\n- **tdai_memory_search**：搜索结构化记忆（L1），适用于回忆用户偏好、历史事件节点、规则等关键信息。\n- **tdai_conversation_search**：搜索原始对话（L0），适用于查找具体消息原文、时间线、上下文细节；也可用于补充或校验 memory_search 的结果。\n- **read_file**（Scene Navigation 中的路径）：当已定位到相关情境，且需要该场景的完整画像、事件经过或阶段结论时使用。\n\n### ⚠️ 调用次数限制\n每轮对话中，tdai_memory_search 和 tdai_conversation_search **合计最多调用 3 次**。\n- 首次搜索无结果时，可换关键词或换工具重试，但总调用次数不要超过 3 次。\n- 若 3 次搜索后仍无结果，说明该信息不在记忆中，请直接根据已有信息回复用户，不要继续搜索。\n</memory-tools-guide>"
+      }
+    },
+    {
+      "caseId": "task-k8-rank2",
+      "level": "task",
+      "k": 8,
+      "rank": 2,
+      "slice": "within_top_k",
+      "expected": [
+        "state-001"
+      ],
+      "actual": [
+        "state-001"
+      ],
+      "exact": true,
+      "expectedRecall": 1,
+      "contaminated": false,
+      "elapsedMs": 0.335207999999966,
+      "injectedTokens": 422,
+      "fallback": false,
+      "promptHash": "1621fd1e45b0fd3e31c28d02c9760adb7a54556f13f88ef93459efd7a501c2e0",
+      "prompt": {
+        "prepend": "<relevant-memories>\n以下是当前对话召回的相关记忆，不代表当前任务进程，仅作为参考：\n\n- [version-state] [ACTIVE SCOPE; branch=main; commit=aaaaaaaaaa; worktree=shared-wor; task=task-1; scope=task; active_here=yes] Atlas compiler command is node run variant001.\n</relevant-memories>",
+        "append": "<memory-tools-guide>\n## 记忆工具调用指南\n\n当上方注入的记忆片段不足以回答用户问题时，可主动调用以下工具获取更多信息：\n\n- **tdai_memory_search**：搜索结构化记忆（L1），适用于回忆用户偏好、历史事件节点、规则等关键信息。\n- **tdai_conversation_search**：搜索原始对话（L0），适用于查找具体消息原文、时间线、上下文细节；也可用于补充或校验 memory_search 的结果。\n- **read_file**（Scene Navigation 中的路径）：当已定位到相关情境，且需要该场景的完整画像、事件经过或阶段结论时使用。\n\n### ⚠️ 调用次数限制\n每轮对话中，tdai_memory_search 和 tdai_conversation_search **合计最多调用 3 次**。\n- 首次搜索无结果时，可换关键词或换工具重试，但总调用次数不要超过 3 次。\n- 若 3 次搜索后仍无结果，说明该信息不在记忆中，请直接根据已有信息回复用户，不要继续搜索。\n</memory-tools-guide>"
+      }
+    },
+    {
+      "caseId": "task-k8-rank3",
+      "level": "task",
+      "k": 8,
+      "rank": 3,
+      "slice": "within_top_k",
+      "expected": [
+        "state-002"
+      ],
+      "actual": [
+        "state-002"
+      ],
+      "exact": true,
+      "expectedRecall": 1,
+      "contaminated": false,
+      "elapsedMs": 0.45170799999999645,
+      "injectedTokens": 422,
+      "fallback": false,
+      "promptHash": "29cb5394e4cfb4b6e9e60074d645e5df651f5cd7004814d69d40daaadaad1f93",
+      "prompt": {
+        "prepend": "<relevant-memories>\n以下是当前对话召回的相关记忆，不代表当前任务进程，仅作为参考：\n\n- [version-state] [ACTIVE SCOPE; branch=main; commit=aaaaaaaaaa; worktree=shared-wor; task=task-2; scope=task; active_here=yes] Atlas compiler command is node run variant002.\n</relevant-memories>",
+        "append": "<memory-tools-guide>\n## 记忆工具调用指南\n\n当上方注入的记忆片段不足以回答用户问题时，可主动调用以下工具获取更多信息：\n\n- **tdai_memory_search**：搜索结构化记忆（L1），适用于回忆用户偏好、历史事件节点、规则等关键信息。\n- **tdai_conversation_search**：搜索原始对话（L0），适用于查找具体消息原文、时间线、上下文细节；也可用于补充或校验 memory_search 的结果。\n- **read_file**（Scene Navigation 中的路径）：当已定位到相关情境，且需要该场景的完整画像、事件经过或阶段结论时使用。\n\n### ⚠️ 调用次数限制\n每轮对话中，tdai_memory_search 和 tdai_conversation_search **合计最多调用 3 次**。\n- 首次搜索无结果时，可换关键词或换工具重试，但总调用次数不要超过 3 次。\n- 若 3 次搜索后仍无结果，说明该信息不在记忆中，请直接根据已有信息回复用户，不要继续搜索。\n</memory-tools-guide>"
+      }
+    },
+    {
+      "caseId": "task-k8-rank4",
+      "level": "task",
+      "k": 8,
+      "rank": 4,
+      "slice": "within_top_k",
+      "expected": [
+        "state-003"
+      ],
+      "actual": [
+        "state-003"
+      ],
+      "exact": true,
+      "expectedRecall": 1,
+      "contaminated": false,
+      "elapsedMs": 0.3423750000000041,
+      "injectedTokens": 422,
+      "fallback": false,
+      "promptHash": "55f9163635a53e53081667b82b53d6ea4eb045c26395b6df67ebce1224d12b7b",
+      "prompt": {
+        "prepend": "<relevant-memories>\n以下是当前对话召回的相关记忆，不代表当前任务进程，仅作为参考：\n\n- [version-state] [ACTIVE SCOPE; branch=main; commit=aaaaaaaaaa; worktree=shared-wor; task=task-3; scope=task; active_here=yes] Atlas compiler command is node run variant003.\n</relevant-memories>",
+        "append": "<memory-tools-guide>\n## 记忆工具调用指南\n\n当上方注入的记忆片段不足以回答用户问题时，可主动调用以下工具获取更多信息：\n\n- **tdai_memory_search**：搜索结构化记忆（L1），适用于回忆用户偏好、历史事件节点、规则等关键信息。\n- **tdai_conversation_search**：搜索原始对话（L0），适用于查找具体消息原文、时间线、上下文细节；也可用于补充或校验 memory_search 的结果。\n- **read_file**（Scene Navigation 中的路径）：当已定位到相关情境，且需要该场景的完整画像、事件经过或阶段结论时使用。\n\n### ⚠️ 调用次数限制\n每轮对话中，tdai_memory_search 和 tdai_conversation_search **合计最多调用 3 次**。\n- 首次搜索无结果时，可换关键词或换工具重试，但总调用次数不要超过 3 次。\n- 若 3 次搜索后仍无结果，说明该信息不在记忆中，请直接根据已有信息回复用户，不要继续搜索。\n</memory-tools-guide>"
+      }
+    },
+    {
+      "caseId": "task-k8-rank5",
+      "level": "task",
+      "k": 8,
+      "rank": 5,
+      "slice": "within_top_k",
+      "expected": [
+        "state-004"
+      ],
+      "actual": [
+        "state-004"
+      ],
+      "exact": true,
+      "expectedRecall": 1,
+      "contaminated": false,
+      "elapsedMs": 0.4869160000000079,
+      "injectedTokens": 422,
+      "fallback": false,
+      "promptHash": "7c629fa23ee61594c730733c2f0507d6aefffc641701fdf5b283d08a17df6f14",
+      "prompt": {
+        "prepend": "<relevant-memories>\n以下是当前对话召回的相关记忆，不代表当前任务进程，仅作为参考：\n\n- [version-state] [ACTIVE SCOPE; branch=main; commit=aaaaaaaaaa; worktree=shared-wor; task=task-4; scope=task; active_here=yes] Atlas compiler command is node run variant004.\n</relevant-memories>",
+        "append": "<memory-tools-guide>\n## 记忆工具调用指南\n\n当上方注入的记忆片段不足以回答用户问题时，可主动调用以下工具获取更多信息：\n\n- **tdai_memory_search**：搜索结构化记忆（L1），适用于回忆用户偏好、历史事件节点、规则等关键信息。\n- **tdai_conversation_search**：搜索原始对话（L0），适用于查找具体消息原文、时间线、上下文细节；也可用于补充或校验 memory_search 的结果。\n- **read_file**（Scene Navigation 中的路径）：当已定位到相关情境，且需要该场景的完整画像、事件经过或阶段结论时使用。\n\n### ⚠️ 调用次数限制\n每轮对话中，tdai_memory_search 和 tdai_conversation_search **合计最多调用 3 次**。\n- 首次搜索无结果时，可换关键词或换工具重试，但总调用次数不要超过 3 次。\n- 若 3 次搜索后仍无结果，说明该信息不在记忆中，请直接根据已有信息回复用户，不要继续搜索。\n</memory-tools-guide>"
+      }
+    },
+    {
+      "caseId": "task-k8-rank6",
+      "level": "task",
+      "k": 8,
+      "rank": 6,
+      "slice": "within_top_k",
+      "expected": [
+        "state-005"
+      ],
+      "actual": [
+        "state-005"
+      ],
+      "exact": true,
+      "expectedRecall": 1,
+      "contaminated": false,
+      "elapsedMs": 0.30945800000000645,
+      "injectedTokens": 422,
+      "fallback": false,
+      "promptHash": "baae4438eeb68aacb8ea5c12235023a7ba360550330b3a08a90567ef66c8be61",
+      "prompt": {
+        "prepend": "<relevant-memories>\n以下是当前对话召回的相关记忆，不代表当前任务进程，仅作为参考：\n\n- [version-state] [ACTIVE SCOPE; branch=main; commit=aaaaaaaaaa; worktree=shared-wor; task=task-5; scope=task; active_here=yes] Atlas compiler command is node run variant005.\n</relevant-memories>",
+        "append": "<memory-tools-guide>\n## 记忆工具调用指南\n\n当上方注入的记忆片段不足以回答用户问题时，可主动调用以下工具获取更多信息：\n\n- **tdai_memory_search**：搜索结构化记忆（L1），适用于回忆用户偏好、历史事件节点、规则等关键信息。\n- **tdai_conversation_search**：搜索原始对话（L0），适用于查找具体消息原文、时间线、上下文细节；也可用于补充或校验 memory_search 的结果。\n- **read_file**（Scene Navigation 中的路径）：当已定位到相关情境，且需要该场景的完整画像、事件经过或阶段结论时使用。\n\n### ⚠️ 调用次数限制\n每轮对话中，tdai_memory_search 和 tdai_conversation_search **合计最多调用 3 次**。\n- 首次搜索无结果时，可换关键词或换工具重试，但总调用次数不要超过 3 次。\n- 若 3 次搜索后仍无结果，说明该信息不在记忆中，请直接根据已有信息回复用户，不要继续搜索。\n</memory-tools-guide>"
+      }
+    },
+    {
+      "caseId": "task-k8-rank7",
+      "level": "task",
+      "k": 8,
+      "rank": 7,
+      "slice": "within_top_k",
+      "expected": [
+        "state-006"
+      ],
+      "actual": [
+        "state-006"
+      ],
+      "exact": true,
+      "expectedRecall": 1,
+      "contaminated": false,
+      "elapsedMs": 0.31575000000003683,
+      "injectedTokens": 422,
+      "fallback": false,
+      "promptHash": "48d10a00ba660dcf25e18522834afb871178854b8290515588ee5a3d943fb9a5",
+      "prompt": {
+        "prepend": "<relevant-memories>\n以下是当前对话召回的相关记忆，不代表当前任务进程，仅作为参考：\n\n- [version-state] [ACTIVE SCOPE; branch=main; commit=aaaaaaaaaa; worktree=shared-wor; task=task-6; scope=task; active_here=yes] Atlas compiler command is node run variant006.\n</relevant-memories>",
+        "append": "<memory-tools-guide>\n## 记忆工具调用指南\n\n当上方注入的记忆片段不足以回答用户问题时，可主动调用以下工具获取更多信息：\n\n- **tdai_memory_search**：搜索结构化记忆（L1），适用于回忆用户偏好、历史事件节点、规则等关键信息。\n- **tdai_conversation_search**：搜索原始对话（L0），适用于查找具体消息原文、时间线、上下文细节；也可用于补充或校验 memory_search 的结果。\n- **read_file**（Scene Navigation 中的路径）：当已定位到相关情境，且需要该场景的完整画像、事件经过或阶段结论时使用。\n\n### ⚠️ 调用次数限制\n每轮对话中，tdai_memory_search 和 tdai_conversation_search **合计最多调用 3 次**。\n- 首次搜索无结果时，可换关键词或换工具重试，但总调用次数不要超过 3 次。\n- 若 3 次搜索后仍无结果，说明该信息不在记忆中，请直接根据已有信息回复用户，不要继续搜索。\n</memory-tools-guide>"
+      }
+    },
+    {
+      "caseId": "task-k8-rank8",
+      "level": "task",
+      "k": 8,
+      "rank": 8,
+      "slice": "within_top_k",
+      "expected": [
+        "state-007"
+      ],
+      "actual": [
+        "state-007"
+      ],
+      "exact": true,
+      "expectedRecall": 1,
+      "contaminated": false,
+      "elapsedMs": 0.29641700000001947,
+      "injectedTokens": 422,
+      "fallback": false,
+      "promptHash": "fba67d713e71de63f3aedb1dff193fdb7aced8828ab89730b1c11473d4ec5319",
+      "prompt": {
+        "prepend": "<relevant-memories>\n以下是当前对话召回的相关记忆，不代表当前任务进程，仅作为参考：\n\n- [version-state] [ACTIVE SCOPE; branch=main; commit=aaaaaaaaaa; worktree=shared-wor; task=task-7; scope=task; active_here=yes] Atlas compiler command is node run variant007.\n</relevant-memories>",
+        "append": "<memory-tools-guide>\n## 记忆工具调用指南\n\n当上方注入的记忆片段不足以回答用户问题时，可主动调用以下工具获取更多信息：\n\n- **tdai_memory_search**：搜索结构化记忆（L1），适用于回忆用户偏好、历史事件节点、规则等关键信息。\n- **tdai_conversation_search**：搜索原始对话（L0），适用于查找具体消息原文、时间线、上下文细节；也可用于补充或校验 memory_search 的结果。\n- **read_file**（Scene Navigation 中的路径）：当已定位到相关情境，且需要该场景的完整画像、事件经过或阶段结论时使用。\n\n### ⚠️ 调用次数限制\n每轮对话中，tdai_memory_search 和 tdai_conversation_search **合计最多调用 3 次**。\n- 首次搜索无结果时，可换关键词或换工具重试，但总调用次数不要超过 3 次。\n- 若 3 次搜索后仍无结果，说明该信息不在记忆中，请直接根据已有信息回复用户，不要继续搜索。\n</memory-tools-guide>"
+      }
+    },
+    {
+      "caseId": "task-k8-rank9",
+      "level": "task",
+      "k": 8,
+      "rank": 9,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-008"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.30249999999995225,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k8-rank10",
+      "level": "task",
+      "k": 8,
+      "rank": 10,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-009"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.31195900000000165,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k8-rank11",
+      "level": "task",
+      "k": 8,
+      "rank": 11,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-010"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.2741250000000264,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k8-rank12",
+      "level": "task",
+      "k": 8,
+      "rank": 12,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-011"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.26637499999998226,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k8-rank13",
+      "level": "task",
+      "k": 8,
+      "rank": 13,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-012"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.28541699999999537,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k8-rank14",
+      "level": "task",
+      "k": 8,
+      "rank": 14,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-013"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.2725409999999897,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k8-rank15",
+      "level": "task",
+      "k": 8,
+      "rank": 15,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-014"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.2663329999999746,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k8-rank16",
+      "level": "task",
+      "k": 8,
+      "rank": 16,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-015"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.2636669999999981,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k8-rank17",
+      "level": "task",
+      "k": 8,
+      "rank": 17,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-016"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.271665999999982,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k8-rank18",
+      "level": "task",
+      "k": 8,
+      "rank": 18,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-017"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.270417000000009,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k8-rank19",
+      "level": "task",
+      "k": 8,
+      "rank": 19,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-018"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.26145800000000463,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k8-rank20",
+      "level": "task",
+      "k": 8,
+      "rank": 20,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-019"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.2654590000000212,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k8-rank21",
+      "level": "task",
+      "k": 8,
+      "rank": 21,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-020"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.25787500000001273,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k8-rank22",
+      "level": "task",
+      "k": 8,
+      "rank": 22,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-021"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.2718330000000151,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k8-rank23",
+      "level": "task",
+      "k": 8,
+      "rank": 23,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-022"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.2579170000000204,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k8-rank24",
+      "level": "task",
+      "k": 8,
+      "rank": 24,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-023"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.3197909999999524,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k8-rank25",
+      "level": "task",
+      "k": 8,
+      "rank": 25,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-024"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.4172079999999596,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k8-rank26",
+      "level": "task",
+      "k": 8,
+      "rank": 26,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-025"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.3337500000000091,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k8-rank27",
+      "level": "task",
+      "k": 8,
+      "rank": 27,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-026"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.31066700000002356,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k8-rank28",
+      "level": "task",
+      "k": 8,
+      "rank": 28,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-027"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.31854199999997945,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k8-rank29",
+      "level": "task",
+      "k": 8,
+      "rank": 29,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-028"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.28016600000000835,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k8-rank30",
+      "level": "task",
+      "k": 8,
+      "rank": 30,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-029"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.2827500000000214,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k8-rank31",
+      "level": "task",
+      "k": 8,
+      "rank": 31,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-030"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.2681249999999977,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k8-rank32",
+      "level": "task",
+      "k": 8,
+      "rank": 32,
+      "slice": "beyond_top_k",
+      "expected": [
+        "state-031"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.2681249999999977,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k8-rank33",
+      "level": "task",
+      "k": 8,
+      "rank": 33,
+      "slice": "outside_pool",
+      "expected": [
+        "state-032"
+      ],
+      "actual": [],
+      "exact": false,
+      "expectedRecall": 0,
+      "contaminated": false,
+      "elapsedMs": 0.2652079999999728,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    },
+    {
+      "caseId": "task-k8-missing",
+      "level": "task",
+      "k": 8,
+      "rank": null,
+      "slice": "missing_context",
+      "expected": [],
+      "actual": [],
+      "exact": true,
+      "expectedRecall": null,
+      "contaminated": false,
+      "elapsedMs": 0.26774999999997817,
+      "injectedTokens": 0,
+      "fallback": false,
+      "promptHash": "f9564dd0f0b4b6a27edee9b0570f3316e831891420d14df4e0ad2c6d6d7e8d5d",
+      "prompt": {
+        "prepend": "",
+        "append": ""
+      }
+    }
+  ]
+}

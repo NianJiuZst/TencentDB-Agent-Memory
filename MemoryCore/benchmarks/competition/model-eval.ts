@@ -1,5 +1,5 @@
 /** Paid, resumable crossed-model rerun, explicitly separated from local tests. */
-import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, renameSync } from "node:fs";
 import path from "node:path";
 import { parseArgs } from "node:util";
 const { values } = parseArgs({ options: { data: { type: "string" }, output: { type: "string", default: "../submission/evidence/model-rerun" } } });
@@ -8,14 +8,27 @@ const output = path.resolve(values.output!); mkdirSync(output, { recursive: true
 const ledgerFile = path.join(output, "budget-ledger.json");
 type Entry = { model: string; status: number | string; promptTokens?: number; completionTokens?: number; chargedUpperCny: number };
 let entries: Entry[] = [];
-try { entries = JSON.parse(readFileSync(ledgerFile, "utf8")).entries; } catch (e) { if ((e as NodeJS.ErrnoException).code !== "ENOENT") throw e; }
+try {
+  const prior = JSON.parse(readFileSync(ledgerFile, "utf8"));
+  if (!Array.isArray(prior.entries) || prior.entries.some((e: Entry) => !Number.isFinite(e.chargedUpperCny) || e.chargedUpperCny < 0)
+      || !Number.isFinite(prior.reservedUpperCny) || prior.reservedUpperCny < 0) throw new Error("invalid budget ledger");
+  entries = prior.entries;
+  // A terminated process may have sent requests whose usage was never saved.
+  // Keep their whole reservation as spent before allowing a resumed call.
+  if (prior.reservedUpperCny > 0) entries.push({ model: "unknown", status: "recovered_unsettled_reservation", chargedUpperCny: prior.reservedUpperCny });
+} catch (e) { if ((e as NodeJS.ErrnoException).code !== "ENOENT") throw e; }
 let spent = entries.reduce((n, e) => n + e.chargedUpperCny, 0), reserved = 0;
 const cap = 200;
 // Conservative accounting, not a provider invoice: charge every input/output
 // token at CNY 100/M, ignoring cache discounts. Failed/unknown calls retain
 // their complete worst-case reservation. Existing spend is loaded on resume.
 const unitCny = 100 / 1_000_000;
-const save = () => writeFileSync(ledgerFile, JSON.stringify({ capCny: cap, accountingCnyPerMillionTokens: 100, chargedUpperCny: spent, reservedUpperCny: reserved, entries }, null, 2) + "\n");
+const save = () => {
+  const temporary = `${ledgerFile}.${process.pid}.tmp`;
+  writeFileSync(temporary, JSON.stringify({ capCny: cap, accountingCnyPerMillionTokens: 100, chargedUpperCny: spent, reservedUpperCny: reserved, entries }, null, 2) + "\n");
+  renameSync(temporary, ledgerFile);
+};
+save();
 const originalFetch = globalThis.fetch;
 globalThis.fetch = async (input, init) => {
   const url = String(input);

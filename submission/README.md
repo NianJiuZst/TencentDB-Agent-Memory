@@ -10,6 +10,8 @@
 - 本次原始结果、历史复算、生产重放：`submission/evidence/`。
 - 中文报告源稿、排版程序、最终 PDF：`submission/report.md`、`submission/render-report.py`、`MemoryCore/output/pdf/competition-memory-solution-cn.pdf`。
 
+提交快照可先用 `shasum -a 256 -c submission/SHA256SUMS` 检查完整性。重跑实验会更新部分证据和时间戳，此后校验值变化属于预期。
+
 ## 安装与本地验证
 
 本次环境为 macOS arm64、Node.js 26.8.1；使用 Node 内置 SQLite。建议使用同一 Node 版本与 pnpm 10。依赖锁文件一并提交。下列命令从仓库根目录执行。
@@ -21,7 +23,7 @@ node submission/check-regressions.mjs
 python3 submission/validate.py
 ```
 
-`run-local.mjs` 顺序运行类型检查、全部本地单元/集成测试、生命周期评测框架测试、插件构建和优化版 204 次召回。`check-regressions.mjs` 会在临时目录解出旧提交并运行新回归测试，旧实现的断言失败是预期结果；它不会修改当前工作树。`validate.py` 从逐例记忆 ID 独立重算已保存的三组对照和验收条件。以上均不调用付费模型服务。
+`run-local.mjs` 顺序运行类型检查、全部本地单元/集成测试、生命周期评测框架测试、插件构建、4 项预算恢复检查和优化版 204 次召回。`check-regressions.mjs` 会在临时目录解出旧提交并运行新回归测试，旧实现的断言失败是预期结果；它不会修改当前工作树。`validate.py` 从逐例记忆 ID 独立重算已保存的三组对照和验收条件。以上均不调用付费模型服务。
 
 ## 三组对照重跑
 
@@ -45,7 +47,21 @@ node --import tsx benchmarks/lifecycle-memory/src/version-aware-context-cli.ts -
 node --import tsx benchmarks/lifecycle-memory/src/version-aware-e2e-validator-cli.ts --contexts benchmarks/lifecycle-memory/results/version-aware-final/context/context-manifest.json --evaluations benchmarks/lifecycle-memory/results/version-aware-final/e2e/evaluations.jsonl --summary benchmarks/lifecycle-memory/results/version-aware-final/e2e/summary.json --output ../submission/evidence/historical-revalidation.json
 ```
 
-第一条会新建真实 Git/worktree、SQLite，重新执行 260 次写入和 330 次召回。fixture 参数必须使用专用的 `/tmp/tdai-version-aware-*` 目录；原有脚本会重建该目录，勿填入需要保留数据的位置。第二条只复算历史 500 条模型判分，不调用新模型。历史模型分数与本次代码测试分别呈现。
+第一条会新建真实 Git/worktree、SQLite，重新执行 260 次写入和 330 次召回。fixture 参数必须使用专用的 `/tmp/tdai-version-aware-*` 目录；原有脚本会重建该目录，勿填入需要保留数据的位置。第二条只复算历史 500 条模型判分，不调用新模型。历史模型分数与本次代码测试分别呈现。最终代码额外重放的材料在 `evidence/final-context-replay/`，与冻结模型输入的逐项比较在 `evidence/context-equivalence.json`：优化组 110 个输入逐字相同，其他差异仅为自动生成的活动时间。
+
+## 本次付费模型复测
+
+本轮使用两位固定 Reader 和反向交叉 Judge，所有上下文及协议在评分前提交为 `689c27a`，原始结果在 `submission/evidence/model-rerun/`。只有明确授权模型调用时才执行以下命令；`run-local.mjs` 不会触发它。
+
+```sh
+cd MemoryCore
+node --import tsx benchmarks/competition/model-eval.ts --data /path/to/Memora/data
+TDAI_VERSION_EVAL_PROTOCOL=benchmarks/competition/model-protocol.json node --import tsx benchmarks/lifecycle-memory/src/version-aware-e2e-validator-cli.ts --contexts ../submission/evidence/replayed-context/context-manifest.json --evaluations ../submission/evidence/model-rerun/evaluations.jsonl --summary ../submission/evidence/model-rerun/summary.json --output ../submission/evidence/model-rerun/independent-validation.json
+```
+
+凭证仅从 `MINIMAX_API_KEY`、`DEEPSEEK_API_KEY` 环境变量读取。预算工具将所有输入/输出 token 按 100 元/百万 token 保守记账（不是供应商账单），忽略缓存优惠；单次调用预留上限且累计不超过 200 元。过程可从已有完成记录继续，不重复计分；中断时未结算的预留在恢复时全额计入。一个结果目录只允许串行启动一轮评测，不要同时运行多个进程。
+
+注意：付费评测使用被冻结上下文文件的精确 SHA-256。重建上下文会改变时间戳或临时 Git 坐标，不能直接覆盖冻结文件后沿用同一个付费评测协议；需要建立新的协议和结果目录。
 
 ## 启用方式
 
