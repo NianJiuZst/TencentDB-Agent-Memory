@@ -62,15 +62,25 @@ def summarize(rows):
                 'regressionRunRate': sum(r['regressions'] > 0 for r in runs) / 3,
                 'meanModelCny': sum(r['peakPriceCny'] for r in runs) / 3,
                 'meanAgentSeconds': sum(r['agentSeconds'] for r in runs) / 3,
+                'meanSourceInspectionSeconds': sum(r.get('sourceInspectionSeconds', 0) for r in runs) / 3,
+                'meanRecallSeconds': sum(r.get('recallSeconds', 0) for r in runs) / 3,
+                'meanContextChars': sum(r.get('contextChars', 0) for r in runs) / 3,
+                'memoryCoverage': sum(r.get('recalledMemories', 0) > 0 for r in runs) / 3,
+                'foreignScopeMemoryRate': sum(r.get('foreignScopeMemories', 0) / max(r.get('recalledMemories', 0), 1) for r in runs) / 3,
             }
     summary = {'tasks': len(tasks), 'repairClusters': len({t['cluster'] for t in tasks.values()}),
                'nominalAssignments': len(rows), 'independentExecutions': sum(r['independentExecution'] for r in rows),
                'actualModelCny': sum(r['peakPriceCny'] for r in rows if r['independentExecution']),
+               'unknownUsageUpperCny': sum(r.get('requestUsage', {}).get('unknownUsageUpperCny', 0) for r in rows if r['independentExecution']),
+               'actualApiRequests': sum(r.get('requestUsage', {}).get('requests', 0) for r in rows if r['independentExecution']),
+               'promptTokens': sum(r.get('requestUsage', {}).get('promptTokens', 0) for r in rows if r['independentExecution']),
+               'completionTokens': sum(r.get('requestUsage', {}).get('completionTokens', 0) for r in rows if r['independentExecution']),
+               'cacheHitTokens': sum(r.get('requestUsage', {}).get('cacheHitTokens', 0) for r in rows if r['independentExecution']),
                'arms': {}, 'comparisons': {}, 'repositories': {}, 'taskResults': tasks}
     for arm in ARMS:
         stats = [t['arms'][arm] for t in tasks.values()]
         summary['arms'][arm] = {metric: sum(t[metric] for t in stats) / len(stats) if stats else None
-                                for metric in ['passAt1', 'officialResolved', 'observedPassWithin3', 'regressionRunRate', 'meanModelCny', 'meanAgentSeconds']}
+                                for metric in ['passAt1', 'officialResolved', 'observedPassWithin3', 'regressionRunRate', 'meanModelCny', 'meanAgentSeconds', 'meanSourceInspectionSeconds', 'meanRecallSeconds', 'meanContextChars', 'memoryCoverage', 'foreignScopeMemoryRate']}
         summary['arms'][arm]['passAt1Interval'] = cluster_interval([(t['cluster'], t['arms'][arm]['passAt1']) for t in tasks.values()])
         summary['arms'][arm]['successfulRuns'] = sum(bool(r['strictResolved']) for r in rows if r['arm'] == arm)
         summary['arms'][arm]['nominalRuns'] = len(stats) * 3
@@ -93,6 +103,22 @@ def main():
     p.add_argument('--ledger', type=Path, required=True)
     p.add_argument('--output', type=Path, required=True)
     a = p.parse_args()
+    con = sqlite3.connect('file:' + str(a.ledger.resolve()) + '?mode=ro', uri=True)
+    usage_rows = []
+    per_run_usage = collections.defaultdict(lambda: {'chargedCny': 0, 'unknownUsageUpperCny': 0, 'requests': 0, 'promptTokens': 0, 'completionTokens': 0, 'cacheHitTokens': 0})
+    for run_id, state, charged, reserved, usage, model in con.execute('SELECT run_id,state,charged,reserved,usage,model FROM calls'):
+        u = json.loads(usage) if usage else {}
+        usage_rows.append({'runId': run_id, 'model': model, 'state': state, 'chargedCny': charged,
+                           'reservedCny': reserved, 'usage': u})
+        stats = per_run_usage[run_id]
+        stats['chargedCny'] += charged
+        stats['requests'] += 1
+        if not u:
+            stats['unknownUsageUpperCny'] += charged
+        stats['promptTokens'] += u.get('prompt_tokens', 0)
+        stats['completionTokens'] += u.get('completion_tokens', 0)
+        stats['cacheHitTokens'] += u.get('prompt_cache_hit_tokens', (u.get('prompt_tokens_details') or {}).get('cached_tokens', 0)) or 0
+    con.close()
     panels = collections.defaultdict(list)
     artifacts = {}
     for f in sorted((a.evidence / 'formal').glob('*/*/matrix.json')):
@@ -101,13 +127,46 @@ def main():
             continue
         if matrix['nominalAssignments'] != 12:
             raise ValueError('Unexpected matrix size')
+        first = matrix['rows'][0]
+        frozen_dir = a.evidence / 'frozen' / first['panel'] / first['instance_id']
+        freeze_path = frozen_dir / 'freeze.json'
+        if hashlib.sha256(freeze_path.read_bytes()).hexdigest() != matrix['freezeSha256']:
+            raise ValueError('Freeze descriptor changed: ' + str(freeze_path))
+        descriptor = load(freeze_path)
+        for name, expected_hash in descriptor['files'].items():
+            if hashlib.sha256((frozen_dir / name).read_bytes()).hexdigest() != expected_hash:
+                raise ValueError('Frozen input changed: ' + name)
         for row in matrix['rows']:
+            if row['runId'] not in per_run_usage:
+                raise ValueError('Missing ledger evidence for a completed execution')
+            row['reportedAgentCny'] = row['peakPriceCny']
+            row['requestUsage'] = per_run_usage[row['runId']]
+            row['peakPriceCny'] = row['requestUsage']['chargedCny']
             out = f.parent / row['artifactDirectory']
             for name, field in [('result.json', 'resultSha256'), ('grading/score.json', 'scoreSha256')]:
                 original = out / name
                 data = original.read_bytes() if original.exists() else gzip.decompress(Path(str(original) + '.gz').read_bytes())
                 if hashlib.sha256(data).hexdigest() != row[field]:
                     raise ValueError('Run evidence changed: ' + str(original))
+            frozen = a.evidence / 'frozen' / row['panel'] / row['instance_id']
+            history = load(frozen / 'history-audit.json')
+            row['sourceInspectionSeconds'] = history.get('sourceInspectionSeconds', 0)
+            inp = load(frozen / (row['arm'] + '.json'))
+            row['contextChars'] = len(inp['context'])
+            row['recallSeconds'] = 0
+            row['recalledMemories'] = 0
+            row['foreignScopeMemories'] = 0
+            if row['arm'] != 'none':
+                recall = load(frozen / (row['arm'] + '-recall.json'))['rows'][0]
+                record_map = {r['id']: r for r in history['records']}
+                row['recallSeconds'] = recall['recallMs'] / 1000
+                row['recalledMemories'] = len(recall['memoryIds'])
+                for mid in recall['memoryIds']:
+                    scope = record_map[mid]['versionContext']
+                    current = recall['current']
+                    wrong_repo = scope['repositoryId'] != current['repositoryId']
+                    wrong_commit = scope['scopeLevel'] != 'repository' and scope.get('commitSha') != current.get('commitSha')
+                    row['foreignScopeMemories'] += int(wrong_repo or wrong_commit)
             panels[(row['panel'], row['model'])].append(row)
         artifacts[str(f.relative_to(a.evidence))] = hashlib.sha256(f.read_bytes()).hexdigest()
     result = {'status': 'interim', 'protocol': load(Path(__file__).with_name('protocol.json'))['id'],
@@ -127,17 +186,20 @@ def main():
             coverage.append({'instance_id': row['instance_id'], 'repo': row['repo'], 'status': status,
                              'attempts': [str(f.relative_to(a.evidence)) for f, _ in refs]})
         result['coverage'][name] = {'selected': len(coverage), 'counts': dict(collections.Counter(r['status'] for r in coverage)), 'tasks': coverage}
-    con = sqlite3.connect('file:' + str(a.ledger.resolve()) + '?mode=ro', uri=True)
     formal_ids = {r['runId'] for rows in panels.values() for r in rows if r['independentExecution']}
-    usage_rows = []
-    for run_id, state, charged, reserved, usage, model in con.execute('SELECT run_id,state,charged,reserved,usage,model FROM calls'):
-        u = json.loads(usage) if usage else {}
-        usage_rows.append({'runId': run_id, 'model': model, 'state': state, 'chargedCny': charged,
-                           'reservedCny': reserved, 'usage': u, 'includedInCompleteMatrices': run_id in formal_ids})
+    for row in usage_rows:
+        row['includedInCompleteMatrices'] = row['runId'] in formal_ids
     result['usage'] = {'totalChargedCny': sum(r['chargedCny'] for r in usage_rows),
                        'pendingReservationsCny': sum(r['reservedCny'] for r in usage_rows if r['state'] == 'pending'),
                        'completeMatricesChargedCny': sum(r['chargedCny'] for r in usage_rows if r['includedInCompleteMatrices']),
+                       'unknownUsageUpperCny': sum(r['chargedCny'] for r in usage_rows if not r['usage']),
                        'callRecords': usage_rows}
+    transport = a.evidence / 'transport-cohorts.json'
+    if transport.exists():
+        result['transport'] = load(transport)
+        initial = result['transport']['initialProxyTasks']
+        result['directTransportSensitivity'] = {panel + '/' + model: summarize([
+            r for r in rows if r['instance_id'] not in initial.get(panel, [])]) for (panel, model), rows in panels.items()}
     expected = [('main', 'deepseek-v4-flash', 100), ('main', 'MiniMax-M3', 20), ('extension', 'deepseek-v4-flash', 20), ('pro', 'deepseek-v4-flash', 20)]
     complete = True
     for panel, model, limit in expected:

@@ -255,6 +255,15 @@ pages.append('''## 7. 部署、交付与结论
 
 ''')
 
+from agent_report import build as build_agent_report
+agent_report = build_agent_report(E)
+pages[0] = pages[0].replace('### 1. 课题问题与方案定位', agent_report['cover'] + '\n\n### 1. 课题问题与方案定位')
+closing = pages.pop().replace('## 7.', '## 10.').replace('### 7.', '### 10.')
+closing = closing.replace('、在线 TCVDB/COS 延迟和完整多轮代码任务的最终成功率', '和在线 TCVDB/COS 延迟')
+closing = closing.replace('**最终结论。** 本次提交完成了可运行的多状态记忆实现、针对实际缺陷的策略优化、可复现的实现与答案层测试，以及完整证据和报告。适用场景是同仓库多分支、多工作树和并行 Agent 的长期协作；贡献在于让“记忆适用于哪里”成为可验证的运行时条件。',
+    '**最终结论。** 实现层证据证明了候选提前截断等缺陷已修复，受控版本题也观察到答案得分改善。' + agent_report['conclusion'] + '完整任务的效果、环境覆盖、负面结果和不确定性见第 7–9 节。方案的工程贡献是将记忆的有效域落实为可验证的写入与召回条件；该贡献与通用编程成功率增益分别判断。')
+pages.extend(agent_report['pages'])
+pages.append(closing)
 md = '\n\n<!-- pagebreak -->\n\n'.join(pages)
 (ROOT/'report.md').write_text(md.replace('@@FLOW@@', '旧流程：过取候选 → 提前 Top-k → 版本筛选 → 可能漏召回。\n\n优化流程：过取候选 → 完整候选解析 → 版本筛选 → 最终 Top-k。').rstrip()+'\n')
 NAVY = colors.HexColor('#172E46'); TEAL = colors.HexColor('#0C7772'); MUTED = colors.HexColor('#5B6774'); LINE = colors.HexColor('#D9E1E8')

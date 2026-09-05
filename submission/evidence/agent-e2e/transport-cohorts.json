@@ -1,0 +1,25 @@
+{
+  "recordedAtUtc": "2026-09-05T07:37:35.168595+00:00",
+  "note": "Transport diagnosis before any complete formal matrix. Preserve all initial task outcomes. All four arms and repetitions within each initial task retain the inherited proxy; newly started whole-task matrices use NO_PROXY for the two domestic model endpoints. Dataset selection, agent parameters, memory inputs and grading do not change. Report initial proxy tasks and sensitivity separately.",
+  "initialProxyTasks": {
+    "main": [
+      "sphinx-doc__sphinx-2549"
+    ],
+    "pro": [
+      "instance_ansible__ansible-d2f80991180337e2be23d6883064a67dcbaeb662-vba6da65a0f3baefda7a058ebbd0a8dcafb8512f5"
+    ]
+  },
+  "newWholeTaskRoute": "Direct HTTPS to api.deepseek.com and api.minimaxi.com",
+  "schedulerShards": {
+    "main": {
+      "path": "/private/tmp/tdai-real-agent-20260905/main-direct-scheduler.json",
+      "sha256": "a206734121f04ecaad521d5eeafccc1b8208629ccf515ab42834e24d976ebf3f",
+      "tasks": 99
+    },
+    "pro": {
+      "path": "/private/tmp/tdai-real-agent-20260905/pro-direct-scheduler.json",
+      "sha256": "e53a30f2ad3d99e930d3fb271f19f578abcd9e0819390512e2dc7c0613ece4c3",
+      "tasks": 19
+    }
+  }
+}
