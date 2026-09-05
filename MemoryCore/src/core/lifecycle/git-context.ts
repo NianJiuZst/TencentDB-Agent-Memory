@@ -6,7 +6,8 @@ import type { MemoryVersionContext, MemoryVersionScopeLevel } from "./version-sc
 
 const execFileAsync = promisify(execFile);
 const CACHE_TTL_MS = 2_000;
-const cache = new Map<string, { expiresAt: number; value?: MemoryVersionContext }>();
+const MAX_CACHE_ENTRIES = 256;
+const cache = new Map<string, { expiresAt: number; value: MemoryVersionContext }>();
 
 function opaqueId(namespace: string, value: string): string {
   return `${namespace}_${createHash("sha256").update(value).digest("hex").slice(0, 20)}`;
@@ -43,26 +44,29 @@ export async function detectGitMemoryVersionContext(params: {
 }): Promise<MemoryVersionContext | undefined> {
   const now = params.now ?? Date.now;
   const scopeLevel = params.scopeLevel ?? (params.taskId ? "task" : "worktree");
+  if (scopeLevel === "task" && !params.taskId?.trim()) return undefined;
   const key = JSON.stringify([params.workspaceDir, params.taskId ?? "", scopeLevel]);
-  const cached = cache.get(key);
-  if (cached && cached.expiresAt > now()) return cached.value;
-
   const timeoutMs = params.timeoutMs ?? 250;
   try {
+    // HEAD is mutable even within a single turn. Cache only repository and
+    // worktree identity; read branch + commit before returning each snapshot.
+    const snapshot = await git(params.workspaceDir, ["rev-parse", "HEAD", "--symbolic-full-name", "HEAD"], timeoutMs);
+    const [commitSha, ref] = snapshot.split("\n");
+    if (!/^[a-f0-9]{40,64}$/i.test(commitSha ?? "") || !ref) return undefined;
+    const branch = ref.startsWith("refs/heads/") ? ref.slice("refs/heads/".length) : `detached@${commitSha.slice(0, 12)}`;
+    const cached = cache.get(key);
+    if (cached && cached.expiresAt > now()) return { ...cached.value, branch, commitSha };
     const inside = await git(params.workspaceDir, ["rev-parse", "--is-inside-work-tree"], timeoutMs);
     if (inside !== "true") throw new Error("not a git worktree");
-    const [topLevelRaw, commonDirRaw, branchRaw, commitSha, remoteRaw] = await Promise.all([
+    const [topLevelRaw, commonDirRaw, remoteRaw] = await Promise.all([
       git(params.workspaceDir, ["rev-parse", "--show-toplevel"], timeoutMs),
       git(params.workspaceDir, ["rev-parse", "--git-common-dir"], timeoutMs),
-      git(params.workspaceDir, ["branch", "--show-current"], timeoutMs),
-      git(params.workspaceDir, ["rev-parse", "HEAD"], timeoutMs),
       git(params.workspaceDir, ["config", "--get", "remote.origin.url"], timeoutMs).catch(() => ""),
     ]);
     const topLevel = await realpath(topLevelRaw);
     const commonDir = commonDirRaw.startsWith("/")
       ? await realpath(commonDirRaw)
       : await realpath(`${params.workspaceDir}/${commonDirRaw}`);
-    const branch = branchRaw || `detached@${commitSha.slice(0, 12)}`;
     const repositorySeed = remoteRaw ? `remote:${normalizeRemote(remoteRaw)}` : `common-dir:${commonDir}`;
     const value: MemoryVersionContext = {
       schemaVersion: 1,
@@ -74,10 +78,13 @@ export async function detectGitMemoryVersionContext(params: {
       scopeLevel,
       source: "git",
     };
+    if (await git(params.workspaceDir, ["rev-parse", "HEAD", "--symbolic-full-name", "HEAD"], timeoutMs) !== snapshot) return undefined;
+    for (const [entryKey, entry] of cache) if (entry.expiresAt <= now()) cache.delete(entryKey);
+    if (cache.size >= MAX_CACHE_ENTRIES) cache.delete(cache.keys().next().value!);
     cache.set(key, { expiresAt: now() + CACHE_TTL_MS, value });
-    return value;
+    return { ...value };
   } catch {
-    cache.set(key, { expiresAt: now() + CACHE_TTL_MS, value: undefined });
+    cache.delete(key);
     return undefined;
   }
 }

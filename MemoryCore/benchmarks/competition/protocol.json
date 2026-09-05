@@ -1,0 +1,25 @@
+{
+  "version": "competition-rank-pressure-v1",
+  "baselineCommit": "25a025b4be83dbc28877d8a740bd7a089a7297e5",
+  "arms": ["global", "previous_strict", "optimized"],
+  "storage": "Real local SQLite FTS5, production writeMemory and performAutoRecall",
+  "scopeLevels": ["branch", "worktree", "task"],
+  "resultLimits": [1, 2, 4, 8],
+  "candidateMultiplier": 4,
+  "fixtureSizePerGroup": "4*k + 1",
+  "queriesPerGroup": "Each stored state, in actual observed FTS rank order, plus missing context",
+  "withinCandidatePoolCases": 180,
+  "outsideCandidatePoolCases": 12,
+  "missingContextCases": 12,
+  "measuredCallsPerArm": 204,
+  "oracle": "Exact expected memory ID from the explicit execution coordinate; no LLM Judge",
+  "timing": "One warm-up per SQLite database, then wall time around production recall; tokenizer excluded",
+  "acceptance": {
+    "allWithinPoolExact": true,
+    "zeroStrictContamination": true,
+    "missingContextAbstains": true,
+    "zeroUnexpectedFallbacks": true,
+    "finalItemLimitRespected": true
+  },
+  "boundary": "Controlled rank-pressure diagnostic, not a held-out general coding-agent or natural-language extraction evaluation. Outside-pool cases are reported, not counted as successful recall. No tuning based on LLM answers."
+}

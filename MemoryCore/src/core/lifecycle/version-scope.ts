@@ -40,6 +40,8 @@ export interface VersionAwareCandidate {
   line: string;
   score?: number;
   versionContext?: MemoryVersionContext;
+  /** A present but malformed scope is quarantined, never treated as legacy. */
+  versionContextInvalid?: boolean;
 }
 
 export interface VersionAwareSelection<T extends VersionAwareCandidate> {
@@ -91,7 +93,8 @@ export function normalizeMemoryVersionContext(value: unknown): MemoryVersionCont
 
   if (scopeLevel === "branch" && !branch) return undefined;
   if (scopeLevel === "worktree" && (!branch || !worktreeId)) return undefined;
-  if (scopeLevel === "task" && !taskId) return undefined;
+  if (scopeLevel === "task" && (!branch || !worktreeId || !taskId)) return undefined;
+  if (scopeLevel !== "repository" && (branch === "HEAD" || branch?.startsWith("detached@")) && !commitSha) return undefined;
 
   return {
     schemaVersion: 1,
@@ -110,6 +113,12 @@ export function parseMemoryVersionContextFromMetadata(metadata: unknown): Memory
   return normalizeMemoryVersionContext(raw?.[MEMORY_VERSION_CONTEXT_METADATA_KEY]);
 }
 
+export function memoryVersionMetadataIsInvalid(metadata: unknown): boolean {
+  const raw = readObject(metadata);
+  return !!raw && Object.hasOwn(raw, MEMORY_VERSION_CONTEXT_METADATA_KEY)
+    && !normalizeMemoryVersionContext(raw[MEMORY_VERSION_CONTEXT_METADATA_KEY]);
+}
+
 export function withMemoryVersionContext(
   metadata: unknown,
   context: MemoryVersionContext | undefined,
@@ -123,23 +132,28 @@ export function withMemoryVersionContext(
 
 export function memoryVersionScopeKey(context: MemoryVersionContext | undefined): string {
   if (!context) return "legacy";
+  // Detached states are immutable snapshots. The display branch (including
+  // a shortened detached@ prefix) is not a sufficient write-domain key.
+  const branchIdentity = detachedBranch(context)
+    ? [context.branch ?? "", context.commitSha ?? ""]
+    : context.branch ?? "";
   switch (context.scopeLevel) {
     case "repository":
       return JSON.stringify([context.repositoryId, "repository"]);
     case "branch":
-      return JSON.stringify([context.repositoryId, "branch", context.branch ?? ""]);
+      return JSON.stringify([context.repositoryId, "branch", branchIdentity]);
     case "worktree":
       return JSON.stringify([
         context.repositoryId,
         "worktree",
-        context.branch ?? "",
+        branchIdentity,
         context.worktreeId ?? "",
       ]);
     case "task":
       return JSON.stringify([
         context.repositoryId,
         "task",
-        context.branch ?? "",
+        branchIdentity,
         context.worktreeId ?? "",
         context.taskId ?? "",
       ]);
@@ -166,7 +180,7 @@ export function memoryVersionContextApplies(
   if (stored.repositoryId !== current.repositoryId) return false;
   if (stored.scopeLevel === "repository") return true;
   if (stored.branch !== current.branch) return false;
-  if (detachedBranch(stored) && stored.commitSha && stored.commitSha !== current.commitSha) return false;
+  if (detachedBranch(stored) && (!stored.commitSha || stored.commitSha !== current.commitSha)) return false;
   if (stored.scopeLevel === "branch") return true;
   if (stored.worktreeId !== current.worktreeId) return false;
   if (stored.scopeLevel === "worktree") return true;
@@ -258,8 +272,8 @@ export function selectVersionAwareCandidates<T extends VersionAwareCandidate>(pa
   maxVersionStates: number;
 }): VersionAwareSelection<T> {
   const intent = classifyVersionQueryIntent(params.query);
-  const scoped = params.candidates.filter((candidate) => candidate.versionContext);
-  const legacy = params.candidates.filter((candidate) => !candidate.versionContext);
+  const scoped = params.candidates.filter((candidate) => candidate.versionContext && !candidate.versionContextInvalid);
+  const legacy = params.candidates.filter((candidate) => !candidate.versionContext && !candidate.versionContextInvalid);
   if (!params.enabled) {
     return {
       candidates: params.candidates,
@@ -295,7 +309,10 @@ export function selectVersionAwareCandidates<T extends VersionAwareCandidate>(pa
     const queryLower = params.query.toLowerCase();
     const explicitlyNamed = sameRepository.filter((candidate) => {
       const branch = candidate.versionContext?.branch?.toLowerCase();
-      return branch && branch.length >= 2 && queryLower.includes(branch);
+      if (!branch) return false;
+      const escaped = branch.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      // Match a ref token, not a substring of another ref or an ordinary word.
+      return new RegExp(`(^|[^a-z0-9_./-])${escaped}(?=$|[^a-z0-9_./-]|[.](?=\\s|$))`, "u").test(queryLower);
     });
     const namedBranches = new Set(explicitlyNamed.map((candidate) => candidate.versionContext!.branch));
     const namedBranchStates = explicitlyNamed.filter(
@@ -307,7 +324,9 @@ export function selectVersionAwareCandidates<T extends VersionAwareCandidate>(pa
     // A branch name is inherited by worktree/task scopes. When two branch
     // names are explicit and both have branch-scoped states, comparing those
     // branches must not accidentally pull every task living on either branch.
-    const comparisonPool = namedBranches.size >= 2 && namedBranchStateNames.size >= 2
+    const comparisonPool = intent === "scope_history" && namedBranches.size > 0
+      ? explicitlyNamed
+      : namedBranches.size >= 2 && namedBranchStateNames.size >= 2
       ? namedBranchStates
       : namedBranches.size >= 2
         ? explicitlyNamed
@@ -352,7 +371,15 @@ export function selectVersionAwareCandidates<T extends VersionAwareCandidate>(pa
   // Legacy memories remain readable only when no scoped state was found for
   // this retrieval pool; this prevents an unlabelled old fact competing with
   // an exact branch/worktree/task state.
-  const selectedRaw = (compatible.length > 0 ? compatible : legacy).slice(0, params.resultLimit);
+  // Explicit questions about this task/worktree should not inject ancestor
+  // defaults alongside that level's answer. Generic queries still retain
+  // compatible facts from every level (they may concern different subjects).
+  const requestedLevel = /\b(?:current\s+(?:parallel\s+)?task|this\s+task)\b|当前(?:并行)?任务|本次任务/u.test(params.query.toLowerCase())
+    ? "task"
+    : /\b(?:current\s+(?:detached\s+)?worktree|this\s+worktree)\b|当前工作树|当前工作区/u.test(params.query.toLowerCase())
+      ? "worktree" : undefined;
+  const levelMatches = requestedLevel ? compatible.filter(candidate => candidate.versionContext?.scopeLevel === requestedLevel) : [];
+  const selectedRaw = (levelMatches.length > 0 ? levelMatches : compatible.length > 0 ? compatible : legacy).slice(0, params.resultLimit);
   const selected = compatible.length > 0
     ? selectedRaw.map((candidate) => labelCandidate(candidate, params.current, false))
     : selectedRaw;

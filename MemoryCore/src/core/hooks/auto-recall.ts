@@ -36,6 +36,7 @@ import type { LifecycleFeedbackScope } from "../lifecycle/feedback-store.js";
 import { detectGitMemoryVersionContext } from "../lifecycle/git-context.js";
 import {
   normalizeMemoryVersionContext,
+  memoryVersionMetadataIsInvalid,
   parseMemoryVersionContextFromMetadata,
   selectVersionAwareCandidates,
   type MemoryVersionContext,
@@ -384,7 +385,7 @@ async function performAutoRecallCore(params: {
   }
   const tSceneEnd = performance.now();
 
-  if (memoryLines.length === 0 && !personaContent && !sceneNavigation) {
+  if (memoryLines.length === 0 && !personaContent && !sceneNavigation && cfg.recall.lifecycle?.versionAwareMode !== "strict") {
     const totalMs = performance.now() - tRecallStart;
     logger?.info(
       `${TAG} ⏱ Recall timing: total=${totalMs.toFixed(0)}ms, ` +
@@ -442,7 +443,8 @@ async function performAutoRecallCore(params: {
     `scene=${(tSceneEnd - tSceneStart).toFixed(0)}ms(${sceneNavigation ? "loaded" : "none"})`,
   );
 
-  if (!appendSystemContext && !prependContext) {
+  // Strict abstention is an observable decision even when it injects no text.
+  if (!appendSystemContext && !prependContext && cfg.recall.lifecycle?.versionAwareMode !== "strict") {
     return undefined;
   }
 
@@ -528,6 +530,7 @@ interface SearchCandidate {
   score: number;
   scope: LifecycleFeedbackScope;
   versionContext?: MemoryVersionContext;
+  versionContextInvalid?: boolean;
 }
 
 /** Timing breakdown from memory search */
@@ -564,18 +567,24 @@ async function applyLifecycleToSearchResult(params: {
     minConfidence: params.config.minConfidence,
     maxHops: params.config.maxHops,
     maxExpansions: params.config.maxExpansions,
-    resultLimit: params.resultLimit,
+    // Keep the bounded over-retrieval pool until version validity is known.
+    // Cutting it to Top-k here defeats the candidate multiplier entirely.
+    resultLimit: params.config.versionAwareMode === "strict"
+      ? Math.max(params.resultLimit, params.searchResult.candidates?.length ?? 0)
+      : params.resultLimit,
     timeoutMs: params.config.timeoutMs,
   };
   const candidates = params.searchResult.candidates;
   if (!candidates) {
     return {
-      searchResult: params.searchResult,
+      searchResult: params.config.versionAwareMode === "strict"
+        ? { ...params.searchResult, candidates: [], lines: [], scores: [] }
+        : params.searchResult,
       decision: {
         mode: "fallback",
         policy,
         inputCandidates: params.searchResult.lines.length,
-        outputCandidates: Math.min(params.searchResult.lines.length, params.resultLimit),
+        outputCandidates: params.config.versionAwareMode === "strict" ? 0 : Math.min(params.searchResult.lines.length, params.resultLimit),
         redirects: 0,
         maxObservedHops: 0,
         expansions: 0,
@@ -595,28 +604,6 @@ async function applyLifecycleToSearchResult(params: {
     ]);
     scopeKeys.set(key, scope);
   }
-  if (scopeKeys.size > 1) {
-    const baseline = candidates.slice(0, params.resultLimit);
-    return {
-      searchResult: {
-        ...params.searchResult,
-        candidates: baseline,
-        lines: baseline.map((candidate) => candidate.line),
-        scores: baseline.map((candidate) => candidate.score),
-      },
-      decision: {
-        mode: "fallback",
-        policy,
-        inputCandidates: candidates.length,
-        outputCandidates: baseline.length,
-        redirects: 0,
-        maxObservedHops: 0,
-        expansions: 0,
-        elapsedMs: 0,
-        fallbackReason: "mixed lifecycle candidate scopes",
-      },
-    };
-  }
   const identityScope = scopeKeys.values().next().value ?? params.fallbackScope;
   const scope: LifecycleFeedbackScope = {
     ...identityScope,
@@ -628,7 +615,17 @@ async function applyLifecycleToSearchResult(params: {
     worktreeId: params.fallbackScope.worktreeId,
     versionScopeLevel: params.fallbackScope.versionScopeLevel,
   };
-  const applied = await applyPersistedLifecycle({
+  // A correction-ledger failure may bypass redirects, but never bypasses
+  // the version selector. Mixed identity scopes follow the same rule.
+  const applied = scopeKeys.size > 1 ? {
+    candidates: candidates.slice(0, policy.resultLimit),
+    decision: {
+      mode: "fallback" as const, policy, inputCandidates: candidates.length,
+      outputCandidates: Math.min(candidates.length, policy.resultLimit),
+      redirects: 0, maxObservedHops: 0, expansions: 0, elapsedMs: 0,
+      fallbackReason: "mixed lifecycle candidate scopes",
+    },
+  } : await applyPersistedLifecycle({
     candidates,
     policy,
     maxEvents: params.config.maxEvents,
@@ -1364,6 +1361,7 @@ function recordToSearchCandidate(record: MemoryRecord, score: number): SearchCan
     type: record.type,
     score,
     versionContext: parseMemoryVersionContextFromMetadata(record.metadata),
+    versionContextInvalid: memoryVersionMetadataIsInvalid(record.metadata),
     scope: {
       teamId: record.teamId,
       userId: record.userId,
@@ -1384,6 +1382,7 @@ function vectorResultToSearchCandidate(result: L1SearchResult): SearchCandidate 
     type: result.type,
     score: result.score,
     versionContext: parseMemoryVersionContextFromMetadata(metadata),
+    versionContextInvalid: memoryVersionMetadataIsInvalid(metadata),
     scope: {
       teamId: result.team_id || undefined,
       userId: result.user_id || undefined,
@@ -1404,6 +1403,7 @@ function ftsResultToSearchCandidate(result: L1FtsResult): SearchCandidate {
     type: result.type,
     score: result.score,
     versionContext: parseMemoryVersionContextFromMetadata(metadata),
+    versionContextInvalid: memoryVersionMetadataIsInvalid(metadata),
     scope: {
       teamId: result.team_id || undefined,
       userId: result.user_id || undefined,
@@ -1436,6 +1436,7 @@ function l1RowToSearchCandidate(row: L1RecordRow): SearchCandidate {
     type: row.type,
     score: 0,
     versionContext: parseMemoryVersionContextFromMetadata(metadata),
+    versionContextInvalid: memoryVersionMetadataIsInvalid(metadata),
     scope: {
       teamId: row.team_id || undefined,
       userId: row.user_id || undefined,

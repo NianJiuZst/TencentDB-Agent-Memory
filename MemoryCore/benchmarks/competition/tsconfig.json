@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "ES2022", "module": "NodeNext", "moduleResolution": "NodeNext",
+    "types": ["node"], "strict": true, "skipLibCheck": true,
+    "esModuleInterop": true, "allowImportingTsExtensions": true, "noEmit": true
+  },
+  "files": [
+    "../../src/core/hooks/auto-recall.ts",
+    "../../src/core/lifecycle/git-context.ts",
+    "../../src/core/lifecycle/version-scope.ts",
+    "../../src/core/hooks/auto-recall.version-boundary.test.ts",
+    "../../src/core/lifecycle/version-scope.robustness.test.ts",
+    "recall-benchmark.ts"
+  ]
+}

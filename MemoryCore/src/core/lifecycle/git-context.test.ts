@@ -44,5 +44,15 @@ describe("Git memory version context", () => {
     expect(taskContext).toMatchObject({ taskId: "parallel-a", scopeLevel: "task" });
     expect(JSON.stringify(mainContext)).not.toContain(primary);
     expect(JSON.stringify(releaseContext)).not.toContain(release);
+    // Same workspace, same task, within the old two-second cache window.
+    git(primary, "switch", "-c", "hotfix");
+    const switched = await detectGitMemoryVersionContext({ workspaceDir: primary });
+    expect(switched?.branch).toBe("hotfix");
+    git(primary, "commit", "--allow-empty", "-m", "advance HEAD");
+    const advanced = await detectGitMemoryVersionContext({ workspaceDir: primary });
+    expect(advanced?.commitSha).not.toBe(switched?.commitSha);
+    // Mutating a returned snapshot cannot poison later detections.
+    advanced!.branch = "poisoned";
+    expect((await detectGitMemoryVersionContext({ workspaceDir: primary }))?.branch).toBe("hotfix");
   });
 });
