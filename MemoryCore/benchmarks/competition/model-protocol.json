@@ -1,0 +1,113 @@
+{
+  "protocolVersion": "competition-version-aware-e2e-20260905-v1",
+  "seed": 20260905,
+  "preScoreCommitRequired": true,
+  "context": {
+    "protocolVersion": "version-aware-production-context-v1.0",
+    "sha256": "69ac20d23e7cd0f9f49170da4775aa7c847ba314f21abd8a218ce55e89693d19",
+    "cases": 110,
+    "naturalCases": 40,
+    "capabilityCases": 70,
+    "scenarios": 10,
+    "uniquePromptsPerReader": 250,
+    "caseArmContexts": 330
+  },
+  "arms": [
+    "global_latest",
+    "old_current_dual",
+    "version_aware_multistate"
+  ],
+  "readers": [
+    {
+      "id": "minimax-m3",
+      "provider": "minimax",
+      "model": "MiniMax-M3",
+      "baseUrl": "https://api.minimaxi.com/v1",
+      "apiKeyEnv": "MINIMAX_API_KEY",
+      "temperature": 0.1,
+      "topP": 0.95,
+      "maxTokens": 700,
+      "thinking": "disabled"
+    },
+    {
+      "id": "deepseek-v4-flash",
+      "provider": "deepseek",
+      "model": "deepseek-v4-flash",
+      "baseUrl": "https://api.deepseek.com",
+      "apiKeyEnv": "DEEPSEEK_API_KEY",
+      "temperature": 0,
+      "maxTokens": 700,
+      "thinking": "disabled"
+    }
+  ],
+  "judges": [
+    {
+      "id": "minimax-m3",
+      "provider": "minimax",
+      "model": "MiniMax-M3",
+      "baseUrl": "https://api.minimaxi.com/v1",
+      "apiKeyEnv": "MINIMAX_API_KEY",
+      "temperature": 0.1,
+      "topP": 0.95,
+      "maxTokens": 8192,
+      "thinking": "disabled"
+    },
+    {
+      "id": "deepseek-v4-flash",
+      "provider": "deepseek",
+      "model": "deepseek-v4-flash",
+      "baseUrl": "https://api.deepseek.com",
+      "apiKeyEnv": "DEEPSEEK_API_KEY",
+      "temperature": 0,
+      "maxTokens": 8192,
+      "thinking": "disabled"
+    }
+  ],
+  "judgeAssignment": {
+    "minimax-m3": "deepseek-v4-flash",
+    "deepseek-v4-flash": "minimax-m3"
+  },
+  "retries": 3,
+  "aggregation": {
+    "answerUnit": "Each answer is judged only by the other fixed model; self-judging is forbidden.",
+    "caseArm": "Arithmetic mean of the two crossed reader/judge cells.",
+    "naturalPrimary": "FAMA on the frozen 40-case public Memora safety panel.",
+    "capabilityPrimary": "Criterion accuracy on the 70-case controlled version-capability panel.",
+    "contextMetrics": "Exact expected-state set, expected-state recall, and foreign-state contamination are recomputed from frozen recalled IDs before LLM scoring.",
+    "uncertainty": "Paired scenario/persona-cluster bootstrap with 5000 draws."
+  },
+  "uncertainty": {
+    "unit": "scenario_or_persona",
+    "bootstrapSamples": 5000,
+    "confidenceLevel": 0.95
+  },
+  "gates": {
+    "minVersionAwareContextExactSelection": 1,
+    "maxVersionAwareContextContaminationRate": 0,
+    "minCapabilityCriterionAccuracyDeltaVsGlobal": 0.05,
+    "minCapabilityCriterionAccuracyDeltaVsOldCurrentDual": 0.05,
+    "requireCapabilityCiLowerAboveZero": true,
+    "minCurrentSliceCriterionAccuracyDelta": -0.01,
+    "minCrossStateSliceCriterionAccuracyDelta": -0.01,
+    "minMissingScopeCriterionAccuracyDelta": 0.25,
+    "minNaturalFamaDelta": -0.01,
+    "maxCombinedTokenIncreaseFraction": 0.2,
+    "requireNonnegativeCapabilityDirectionForBothReaders": true,
+    "requireCompleteFrozenTaskSet": true,
+    "requireZeroModelMismatches": true,
+    "requireZeroSelfJudgments": true,
+    "requirePassedProductionContext": true
+  },
+  "decisionRule": "Recommend the version-aware multi-state upgrade only if every frozen gate passes against both global-latest and old/current-dual baselines. Controlled capability proves scoped behavior; public Memora is a non-inferiority safety panel.",
+  "reuse": {
+    "rule": "Reuse only byte-identical reader message arrays within the same frozen case.",
+    "expectedReaderCalls": 500,
+    "expectedJudgeCalls": 500
+  },
+  "claimBoundary": "The version-capability panel is controlled and generated, but uses real Git repositories/worktrees, real SQLite writes, and the production performAutoRecall prompt path. The public safety panel is Memora at a fixed revision. This run does not measure automatic LLM extraction quality, live TCVDB/COS latency, merge ancestry inference, or prevalence on uncontrolled programming traffic.",
+  "budget": {
+    "limitCny": 200,
+    "conservativeAccountingCnyPerMillionTokens": 100,
+    "cacheDiscountsApplied": false
+  }
+}

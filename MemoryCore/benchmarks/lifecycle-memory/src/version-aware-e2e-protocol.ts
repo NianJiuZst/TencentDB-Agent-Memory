@@ -1,4 +1,5 @@
 import protocolJson from "../protocol.version-aware-e2e.v1.json" with { type: "json" };
+import { readFileSync } from "node:fs";
 import type { DirectJudgeSpec } from "./judge-provider.js";
 import type { VersionAwareArm } from "./version-aware-context-protocol.js";
 
@@ -45,7 +46,11 @@ export interface VersionAwareE2EProtocol {
   claimBoundary: string;
 }
 
-export const VERSION_AWARE_E2E_PROTOCOL = protocolJson as VersionAwareE2EProtocol;
+// Separate frozen reruns can use new context hashes without editing historical
+// protocols or mixing new verdicts into old output directories.
+export const VERSION_AWARE_E2E_PROTOCOL = (process.env.TDAI_VERSION_EVAL_PROTOCOL
+  ? JSON.parse(readFileSync(process.env.TDAI_VERSION_EVAL_PROTOCOL, "utf8"))
+  : protocolJson) as VersionAwareE2EProtocol;
 
 const readerIds = VERSION_AWARE_E2E_PROTOCOL.readers.map((item) => item.id).sort();
 const judgeIds = VERSION_AWARE_E2E_PROTOCOL.judges.map((item) => item.id).sort();
