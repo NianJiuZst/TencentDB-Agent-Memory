@@ -308,6 +308,8 @@ for pi, page in enumerate(pages):
                 table_lines.append([x.strip() for x in row.strip('|').split('|')])
             columns = len(table_lines[0]); width = A4[0]-38*mm
             widths = {2:[width*.26,width*.74],3:[width*.19,width*.47,width*.34],4:[width*.40,width*.20,width*.20,width*.20],5:[width*.25,width*.15,width*.20,width*.20,width*.20]}[columns]
+            if columns == 4 and table_lines[0][-1] == '含义':
+                widths = [width*.24, width*.17, width*.17, width*.42]
             table = Table([[Paragraph(rich(x),styles['headcell' if ri==0 else 'cell']) for x in row] for ri,row in enumerate(table_lines)],colWidths=widths,repeatRows=1,hAlign='LEFT')
             table.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,0),NAVY),('VALIGN',(0,0),(-1,-1),'TOP'),('ROWBACKGROUNDS',(0,1),(-1,-1),[colors.HexColor('#F2F6F8'),colors.white]),('LINEBELOW',(0,-1),(-1,-1),.5,LINE),('LEFTPADDING',(0,0),(-1,-1),7),('RIGHTPADDING',(0,0),(-1,-1),7),('TOPPADDING',(0,0),(-1,-1),7),('BOTTOMPADDING',(0,0),(-1,-1),7)]))
             story.extend([table,Spacer(1,10)])

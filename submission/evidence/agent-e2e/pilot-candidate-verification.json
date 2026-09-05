@@ -1,0 +1,11 @@
+{
+  "verifiedAtUtc": "2026-09-05T11:16:08.086238+00:00",
+  "status": "passed",
+  "candidateCount": 244,
+  "repairClusters": 195,
+  "original100TaskPrefixMatches": true,
+  "candidateManifestSha256": "f5e2f69331d4cd8e60f799236163f46a7f471b1a637ebd98e470ca08252a3131",
+  "sourceRelatedTableSha256": "890aaf0fc82a739e5031232d81e208b82d71798c86d1960725055ffdeaeca2ad",
+  "modelOutputsRead": false,
+  "modelCalls": 0
+}

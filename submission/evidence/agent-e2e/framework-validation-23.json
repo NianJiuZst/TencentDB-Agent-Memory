@@ -1,0 +1,20 @@
+{
+  "checkedAtUtc": "2026-09-05T11:20:40.424332+00:00",
+  "command": "/private/tmp/tdai-real-agent-20260905/venv/bin/python -m unittest discover -s MemoryCore/benchmarks/agent-e2e -p 'test_*.py' -v",
+  "status": "passed",
+  "testsRun": 23,
+  "failures": 0,
+  "errors": 0,
+  "elapsedSeconds": 0.057,
+  "modelCalls": 0,
+  "testSourceSha256": {
+    "test_analysis.py": "056b9bed4d748b008e3642a7f762466df0c35534894ff491570b0380552c3b9f",
+    "test_pilot.py": "5de65462ba4f415d320058e2d523c32194b12c37f51b14f0977930d071c73c64",
+    "test_pilot_analysis.py": "71dec6137481ebf3d18abf8e32d368199f874153e71b613aecf778b64d4a2758",
+    "test_pilot_limits.py": "ec769a2ff5498d5b1723bcf9586d251a4fe85141d72d63fb105c4f608fdb9914",
+    "test_pilot_scheduling.py": "5750aefea1ac0a9fa52eab913031ba396b49873dfc0e95cd8c300878752d4ef8",
+    "test_progress_metrics.py": "96db7a839566f3b93c018b0849260f13692cdfdc9cf133bdb959b6692aa6a82d",
+    "test_protocol.py": "b3c0bf900d668fb5f4336346266099d503a626402379b9b7a0936b28a220b3a9",
+    "test_score_adapter.py": "2ad62c0f468429b7db9da20e7e8bae28d8dba914ac0c1e03728510dafa4825bb"
+  }
+}

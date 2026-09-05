@@ -36,6 +36,8 @@ def main():
     p.add_argument('--skip-install', action='store_true')
     a = p.parse_args()
     rt = a.runtime.resolve()
+    if not (rt / 'venv/bin/python').exists() and sys.version_info[:2] != (3, 12):
+        raise SystemExit('Create the experiment environment with Python 3.12: python3.12 bootstrap.py --runtime PATH')
     rt.mkdir(parents=True, exist_ok=True)
     if platform.system() == 'Darwin' and platform.machine() == 'arm64':
         binary = rt / 'regctl'
@@ -84,6 +86,9 @@ def main():
     subprocess.run([str(py), str(scripts / 'prepare_dataset.py'), '--runtime', str(scratch), '--output', str(verification)], check=True)
     if json.loads((verification / 'dataset-audit.json').read_text()) != main_manifest:
         raise RuntimeError('Reconstructed main manifest differs from the registered selection')
+    subprocess.run([str(py), str(scripts / 'verify_pilot_candidates.py'), '--runtime', str(rt),
+                    '--evidence', str(evidence),
+                    '--output', str(verification / 'pilot-candidate-verification.json')], check=True)
     (rt / 'tables.json').write_bytes((scratch / 'tables.json').read_bytes())
     pro = json.loads((evidence / 'pro-dataset-audit.json').read_text())
     fetch(f"https://huggingface.co/datasets/ScaleAI/SWE-bench_Pro/resolve/{pro['revision']}/data/test-00000-of-00001.parquet",

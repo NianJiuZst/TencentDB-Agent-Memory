@@ -1,0 +1,15 @@
+{
+  "checkedAtUtc": "2026-09-05T11:19:56.642033+00:00",
+  "status": "passed",
+  "scope": "Offline initialization with cached immutable inputs and the existing Python 3.12 runtime in an isolated scratch directory; package installation and fresh downloads not repeated.",
+  "scratchRuntime": "/private/tmp/tdai-bootstrap-check-20260905",
+  "original100ManifestRebuilt": true,
+  "all244CandidatesRebuilt": true,
+  "archivedPro20ManifestRebuilt": true,
+  "modelCalls": 0,
+  "newEnvironmentPython39Guard": "Rejected before creating or downloading runtime files, as intended.",
+  "files": {
+    "MemoryCore/benchmarks/agent-e2e/bootstrap.py": "f6653b31f96f4f5c8d9f076f4f3ee118bfbe79c2ab972bd2039ea166cac02525",
+    "MemoryCore/benchmarks/agent-e2e/verify_pilot_candidates.py": "fe0cb328ffc0bf6a0b30a7a11e7a7a50616878893d6409e20d391b8d6d9c915e"
+  }
+}

@@ -42,10 +42,10 @@ TDAI_RUN_ROOT=/tmp/tdai-real-agent
 本次实测环境为 macOS arm64、Node 26、Python 3.12、Docker/Colima，amd64 镜像通过仿真运行。该执行入口的磁盘检查使用 Colima；Linux 原生移植尚未实测。报告不把本机耗时当作生产性能基准。
 
 ```sh
-python3 MemoryCore/benchmarks/agent-e2e/bootstrap.py --runtime "$TDAI_RUN_ROOT"
+python3.12 MemoryCore/benchmarks/agent-e2e/bootstrap.py --runtime "$TDAI_RUN_ROOT"
 ```
 
-该步骤下载固定提交、验证公开数据摘要和原候选清单，不调用模型。macOS arm64 上还下载并校验 regctl v0.11.5，用于 Docker 下载失败时恢复完全相同的官方镜像。旧实现固定为 `25a025b4be83dbc28877d8a740bd7a089a7297e5`，需独立检出并安装与当前分支相同的 Node 依赖。
+该步骤使用 Python 3.12 创建环境，下载固定提交、验证公开数据摘要，并从源数据重建全部 244 个候选及原 100 个候选前缀，不调用模型。macOS arm64 上还下载并校验 regctl v0.11.5，用于 Docker 下载失败时恢复完全相同的官方镜像。旧实现固定为 `25a025b4be83dbc28877d8a740bd7a089a7297e5`，需独立检出并安装与当前分支相同的 Node 依赖。不要在正在运行实验的目录执行初始化；它会重新写出公开数据缓存。
 
 换机器时，先复算提交结果，再为**新的结果目录**重绑定本机路径；此操作验证每份生产源码的字节摘要，并保留原始登记：
 
