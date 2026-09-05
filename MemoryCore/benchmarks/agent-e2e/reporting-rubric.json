@@ -1,0 +1,13 @@
+{
+  "id": "coursework-style-graded-presentation-v1",
+  "authorization": "User requested a less stringent, coursework-appropriate acceptance rubric and clearer presentation of positive effects.",
+  "timingDisclosure": "Added after the 80-step diagnostic runs and after the 160-step main execution began. These additional endpoints are descriptive, not preregistered confirmatory tests.",
+  "unchanged": ["30-task fixed selection rule", "MiniMax-M3", "two arms with identical limits", "one run per arm", "all observed outcomes retained", "original complete-success metric"],
+  "engineeringAcceptance": "Implemented features, regression checks and verified recall improvements, reported separately from coding-task results.",
+  "targetRepairSuccess": "Every declared FAIL_TO_PASS test passes after the submitted patch. Regression preservation is reported separately; this does not mean complete task success.",
+  "targetRepairFraction": "Fraction of declared FAIL_TO_PASS tests passed after the submitted patch, averaged equally across tasks. Empty or inapplicable patches earn zero target-repair credit.",
+  "anyTargetRepair": "At least one declared FAIL_TO_PASS test passes, including fully repaired target-test sets.",
+  "partialTargetRepair": "At least one but not all declared FAIL_TO_PASS tests pass.",
+  "completeSuccess": "Original endpoint: every declared FAIL_TO_PASS and PASS_TO_PASS test passes with a validated failing baseline.",
+  "presentation": "Report all tiers for both arms with explicit denominators. Preserve incomplete submissions, regressions, negative findings and uncertainty. No case replacement, selective reruns or outcome-based threshold tuning."
+}

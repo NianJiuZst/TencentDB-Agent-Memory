@@ -1,0 +1,7 @@
+{
+  "recordedAtUtc": "2026-09-05T09:54:19.376117+00:00",
+  "request": "User requested less stringent coursework-style acceptance and clearer positive presentation.",
+  "changes": "Add descriptive target-repair and partial-progress metrics. Preserve all tasks, complete-success endpoint, regressions and negative findings. No additional model calls or changed execution limits.",
+  "timing": "Added after the 160-step panel began. Not a preregistered confirmatory endpoint.",
+  "additionalTestsPassed": 3
+}

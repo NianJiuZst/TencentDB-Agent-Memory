@@ -19,6 +19,15 @@ def exact_mcnemar(improved, harmed):
     return min(1.0, 2 * sum(math.comb(discordant, k) for k in range(min(improved, harmed) + 1)) / 2**discordant)
 
 
+def repair_progress(f2p, p2p, passed_after):
+    """Descriptive progress from held-out tests; unchanged code earns no repair credit."""
+    fixed = len(f2p & passed_after)
+    return {'targetRepairFraction': fixed / len(f2p),
+            'targetRepairSuccess': fixed == len(f2p),
+            'anyTargetRepair': fixed > 0, 'partialTargetRepair': 0 < fixed < len(f2p),
+            'regressionTestPreservation': len(p2p & passed_after) / len(p2p) if p2p else None}
+
+
 def analyze(runtime, evidence, ledger):
     scripts = Path(__file__).parent
     pilot = pilot_root(evidence)
@@ -126,12 +135,16 @@ def analyze(runtime, evidence, ledger):
             baseline = bool(f2p) and f2p <= broken and p2p <= passed_before
             success = baseline and (f2p | p2p) <= passed_after
             regressions = p2p & passed_before - passed_after
+            row.update(repair_progress(f2p, p2p, passed_after))
             if not baseline or score['baselineValid'] != baseline or score['strictResolved'] != success or row['strictResolved'] != success:
                 raise RuntimeError('Independently recomputed success disagrees')
             if set(score['regressions']) != regressions or row['regressions'] != len(regressions):
                 raise RuntimeError('Independently recomputed regression disagrees')
             if sha(out / 'model.patch') != result['patch_sha256'] or sha(out / 'model.patch') != score['patchSha256']:
                 raise RuntimeError('Scored patch differs from submitted patch')
+            row['emptySubmission'] = not (out / 'model.patch').read_text().strip()
+            row['patchApplied'] = bool(score['officialReport'].get('patch_applied'))
+            row['patchApplicationFailed'] = score['officialReport'].get('error') == 'Patch failed'
             actual = collections.Counter(m.get('extra', {}).get('response', {}).get('model') for m in load(out / 'trajectory.json')['messages'] if isinstance(m.get('extra', {}).get('response'), dict))
             if not actual or set(actual) - {'MiniMax-M3', 'openai/MiniMax-M3'}:
                 raise RuntimeError('Actual response model differs: ' + str(actual))
@@ -160,6 +173,7 @@ def analyze(runtime, evidence, ledger):
     harmed = sum(r['none']['strictResolved'] and not r['optimized']['strictResolved'] for r in tasks.values())
     both = sum(r['none']['strictResolved'] and r['optimized']['strictResolved'] for r in tasks.values())
     differences = [(r['none']['analysisCluster'], int(r['optimized']['strictResolved']) - int(r['none']['strictResolved'])) for r in tasks.values()]
+    repair_differences = [(r['none']['analysisCluster'], r['optimized']['targetRepairFraction'] - r['none']['targetRepairFraction']) for r in tasks.values()]
     summary = {'status': 'completed' if len(chosen) == 30 and n == 30 else 'interim',
                'protocol': protocol['id'], 'selectedTasks': len(chosen), 'completedTasks': n, 'executions': len(rows),
                'repairClusters': len({r['analysisCluster'] for r in rows}), 'arms': {},
@@ -175,11 +189,25 @@ def analyze(runtime, evidence, ledger):
                          'allWorkUnknownUsageUpperCny': sum(r['chargedCny'] for r in ledger_rows if not r['usage']),
                          'allWorkPendingReservationsCny': sum(r['reservedCny'] for r in ledger_rows if r['state'] == 'pending'),
                          'callRecords': ledger_rows}}
+    summary['descriptiveProgress'] = {
+        'rubricSha256': sha(scripts / 'reporting-rubric.json'),
+        'addedAfterExecutionStarted': True,
+        'note': 'User-requested graded presentation; all fixed tasks retained. Original full-success metric, grading and selection are unchanged. Progress endpoints are descriptive, not preregistered confirmatory claims.',
+        'targetRepairFractionDelta': cluster_interval(repair_differences),
+        'targetRepairImprovedTasks': sum(r['optimized']['targetRepairFraction'] > r['none']['targetRepairFraction'] for r in tasks.values()),
+        'targetRepairHarmedTasks': sum(r['optimized']['targetRepairFraction'] < r['none']['targetRepairFraction'] for r in tasks.values()),
+    }
     for arm in ['none', 'optimized']:
         selected_rows = [r for r in rows if r['arm'] == arm]
         summary['arms'][arm] = {'successes': sum(r['strictResolved'] for r in selected_rows),
                                 'successRate': sum(r['strictResolved'] for r in selected_rows)/n if n else None,
                                 'regressionRuns': sum(r['regressions'] > 0 for r in selected_rows),
+                                'emptySubmissions': sum(r['emptySubmission'] for r in selected_rows),
+                                'patchApplicationFailures': sum(r['patchApplicationFailed'] for r in selected_rows),
+                                'targetRepairSuccesses': sum(r['targetRepairSuccess'] for r in selected_rows),
+                                'anyTargetRepairTasks': sum(r['anyTargetRepair'] for r in selected_rows),
+                                'partialTargetRepairTasks': sum(r['partialTargetRepair'] for r in selected_rows),
+                                'meanTargetRepairFraction': sum(r['targetRepairFraction'] for r in selected_rows)/n if n else None,
                                 'meanAgentSeconds': sum(r['agentSeconds'] for r in selected_rows)/n if n else None,
                                 'contextCoverage': sum(r['contextChars'] > 0 for r in selected_rows),
                                 'totalContextChars': sum(r['contextChars'] for r in selected_rows),
