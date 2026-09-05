@@ -1,0 +1,29 @@
+{
+  "createdAtUtc": "2026-09-05T12:16:15.877168+00:00",
+  "instance_id": "pydata__xarray-7068",
+  "image": "jiayuanz3/swecontextbench@sha256:23059c61c074c7bf7006edad9f1759667012aef5227eae0162af805fe915fb29",
+  "caseSha256": "f5fbb1b951730c0ed109583218af96eea8d25d93a1a017e91cc3ced1dd350b1e",
+  "exampleSha256": "e2fb31eb91ad095a55b9cff837980e82858888ede88688084ffaca1f3dbf07d7",
+  "submittedPatchSha256": "55882ce3d68f9cc7bc358c1c3264e436e9121880f61d5b7fc6c2c3726b637377",
+  "scriptSha256": "f4451849588623bd5045fe9d4621178998afeec328ec8cdf55f8568ae7d53366",
+  "purpose": "Post-run explanation of one failed task; no aggregate score changes or causal inference.",
+  "modelCalls": 0,
+  "results": {
+    "baseline": {
+      "returncode": 1,
+      "stdout": "{\"examplePassed\": false, \"exceptionType\": \"AssertionError\"}\n",
+      "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 8, in <module>\n  File \"<unchanged-public-issue-example>\", line 15, in <module>\nAssertionError\n"
+    },
+    "submitted_optimized": {
+      "returncode": 0,
+      "stdout": "{\"examplePassed\": true}\n",
+      "stderr": ""
+    },
+    "reference": {
+      "returncode": 0,
+      "stdout": "{\"examplePassed\": true}\n",
+      "stderr": ""
+    }
+  },
+  "validExampleProbe": true
+}

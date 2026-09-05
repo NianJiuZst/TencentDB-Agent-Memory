@@ -1,4 +1,5 @@
 """Report chapters derived exclusively from the completed MiniMax pilot."""
+import hashlib
 import json
 
 
@@ -32,6 +33,21 @@ def build(evidence):
     ])
     repos = '\n'.join(f"| {repo} | {s['tasks']} | {s['noneSuccesses']} | {s['optimizedSuccesses']} |" for repo, s in d['repositories'].items())
     costs = '\n'.join(f"| {labels[a]} | {d['arms'][a]['usage']['requests']} | {d['arms'][a]['usage']['knownUsageCny']:.2f} | {d['arms'][a]['usage']['unknownUsageUpperCny']:.2f} | {d['arms'][a]['meanAgentSeconds']:.1f} |" for a in labels)
+    example_note = ''
+    example_dir = evidence / 'agent-e2e/pilot-30-160/qualitative-notes/xarray-minimal-example'
+    if (example_dir / 'result.json').exists():
+        probe = json.loads((example_dir / 'result.json').read_text())
+        patch_path = evidence / 'agent-e2e/pilot-30-160/runs/pydata__xarray-7068/optimized/model.patch'
+        if (not probe['validExampleProbe'] or probe['modelCalls'] != 0
+                or hashlib.sha256(patch_path.read_bytes()).hexdigest() != probe['submittedPatchSha256']
+                or hashlib.sha256((example_dir / 'issue-example.py').read_bytes()).hexdigest() != probe['exampleSha256']):
+            raise RuntimeError('Qualitative example evidence failed validation')
+        if probe['results']['submitted_optimized']['returncode'] == 0:
+            example_note = '''\n### 9.2 一个基本场景修复案例
+
+Xarray 7068 的优化组提交了补丁，173 项原有测试保持通过，但指定目标测试仍失败。事后将题面自带的最小示例原样放入独立容器复核：原始代码触发断言失败，优化组提交和参考补丁均通过。说明该补丁修复了题面基本场景，但尚未满足官方测试覆盖的更多输入组合与属性处理要求。
+
+这是一例用于解释进展的事后分析，不代表新增任务或整体修复率，也不改变“目标测试通过比例”与完整成功分数。复核不调用模型，代码、镜像摘要与三次输出随材料保存。\n'''
     first = f'''## 7. 小规模真实编程验证：设计
 
 ### 7.1 从答案题走向仓库任务
@@ -95,7 +111,8 @@ def build(evidence):
 
 真实任务面板检验公开历史经验能否帮助仓库修复；它不等同于自然运行多天、持续学习的长期记忆实验。两组比较检验整套方案的效果，各项代码优化的贡献由前文对照测试说明。正确召回是必要的工程能力，能否转化为更多成功任务则由本面板回答。
 
-### 9.2 成本与耗时
+{example_note}
+### 9.{3 if example_note else 2} 成本与耗时
 
 | 策略 | API 请求 | 已知计价/元 | 未知上界/元 | 平均 Agent 秒 |
 |---|---|---|---|---|
@@ -107,7 +124,7 @@ Agent 耗时包含命令、模型和网络等待，不含镜像下载及参考�
 
 Agent 从固定的官方原始镜像出发，在预算内自行处理必要的环境工作。官方评分器可能先重编译依赖；例如 Matplotlib 参考预检记录了包无法导入及重编译过程。因此，任务成功率也受依赖维护与环境耗时影响，不能将全部失败归因于记忆检索。
 
-### 9.3 评分修复与材料核验
+### 9.{4 if example_note else 3} 评分修复与材料核验
 
 评分器固定镜像内容，在独立容器中执行官方测试，再从逐项状态复算指标。早期镜像适配错误已修复并以保存的补丁重放；旧评分归档，主汇总只接纳修正后的可评分结果，详情见复现说明。
 
