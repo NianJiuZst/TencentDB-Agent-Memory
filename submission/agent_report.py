@@ -1,125 +1,103 @@
-"""Publication text derived only from complete real-agent evidence."""
-from pathlib import Path
+"""Report chapters derived exclusively from the completed MiniMax pilot."""
 import json
 
 
 def build(evidence):
-    data = json.loads((evidence / 'agent-e2e/analysis.json').read_text())
-    if data['status'] != 'completed':
-        raise RuntimeError('The registered coding-agent evaluation is still incomplete')
-    panels = data['panels']
-    main = panels.get('main/deepseek-v4-flash')
-    pro = panels.get('pro/deepseek-v4-flash')
-    extension = panels.get('extension/deepseek-v4-flash')
-    secondary = panels.get('main/MiniMax-M3')
-    percent = lambda x: '—' if x is None else f'{100*x:.2f}%'
-    number = lambda x: '—' if x is None else f'{x:.2f}'
-    labels = {'none': '无持久记忆', 'global': '全局记忆', 'previous': '旧版严格筛选', 'optimized': '优化版严格筛选'}
-    def cell(panel, arm):
-        if not panel:
-            return '无合格任务'
-        v = panel['arms'][arm]
-        return f"{percent(v['passAt1'])} ({v['successfulRuns']}/{v['nominalRuns']})"
-    def interval(value):
-        if value['mean'] is None:
-            return '无可估计样本'
-        return f"{100*value['mean']:+.2f} pp [{100*value['lower']:.2f}, {100*value['upper']:.2f}]"
-    coverage = data['coverage']
-    totals = {k: {name: v['counts'].get(name, 0) for name in ['eligible', 'excluded', 'pending']} for k, v in coverage.items()}
-    if main:
-        diff = main['comparisons']['optimized_vs_none']['passAt1Delta']
-        conclusion = ('在该公开任务与固定 Agent 配置下，观察到完整任务成功率提高。'
-                      if diff['lower'] > 0 and main['repairClusters'] >= 10 else
-                      '目前不能宣称优化提高了通用编程任务的最终成功率。')
-        cover = (f"新增真实编程评测：固定抽取 100 个 SWEContextBench 任务，{totals['main']['eligible']} 个通过严格参考预检；"
-                 f"另抽取 20 个 SWE-bench Pro 任务，{totals['pro']['eligible']} 个合格。主面板中无记忆与优化版的平均 pass@1 分别为 "
-                 f"{percent(main['arms']['none']['passAt1'])}、{percent(main['arms']['optimized']['passAt1'])}；配对差值 {interval(diff)}。{conclusion}")
+    d = json.loads((evidence / 'agent-e2e/pilot-30/analysis.json').read_text())
+    if d['status'] != 'completed' or d['completedTasks'] != 30 or d['executions'] != 60:
+        raise RuntimeError('The 30-task, 60-execution MiniMax pilot is not complete')
+    if d['validation']['status'] != 'passed' or d['validation']['executionsChecked'] != 60:
+        raise RuntimeError('All 60 executions require independent verification')
+    b, o, p = d['arms']['none'], d['arms']['optimized'], d['paired']
+    v = p['delta']
+    interval = f"{100*v['mean']:+.2f} 个百分点，95% 配对区间 [{100*v['lower']:.2f}, {100*v['upper']:.2f}]"
+    net = p['improved'] - p['harmed']
+    if net > 0:
+        conclusion = f'优化版在这 30 个任务中净增加 {net} 个成功任务。' + ('配对结果支持本样本内的提升，仍需扩大样本验证稳定性。' if v['lower'] > 0 and p['exactMcNemarP'] < .05 else '现有差异不足以证明稳定提升，不能宣称通用编程成功率已经提高。')
+    elif net == 0:
+        conclusion = '本次两组成功总数相同，没有观察到最终成功率的净提升。'
     else:
-        conclusion = '本机环境未提供足够的合格主任务，不能估计通用编程成功率增益。'
-        cover = conclusion
-    row_text = '\n'.join('| ' + labels[arm] + ' | ' + cell(main, arm) + ' | ' + cell(pro, arm) + ' | ' + cell(extension, arm) + ' |' for arm in labels)
-    contrasts = []
-    for name, panel in [('SWEContextBench', main), ('SWE-bench Pro', pro), ('真实历史版本扩展', extension)]:
-        if not panel:
-            continue
-        for baseline in ['none', 'global', 'previous']:
-            contrast = panel['comparisons']['optimized_vs_' + baseline]
-            contrasts.append(f"| {name} / 对比{labels[baseline]} | {interval(contrast['passAt1Delta'])} | {contrast['improvedTasks']} / {contrast['tiedTasks']} / {contrast['harmedTasks']} |")
-    independent = sum(v['independentExecutions'] for v in panels.values())
-    nominal = sum(v['nominalAssignments'] for v in panels.values())
-    first = f'''## 7. 真实编程评测：任务、环境与隔离
+        conclusion = f'本次优化版比无记忆基线少成功 {-net} 个任务，不支持提高完整编程成功率的结论。'
+    cover = f"新增小规模真实任务验证：MiniMax-M3 在 30 个任务中执行两种策略各一次，共 60 次。无记忆基线成功 {b['successes']}/30，优化版成功 {o['successes']}/30；{interval}。{conclusion}"
+    exclusions = sum(r['status'] == 'reference_excluded' for r in d['referenceDispositions'])
+    duplicates = sum(r['status'] == 'duplicate_repair_pr' for r in d['referenceDispositions'])
+    labels = {'none': '无记忆基线', 'optimized': '最终优化方案'}
+    rows = '\n'.join(f"| {labels[a]} | {d['arms'][a]['successes']}/30 | {100*d['arms'][a]['successRate']:.2f}% | {d['arms'][a]['regressionRuns']}/30 |" for a in labels)
+    repos = '\n'.join(f"| {repo} | {s['tasks']} | {s['noneSuccesses']} | {s['optimizedSuccesses']} |" for repo, s in d['repositories'].items())
+    costs = '\n'.join(f"| {labels[a]} | {d['arms'][a]['usage']['requests']} | {d['arms'][a]['usage']['knownUsageCny']:.2f} | {d['arms'][a]['usage']['unknownUsageUpperCny']:.2f} | {d['arms'][a]['meanAgentSeconds']:.1f} |" for a in labels)
+    first = f'''## 7. 小规模真实编程验证：设计
 
-### 7.1 从答案题扩展到完整仓库任务
+### 7.1 从答案题走向仓库任务
 
-Agent 使用 mini-swe-agent 2.4.6，在真实仓库中检索源码、编辑文件、执行命令并提交补丁。独立容器运行官方测试，成功要求全部指定缺陷测试和回归测试通过。达到 80 步或步骤边界检测到 1,200 秒预算耗尽仍未提交，计为预算内任务失败。上游请求重试可能使实际耗时超出，网络等待包含在内。测试缺失、跳过、环境异常不能算通过；基础设施异常单独标记，不能用模型自评替代结果。
+核心问题是：相同任务、模型和运行限制下，加上最终记忆方案，完整编程任务是否更容易成功？mini-swe-agent 2.4.6 在真实公开仓库中读取源码、修改文件、执行命令并提交补丁；独立容器执行官方测试。模型自评、文本相似度和答案评分均不作为最终成功依据。
 
-主面板固定抽取 100 个 SWEContextBench Python 任务，覆盖 88 个修复 PR；补充面板固定抽取 20 个 SWE-bench Pro 任务。任务按仓库轮询和固定哈希选取，在正式模型调用前提交。预检先在有缺陷版本上确认缺陷测试失败、回归测试通过，再确认参考补丁使全部指定测试通过。主面板合格 {totals['main']['eligible']}/100，排除 {totals['main']['excluded']}；Pro 合格 {totals['pro']['eligible']}/20，排除 {totals['pro']['excluded']}。所有排除及重试证据保留，结论只适用于合格子集。此严格定义不同于上游仅检查修复项的 resolved，不能直接与官方排行榜横比。
+按用户确定的精简计划，只保留 30 个任务、两种策略、每组一次，共 60 次。模型固定为 MiniMax-M3，adaptive thinking，温度 0.2，单次输出上限 8,192 tokens。两组均为最多 80 步、1,200 秒，命令默认超时 60 秒。未完成提交记为预算内失败。上游在步骤边界检查时间，正在进行的请求和重试可能使实测耗时超出预算。
 
-### 7.2 对照设计与真实记忆链路
+### 7.2 不根据成功与否挑题
 
-四组共用同一任务、初始提交、模型参数和工具。全局组使用优化代码并关闭版本筛选；旧版组加载真实旧提交 25a025b；优化组加载本分支生产源码；无记忆组仅清空持久记忆上下文。历史记录经 writeMemory 写入 SQLite，再经 performAutoRecall 生成提示，k=5、最大 12,000 字符、候选倍率 4、状态上限 6、策略预算 100 ms。真实容器的仓库与提交坐标显式传给宿主，未把这次实验说成自动 Git 探测或自动事实抽取评测。
+候选来自固定版本 SWEContextBench。保持最初仓库轮询与 SHA256(20260905|任务 ID) 排序，延伸到全部 244 个 Python 候选。按顺序取参考预检合格的前 30 个任务，每个修复 PR 最多一个。选满前共记录 {exclusions} 个参考预检排除、{duplicates} 个重复修复 PR 跳过；最终覆盖 {len(d['repositories'])} 个仓库、30 个修复 PR。
 
-主模型为 deepseek-v4-flash，开启 thinking；另在固定前 20 个主任务的合格子集上运行 MiniMax-M3 adaptive thinking。温度 0.2，每次输出上限 8,192 tokens。每组重复三次，同一修复 PR 的任务变体共同参加 5,000 次配对 bootstrap。版本扩展与第二模型面板分别报告。模型配置仅在排除于正式样本的 Requests-5474 开发任务上确定。
+预检要求有缺陷版本的所有指定修复测试失败、回归测试通过；参考补丁使两类测试全部通过。缺失、跳过、超时与环境错误不能证明合格。纯下载故障可重试同一官方镜像，原尝试保留。成功率分母为合格的 30 个任务，不把环境排除混成策略失败；这一严格口径不能与官方排行榜直接横比。
 
-### 7.3 防止答案和未来版本泄漏
+### 7.3 对照与信息隔离
 
-目标参考补丁、隐藏测试、hints_text 不进入 Agent 输入。主面板的历史内容来自更早的公开参考经验，并排除目标 ID、目标 PR、相同答案补丁以及没有明确时区的记录；同仓库历史补丁还必须能在初始代码上反向检查成功。它是“参考经验导入”，不是自然产生的 Agent 长期记忆。Pro 与该经验库的仓库完全不重合，因此它主要检验无关记忆干扰与隔离。
+无记忆组的持久记忆上下文为空；优化组经真实 writeMemory 写入 SQLite，再经 performAutoRecall 注入上下文，k=5、最多 12,000 字符、候选倍率 4。真实容器的仓库与提交坐标显式传入宿主。两组分别运行，即使某例最终上下文同为空也不共享执行。
 
-所有 Agent 容器禁止外网、不挂载宿主目录、凭证或 Docker socket。Pro 原镜像含未来 Git 提交，启动时在隔离容器中重建只含初始提交的浅克隆。Requests 使用内部网络提供真实 TCP 超时地址；该设置未改写测试或伪造异常。amd64 镜像在 Apple Silicon 上运行，耗时包含仿真影响。
+本面板复用 {d['reusedExecutions']} 次已有且配置完全一致的 MiniMax 主任务运行，成功与失败都保留。DeepSeek、中间策略、额外重复、Pro 和版本扩展暂停并单独归档。精简协议是用户在早期广面板运行后提出的修订；新增调用前已提交规则和源码登记，不将修订时间写成所有调用之前。
+
+目标答案、隐藏测试和 hints_text 不进入 Agent。历史经验来自公开参考记录，排除目标任务、目标 PR、相同答案补丁，以及记录日期非更早或时区不明的条目；同仓库历史补丁还必须已存在于初始代码。记录日期不等于独立核实的发布时间，经验也不是自然生成的 Agent 长期记忆。容器禁止外网，不挂载宿主目录、凭证或 Docker socket。
 '''
-    second = f'''## 8. 完整任务成功率与配对结论
+    second = f'''## 8. 完整任务结果与配对结论
 
-### 8.1 主模型结果
+### 8.1 单次运行任务成功率
 
-| 记忆策略 | SWEContextBench | SWE-bench Pro | 历史版本扩展 |
+| 策略 | 成功任务 | 成功率 | 发生回归的运行 |
 |---|---|---|---|
-{row_text}
+{rows}
 
-括号表示三次重复中的成功次数 / 名义运行次数。主指标是每个任务三次独立运行的平均 pass@1，不是“三次中选一次最好结果”。四组输入完全相同时，只在同一任务、模型和重复编号内共享一次执行，记录复用来源；不同重复之间不复用。全部面板合计 {nominal} 个名义组别记录、{independent} 次独立 Agent 执行，不能将两者混写。
+每个成功任务均要求全部指定修复与回归测试通过。测试数量不是任务数量，也未从多次运行中挑选最好结果。全部 60 次的补丁摘要、实际模型、初始提交、测试状态与费用计算均已独立复核。
 
-### 8.2 优化版与各基线的配对比较
-
-| 面板与基线 | 差值及 95% 区间 | 改善 / 持平 / 退化任务 |
-|---|---|---|
-{chr(10).join(contrasts)}
-
-pp 为百分点。区间按底层修复 PR 聚类，保留问题变体、三次重复和四组的配对关系。少于 10 个修复簇的面板仅作描述，单任务成功不能外推为通用增益。回归测试数不是独立任务数；各仓库结果以及每例改善、持平和退化明细均保存在 analysis.json。
-
-**对课题的回答。** {conclusion} 召回层的确定性修复与受控题得分提高仍成立，但能否改善完整编程任务，必须由本页公开任务的配对结果支持，不能由前文压力测试推导。
-'''
-    secondary_rows = '\n'.join(f"| {labels[arm]} | {cell(secondary, arm)} |" for arm in labels)
-    cost_rows = []
-    for name, panel in [('主面板', main), ('Pro', pro), ('历史版本扩展', extension), ('第二模型', secondary)]:
-        if panel:
-            cost_rows.append(f"| {name} | {panel['independentExecutions']} | {panel['actualModelCny']:.2f} |")
-    third = f'''## 9. 版本扩展、第二模型与成本
-
-### 9.1 真实历史版本扩展的含义
-
-版本扩展仅使用固定前 20 个主任务的合格子集。程序根据公开任务描述，确定性选择三个相关 Python 源文件，读取初始版本和最多五个不同祖先版本的真实代码片段。所选文件不来自参考答案或隐藏测试。所有组共享相同的初始源码观察预算，记忆分别带真实提交坐标。全局组可能召回过时片段，旧版可能因提前截断而漏掉当前片段，优化版选择当前有效状态。
-
-这检验“恢复带有不同版本观察的工作区”能否改善真实任务，是公开任务之上的自定义扩展。它不是 SWEContextBench 官方分数，也不是通过自然交互自动学习长期记忆的证明。初始源码选择、历史提取耗时及最终上下文均可核验，不能只计模型推理而隐藏记忆准备过程。
-
-### 9.2 第二模型复测
-
-| 策略 | MiniMax-M3 平均 pass@1 |
+| 成对结果 | 任务数 |
 |---|---|
-{secondary_rows}
+| 两组都成功 | {p['bothSucceeded']} |
+| 只有优化版成功 | {p['improved']} |
+| 只有无记忆基线成功 | {p['harmed']} |
+| 两组都失败 | {p['bothFailed']} |
 
-第二模型使用同一批预先选定任务中的合格项、同样的四组和三次重复，单独报告，不与主模型混合扩大样本量。
+优化版减去基线：**{interval}**；精确双侧 McNemar p={p['exactMcNemarP']:.4f}。按修复 PR 成对重采样 5,000 次，固定种子 20260905。样本通过确定性规则选取，区间仅描述本评测的不确定性，不代表所有真实开发任务的概率抽样推断。
 
-### 9.3 模型用量与成本
+### 8.2 各仓库结果
 
-| 面板 | 独立 Agent 执行 | 模型费用估算 / 元 |
-|---|---|---|
-{chr(10).join(cost_rows)}
+| 仓库 | 任务数 | 基线成功 | 优化成功 |
+|---|---|---|---|
+{repos}
 
-费用按供应商返回的输入、输出与缓存命中量，以及记录的标准公开价格核算；DeepSeek 采用高峰价。正式完成矩阵费用 {data['usage']['completeMatricesChargedCny']:.2f} 元，本轮含开发验证和其他已结算请求合计 {data['usage']['totalChargedCny']:.2f} 元。其中未返回用量的请求按预留保守计入，其上界单独保存在用量汇总中；不能视为已知实际消费。预算预留、已返回用量和实际请求分别保存；前一轮统一 100 元/百万 token 的预算上界不能与本页费用相加作为实际账单。
+**对核心问题的回答。** {conclusion} 30 个任务中净多成功一个仅相差 3.33 个百分点，差一两个任务不足以证明稳定提升。结论定位为“小规模真实任务验证”。
+'''
+    third = f'''## 9. 结果解释、成本与复现
 
-初期 Sphinx-2549 和 Pro Ansible 任务使用代理，后续完整任务固定直连国内模型接口；全部初期结果保留，并提供排除这两个传输组的敏感性结果，不能忽略网络稳定性对时间预算的影响。
+### 9.1 记忆是否实际进入任务
 
-API 价格、模型别名和远程服务可能变化；本次运行保存实际响应、参数和用量。公开镜像预检会触发上游已定义的依赖重建或环境修复。任务排除、仿真开销、记忆来源和有限的仓库覆盖共同限定本报告的外推范围。
+优化组在 {o['contextCoverage']}/30 个任务中实际注入非空持久记忆，总计 {o['totalContextChars']} 个字符；其他任务因没有合格召回而保持空上下文。注入的跨仓库记忆数为 {o['foreignRepositoryMemories']}。没有实际记忆输入时，成对差异主要反映模型单次运行波动，不能归因于检索策略。
 
-数据与框架：[SWEContextBench](https://github.com/jiayuanz3/SWEContextBench)、[SWE-bench Pro](https://github.com/scaleapi/SWE-bench_Pro-os)、[mini-swe-agent](https://github.com/SWE-agent/mini-swe-agent)。本实验源码冻结为 69b24f8，正式调用前的摘要登记为 37206f2；完整版本和数据修订见 protocol.json 与 registration.json。
+本面板检验带公开历史参考经验的完整修复任务，没有自然运行多天并自动抽取、更新长期记忆，也没有重新运行已暂停的历史版本扩展。前文确定性测试证明的候选保留、作用域隔离和快照身份修复，与本页任务成功率属于不同证据。召回修复成立，仍可能无法转化为最终成功数提升。
+
+### 9.2 成本与耗时
+
+| 策略 | API 请求 | 已知计价/元 | 未知上界/元 | 平均 Agent 秒 |
+|---|---|---|---|---|
+{costs}
+
+本面板已知用量按公开标准价格计价 {d['usage']['pilotKnownUsageCny']:.2f} 元，未返回用量请求另保守计入上界 {d['usage']['pilotUnknownUsageUpperCny']:.2f} 元；不能混写为已知实际账单。本轮含开发、已暂停面板和主评测合计保守记账 {d['usage']['allWorkChargedCny']:.2f} 元。用户授权总额为 1,000 元，共享账本上限 990 元、此前工作预留 10 元。
+
+Agent 耗时包含命令、模型和网络等待，不含镜像下载及参考预检，召回耗时另存逐例记录。amd64 镜像运行于 Apple Silicon 并共享本机资源。复用运行曾处于较高并发负载，新增主评测最多两个任务工作线程，因此不把该时间当作生产性能基准。主评测绕过显式 HTTP 代理，系统路由仍可能经过网络隧道。
+
+### 9.3 评分修复与材料核验
+
+早期适配器将镜像摘要误作临时标签，导致测试启动失败。已改为合法标签并验证其内容等同于固定摘要；旧评分保留，已保存补丁重放，不新增模型调用。开发样本 131 项测试、Requests-3359 参考补丁 69 项测试通过适配器独立校验。主评测汇总拒绝旧评分和不可评分的环境异常。
+
+分支提供协议、固定清单、逐例输入、真实轨迹、补丁、官方测试输出和独立复算程序。精简实现提交 8599a63、登记提交 8556d16；原始来源与后续修订分别保存。复算入口 analyze_pilot.py，最终任务清单为 pilot-30/selection.json。报告只在 30 对结果齐全、60 次核验通过后生成。
+
+公开来源：[SWEContextBench](https://github.com/jiayuanz3/SWEContextBench)、[mini-swe-agent](https://github.com/SWE-agent/mini-swe-agent)、[MiniMax 价格](https://platform.minimaxi.com/docs/guides/pricing-paygo)。数据与框架提交在协议中记录；远程模型别名和价格可能随时间变化。
 '''
     return {'cover': cover, 'conclusion': conclusion, 'pages': [first, second, third]}

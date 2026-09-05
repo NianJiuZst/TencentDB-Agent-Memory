@@ -3,6 +3,8 @@ import argparse
 import collections
 import hashlib
 import json
+import os
+import platform
 import subprocess
 import sys
 import time
@@ -35,6 +37,11 @@ def main():
     a = p.parse_args()
     rt = a.runtime.resolve()
     rt.mkdir(parents=True, exist_ok=True)
+    if platform.system() == 'Darwin' and platform.machine() == 'arm64':
+        binary = rt / 'regctl'
+        fetch('https://github.com/regclient/regclient/releases/download/v0.11.5/regctl-darwin-arm64', binary,
+              'f4d536d64d0c3cc1db7400902175a1c314675991d22e87e15c319501a2676d3f')
+        os.chmod(binary, 0o755)
     scripts = Path(__file__).parent.resolve()
     evidence = scripts.parents[2] / 'submission/evidence/agent-e2e'
     protocol = json.loads((scripts / 'protocol.json').read_text())

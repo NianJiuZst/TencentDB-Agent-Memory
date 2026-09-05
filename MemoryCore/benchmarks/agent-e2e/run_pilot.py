@@ -28,6 +28,25 @@ def selected_prefix(candidates, decisions, count=30):
     return chosen, dispositions
 
 
+def guaranteed_selection(candidates, decisions, count=30):
+    """Dispatch only cases that must enter the final prefix under every pending outcome.
+
+    Each unresolved earlier repair PR counts as potentially eligible. This is an
+    upper bound, so later fast environment checks cannot displace an earlier task.
+    """
+    possible_earlier = set()
+    guaranteed = []
+    for row in candidates:
+        decision = decisions.get(row['instance_id'])
+        if decision is not None and not decision['eligible']:
+            continue
+        cluster = row['analysisCluster']
+        if decision is not None and decision['eligible'] and cluster not in possible_earlier and len(possible_earlier) < count:
+            guaranteed.append(row)
+        possible_earlier.add(cluster)
+    return guaranteed
+
+
 def check_registration(scripts, evidence):
     registration = load(scripts / 'pilot-registration.json')
     for name, expected in registration['scriptHashes'].items():
@@ -69,6 +88,17 @@ def main():
     fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
     candidates = load(a.evidence / 'pilot-candidate-order.json')['selected']
     decisions = {p.parent.name: load(p) for p in (out / 'references').glob('*/decision.json')}
+    # Previously completed reference proof can be reused out of preparation order.
+    # This scan reads no agent outputs. A guaranteed-selection bound below still
+    # controls which tasks may consume model calls.
+    previous_references = {}
+    for path in (a.evidence / 'preflight-cohort').rglob('preflight.json'):
+        reference = load(path)
+        if reference.get('strictReferencePass'):
+            previous_references[reference['instance_id']] = path
+    for row in candidates:
+        if row['instance_id'] not in decisions and row['instance_id'] in previous_references:
+            decisions[row['instance_id']] = prepare_reference(row, a.runtime, a.evidence)
     submitted = set()
     preparation, execution = {}, {}
     cursor = 0
@@ -97,7 +127,8 @@ def main():
                         'selectionComplete': len(selected) == 30, 'selected': selected, 'dispositions': dispositions,
                         'selectionRuleUsesAgentOutcomes': False}
             write(out / 'selection.json', snapshot)
-            for row in selected:
+            guaranteed = guaranteed_selection(candidates, decisions)
+            for row in guaranteed:
                 task = row['instance_id']
                 if task in submitted or len(execution) >= a.task_workers:
                     continue
@@ -116,7 +147,7 @@ def main():
                         continue
                     preparation[prep_pool.submit(prepare_reference, row, a.runtime, a.evidence)] = row['instance_id']
             pairs = [p.parent.name for p in (out / 'pairs').glob('*/pair.json')]
-            status = {'updatedAtUtc': now(), 'selected': len(selected), 'completedPairs': len(pairs),
+            status = {'updatedAtUtc': now(), 'selected': len(selected), 'guaranteedSelected': len(guaranteed), 'completedPairs': len(pairs),
                       'referenceDecisions': len(decisions), 'activePreparations': list(preparation.values()),
                       'activeTasks': list(execution.values()), 'errors': errors,
                       'status': 'complete' if len(selected) == 30 and len(pairs) == 30 else 'running'}
