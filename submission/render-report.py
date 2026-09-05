@@ -59,7 +59,9 @@ TencentDB Agent Memory · 比赛提交材料 · {report_date.year} 年 {report_d
 
 **核心结论。** 本方案将“事实是否有效”与“写入时间是否最新”分开建模，在分支、工作树和并行任务中保留各自有效的记忆，并在真实召回链路中选择当前适用的状态。本次优化修复了候选提前截断、异常路径绕过版本选择和 Git 坐标缓存过期等问题。在新增的 180 个候选池内案例中，精确选择由旧版的 45/180 提升到 180/180；新增 12 个池外案例仍未召回，作为明确边界报告。
 
-新一轮 70 题版本能力评测使用优化代码生成的生产上下文，并重新调用 MiniMax-M3 与 deepseek-v4-flash 生成答案、交叉评分。全局混合召回的 criterion accuracy 为 {pct(global_model['criterionAccuracy'])}，优化版为 {pct(optimized_model['criterionAccuracy'])}，配对差值为 {100*delta['mean']:+.2f} 个百分点，95% 聚类 bootstrap 区间为 [{100*delta['lower']:.2f}, {100*delta['upper']:.2f}]。这是受控版本场景的结果，不代表任意编程任务的总体正确率。
+70 题受控版本评测使用生产上下文，两位模型生成答案并交叉评分：判据准确率由全局混合的 {pct(global_model['criterionAccuracy'])} 提升至优化版的 {pct(optimized_model['criterionAccuracy'])}。该结果反映版本场景的答案质量，统计与评分细节见第 6 节。
+
+@@AGENT_COVER@@
 
 ### 1. 课题问题与方案定位
 
@@ -259,7 +261,7 @@ pages.append('''## 7. 部署、交付与结论
 
 from agent_report import build as build_agent_report
 agent_report = build_agent_report(E)
-pages[0] = pages[0].replace('**核心结论。**', '**真实任务结论。** ' + agent_report['cover'] + '\n\n**实现层结论。**')
+pages[0] = pages[0].replace('**核心结论。**', '**方案与工程结果。**').replace('@@AGENT_COVER@@', '**真实任务结论。** ' + agent_report['cover'])
 closing = pages.pop().replace('## 7.', '## 10.').replace('### 7.', '### 10.')
 closing = closing.replace('、在线 TCVDB/COS 延迟和完整多轮代码任务的最终成功率', '和在线 TCVDB/COS 延迟')
 closing = closing.replace('**最终结论。** 本次提交完成了可运行的多状态记忆实现、针对实际缺陷的策略优化、可复现的实现与答案层测试，以及完整证据和报告。适用场景是同仓库多分支、多工作树和并行 Agent 的长期协作；贡献在于让“记忆适用于哪里”成为可验证的运行时条件。',

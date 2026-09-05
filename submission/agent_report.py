@@ -18,7 +18,7 @@ def build(evidence):
         conclusion = '本次两组成功总数相同，没有观察到最终成功率的净提升。'
     else:
         conclusion = f'本次优化版比无记忆基线少成功 {-net} 个任务，不支持提高完整编程成功率的结论。'
-    cover = f"新增小规模真实任务验证：MiniMax-M3 在 30 个任务中执行两种策略各一次，共 60 次。目标缺陷修复：基线 {b['targetRepairSuccesses']}/30，优化版 {o['targetRepairSuccesses']}/30；修复并通过全部回归测试：基线 {b['successes']}/30，优化版 {o['successes']}/30，差值{interval}。{conclusion}"
+    cover = f"MiniMax-M3 在 30 个真实任务上分别执行两种策略，共 60 次。目标缺陷修复：基线 {b['targetRepairSuccesses']}/30，优化版 {o['targetRepairSuccesses']}/30；修复并通过全部回归测试：基线 {b['successes']}/30，优化版 {o['successes']}/30。{conclusion} 分层定义与配对分析见第 7–9 节。"
     exclusions = sum(r['status'] == 'reference_excluded' for r in d['referenceDispositions'])
     duplicates = sum(r['status'] == 'duplicate_repair_pr' for r in d['referenceDispositions'])
     labels = {'none': '无记忆基线', 'optimized': '最终优化方案'}
@@ -104,6 +104,8 @@ def build(evidence):
 本面板已知用量按公开标准价格计价 {d['usage']['pilotKnownUsageCny']:.2f} 元，未返回用量请求另保守计入上界 {d['usage']['pilotUnknownUsageUpperCny']:.2f} 元；不能混写为已知实际账单。含开发、试跑和主评测的 Agent 工作合计保守记账 {d['usage']['allWorkChargedCny']:.2f} 元。前一轮答案评测采用另一种保守记账口径。总预算上限 1,000 元，共享账本上限 990 元、此前工作预留 10 元。
 
 Agent 耗时包含命令、模型和网络等待，不含镜像下载及参考预检；召回耗时另存逐例记录。amd64 镜像在 Apple Silicon 上仿真执行，最多两个任务并发，共享本机资源；本机耗时只作该配置下的描述，不视为生产性能基准。
+
+Agent 从固定的官方原始镜像出发，在预算内自行处理必要的环境工作。官方评分器可能先重编译依赖；例如 Matplotlib 参考预检记录了包无法导入及重编译过程。因此，任务成功率也受依赖维护与环境耗时影响，不能将全部失败归因于记忆检索。
 
 ### 9.3 评分修复与材料核验
 
