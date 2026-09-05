@@ -257,7 +257,7 @@ pages.append('''## 7. 部署、交付与结论
 
 from agent_report import build as build_agent_report
 agent_report = build_agent_report(E)
-pages[0] = pages[0].replace('### 1. 课题问题与方案定位', agent_report['cover'] + '\n\n### 1. 课题问题与方案定位')
+pages[0] = pages[0].replace('**核心结论。**', '**真实任务结论。** ' + agent_report['cover'] + '\n\n**实现层结论。**')
 closing = pages.pop().replace('## 7.', '## 10.').replace('### 7.', '### 10.')
 closing = closing.replace('、在线 TCVDB/COS 延迟和完整多轮代码任务的最终成功率', '和在线 TCVDB/COS 延迟')
 closing = closing.replace('**最终结论。** 本次提交完成了可运行的多状态记忆实现、针对实际缺陷的策略优化、可复现的实现与答案层测试，以及完整证据和报告。适用场景是同仓库多分支、多工作树和并行 Agent 的长期协作；贡献在于让“记忆适用于哪里”成为可验证的运行时条件。',
@@ -307,7 +307,7 @@ for pi, page in enumerate(pages):
                 if re.fullmatch(r'[| :\-]+', row): continue
                 table_lines.append([x.strip() for x in row.strip('|').split('|')])
             columns = len(table_lines[0]); width = A4[0]-38*mm
-            widths = {2:[width*.26,width*.74],3:[width*.19,width*.47,width*.34],4:[width*.40,width*.20,width*.20,width*.20]}[columns]
+            widths = {2:[width*.26,width*.74],3:[width*.19,width*.47,width*.34],4:[width*.40,width*.20,width*.20,width*.20],5:[width*.25,width*.15,width*.20,width*.20,width*.20]}[columns]
             table = Table([[Paragraph(rich(x),styles['headcell' if ri==0 else 'cell']) for x in row] for ri,row in enumerate(table_lines)],colWidths=widths,repeatRows=1,hAlign='LEFT')
             table.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,0),NAVY),('VALIGN',(0,0),(-1,-1),'TOP'),('ROWBACKGROUNDS',(0,1),(-1,-1),[colors.HexColor('#F2F6F8'),colors.white]),('LINEBELOW',(0,-1),(-1,-1),.5,LINE),('LEFTPADDING',(0,0),(-1,-1),7),('RIGHTPADDING',(0,0),(-1,-1),7),('TOPPADDING',(0,0),(-1,-1),7),('BOTTOMPADDING',(0,0),(-1,-1),7)]))
             story.extend([table,Spacer(1,10)])
