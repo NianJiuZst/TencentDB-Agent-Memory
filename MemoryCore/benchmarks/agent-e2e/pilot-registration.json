@@ -1,0 +1,27 @@
+{
+  "id": "pilot30-minimax-registration-v1",
+  "recordedAtUtc": "2026-09-05T08:43:42.254183+00:00",
+  "sourceCommit": "8599a63eccbd344f04f27aaefcec19f3f02604e2",
+  "baseRegistrationSha256": "638d70179a94f6c55622b8f227bf625af9851dc54a64430aa51a98988f1f34cb",
+  "candidateManifestSha256": "f5e2f69331d4cd8e60f799236163f46a7f471b1a637ebd98e470ca08252a3131",
+  "scriptHashes": {
+    "pilot-protocol.json": "34a0afb7a5f967f5705f012e7cda0d4fd46b87fd6a319d2045c6db8306dedd27",
+    "pilot_support.py": "b8dcd339d061f512874320068776258bdc25a0b59745823777658509c626e80a",
+    "run_pilot.py": "160c1fd08ffedb2d94970b29c8419229017a30da6645f150c0b6197e215def31",
+    "test_pilot.py": "5de65462ba4f415d320058e2d523c32194b12c37f51b14f0977930d071c73c64",
+    "fetch_image.py": "a6075ddc0e25432e1a95cb7a0468a215dc3ab88f6100b8aca0fd654760f22289",
+    "budget-authorization.json": "17c043f88a9b187b14edb662c7c26c6508676b9231ce1acad215bb8f3c4fa371"
+  },
+  "existingModelRequestsBeforeScopeAmendment": 1890,
+  "disclosure": "User-directed scope and model amendment after the broader experiment had begun. Original candidate ordering retained and extended without reading model outcomes. Existing qualifying MiniMax replicate-zero outcomes are reused regardless of success. New pilot calls have not started.",
+  "existingMiniMaxRuns": [
+    {
+      "artifact": "formal/main-minimax/mwaskom__seaborn-3091/r0-none",
+      "resultSha256": "76ae4f0d92ed15ecc7142a66bf916cdebda70412918e682c86a81d88145b961e"
+    },
+    {
+      "artifact": "formal/main-minimax/mwaskom__seaborn-3091/r0-optimized",
+      "resultSha256": "c33c8946d2136e3d4a38b7f4889c60a79c833e715b7d53edcf569f6f01645dff"
+    }
+  ]
+}
