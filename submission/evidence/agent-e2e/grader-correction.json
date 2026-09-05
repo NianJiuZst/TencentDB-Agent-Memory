@@ -1,0 +1,20 @@
+{
+  "id": "digest-alias-v2",
+  "recordedAtUtc": "2026-09-05T08:17:15.274490+00:00",
+  "initialRegistrationSha256": "1692a6cf85d9f480ba9d2f1fac416a709b22d7407fbc1db6f32a5ffd367265fb",
+  "reason": "The pinned digest was supplied to an upstream function that appends temporary tag suffixes, producing invalid Docker references. Legacy pre-test setup errors were also incorrectly represented as coding failures.",
+  "change": "Create a unique temporary Docker tag and verify it identifies the exact pinned image. Preserve the immutable source digest. Treat pre-test infrastructure failures as unscorable.",
+  "unchanged": [
+    "task selection",
+    "agent prompts and generated patches",
+    "model configuration",
+    "memory contexts",
+    "test contents",
+    "success definition",
+    "repetition count",
+    "authorized budget"
+  ],
+  "reanalysis": "Archive all legacy grading outputs and regrade every saved patch. Regenerate every complete main/extension task matrix without new model calls. Retain empty submissions as budget failures. Pro scoring was unaffected.",
+  "initialSourceCommit": "69b24f8f572b4544ccce78591b2dd48f6e3d80a5",
+  "legacyFailureExample": "formal/extension-deepseek/psf__requests-3359/r0-global/grading-superseded-v1/official/test_output.txt"
+}

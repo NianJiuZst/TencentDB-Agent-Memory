@@ -110,7 +110,8 @@ def main():
             (a.output / 'progress.json').write_text(json.dumps(rows, indent=2) + '\n')
             print(json.dumps({k: row[k] for k in ['runId', 'strictResolved', 'apiCalls', 'peakPriceCny']}), flush=True)
     result = {'instance_id': frozen['instance_id'], 'protocolSha256': frozen['protocolSha256'],
-              'preScoreCommit': registration['sourceCommit'], 'freezeSha256': sha(a.frozen / 'freeze.json'),
+              'preScoreCommit': registration.get('initialSourceCommit', registration['sourceCommit']),
+              'evaluationCodeCommit': registration['sourceCommit'], 'freezeSha256': sha(a.frozen / 'freeze.json'),
               'nominalAssignments': len(rows), 'independentExecutions': sum(r['independentExecution'] for r in rows),
               'rows': rows, 'complete': len(rows) == len(protocol['arms']) * protocol['replicates']}
     (a.output / 'matrix.json').write_text(json.dumps(result, indent=2) + '\n')
