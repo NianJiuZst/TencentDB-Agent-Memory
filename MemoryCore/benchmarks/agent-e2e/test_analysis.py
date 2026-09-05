@@ -1,9 +1,18 @@
 import unittest
 
-from analyze_results import cluster_interval, summarize
+from analyze_results import cluster_interval, require_current_score, summarize
 
 
 class AnalysisTests(unittest.TestCase):
+    def test_infrastructure_failure_cannot_enter_success_denominator(self):
+        legacy = {'strictResolved': False, 'officialReport': {'error': 'Test-patched image commit failed'}}
+        for panel in ['main', 'extension']:
+            with self.assertRaises(ValueError):
+                require_current_score(panel, legacy)
+            with self.assertRaises(ValueError):
+                require_current_score(panel, {'adapterVersion': 'digest-alias-v2', 'scorable': False})
+            require_current_score(panel, {'adapterVersion': 'digest-alias-v2', 'scorable': True, 'strictResolved': False})
+
     def test_variants_share_a_repair_cluster(self):
         result = cluster_interval([('one-pr', 0), ('one-pr', 1), ('another-pr', 0)], draws=5000)
         self.assertEqual(result['clusters'], 2)

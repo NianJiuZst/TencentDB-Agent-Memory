@@ -1,0 +1,46 @@
+{
+  "recordedAtUtc": "2026-09-05T08:40:16.826025+00:00",
+  "reason": "Replace broad preflight schedulers with fixed-order 30-task pilot scheduler; retain all completed and partial evidence",
+  "processes": [
+    {
+      "pid": 36289,
+      "parent": 93597,
+      "command": "/private/tmp/tdai-real-agent-20260905/venv/bin/python -u MemoryCore/benchmarks/agent-e2e/recover_environments.py --runtime /private/tmp/tdai-real-agent-20260905 --evidence submission/evidence/agent-e2e --round 2 --wait"
+    },
+    {
+      "pid": 38133,
+      "parent": 64911,
+      "command": "/private/tmp/tdai-real-agent-20260905/venv/bin/python -u /Users/nianjiu/TencentDB-Agent-Memory/.worktrees/competition-submission/MemoryCore/benchmarks/agent-e2e/preflight.py --runtime /private/tmp/tdai-real-agent-20260905 --instance scikit-learn__scikit-learn-5970 --output submission/evidence/agent-e2e/preflight-cohort/scikit-learn__scikit-learn-5970"
+    },
+    {
+      "pid": 38322,
+      "parent": 38133,
+      "command": "docker run --name rebuild_testpatch_scikit-learn_scikit-learn-5970_2db79e74047a jiayuanz3/swecontextbench:scikit-learn.scikit-learn-5970_1304004ee877_testpatch bash -c cd /testbed && export CFLAGS=-Wno-error=incompatible-pointer-types && /opt/conda/envs/testbed/bin/pip install 'numpy<2' scipy==1.3.3 'cython<0.30' -q 2>&1 || true && /opt/conda/envs/testbed/bin/pip install -e . --no-build-isolation --no-deps -q 2>&1 || /opt/conda/envs/testbed/bin/pip install . --no-build-isolation --no-deps -q 2>&1 || /opt/conda/envs/testbed/bin/python setup.py develop -q 2>&1"
+    },
+    {
+      "pid": 38564,
+      "parent": 86422,
+      "command": "/private/tmp/tdai-real-agent-20260905/venv/bin/python -u /Users/nianjiu/TencentDB-Agent-Memory/.worktrees/competition-submission/MemoryCore/benchmarks/agent-e2e/preflight.py --runtime /private/tmp/tdai-real-agent-20260905 --instance astropy__astropy-8711 --output /Users/nianjiu/TencentDB-Agent-Memory/.worktrees/competition-submission/submission/evidence/agent-e2e/preflight-cohort/astropy__astropy-8711"
+    },
+    {
+      "pid": 38826,
+      "parent": 36289,
+      "command": "/private/tmp/tdai-real-agent-20260905/regctl image copy jiayuanz3/swecontextbench@sha256:48b58a31dc2a9a5b65614f494a4bf887138e0d67c5db573ea8b63406ae810840 ocidir:///private/tmp/tdai-real-agent-20260905/image-cache:image-9467ef6be8ed12762132fb8b"
+    },
+    {
+      "pid": 38876,
+      "parent": 38564,
+      "command": "docker run --rm jiayuanz3/swecontextbench:astropy.astropy-8711_d506355e4a70_testpatch bash -c python - <<'PY'\\012import importlib\\012from pathlib import Path\\012import sys\\012package_name = \"astropy\"\\012repo = \"astropy/astropy\"\\012try:\\012    module = importlib.import_module(package_name)\\012    if repo == 'matplotlib/matplotlib':\\012        from matplotlib import ft2font\\012        import matplotlib\\012        rc_file = Path(matplotlib.get_data_path()) / 'matplotlibrc'\\012        if not rc_file.exists():\\012            raise FileNotFoundError(f'missing matplotlibrc: {rc_file}')\\012        print(f'OK: matplotlib ft2font {getattr(ft2font, \"__file__\", \"\") or \"\"}')\\012except Exception as exc:\\012    print(f'FAILED: {type(exc).__name__}: {exc}')\\012    sys.exit(1)\\012print(f'OK: {package_name} {getattr(module, \"__file__\", \"\") or \"\"}')\\012PY"
+    },
+    {
+      "pid": 64911,
+      "parent": 93597,
+      "command": "/private/tmp/tdai-real-agent-20260905/venv/bin/python -u MemoryCore/benchmarks/agent-e2e/preflight_batch.py --runtime /private/tmp/tdai-real-agent-20260905 --manifest submission/evidence/agent-e2e/dataset-audit.json --output submission/evidence/agent-e2e/preflight-cohort --limit 20"
+    },
+    {
+      "pid": 86422,
+      "parent": 93597,
+      "command": "/private/tmp/tdai-real-agent-20260905/venv/bin/python -u MemoryCore/benchmarks/agent-e2e/prepare_environments.py --runtime /private/tmp/tdai-real-agent-20260905 --manifest submission/evidence/agent-e2e/dataset-audit.json --output submission/evidence/agent-e2e/preflight-cohort --panel main --start 20 --limit 100"
+    }
+  ]
+}

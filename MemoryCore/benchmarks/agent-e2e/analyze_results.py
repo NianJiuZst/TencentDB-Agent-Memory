@@ -17,6 +17,11 @@ def load(path):
     return json.loads(gzip.decompress(Path(str(path) + '.gz').read_bytes()))
 
 
+def require_current_score(panel, score):
+    if panel != 'pro' and (score.get('adapterVersion') != 'digest-alias-v2' or score.get('scorable') is not True):
+        raise ValueError('Main/extension score requires the corrected adapter and executable grading evidence')
+
+
 def percentile(values, q):
     values = sorted(values)
     pos = (len(values) - 1) * q
@@ -148,6 +153,7 @@ def main():
                 data = original.read_bytes() if original.exists() else gzip.decompress(Path(str(original) + '.gz').read_bytes())
                 if hashlib.sha256(data).hexdigest() != row[field]:
                     raise ValueError('Run evidence changed: ' + str(original))
+            require_current_score(row['panel'], load(out / 'grading/score.json'))
             frozen = a.evidence / 'frozen' / row['panel'] / row['instance_id']
             history = load(frozen / 'history-audit.json')
             row['sourceInspectionSeconds'] = history.get('sourceInspectionSeconds', 0)
