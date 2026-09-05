@@ -1,20 +1,21 @@
 {
-  "id": "pilot30-minimax-registration-v1",
-  "recordedAtUtc": "2026-09-05T09:06:52.999813+00:00",
-  "sourceCommit": "97aae77c95167df2824aa22a00d4ee3f5c5154a7",
+  "id": "pilot30-minimax-160-registration-v2",
+  "recordedAtUtc": "2026-09-05T09:36:04.609793+00:00",
+  "sourceCommit": "85bf8ad7e31a6f1a4ec03ab04b04160c67c4b20e",
   "baseRegistrationSha256": "638d70179a94f6c55622b8f227bf625af9851dc54a64430aa51a98988f1f34cb",
   "candidateManifestSha256": "f5e2f69331d4cd8e60f799236163f46a7f471b1a637ebd98e470ca08252a3131",
   "scriptHashes": {
-    "pilot-protocol.json": "34a0afb7a5f967f5705f012e7cda0d4fd46b87fd6a319d2045c6db8306dedd27",
-    "pilot_support.py": "b8dcd339d061f512874320068776258bdc25a0b59745823777658509c626e80a",
-    "run_pilot.py": "97b4458f0ee955eb8338560498681b91aef57413801bc893eb598bf35eb293f2",
+    "pilot-protocol.json": "1cab5d407bfb6562de5757f3ab2277c75d9557c881fe7de97a5e04cf26464995",
+    "pilot_support.py": "096a66eb48b41185df0c386b69c1b8c8d360882f959a6906606c78ae95095e4c",
+    "run_pilot.py": "86729e956f2f30f8e93dc1cc8f63d0c97ad87713892613ff1e70e9575e68f7ac",
     "test_pilot.py": "5de65462ba4f415d320058e2d523c32194b12c37f51b14f0977930d071c73c64",
     "fetch_image.py": "a6075ddc0e25432e1a95cb7a0468a215dc3ab88f6100b8aca0fd654760f22289",
     "budget-authorization.json": "17c043f88a9b187b14edb662c7c26c6508676b9231ce1acad215bb8f3c4fa371",
-    "test_pilot_scheduling.py": "5750aefea1ac0a9fa52eab913031ba396b49873dfc0e95cd8c300878752d4ef8"
+    "test_pilot_scheduling.py": "5750aefea1ac0a9fa52eab913031ba396b49873dfc0e95cd8c300878752d4ef8",
+    "test_pilot_limits.py": "ec769a2ff5498d5b1723bcf9586d251a4fe85141d72d63fb105c4f608fdb9914"
   },
   "existingModelRequestsBeforeScopeAmendment": 1890,
-  "disclosure": "User-directed scope and model amendment after the broader experiment had begun. Original candidate ordering retained and extended without reading model outcomes. Existing qualifying MiniMax replicate-zero outcomes are reused regardless of success. New pilot calls have not started.",
+  "disclosure": "User approved uniform 160-step / 1800-second limits after old-limit runs. All 60 main executions are fresh. Old model results are excluded; completed reference checks and unchanged memory inputs may be reused. Candidate order and strict reference-only selection unchanged. No new-limit calls have started.",
   "existingMiniMaxRuns": [
     {
       "artifact": "formal/main-minimax/mwaskom__seaborn-3091/r0-none",
@@ -31,6 +32,14 @@
       "previousSourceCommit": "8599a63eccbd344f04f27aaefcec19f3f02604e2",
       "recordedAtUtc": "2026-09-05T09:06:52.965683+00:00",
       "reason": "Reuse already-completed reference checks and dispatch a task early only when it is mathematically guaranteed to enter the unchanged first-30-valid selection under every pending reference outcome. No task selection, model, input, success rule or runtime limit changed."
+    },
+    {
+      "previousRegistrationSha256": "09cd8ba364b54fe8bcec9e13fe715344adcaa54982f48a8da68fb16e1e4c935d",
+      "previousSourceCommit": "97aae77c95167df2824aa22a00d4ee3f5c5154a7",
+      "recordedAtUtc": "2026-09-05T09:36:04.609793+00:00",
+      "reason": "User approved uniform 160-step / 1800-second limits after old-limit runs. All 60 main executions are fresh. Old model results are excluded; completed reference checks and unchanged memory inputs may be reused. Candidate order and strict reference-only selection unchanged. No new-limit calls have started.",
+      "evidence": "submission/evidence/agent-e2e/pilot-160-amendment.json"
     }
-  ]
+  ],
+  "oldLimitRunInventorySha256": "e1d8c21fc8e0eb5b150ff946281ef5aad7a10415ffd4d69a5c56f928050fa360"
 }
