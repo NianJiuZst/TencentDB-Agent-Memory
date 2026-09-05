@@ -1,6 +1,6 @@
 {
-  "registeredAtUtc": "2026-09-05T08:29:31.353421+00:00",
-  "sourceCommit": "e1072b5d1d48e5fdea541f2dc9bdcc0980a9a27e",
+  "registeredAtUtc": "2026-09-05T08:17:37.478648+00:00",
+  "sourceCommit": "e2b323b56dced526687c4ce90389f247f9ffc822",
   "protocolSha256": "7937d3940dcf1d53474368216bda776007123689dc091472c4a13938667cd2c3",
   "scriptHashes": {
     "audit_data.py": "69d6e6c4f5fae743725f3e437e145c2f9940c913d15f366a3a036464db8368d8",
@@ -19,13 +19,12 @@
     "register.py": "5c7a08a0eb0e8189d926be79ed3f8af4f33b397f4732e4f910bb4a3ae896da34",
     "run_agent.py": "1fc9a4cb832dc6c83003c8862831d35bd37e6d117a12c7dca80013fe953a21f1",
     "run_cohort.py": "d852e8cd6e5e8e46a4c4b706772d82a450b15b47ae98cd1d22683851678712d4",
-    "run_task_matrix.py": "a10e3d13a3ae216efd619c29160fd4e0ea7a23568cf1b25e8780a0894d24d273",
+    "run_task_matrix.py": "2f0e6bcd6e16d931cff4b0ceec5e58f2a6f5c98f82ee6341a434c4f0b1badaa8",
     "score.py": "c96d08dea2450c44a2e862979427a69c7962b96d3d80b22a842be8d15470e39b",
     "test_protocol.py": "b3c0bf900d668fb5f4336346266099d503a626402379b9b7a0936b28a220b3a9",
     "test_score_adapter.py": "2ad62c0f468429b7db9da20e7e8bae28d8dba914ac0c1e03728510dafa4825bb",
     "timestamps.py": "70f2805cd75865f52f4b77fe6352d7aa6eb564736e5d635783970044afd469b7",
-    "verifier_network.py": "31017ff54ad60eae1bce4dc8c15c5c92f9ca465bf617a3847190051716fdf174",
-    "budget-authorization.json": "17c043f88a9b187b14edb662c7c26c6508676b9231ce1acad215bb8f3c4fa371"
+    "verifier_network.py": "31017ff54ad60eae1bce4dc8c15c5c92f9ca465bf617a3847190051716fdf174"
   },
   "productionSources": {
     "optimized": {
@@ -686,14 +685,6 @@
   "initialSourceCommit": "69b24f8f572b4544ccce78591b2dd48f6e3d80a5",
   "initialRegisteredAtUtc": "2026-09-05T06:55:10.964627+00:00",
   "initialFormalModelCallsBeforeRegistration": 0,
-  "amendment": "User-authorized total funding increased to CNY 1000, ledger cap 990 plus CNY 10 prior-work reserve. No changes to tasks, inputs, repetitions, agent limits, or scoring.",
-  "formalModelRequestsReservedBeforeAmendment": 1647,
-  "amendments": [
-    {
-      "registeredAtUtc": "2026-09-05T08:17:37.478648+00:00",
-      "sourceCommit": "e2b323b56dced526687c4ce90389f247f9ffc822",
-      "amendment": "digest-alias-v2: evaluator transport and infrastructure classification correction; see submission/evidence/agent-e2e/grader-correction.json",
-      "formalModelRequestsReservedBeforeAmendment": 1167
-    }
-  ]
+  "amendment": "digest-alias-v2: evaluator transport and infrastructure classification correction; see submission/evidence/agent-e2e/grader-correction.json",
+  "formalModelRequestsReservedBeforeAmendment": 1167
 }
