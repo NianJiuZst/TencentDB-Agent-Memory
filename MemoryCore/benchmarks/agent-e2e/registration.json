@@ -1,6 +1,6 @@
 {
-  "registeredAtUtc": "2026-09-05T06:55:10.964627+00:00",
-  "sourceCommit": "69b24f8f572b4544ccce78591b2dd48f6e3d80a5",
+  "registeredAtUtc": "2026-09-05T08:17:37.478648+00:00",
+  "sourceCommit": "e2b323b56dced526687c4ce90389f247f9ffc822",
   "protocolSha256": "7937d3940dcf1d53474368216bda776007123689dc091472c4a13938667cd2c3",
   "scriptHashes": {
     "audit_data.py": "69d6e6c4f5fae743725f3e437e145c2f9940c913d15f366a3a036464db8368d8",
@@ -8,6 +8,7 @@
     "extract_version_history.py": "2c88883a54df720183290b2f630934356620b43bc30b65be62bc987c40c1a16d",
     "freeze_pro_task.py": "32054d6f84ed3ff9dca0d76b6f877550be4229efb82cba7d958755242ea720cc",
     "freeze_task.py": "3122f520ca482fb72b359546a92f841f583d99b7df9242508da4c3916f33d285",
+    "image_adapter.py": "f57b96a479620c3b22d6c86f2afab9f298321f8de85494d9d4002de46e1b88da",
     "memory-context.ts": "e2691bc36812b72fa74467981ab9b90c7c8efd24a6066a75891cf5c22aec2a9a",
     "preflight.py": "2725c34893f40fc9df35142166c1fbabd6c65e9b21523d44f279d1e4b0a5de23",
     "preflight_batch.py": "7d60e9d1f86f13cf8b2fb2c6c5370e33c9476e7c2a705031447c272e9471e9d5",
@@ -18,9 +19,10 @@
     "register.py": "5c7a08a0eb0e8189d926be79ed3f8af4f33b397f4732e4f910bb4a3ae896da34",
     "run_agent.py": "1fc9a4cb832dc6c83003c8862831d35bd37e6d117a12c7dca80013fe953a21f1",
     "run_cohort.py": "d852e8cd6e5e8e46a4c4b706772d82a450b15b47ae98cd1d22683851678712d4",
-    "run_task_matrix.py": "307306d2243b0e6ed528550fe86ed1afcbe1dfa0f7804a5049a641685da71800",
-    "score.py": "772ae22cb80e1410612fd07e07bb9c3489747d7e830f1727900fe50286866337",
+    "run_task_matrix.py": "2f0e6bcd6e16d931cff4b0ceec5e58f2a6f5c98f82ee6341a434c4f0b1badaa8",
+    "score.py": "c96d08dea2450c44a2e862979427a69c7962b96d3d80b22a842be8d15470e39b",
     "test_protocol.py": "b3c0bf900d668fb5f4336346266099d503a626402379b9b7a0936b28a220b3a9",
+    "test_score_adapter.py": "2ad62c0f468429b7db9da20e7e8bae28d8dba914ac0c1e03728510dafa4825bb",
     "timestamps.py": "70f2805cd75865f52f4b77fe6352d7aa6eb564736e5d635783970044afd469b7",
     "verifier_network.py": "31017ff54ad60eae1bce4dc8c15c5c92f9ca465bf617a3847190051716fdf174"
   },
@@ -680,5 +682,9 @@
     "pro-dataset-audit.json": "7075e0960745d6da30abc9d62a3916e1adbdc3ea4853b7f4c94d5f94d6f4b48a",
     "quality-audit.json": "244ade107b4f197da2ce95c1e106ca1094ab5e6a838b2f99332fd3c34d2a0be8"
   },
-  "formalModelCallsBeforeRegistration": 0
+  "initialSourceCommit": "69b24f8f572b4544ccce78591b2dd48f6e3d80a5",
+  "initialRegisteredAtUtc": "2026-09-05T06:55:10.964627+00:00",
+  "initialFormalModelCallsBeforeRegistration": 0,
+  "amendment": "digest-alias-v2: evaluator transport and infrastructure classification correction; see submission/evidence/agent-e2e/grader-correction.json",
+  "formalModelRequestsReservedBeforeAmendment": 1167
 }
